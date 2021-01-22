@@ -1,0 +1,19 @@
+# System
+.DS_Store
+*.swp
+*.swo
+.vs/
+.vscode/
+
+# Rust
+target/
+Cargo.lock
+**/*.rs.bk
+
+# Godot
+.import/
+export.cfg
+export_presets.cfg
+.mono/
+data_*/
+export/
