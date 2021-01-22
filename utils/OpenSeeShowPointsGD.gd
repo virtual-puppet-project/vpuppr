@@ -1,0 +1,198 @@
+extends Spatial
+
+const VIS_SPHERE: Resource = preload("res://entities/VisualizationSphere.tscn")
+
+var open_see: OpenSeeGD = null
+
+export var face_id: int = 0
+
+export var only_30_points: bool = false
+export var show_3d_points: bool = true
+
+export var apply_translation: bool = false
+export var apply_rotation: bool = false
+
+export var min_confidence: float = 0.2
+
+export var show_gaze: bool = true
+
+export var material: Material
+
+export var show_lines: bool = false
+export var line_width: float = 0.01
+export var line_material: Material
+
+export var receive_shadows: bool = false
+
+var open_see_data: OpenSeeGD.OpenSeeData
+var game_objects: Array
+var line_renderers: Array
+var center_ball
+
+var updated: float = 0.0
+var total: int = 70
+
+var lines: PoolIntArray = [
+	# Contour
+	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, -1,
+	# Eyebrows
+	18, 19, 20, 21, -1, 23, 24, 25, 26, -1,
+	# Noses
+	28, 29, 30, 33, 32, 33, 34, 35, -1,
+	# Eye
+	37, 38, 39, 40, 41, 36,
+	# Eye
+	43, 44, 45, 46, 47, 42,
+	# Mouth
+	49, 50, 51, 52, 62, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 58, 58, 62
+]
+
+var point_30_set: PoolIntArray = [
+	0, 2, 5, 8, 11, 14, 16, 17, 19, 21, 22, 24, 26, 27, 30, 33, 36, 37, 39, 40, 42, 43, 45, 46, 50, 55, 58, 60, 62, 64
+]
+var point_30_lines: PoolIntArray = [
+	# Contour
+	2, -1, 5, -1, -1, 8, -1, -1, 11, -1, -1, 14, -1, -1, 16, -1, -1,
+	# Eyebrows
+	19, -1, 21, -1, -1, 24, -1, 26, -1, -1,
+	# Nose
+	30, -1, -1, 33, -1, -1, -1, -1, -1,
+	# Eye
+	37, 39, -1, 40, 36, -1,
+	# Eye
+	43, 45, -1, 46, 42, -1,
+	# Mouth
+	-1, -1, 62, -1, -1, -1, -1, 58, -1, -1, 60, -1, 62, -1, 64, -1, 58, -1, 58, 62
+
+]
+
+###############################################################################
+# Builtin functions                                                           #
+###############################################################################
+
+# TODO move magic numbers to top of file
+func _ready() -> void:
+	if not self.open_see:
+		self.open_see = get_parent().get_node("OpenSeeGD")
+
+	game_objects.resize(70)
+	line_renderers.resize(68)
+	
+	if not line_material:
+		show_lines = false
+	
+	if not show_gaze:
+		total = 66
+
+	for i in range(total):
+		var sphere = VIS_SPHERE.instance()
+		sphere.name = "Point " + str(i + 1)
+		if material:
+			sphere.set_surface_material(material)
+		sphere.transform = Transform()
+		sphere.scale_object_local(Vector3(0.025, 0.025, 0.025))
+		
+		game_objects[i] = sphere
+		get_parent().call_deferred("add_child", sphere)
+	# TODO add line object init
+
+	self.center_ball = VIS_SPHERE.instance()
+	center_ball.name = "Center"
+	center_ball.transform = Transform()
+	center_ball.scale_object_local(Vector3(0.1, 0.1, 0.1))
+	get_parent().call_deferred("add_child", center_ball)
+
+func _process(_delta: float) -> void:
+	if not open_see:
+		return
+
+	self.open_see_data = open_see.get_open_see_data(face_id)
+	if(not open_see_data or (show_3d_points and open_see_data.fit_3d_error > open_see.max_fit_3d_error)):
+		return
+	
+	if open_see_data.time > updated:
+		updated = open_see_data.time
+	else:
+		return
+
+	if self.show_3d_points:
+		center_ball.visible = false
+		for i in range(self.total):
+			if(open_see_data.got_3d_points and (i >= 68 or open_see_data.confidence[i] > min_confidence)):
+				var pt: Vector3 = open_see_data.points_3d[i]
+				pt.x = -pt.x
+				game_objects[i].transform.origin = pt
+				if i < 68:
+					# TODO original sets some material stuff here
+					# game_objects[i].
+					pass
+				# else:
+				# 	if i == 68:
+				# 		# game_objects[i].transform = game_objects[i].transform.looking_at(open_see_data.right_gaze, Vector3.UP)
+				# 		# game_objects[i].transform.basis = Basis(game_objects[i].transform.basis.slerp(open_see_data.right_gaze, 0.1))
+				# 		var quat_a: Quat = Quat(game_objects[i].transform.basis)
+				# 		var quat_b: Quat = open_see_data.right_gaze
+				# 		game_objects[i].transform = Transform(quat_a.slerp(quat_b, .01))
+				# 	else:
+				# 		# game_objects[i].transform = game_objects[i].transform.looking_at(open_see_data.left_gaze, Vector3.UP)
+				# 		# game_objects[i].transform.basis = Basis(game_objects[i].transform.basis.slerp(open_see_data.left_gaze, 0.1))
+				# 		var quat_a: Quat = Quat(game_objects[i].transform.basis)
+				# 		var quat_b: Quat = open_see_data.left_gaze
+				# 		game_objects[i].transform = Transform(quat_a.slerp(quat_b, .01))
+			else:
+				# TODO original sets some material stuff here
+				pass
+		if apply_translation:
+			var v: Vector3 = open_see_data.translation
+			v.x = -v.x
+			v.z = -v.z
+			self.transform.origin = v
+		if apply_rotation:
+			var offset: Quat = Quat(Vector3(0.0, 0.0, -90.0))
+			# TODO maybe wrong axis?
+			var converted_quat: Quat = Quat(-open_see_data.raw_quaternion.y, -open_see_data.raw_quaternion.x, open_see_data.raw_quaternion.z, open_see_data.raw_quaternion.w) * offset
+			self.transform.basis = Basis(converted_quat)
+	else:
+		# center_ball.visible = false
+		var center: Vector3 = Vector3.ZERO
+		# TODO fill out the rest?
+
+	for i in range(68):
+		if((not only_30_points and lines[i] == -1) or (only_30_points and point_30_lines[i] == -1)):
+			continue
+		if(not show_lines or not line_material):
+			pass
+		else:
+			var a: int = i
+			var b: int = lines[i]
+			if only_30_points:
+				b = point_30_lines[i]
+				if i == 66:
+					a = 50
+				if i == 67:
+					a = 55
+			else:
+				if i == 66:
+					a = 48
+				if i == 67:
+					a = 53
+			var red_color_data: Vector3 = Vector3(Color.red.r, Color.red.g, Color.red.b)
+			var green_color_data: Vector3 = Vector3(Color.green.r, Color.green.g, Color.green.b)
+			var confidence_lerp: float = lerp(open_see_data.confidence[a], open_see_data.confidence[b], 0.5)
+			var lerped_color: Vector3 = lerp(red_color_data, green_color_data, confidence_lerp)
+			var color: Color = Color(lerped_color.x, lerped_color.y, lerped_color.z)
+			# TODO finish this later?
+
+###############################################################################
+# Connections                                                                 #
+###############################################################################
+
+###############################################################################
+# Private functions                                                           #
+###############################################################################
+
+###############################################################################
+# Public functions                                                            #
+###############################################################################
+
+

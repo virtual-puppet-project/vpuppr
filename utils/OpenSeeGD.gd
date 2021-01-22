@@ -1,3 +1,4 @@
+class_name OpenSeeGD
 extends Node
 
 const NUMBER_OF_POINTS: int = 68
@@ -215,6 +216,8 @@ func _process(_delta: float) -> void:
 	if(receive_thread and not receive_thread.is_active()):
 		self._ready()
 
+	# print(self.tracking_data[0].rotation)
+
 func _exit_tree() -> void:
 	_end_receiver()
 
@@ -226,13 +229,6 @@ func _exit_tree() -> void:
 # Private functions                                                           #
 ###############################################################################
 
-func _get_open_see_data(face_id: int) -> OpenSeeData:
-	if not open_see_data_map:
-		return null
-	if not open_see_data_map.has(face_id):
-		return null
-	return open_see_data_map[face_id]
-
 func _perform_reception(_x) -> void:
 	self.listening = true
 	while not stop_reception:
@@ -241,11 +237,11 @@ func _perform_reception(_x) -> void:
 		if server.is_connection_available():
 			var peer: PacketPeerUDP = server.take_connection()
 			var packet := peer.get_packet()
-			print("Accepted peer: %s:%s" % [peer.get_packet_ip(), peer.get_packet_port()])
+			# print("Accepted peer: %s:%s" % [peer.get_packet_ip(), peer.get_packet_port()])
 			# print("Received data: %s" % [packet.get_string_from_utf8()])
 			# print(packet.get_string_from_ascii())
 			if(packet.size() < 1 or packet.size() % PACKET_FRAME_SIZE != 0):
-				print("packet size too small, continuing")
+				print_debug("packet size too small, continuing")
 				continue
 			self.received_packets += 1
 			var offset: int = 0
@@ -269,3 +265,10 @@ func _end_receiver() -> void:
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
+
+func get_open_see_data(face_id: int) -> OpenSeeData:
+	if not open_see_data_map:
+		return null
+	if not open_see_data_map.has(face_id):
+		return null
+	return open_see_data_map[face_id]
