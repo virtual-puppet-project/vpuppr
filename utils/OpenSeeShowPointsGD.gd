@@ -1,6 +1,8 @@
 extends Spatial
 
 const VIS_SPHERE: Resource = preload("res://entities/VisualizationSphere.tscn")
+const VIS_CYLINDER: Resource = preload("res://entities/VisualizationCylinder.tscn")
+const VIS_RECTANGLE: Resource = preload("res://entities/VisualizationRectangle.tscn")
 
 var open_see: OpenSeeGD = null
 
@@ -9,8 +11,17 @@ export var face_id: int = 0
 export var only_30_points: bool = false
 export var show_3d_points: bool = true
 
-export var apply_translation: bool = false
-export var apply_rotation: bool = false
+export var apply_translation: bool = true
+export var apply_rotation: bool = true
+# Expose these values so they can be viewed in the editor
+var current_translation
+var current_rotation
+var current_quat
+class StoredOffsets:
+	var translation_offset: Vector3
+	var rotation_offset: Vector3
+	var quat_offset: Quat
+var stored_offsets: StoredOffsets = StoredOffsets.new()
 
 export var min_confidence: float = 0.2
 
@@ -26,7 +37,7 @@ export var receive_shadows: bool = false
 
 var open_see_data: OpenSeeGD.OpenSeeData
 var game_objects: Array
-var line_renderers: Array
+var line_renderers: Array # TODO probably don't need this
 var center_ball
 
 var updated: float = 0.0
@@ -88,19 +99,47 @@ func _ready() -> void:
 		var sphere = VIS_SPHERE.instance()
 		sphere.name = "Point " + str(i + 1)
 		if material:
+			# TODO might just need to use property access
 			sphere.set_surface_material(material)
 		sphere.transform = Transform()
 		sphere.scale_object_local(Vector3(0.025, 0.025, 0.025))
 		
 		game_objects[i] = sphere
-		get_parent().call_deferred("add_child", sphere)
-	# TODO add line object init
+		# get_parent().call_deferred("add_child", sphere)
+		self.call_deferred("add_child", sphere)
+		if i >= 68:
+			var cylinder = VIS_CYLINDER.instance()
+			if material:
+				# TODO might just need to use property access
+				cylinder.set_surface_material(material)
+			cylinder.transform = Transform()
+			cylinder.transform.origin = Vector3(0.0, 0.0, -4.0)
+			cylinder.scale_object_local(Vector3(1.0, 4.0, 1.0))
+			sphere.call_deferred("add_child", cylinder)
+	
+	# TODO need to figure out what exactly a line renderer is
+	# Original code references a 'LineRenderer' type/component
+	# so this is incomplete
+	for i in range(68):
+		if i == 66:
+			var rectangle = VIS_RECTANGLE.instance()
+			if only_30_points:
+				game_objects[50].call_deferred("add_child", rectangle)
+			else:
+				game_objects[48].call_deferred("add_child", rectangle)
+		elif i == 67:
+			var rectangle = VIS_RECTANGLE.instance()
+			if only_30_points:
+				game_objects[55].call_deferred("add_child", rectangle)
+			else:
+				game_objects[53].call_deferred("add_child", rectangle)
 
 	self.center_ball = VIS_SPHERE.instance()
 	center_ball.name = "Center"
 	center_ball.transform = Transform()
 	center_ball.scale_object_local(Vector3(0.1, 0.1, 0.1))
-	get_parent().call_deferred("add_child", center_ball)
+	# get_parent().call_deferred("add_child", center_ball)
+	self.call_deferred("add_child", center_ball)
 
 func _process(_delta: float) -> void:
 	if not open_see:
@@ -115,6 +154,8 @@ func _process(_delta: float) -> void:
 	else:
 		return
 
+	self.look_at(get_parent().get_node("Camera").transform.origin, Vector3.UP)
+
 	if self.show_3d_points:
 		center_ball.visible = false
 		for i in range(self.total):
@@ -123,9 +164,11 @@ func _process(_delta: float) -> void:
 				pt.x = -pt.x
 				game_objects[i].transform.origin = pt
 				if i < 68:
-					# TODO original sets some material stuff here
-					# game_objects[i].
-					pass
+					var red_color_data: Vector3 = Vector3(Color.red.r, Color.red.g, Color.red.b)
+					var green_color_data: Vector3 = Vector3(Color.green.r, Color.green.g, Color.green.b)
+					var lerped_color: Vector3 = lerp(red_color_data, green_color_data, open_see_data.confidence[i])
+					var color: Color = Color(lerped_color.x, lerped_color.y, lerped_color.z)
+					game_objects[i].color = color
 				# else:
 				# 	if i == 68:
 				# 		# game_objects[i].transform = game_objects[i].transform.looking_at(open_see_data.right_gaze, Vector3.UP)
@@ -140,18 +183,38 @@ func _process(_delta: float) -> void:
 				# 		var quat_b: Quat = open_see_data.left_gaze
 				# 		game_objects[i].transform = Transform(quat_a.slerp(quat_b, .01))
 			else:
-				# TODO original sets some material stuff here
-				pass
+				game_objects[i].color = Color.cyan
 		if apply_translation:
-			var v: Vector3 = open_see_data.translation
+			self.current_translation = open_see_data.translation
+			var v: Vector3
+			if stored_offsets.translation_offset:
+				v = stored_offsets.translation_offset - open_see_data.translation
+			else:
+				v = open_see_data.translation
 			v.x = -v.x
-			v.z = -v.z
+			v.y = -v.y
+			# v.z = -v.z
 			self.transform.origin = v
 		if apply_rotation:
+			self.current_quat = open_see_data.raw_quaternion
+			self.current_rotation = open_see_data.rotation
+			# var rotation: Vector3
+			# if stored_offsets.rotation_offset:
+			# 	rotation = stored_offsets.rotation_offset - open_see_data.rotation
+			# else:
+			# 	rotation = open_see_data.rotation
+			# self.transform.basis = Basis(rotation.normalized())
 			var offset: Quat = Quat(Vector3(0.0, 0.0, -90.0))
-			# TODO maybe wrong axis?
-			var converted_quat: Quat = Quat(-open_see_data.raw_quaternion.y, -open_see_data.raw_quaternion.x, open_see_data.raw_quaternion.z, open_see_data.raw_quaternion.w) * offset
-			self.transform.basis = Basis(converted_quat)
+			# var converted_quat: Quat = Quat(-open_see_data.raw_quaternion.y, -open_see_data.raw_quaternion.x, open_see_data.raw_quaternion.z, open_see_data.raw_quaternion.w) * offset
+			var converted_quat: Quat = _to_godot_quat(open_see_data.raw_quaternion) * offset
+
+			if stored_offsets.quat_offset:
+				# converted_quat = stored_offsets.quat_offset + Quat(-open_see_data.raw_quaternion.y, -open_see_data.raw_quaternion.x, open_see_data.raw_quaternion.z, open_see_data.raw_quaternion.w)
+				converted_quat = stored_offsets.quat_offset - _to_godot_quat(open_see_data.raw_quaternion)
+
+			self.transform.basis = Basis(converted_quat.normalized())
+			
+			# self.rotate_z(deg2rad(-22.5))
 	else:
 		# center_ball.visible = false
 		var center: Vector3 = Vector3.ZERO
@@ -183,6 +246,10 @@ func _process(_delta: float) -> void:
 			var color: Color = Color(lerped_color.x, lerped_color.y, lerped_color.z)
 			# TODO finish this later?
 
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_accept"):
+		_save_offsets()
+
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
@@ -190,6 +257,17 @@ func _process(_delta: float) -> void:
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
+
+func _to_godot_quat(v: Quat) -> Quat:
+	return Quat(v.x, -v.y, v.z, v.w)
+
+func _save_offsets() -> void:
+	stored_offsets.translation_offset = open_see_data.translation
+	stored_offsets.rotation_offset = open_see_data.rotation
+	# var offset: Quat = Quat(Vector3(0.0, 0.0, -90.0))
+	var offset: Quat = Quat(Vector3(0.0, 0.0, -90.0))
+	# stored_offsets.quat_offset = Quat(-open_see_data.raw_quaternion.y, -open_see_data.raw_quaternion.x, open_see_data.raw_quaternion.z, open_see_data.raw_quaternion.w) * offset
+	stored_offsets.quat_offset = _to_godot_quat(open_see_data.raw_quaternion) * offset
 
 ###############################################################################
 # Public functions                                                            #

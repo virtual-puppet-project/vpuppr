@@ -243,7 +243,7 @@ func _perform_reception(_x) -> void:
 			if(packet.size() < 1 or packet.size() % PACKET_FRAME_SIZE != 0):
 				print_debug("packet size too small, continuing")
 				continue
-			self.received_packets += 1
+			# self.received_packets += 1
 			var offset: int = 0
 			while offset < packet.size():
 				var new_data: OpenSeeData = OpenSeeData.new()

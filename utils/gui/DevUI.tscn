@@ -1,0 +1,60 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://utils/gui/DevUI.gd" type="Script" id=1]
+
+[node name="DevUI" type="Control"]
+margin_right = 1600.0
+margin_bottom = 900.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
+margin_right = 423.0
+margin_bottom = 124.0
+color = Color( 0, 0, 0, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="InfoContainer" type="MarginContainer" parent="CanvasLayer/ColorRect"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 5.0
+margin_top = 5.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/ColorRect/InfoContainer"]
+margin_right = 418.0
+margin_bottom = 119.0
+
+[node name="FPSLabel" type="Label" parent="CanvasLayer/ColorRect/InfoContainer/VBoxContainer"]
+margin_right = 418.0
+margin_bottom = 14.0
+text = "test"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TranslationLabel" type="Label" parent="CanvasLayer/ColorRect/InfoContainer/VBoxContainer"]
+margin_top = 18.0
+margin_right = 418.0
+margin_bottom = 32.0
+text = "test"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="QuatLabel" type="Label" parent="CanvasLayer/ColorRect/InfoContainer/VBoxContainer"]
+margin_top = 36.0
+margin_right = 418.0
+margin_bottom = 50.0
+text = "test"
+__meta__ = {
+"_edit_use_anchors_": false
+}
