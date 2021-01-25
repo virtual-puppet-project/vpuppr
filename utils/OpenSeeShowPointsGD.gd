@@ -105,7 +105,6 @@ func _ready() -> void:
 		sphere.scale_object_local(Vector3(0.025, 0.025, 0.025))
 		
 		game_objects[i] = sphere
-		# get_parent().call_deferred("add_child", sphere)
 		self.call_deferred("add_child", sphere)
 		if i >= 68:
 			var cylinder = VIS_CYLINDER.instance()
@@ -138,7 +137,6 @@ func _ready() -> void:
 	center_ball.name = "Center"
 	center_ball.transform = Transform()
 	center_ball.scale_object_local(Vector3(0.1, 0.1, 0.1))
-	# get_parent().call_deferred("add_child", center_ball)
 	self.call_deferred("add_child", center_ball)
 
 func _process(_delta: float) -> void:
@@ -154,7 +152,7 @@ func _process(_delta: float) -> void:
 	else:
 		return
 
-	self.look_at(get_parent().get_node("Camera").transform.origin, Vector3.UP)
+	# self.look_at(get_parent().get_node("Camera").transform.origin, Vector3.UP)
 
 	if self.show_3d_points:
 		center_ball.visible = false
@@ -191,8 +189,8 @@ func _process(_delta: float) -> void:
 				v = stored_offsets.translation_offset - open_see_data.translation
 			else:
 				v = open_see_data.translation
-			v.x = -v.x
-			v.y = -v.y
+			# v.x = -v.x
+			# v.y = -v.y
 			# v.z = -v.z
 			self.transform.origin = v
 		if apply_rotation:
@@ -205,6 +203,7 @@ func _process(_delta: float) -> void:
 			# 	rotation = open_see_data.rotation
 			# self.transform.basis = Basis(rotation.normalized())
 			var offset: Quat = Quat(Vector3(0.0, 0.0, -90.0))
+			# var offset: Quat = Quat(Vector3(0.0, 0.0, 0.0))
 			# var converted_quat: Quat = Quat(-open_see_data.raw_quaternion.y, -open_see_data.raw_quaternion.x, open_see_data.raw_quaternion.z, open_see_data.raw_quaternion.w) * offset
 			var converted_quat: Quat = _to_godot_quat(open_see_data.raw_quaternion) * offset
 
@@ -264,8 +263,8 @@ func _to_godot_quat(v: Quat) -> Quat:
 func _save_offsets() -> void:
 	stored_offsets.translation_offset = open_see_data.translation
 	stored_offsets.rotation_offset = open_see_data.rotation
-	# var offset: Quat = Quat(Vector3(0.0, 0.0, -90.0))
 	var offset: Quat = Quat(Vector3(0.0, 0.0, -90.0))
+	# var offset: Quat = Quat(Vector3(0.0, 0.0, 0.0))
 	# stored_offsets.quat_offset = Quat(-open_see_data.raw_quaternion.y, -open_see_data.raw_quaternion.x, open_see_data.raw_quaternion.z, open_see_data.raw_quaternion.w) * offset
 	stored_offsets.quat_offset = _to_godot_quat(open_see_data.raw_quaternion) * offset
 

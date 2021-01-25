@@ -10,7 +10,7 @@ export var listen_address: String = "127.0.0.1"
 export var listen_port: int = 11573
 
 # Tracking data
-var received_packets: int = 0
+# var received_packets: int = 0
 var tracking_data: Array = [] # OpenSeeData
 
 var listening: bool = false

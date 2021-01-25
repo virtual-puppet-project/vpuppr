@@ -58,3 +58,12 @@ text = "test"
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="EulerLabel" type="Label" parent="CanvasLayer/ColorRect/InfoContainer/VBoxContainer"]
+margin_top = 54.0
+margin_right = 418.0
+margin_bottom = 68.0
+text = "test"
+__meta__ = {
+"_edit_use_anchors_": false
+}
