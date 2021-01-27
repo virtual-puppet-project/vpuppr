@@ -29,7 +29,7 @@ Import the project in [Godot](https://godotengine.org/) (developed with version 
 ## Work notes
 - [x] basic OpenSeeFace visualization
 - [x] map data to a rigged, non-vrm model
-- [ ] make rigged, non-vrm models lean based on translation
+- [x] make rigged, non-vrm models lean based on translation
 - [ ] load vrm models
 - [ ] map data to a vrm model
 - [ ] support Live2D-style sprites

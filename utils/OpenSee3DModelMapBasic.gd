@@ -86,10 +86,14 @@ func _process(_delta: float) -> void:
 			corrected_euler.x = 360 + corrected_euler.x
 		head_rotation = (stored_offsets.euler_offset - corrected_euler) * rotation_damp
 
-		model.move_head(
-			Vector3(head_translation.x, -head_translation.y, head_translation.z),
-			Vector3(-head_rotation.x, -head_rotation.y, head_rotation.z)
-		)
+	# TODO solve for real head-to-camera translation + rotation
+	# Moving head without rotation still causes rotation to be registered
+	# because rotation is based off of head-to-camera position
+
+	model.move_head(
+		Vector3(head_translation.x, -head_translation.y, head_translation.z),
+		Vector3(-head_rotation.x, -head_rotation.y, head_rotation.z)
+	)
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_accept"):
