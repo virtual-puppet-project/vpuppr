@@ -9,6 +9,8 @@ var debug: bool = true
 ###############################################################################
 
 func _ready() -> void:
+	if OS.has_feature("standalone"):
+		debug = false
 	if debug:
 		var dev_ui: Control = DEV_UI.instance()
 		self.add_child(dev_ui)

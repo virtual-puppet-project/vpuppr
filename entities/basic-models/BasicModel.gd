@@ -5,10 +5,8 @@ export var head_name: String
 # Used to make the model lean with head movement
 export(Array, String) var additional_bones_to_pose_names: Array
 export var additional_bone_damp: float = 0.3
-# Used to pose model from T-pose position
-export(Array, String) var arm_bone_names: Array
-export var arm_bone_rotation_amount: float = 0.0
 export var path_to_skeleton: String
+export var initial_animation: String
 
 var skeleton: Skeleton
 var head_bone_id: int
@@ -24,12 +22,8 @@ func _ready() -> void:
 	head_bone_id = skeleton.find_bone(head_name)
 	for bone_name in additional_bones_to_pose_names:
 		additional_bone_ids[bone_name] = skeleton.find_bone(bone_name)
-
-	if arm_bone_names:
-		var arm_transform: Transform = Transform()
-		arm_transform = arm_transform.rotated(Vector3.BACK, arm_bone_rotation_amount)
-		for bone_name in arm_bone_names:
-			skeleton.set_bone_pose(skeleton.find_bone(bone_name), arm_transform)
+		
+	$AnimationPlayer.play(initial_animation)
 
 ###############################################################################
 # Connections                                                                 #

@@ -7,5 +7,5 @@
 script = ExtResource( 2 )
 head_name = "head"
 additional_bones_to_pose_names = [ "neck", "chest", "stomach" ]
-arm_bone_names = [ "upperarmleft", "upperarmright" ]
 path_to_skeleton = "Armature/Skeleton"
+initial_animation = "ArmsDown"
