@@ -70,4 +70,5 @@ scroll_down={
 
 [rendering]
 
+environment/default_clear_color=Color( 0.301961, 0.301961, 0.301961, 0 )
 environment/default_environment="res://assets/default_env.tres"

@@ -9,6 +9,8 @@ var debug: bool = true
 ###############################################################################
 
 func _ready() -> void:
+	get_viewport().transparent_bg = true
+	
 	if OS.has_feature("standalone"):
 		debug = false
 	if debug:
