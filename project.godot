@@ -35,6 +35,10 @@ config/icon="res://assets/icon.png"
 window/size/width=1600
 window/size/height=900
 
+[gdnative]
+
+singletons=[ "res://pythonscript.gdnlib" ]
+
 [input]
 
 allow_move_model={

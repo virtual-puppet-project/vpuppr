@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://utils/OpenSeeVRMModelMap.gd" type="Script" id=1]
+[ext_resource path="res://utils/gltf2-util/GLTF2Util.tscn" type="PackedScene" id=2]
+
+[node name="OpenSeeVRMModelMap" type="Spatial"]
+script = ExtResource( 1 )
+vrm_model_path = "C:\\Users\\theaz\\dev\\openseeface-gd\\assets\\vrm-models\\AliciaSolid_vrm-0.51.vrm"
+
+[node name="ModelParent" type="Spatial" parent="."]
+
+[node name="GLTF2Util" parent="." instance=ExtResource( 2 )]
