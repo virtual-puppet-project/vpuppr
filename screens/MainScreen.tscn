@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=2]
 
+[ext_resource path="res://entities/vrm/AliciaSolid_vrm-051.tscn" type="PackedScene" id=1]
 [ext_resource path="res://screens/MainScreen.gd" type="Script" id=4]
-[ext_resource path="res://utils/OpenSee3DModelMapBasic.tscn" type="PackedScene" id=5]
 
 [node name="MainScreen" type="Spatial"]
 script = ExtResource( 4 )
@@ -9,4 +9,8 @@ script = ExtResource( 4 )
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 1, 0, 2.98023e-08, 0, 1, 0, -2.98023e-08, 0, 1, 0, 0, 2 )
 
-[node name="OpenSee3DModelMapBasic" parent="." instance=ExtResource( 5 )]
+[node name="AliciaSolid_vrm-051" parent="." instance=ExtResource( 1 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, -0.752742, 0.373721 )
+
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 17.3583 )

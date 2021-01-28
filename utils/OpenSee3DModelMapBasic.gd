@@ -2,6 +2,7 @@ extends Spatial
 
 const OPEN_SEE: Resource = preload("res://utils/OpenSeeGD.tscn")
 const MODEL: Resource = preload("res://entities/basic-models/Person.tscn")
+export var model_resource_path: String
 
 var model
 onready var model_parent: Spatial = $ModelParent
@@ -45,7 +46,11 @@ export var mouse_move_strength: float = 0.002
 ###############################################################################
 
 func _ready() -> void:
-	model = MODEL.instance()
+	if model_resource_path:
+		var model_resource = load(model_resource_path)
+		model = model_resource.instance()
+	else:
+		model = MODEL.instance()
 	model.scale_object_local(Vector3(0.4, 0.4, 0.4))
 	model_initial_transform = model.transform
 	model_parent_initial_transform = model_parent.transform
