@@ -34,3 +34,6 @@ Import the project in [Godot](https://godotengine.org/) (developed with version 
 - [ ] map data to a vrm model
 - [ ] support Live2D-style sprites
 
+Dynamic gltf loading:
+editor_scene_importer_gltf.cpp -> import_scene() -> gltf_document.cpp -> parse() -> generate_mesh_instance()
+

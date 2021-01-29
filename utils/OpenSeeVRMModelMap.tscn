@@ -5,7 +5,7 @@
 
 [node name="OpenSeeVRMModelMap" type="Spatial"]
 script = ExtResource( 1 )
-vrm_model_path = "C:\\Users\\theaz\\dev\\openseeface-gd\\assets\\vrm-models\\AliciaSolid_vrm-0.51.vrm"
+vrm_model_path = "C:\\Users\\theaz\\dev\\openseeface-gd\\assets\\vrm-models\\alicia\\AliciaSolid_vrm-0.51.vrm"
 
 [node name="ModelParent" type="Spatial" parent="."]
 

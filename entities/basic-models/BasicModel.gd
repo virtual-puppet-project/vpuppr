@@ -64,10 +64,10 @@ func move_head(translation: Vector3, rotation: Vector3) -> void:
 	skeleton.set_bone_pose(head_bone_id, head_transform)
 	if additional_bones_to_pose_names:
 		var additional_transform = Transform()
-		additional_transform = additional_transform.translated(translation * 0.2)
-		additional_transform = additional_transform.rotated(Vector3.RIGHT, rotation.x * 0.2)
-		additional_transform = additional_transform.rotated(Vector3.UP, rotation.y * 0.2)
-		additional_transform = additional_transform.rotated(Vector3.BACK, rotation.z * 0.2)
+		additional_transform = additional_transform.translated(translation * additional_bone_damp)
+		additional_transform = additional_transform.rotated(Vector3.RIGHT, rotation.x * additional_bone_damp)
+		additional_transform = additional_transform.rotated(Vector3.UP, rotation.y * additional_bone_damp)
+		additional_transform = additional_transform.rotated(Vector3.BACK, rotation.z * additional_bone_damp)
 
 		for bone in additional_bones_to_pose_names:
 			skeleton.set_bone_pose(additional_bone_ids[bone], additional_transform)
