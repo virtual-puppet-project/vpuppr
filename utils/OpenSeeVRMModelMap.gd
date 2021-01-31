@@ -2,7 +2,7 @@ extends Spatial
 
 const OPEN_SEE: Resource = preload("res://utils/OpenSeeGD.tscn")
 
-onready var gltf2_util: Node = $GLTF2Util
+# onready var gltf2_util: Node = $GLTF2Util
 
 export var vrm_model_path: String
 export var vrm_model_scene: String
@@ -49,7 +49,7 @@ export var mouse_move_strength: float = 0.002
 ###############################################################################
 
 func _ready() -> void:
-	gltf2_util.load_file(vrm_model_path)
+	# gltf2_util.load_file(vrm_model_path)
 	
 	var model_resource = load(vrm_model_scene)
 	model = model_resource.instance()
