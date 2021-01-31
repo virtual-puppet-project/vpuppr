@@ -1,1 +1,0 @@
-liblzma is in the public domain.
