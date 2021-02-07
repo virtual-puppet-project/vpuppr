@@ -1,26 +1,14 @@
-extends Spatial
+extends BasicModel
 
-const DEV_UI: Resource = preload("res://utils/gui/DevUI.tscn")
-
-var debug: bool = true
+var is_blinking: bool = false
+var current_animation: String
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
 func _ready() -> void:
-	get_viewport().transparent_bg = true
-	OS.window_per_pixel_transparency_enabled = true
-	
-	if OS.has_feature("standalone"):
-		debug = false
-	if debug:
-		var dev_ui: Control = DEV_UI.instance()
-		self.add_child(dev_ui)
-
-func _input(event: InputEvent) -> void:
-	if(event.is_action_pressed("ui_cancel") and debug):
-		get_tree().quit()
+	$DuckMovement.play("Idle")
 
 ###############################################################################
 # Connections                                                                 #
@@ -34,4 +22,28 @@ func _input(event: InputEvent) -> void:
 # Public functions                                                            #
 ###############################################################################
 
+func blink() -> void:
+	current_animation = $AnimationPlayer.current_animation
+	$AnimationPlayer.play("Blink")
+	is_blinking = true
 
+func unblink() -> void:
+	$AnimationPlayer.play(current_animation)
+	is_blinking = false
+
+func change_expression_to(expression_type: int) -> void:
+	match expression_type:
+		ExpressionTypes.DEFAULT:
+			$AnimationPlayer.play("Default")
+		ExpressionTypes.HAPPY:
+			$AnimationPlayer.play("Happy")
+		ExpressionTypes.SAD:
+			$AnimationPlayer.play("Blink")
+		ExpressionTypes.ANGRY:
+			$AnimationPlayer.play("Angry")
+		ExpressionTypes.SHOCKED:
+			$AnimationPlayer.play("Shocked")
+		ExpressionTypes.BASHFUL:
+			$AnimationPlayer.play("Bashful")
+		_:
+			print_debug("Expression not handled")

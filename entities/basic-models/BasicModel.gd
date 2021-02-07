@@ -1,7 +1,9 @@
 class_name BasicModel
 extends Spatial
 
-export var head_name: String
+enum ExpressionTypes { DEFAULT, HAPPY, ANGRY, SAD, SHOCKED, BASHFUL }
+
+export var head_name: String = "head"
 # Used to make the model lean with head movement
 export(Array, String) var additional_bones_to_pose_names: Array
 export var additional_bone_damp: float = 0.3
@@ -71,3 +73,6 @@ func move_head(translation: Vector3, rotation: Vector3) -> void:
 
 		for bone in additional_bones_to_pose_names:
 			skeleton.set_bone_pose(additional_bone_ids[bone], additional_transform)
+
+func change_expression_to(expression_type: int) -> void:
+	pass
