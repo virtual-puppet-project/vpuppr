@@ -31,6 +31,8 @@ export var rotation_damp: float = 0.02
 
 export var tracking_start_delay: float = 2.0
 
+export var blink_threshold: float = 0.3
+
 var updated: float = 0.0
 
 # Input
@@ -94,6 +96,13 @@ func _process(_delta: float) -> void:
 	# TODO solve for real head-to-camera translation + rotation
 	# Moving head without rotation still causes rotation to be registered
 	# because rotation is based off of head-to-camera position
+	
+	if not model.is_blinking:
+		if(open_see_data.left_eye_open < blink_threshold and open_see_data.right_eye_open < blink_threshold):
+			model.blink()
+	elif model.is_blinking:
+		if(open_see_data.left_eye_open > blink_threshold and open_see_data.right_eye_open > blink_threshold):
+			model.unblink()
 
 	model.move_head(
 		Vector3(head_translation.x, -head_translation.y, head_translation.z),
@@ -138,6 +147,20 @@ func _input(event: InputEvent) -> void:
 		
 		if(should_move_model and event is InputEventMouseMotion):
 			model_parent.translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
+	
+	# TODO debug inputs for expressions for now
+	if Input.is_key_pressed(KEY_1):
+		model.change_expression_to(BasicModel.ExpressionTypes.DEFAULT)
+	elif Input.is_key_pressed(KEY_2):
+		model.change_expression_to(BasicModel.ExpressionTypes.HAPPY)
+	elif Input.is_key_pressed(KEY_3):
+		model.change_expression_to(BasicModel.ExpressionTypes.ANGRY)
+	elif Input.is_key_pressed(KEY_4):
+		model.change_expression_to(BasicModel.ExpressionTypes.SAD)
+	elif Input.is_key_pressed(KEY_5):
+		model.change_expression_to(BasicModel.ExpressionTypes.SHOCKED)
+	elif Input.is_key_pressed(KEY_6):
+		model.change_expression_to(BasicModel.ExpressionTypes.BASHFUL)
 
 ###############################################################################
 # Connections                                                                 #
