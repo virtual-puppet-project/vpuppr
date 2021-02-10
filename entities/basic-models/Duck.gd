@@ -1,5 +1,7 @@
 extends BasicModel
 
+enum ExpressionTypes { DEFAULT, HAPPY, ANGRY, SAD, SHOCKED, BASHFUL }
+
 var is_blinking: bool = false
 var current_animation: String
 
@@ -9,6 +11,20 @@ var current_animation: String
 
 func _ready() -> void:
 	$DuckMovement.play("Idle")
+
+func _unhandled_input(_event: InputEvent) -> void:
+	if Input.is_key_pressed(KEY_1):
+		change_expression_to(ExpressionTypes.DEFAULT)
+	elif Input.is_key_pressed(KEY_2):
+		change_expression_to(ExpressionTypes.HAPPY)
+	elif Input.is_key_pressed(KEY_3):
+		change_expression_to(ExpressionTypes.ANGRY)
+	elif Input.is_key_pressed(KEY_4):
+		change_expression_to(ExpressionTypes.SAD)
+	elif Input.is_key_pressed(KEY_5):
+		change_expression_to(ExpressionTypes.SHOCKED)
+	elif Input.is_key_pressed(KEY_6):
+		change_expression_to(ExpressionTypes.BASHFUL)
 
 ###############################################################################
 # Connections                                                                 #

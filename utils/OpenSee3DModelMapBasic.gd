@@ -1,12 +1,18 @@
 extends Spatial
 
 const OPEN_SEE: Resource = preload("res://utils/OpenSeeGD.tscn")
+
 const MODEL: Resource = preload("res://entities/basic-models/Person.tscn")
+
+const BASIC_SCRIPT_PATH: String = "res://entities/basic-models/BasicModel.gd"
+
 export var model_resource_path: String
 
+# Model nodes
 var model
 onready var model_parent: Spatial = $ModelParent
 
+# Store transforms so we can easily reset
 var model_initial_transform: Transform
 var model_parent_initial_transform: Transform
 
@@ -43,14 +49,24 @@ var should_move_model: bool = false
 export var zoom_strength: float = 0.05
 export var mouse_move_strength: float = 0.002
 
+# TODO debug
+var imported_model
+
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
 func _ready() -> void:
+	AppManager.connect("file_to_load_changed", self, "_on_file_to_load_changed")
 	if model_resource_path:
-		var model_resource = load(model_resource_path)
-		model = model_resource.instance()
+		match model_resource_path.get_extension():
+			"glb":
+				model = load_external_model(model_resource_path)
+			"tscn":
+				var model_resource = load(model_resource_path)
+				model = model_resource.instance()
+			_:
+				printerr("File extension not recognized.")
 	else:
 		model = MODEL.instance()
 	model.scale_object_local(Vector3(0.4, 0.4, 0.4))
@@ -97,12 +113,13 @@ func _process(_delta: float) -> void:
 	# Moving head without rotation still causes rotation to be registered
 	# because rotation is based off of head-to-camera position
 	
-	if not model.is_blinking:
-		if(open_see_data.left_eye_open < blink_threshold and open_see_data.right_eye_open < blink_threshold):
-			model.blink()
-	elif model.is_blinking:
-		if(open_see_data.left_eye_open > blink_threshold and open_see_data.right_eye_open > blink_threshold):
-			model.unblink()
+	if model.get("is_blinking"):
+		if not model.is_blinking:
+			if(open_see_data.left_eye_open < blink_threshold and open_see_data.right_eye_open < blink_threshold):
+				model.blink()
+		elif model.is_blinking:
+			if(open_see_data.left_eye_open > blink_threshold and open_see_data.right_eye_open > blink_threshold):
+				model.unblink()
 
 	model.move_head(
 		Vector3(head_translation.x, -head_translation.y, head_translation.z),
@@ -147,20 +164,6 @@ func _input(event: InputEvent) -> void:
 		
 		if(should_move_model and event is InputEventMouseMotion):
 			model_parent.translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
-	
-	# TODO debug inputs for expressions for now
-	if Input.is_key_pressed(KEY_1):
-		model.change_expression_to(BasicModel.ExpressionTypes.DEFAULT)
-	elif Input.is_key_pressed(KEY_2):
-		model.change_expression_to(BasicModel.ExpressionTypes.HAPPY)
-	elif Input.is_key_pressed(KEY_3):
-		model.change_expression_to(BasicModel.ExpressionTypes.ANGRY)
-	elif Input.is_key_pressed(KEY_4):
-		model.change_expression_to(BasicModel.ExpressionTypes.SAD)
-	elif Input.is_key_pressed(KEY_5):
-		model.change_expression_to(BasicModel.ExpressionTypes.SHOCKED)
-	elif Input.is_key_pressed(KEY_6):
-		model.change_expression_to(BasicModel.ExpressionTypes.BASHFUL)
 
 ###############################################################################
 # Connections                                                                 #
@@ -172,6 +175,17 @@ func _on_offset_timer_timeout() -> void:
 	stored_offsets = StoredOffsets.new()
 	open_see_data = open_see.get_open_see_data(face_id)
 	_save_offsets()
+
+func _on_file_to_load_changed(file_path: String) -> void:
+	match file_path.get_extension():
+		"glb":
+			model = load_external_model(file_path)
+		"tscn":
+			var model_resource = load(file_path)
+			model = model_resource.instance()
+		_:
+			printerr("File extension not recognized.")
+	model.request_ready()
 
 ###############################################################################
 # Private functions                                                           #
@@ -194,4 +208,12 @@ func _save_offsets() -> void:
 # Public functions                                                            #
 ###############################################################################
 
+func load_external_model(path: String) -> Spatial:
+	var gltf_loader: DynamicGLTFLoader = DynamicGLTFLoader.new()
+	var loaded_model: Spatial = gltf_loader.import_scene(path, 1, 1)
+
+	var vrm_script = load(BASIC_SCRIPT_PATH)
+	loaded_model.set_script(vrm_script)
+	
+	return loaded_model
 
