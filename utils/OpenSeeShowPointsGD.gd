@@ -4,6 +4,8 @@ const VIS_SPHERE: Resource = preload("res://entities/VisualizationSphere.tscn")
 const VIS_CYLINDER: Resource = preload("res://entities/VisualizationCylinder.tscn")
 const VIS_RECTANGLE: Resource = preload("res://entities/VisualizationRectangle.tscn")
 
+const OPEN_SEE: Resource = preload("res://utils/OpenSeeGD.tscn")
+
 var open_see: OpenSeeGD = null
 
 export var face_id: int = 0
@@ -83,8 +85,8 @@ var point_30_lines: PoolIntArray = [
 
 # TODO move magic numbers to top of file
 func _ready() -> void:
-	if not self.open_see:
-		self.open_see = get_parent().get_node("OpenSeeGD")
+	self.open_see = OPEN_SEE.instance()
+	self.call_deferred("add_child", open_see)
 
 	game_objects.resize(70)
 	line_renderers.resize(68)
