@@ -2,14 +2,17 @@ extends Spatial
 
 const OPEN_SEE: Resource = preload("res://utils/OpenSeeGD.tscn")
 
-# onready var gltf2_util: Node = $GLTF2Util
+const DEFAULT_MODEL_PATH: String = "res://assets/vrm-models/alicia/AliciaSolid_vrm-0.51.glb"
 
-export var vrm_model_path: String
-export var vrm_model_scene: String
+const VRM_SCRIPT_PATH: String = "res://entities/vrm/VRMModel.gd"
 
+export var model_resource_path: String
+
+# Model nodes
 var model
 onready var model_parent: Spatial = $ModelParent
 
+# Store transforms so we can easily reset
 var model_initial_transform: Transform
 var model_parent_initial_transform: Transform
 
@@ -28,7 +31,7 @@ export var min_confidence: float = 0.2
 export var show_gaze: bool = true
 
 export var apply_translation: bool = true
-export var translation_damp: float = 0.3
+export var translation_damp: float = 0.1
 export var apply_rotation: bool = true
 export var rotation_damp: float = 0.02
 
@@ -49,24 +52,32 @@ export var mouse_move_strength: float = 0.002
 ###############################################################################
 
 func _ready() -> void:
-	# gltf2_util.load_file(vrm_model_path)
-	
-	var model_resource = load(vrm_model_scene)
-	model = model_resource.instance()
+	AppManager.connect("file_to_load_changed", self, "_on_file_to_load_changed")
+	if model_resource_path:
+		match model_resource_path.get_extension():
+			"glb":
+				model = load_external_model(model_resource_path)
+			"tscn":
+				var model_resource = load(model_resource_path)
+				model = model_resource.instance()
+			_:
+				printerr("File extension not recognized.")
+	else:
+		model = load_external_model(DEFAULT_MODEL_PATH)
 	model.transform = model.transform.rotated(Vector3.UP, PI)
 	model_initial_transform = model.transform
 	model_parent_initial_transform = model_parent.transform
 	model_parent.call_deferred("add_child", model)
 
-	# self.open_see = OPEN_SEE.instance()
-	# self.call_deferred("add_child", open_see)
+	self.open_see = OPEN_SEE.instance()
+	self.call_deferred("add_child", open_see)
 
-	# var offset_timer: Timer = Timer.new()
-	# self.call_deferred("add_child", offset_timer)
-	# offset_timer.name = "OffsetTimer"
-	# offset_timer.connect("timeout", self, "_on_offset_timer_timeout")
-	# offset_timer.wait_time = tracking_start_delay
-	# offset_timer.autostart = true
+	var offset_timer: Timer = Timer.new()
+	self.call_deferred("add_child", offset_timer)
+	offset_timer.name = "OffsetTimer"
+	offset_timer.connect("timeout", self, "_on_offset_timer_timeout")
+	offset_timer.wait_time = tracking_start_delay
+	offset_timer.autostart = true
 
 func _process(_delta: float) -> void:
 	if not stored_offsets:
@@ -148,6 +159,19 @@ func _on_offset_timer_timeout() -> void:
 	open_see_data = open_see.get_open_see_data(face_id)
 	_save_offsets()
 
+func _on_file_to_load_changed(file_path: String) -> void:
+	var loaded_model
+	match file_path.get_extension():
+		"glb":
+			loaded_model = load_external_model(file_path)
+		"tscn":
+			var model_resource = load(file_path)
+			loaded_model = model_resource.instance()
+		_:
+			printerr("File extension not recognized.")
+	
+	model = loaded_model
+
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
@@ -169,4 +193,11 @@ func _save_offsets() -> void:
 # Public functions                                                            #
 ###############################################################################
 
+func load_external_model(path: String) -> Spatial:
+	var gltf_loader: DynamicGLTFLoader = DynamicGLTFLoader.new()
+	var loaded_model: Spatial = gltf_loader.import_scene(path, 1, 1)
 
+	var vrm_script = load(VRM_SCRIPT_PATH)
+	loaded_model.set_script(vrm_script)
+	
+	return loaded_model

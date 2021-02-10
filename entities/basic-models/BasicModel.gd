@@ -1,17 +1,15 @@
 class_name BasicModel
 extends Spatial
 
-enum ExpressionTypes { DEFAULT, HAPPY, ANGRY, SAD, SHOCKED, BASHFUL }
+const SKELETON_NODE = "Skeleton"
+const HEAD_BONE = "head"
 
-export var head_name: String = "head"
 # Used to make the model lean with head movement
 export(Array, String) var additional_bones_to_pose_names: Array
 export var additional_bone_damp: float = 0.3
-export var path_to_skeleton: String
-export var initial_animation: String
 
-var skeleton: Skeleton
-var head_bone_id: int
+onready var skeleton: Skeleton = find_node(SKELETON_NODE)
+onready var head_bone_id: int = skeleton.find_bone(HEAD_BONE)
 var additional_bone_ids: Dictionary
 
 ###############################################################################
@@ -19,13 +17,8 @@ var additional_bone_ids: Dictionary
 ###############################################################################
 
 func _ready() -> void:
-	skeleton = get_node(path_to_skeleton)
-
-	head_bone_id = skeleton.find_bone(head_name)
 	for bone_name in additional_bones_to_pose_names:
 		additional_bone_ids[bone_name] = skeleton.find_bone(bone_name)
-		
-	$AnimationPlayer.play(initial_animation)
 
 ###############################################################################
 # Connections                                                                 #
@@ -73,6 +66,3 @@ func move_head(translation: Vector3, rotation: Vector3) -> void:
 
 		for bone in additional_bones_to_pose_names:
 			skeleton.set_bone_pose(additional_bone_ids[bone], additional_transform)
-
-func change_expression_to(expression_type: int) -> void:
-	pass

@@ -185,8 +185,6 @@ tracks/1/keys = {
 [node name="Duck" type="Spatial"]
 script = ExtResource( 2 )
 additional_bones_to_pose_names = [ "neck", "collar" ]
-path_to_skeleton = "Armature/Skeleton"
-initial_animation = "Default"
 
 [node name="Armature" type="Spatial" parent="."]
 
