@@ -2,6 +2,7 @@ extends BasicModel
 
 enum ExpressionTypes { DEFAULT, HAPPY, ANGRY, SAD, SHOCKED, BASHFUL }
 
+var blink_threshold: float = 0.3
 var is_blinking: bool = false
 var current_animation: String
 
@@ -10,6 +11,7 @@ var current_animation: String
 ###############################################################################
 
 func _ready() -> void:
+	has_custom_update = true
 	$DuckMovement.play("Idle")
 
 func _unhandled_input(_event: InputEvent) -> void:
@@ -37,6 +39,14 @@ func _unhandled_input(_event: InputEvent) -> void:
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
+
+func custom_update(open_see_data: OpenSeeGD.OpenSeeData) -> void:
+	if not is_blinking:
+		if(open_see_data.left_eye_open < blink_threshold and open_see_data.right_eye_open < blink_threshold):
+			blink()
+	elif is_blinking:
+		if(open_see_data.left_eye_open > blink_threshold and open_see_data.right_eye_open > blink_threshold):
+			unblink()
 
 func blink() -> void:
 	current_animation = $AnimationPlayer.current_animation

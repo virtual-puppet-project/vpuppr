@@ -6,19 +6,23 @@ const HEAD_BONE = "head"
 
 # Used to make the model lean with head movement
 export(Array, String) var additional_bones_to_pose_names: Array
-export var additional_bone_damp: float = 0.3
+
+var translation_damp: float = 0.3
+var rotation_damp: float = 0.02
+var additional_bone_damp: float = 0.3
 
 onready var skeleton: Skeleton = find_node(SKELETON_NODE)
 onready var head_bone_id: int = skeleton.find_bone(HEAD_BONE)
 var additional_bone_ids: Dictionary
+
+var has_custom_update: bool = false
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
 func _ready() -> void:
-	for bone_name in additional_bones_to_pose_names:
-		additional_bone_ids[bone_name] = skeleton.find_bone(bone_name)
+	rescan_mapped_bones()
 
 ###############################################################################
 # Connections                                                                 #
@@ -31,6 +35,13 @@ func _ready() -> void:
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
+
+func custom_update(open_see_data: OpenSeeGD.OpenSeeData) -> void:
+	push_error("Model custom update not implemented")
+
+func rescan_mapped_bones() -> void:
+	for bone_name in additional_bones_to_pose_names:
+		additional_bone_ids[bone_name] = skeleton.find_bone(bone_name)
 
 func get_head_rest() -> Transform:
 	return skeleton.get_bone_rest(head_bone_id)
