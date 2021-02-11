@@ -16,7 +16,7 @@ __meta__ = {
 [node name="ColorRect" type="ColorRect" parent="."]
 margin_right = 470.0
 margin_bottom = 880.0
-color = Color( 0, 0, 0, 0.0862745 )
+color = Color( 0, 0, 0, 0.270588 )
 
 [node name="ScrollContainer" type="ScrollContainer" parent="."]
 margin_right = 470.0

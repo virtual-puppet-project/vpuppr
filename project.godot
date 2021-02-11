@@ -40,6 +40,10 @@ config/icon="res://assets/icon.png"
 
 AppManager="*res://utils/AppManager.gd"
 
+[debug]
+
+gdscript/warnings/return_value_discarded=false
+
 [display]
 
 window/size/width=1600

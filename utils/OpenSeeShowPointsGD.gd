@@ -6,6 +6,8 @@ const VIS_RECTANGLE: Resource = preload("res://entities/VisualizationRectangle.t
 
 const OPEN_SEE: Resource = preload("res://utils/OpenSeeGD.tscn")
 
+const DEV_UI: Resource = preload("res://utils/OpenSeeShowPointsGD.tscn")
+
 var open_see: OpenSeeGD = null
 
 export var face_id: int = 0
@@ -140,6 +142,9 @@ func _ready() -> void:
 	center_ball.transform = Transform()
 	center_ball.scale_object_local(Vector3(0.1, 0.1, 0.1))
 	self.call_deferred("add_child", center_ball)
+	
+	var dev_ui: Control = DEV_UI.instance()
+	self.add_child(dev_ui)
 
 func _process(_delta: float) -> void:
 	if not open_see:

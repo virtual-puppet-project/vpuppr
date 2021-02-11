@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://screens/gui/GuiLayer.gd" type="Script" id=1]
+[ext_resource path="res://screens/gui/DynamicBoneMappingSelector.tscn" type="PackedScene" id=2]
 
 [node name="GuiLayer" type="CanvasLayer"]
 script = ExtResource( 1 )
@@ -34,3 +35,5 @@ margin_right = 1580.0
 margin_bottom = 20.0
 focus_mode = 0
 text = "Load basic model"
+
+[node name="DynamicBoneMappingSelector" parent="." instance=ExtResource( 2 )]

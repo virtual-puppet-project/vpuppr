@@ -24,6 +24,8 @@ var has_custom_update: bool = false
 func _ready() -> void:
 	rescan_mapped_bones()
 
+	AppManager.emit_signal("model_loaded")
+
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
