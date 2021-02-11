@@ -36,15 +36,13 @@ export var show_gaze: bool = true
 
 # Various tracking options
 export var apply_translation: bool = true
-export var translation_damp: float = 0.3
+# export var translation_damp: float = 0.3
 var translation_adjustment: Vector3 = Vector3.ONE
 export var apply_rotation: bool = true
-export var rotation_damp: float = 0.02
+# export var rotation_damp: float = 0.02
 var rotation_adjustment: Vector3 = Vector3.ONE
 
 export var tracking_start_delay: float = 2.0
-
-export var blink_threshold: float = 0.3
 
 # OpenSeeData last updated time
 var updated: float = 0.0
@@ -130,27 +128,16 @@ func _process(_delta: float) -> void:
 	var head_translation: Vector3 = Vector3.ZERO
 	var head_rotation: Vector3 = Vector3.ZERO
 	if apply_translation:
-		head_translation = (stored_offsets.translation_offset - open_see_data.translation) * translation_damp
+		head_translation = (stored_offsets.translation_offset - open_see_data.translation) * model.translation_damp
 
 	if apply_rotation:
 		var corrected_euler: Vector3 = open_see_data.raw_euler
 		if corrected_euler.x < 0.0:
 			corrected_euler.x = 360 + corrected_euler.x
-		head_rotation = (stored_offsets.euler_offset - corrected_euler) * rotation_damp
+		head_rotation = (stored_offsets.euler_offset - corrected_euler) * model.rotation_damp
 
-	# TODO solve for real head-to-camera translation + rotation
-	# Moving head without rotation still causes rotation to be registered
-	# because rotation is based off of head-to-camera position
-	
-	# TODO won't need this anymore after model script refactor?
-	if model.get("is_blinking"):
-		print("hello")
-		if not model.is_blinking:
-			if(open_see_data.left_eye_open < blink_threshold and open_see_data.right_eye_open < blink_threshold):
-				model.blink()
-		elif model.is_blinking:
-			if(open_see_data.left_eye_open > blink_threshold and open_see_data.right_eye_open > blink_threshold):
-				model.unblink()
+	if model.has_custom_update:
+		model.custom_update(open_see_data)
 
 	model.move_head(
 		head_translation * translation_adjustment,

@@ -1,0 +1,20 @@
+[gd_scene format=2]
+
+[node name="InputLabel" type="HBoxContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="."]
+margin_top = 443.0
+margin_right = 798.0
+margin_bottom = 457.0
+size_flags_horizontal = 3
+
+[node name="LineEdit" type="LineEdit" parent="."]
+margin_left = 802.0
+margin_right = 1600.0
+margin_bottom = 900.0
+size_flags_horizontal = 3
