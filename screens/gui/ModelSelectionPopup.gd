@@ -1,12 +1,15 @@
 extends FileDialog
 
-var model_type: String = ""
+export(AppManager.ModelType) var model_type
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
 func _ready() -> void:
+	if model_type == null:
+		push_error("Model type not specified when trying to load new model")
+	
 	self.connect("file_selected", self, "_on_file_selected")
 	
 	var screen_middle: Vector2 = Vector2(get_viewport_rect().size.x/2, get_viewport_rect().size.y/2)
@@ -20,9 +23,8 @@ func _ready() -> void:
 # Connections                                                                 #
 ###############################################################################
 
-func _on_file_selected(path: String) -> void:
-	AppManager.file_to_load_type = model_type
-	AppManager.file_to_load_path = path
+func _on_file_selected(file_path: String) -> void:
+	AppManager.set_file_to_load(file_path, model_type)
 
 func _on_popup_hide() -> void:
 	queue_free()
