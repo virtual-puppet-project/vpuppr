@@ -2,6 +2,7 @@ class_name ModelDisplayScreen
 extends Spatial
 
 const OPEN_SEE: Resource = preload("res://utils/OpenSeeGD.tscn")
+
 const DEFAULT_GENERIC_MODEL: Resource = preload("res://entities/basic-models/Person.tscn")
 const DEFAULT_VRM_MODEL: Resource = preload("res://entities/vrm/AliciaSolid_vrm-051.tscn")
 const GENERIC_MODEL_SCRIPT_PATH: String = "res://entities/basic-models/BasicModel.gd"
@@ -192,7 +193,10 @@ func _on_offset_timer_timeout() -> void:
 
 	stored_offsets = StoredOffsets.new()
 	open_see_data = open_see.get_open_see_data(face_id)
-	_save_offsets()
+	if open_see_data:
+		_save_offsets()
+	else:
+		push_error("OpenSeeData not found. Is OpenSeeFace running?")
 
 ###############################################################################
 # Private functions                                                           #

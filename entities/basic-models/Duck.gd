@@ -6,12 +6,15 @@ var blink_threshold: float = 0.3
 var is_blinking: bool = false
 var current_animation: String
 
+onready var animation_player: AnimationPlayer = $AnimationPlayer
+
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
 func _ready() -> void:
 	has_custom_update = true
+	animation_player.play("Default")
 	$DuckMovement.play("Idle")
 
 func _unhandled_input(_event: InputEvent) -> void:
@@ -60,16 +63,16 @@ func unblink() -> void:
 func change_expression_to(expression_type: int) -> void:
 	match expression_type:
 		ExpressionTypes.DEFAULT:
-			$AnimationPlayer.play("Default")
+			animation_player.play("Default")
 		ExpressionTypes.HAPPY:
-			$AnimationPlayer.play("Happy")
+			animation_player.play("Happy")
 		ExpressionTypes.SAD:
-			$AnimationPlayer.play("Blink")
+			animation_player.play("Blink")
 		ExpressionTypes.ANGRY:
-			$AnimationPlayer.play("Angry")
+			animation_player.play("Angry")
 		ExpressionTypes.SHOCKED:
-			$AnimationPlayer.play("Shocked")
+			animation_player.play("Shocked")
 		ExpressionTypes.BASHFUL:
-			$AnimationPlayer.play("Bashful")
+			animation_player.play("Bashful")
 		_:
 			print_debug("Expression not handled")

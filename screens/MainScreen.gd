@@ -22,9 +22,6 @@ func _ready() -> void:
 		debug = false
 	if not OS.is_debug_build():
 		debug = false
-	if debug:
-		var dev_ui: Control = DEV_UI.instance()
-		self.add_child(dev_ui)
 	
 	AppManager.connect("file_to_load_changed", self, "_on_file_to_load_changed")
 	

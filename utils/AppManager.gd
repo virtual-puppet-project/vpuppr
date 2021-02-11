@@ -3,6 +3,7 @@ extends Node
 enum ModelType { GENERIC, VRM }
 
 signal file_to_load_changed(file_path, file_type)
+signal model_loaded
 
 ###############################################################################
 # Builtin functions                                                           #
