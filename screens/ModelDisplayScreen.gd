@@ -1,12 +1,16 @@
+class_name ModelDisplayScreen
 extends Spatial
 
 const OPEN_SEE: Resource = preload("res://utils/OpenSeeGD.tscn")
+const DEFAULT_GENERIC_MODEL: Resource = preload("res://entities/basic-models/Person.tscn")
+const DEFAULT_VRM_MODEL: Resource = preload("res://entities/vrm/AliciaSolid_vrm-051.tscn")
+const GENERIC_MODEL_SCRIPT_PATH: String = "res://entities/basic-models/BasicModel.gd"
+const VRM_MODEL_SCRIPT_PATH: String = "res://entities/vrm/VRMModel.gd"
 
-const DEFAULT_MODEL_PATH: String = "res://assets/vrm-models/alicia/AliciaSolid_vrm-0.51.glb"
-
-const VRM_SCRIPT_PATH: String = "res://entities/vrm/VRMModel.gd"
-
+export(AppManager.ModelType) var model_type = AppManager.ModelType.GENERIC
 export var model_resource_path: String
+
+var script_to_use: String
 
 # Model nodes
 var model
@@ -30,13 +34,19 @@ export var face_id: int = 0
 export var min_confidence: float = 0.2
 export var show_gaze: bool = true
 
+# Various tracking options
 export var apply_translation: bool = true
-export var translation_damp: float = 0.1
+export var translation_damp: float = 0.3
+var translation_adjustment: Vector3 = Vector3.ONE
 export var apply_rotation: bool = true
 export var rotation_damp: float = 0.02
+var rotation_adjustment: Vector3 = Vector3.ONE
 
 export var tracking_start_delay: float = 2.0
 
+export var blink_threshold: float = 0.3
+
+# OpenSeeData last updated time
 var updated: float = 0.0
 
 # Input
@@ -47,24 +57,48 @@ var should_move_model: bool = false
 export var zoom_strength: float = 0.05
 export var mouse_move_strength: float = 0.002
 
+# TODO debug
+var imported_model
+
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
 func _ready() -> void:
-	AppManager.connect("file_to_load_changed", self, "_on_file_to_load_changed")
 	if model_resource_path:
 		match model_resource_path.get_extension():
 			"glb":
+				# TODO have to use an extra match in order to get the correct model script
+				# there must be a better way
+				match model_type:
+					AppManager.ModelType.GENERIC:
+						script_to_use = GENERIC_MODEL_SCRIPT_PATH
+					AppManager.ModelType.VRM:
+						script_to_use = VRM_MODEL_SCRIPT_PATH
 				model = load_external_model(model_resource_path)
 			"tscn":
 				var model_resource = load(model_resource_path)
 				model = model_resource.instance()
 			_:
 				printerr("File extension not recognized.")
-	else:
-		model = load_external_model(DEFAULT_MODEL_PATH)
-	model.transform = model.transform.rotated(Vector3.UP, PI)
+	
+	match model_type:
+		AppManager.ModelType.GENERIC:
+			if not model:
+				model = DEFAULT_GENERIC_MODEL.instance()
+			model.scale_object_local(Vector3(0.4, 0.4, 0.4))
+			translation_adjustment = Vector3(1, -1, 1)
+			rotation_adjustment = Vector3(-1, -1, 1)
+
+			script_to_use = GENERIC_MODEL_SCRIPT_PATH
+		AppManager.ModelType.VRM:
+			if not model:
+				model = DEFAULT_VRM_MODEL.instance()
+			model.transform = model.transform.rotated(Vector3.UP, PI)
+			translation_adjustment = Vector3(-1, -1, -1)
+			rotation_adjustment = Vector3(1, -1, -1)
+
+			script_to_use = VRM_MODEL_SCRIPT_PATH
 	model_initial_transform = model.transform
 	model_parent_initial_transform = model_parent.transform
 	model_parent.call_deferred("add_child", model)
@@ -104,12 +138,26 @@ func _process(_delta: float) -> void:
 			corrected_euler.x = 360 + corrected_euler.x
 		head_rotation = (stored_offsets.euler_offset - corrected_euler) * rotation_damp
 
+	# TODO solve for real head-to-camera translation + rotation
+	# Moving head without rotation still causes rotation to be registered
+	# because rotation is based off of head-to-camera position
+	
+	# TODO won't need this anymore after model script refactor?
+	if model.get("is_blinking"):
+		print("hello")
+		if not model.is_blinking:
+			if(open_see_data.left_eye_open < blink_threshold and open_see_data.right_eye_open < blink_threshold):
+				model.blink()
+		elif model.is_blinking:
+			if(open_see_data.left_eye_open > blink_threshold and open_see_data.right_eye_open > blink_threshold):
+				model.unblink()
+
 	model.move_head(
-		Vector3(-head_translation.x, -head_translation.y, -head_translation.z),
-		Vector3(head_rotation.x, -head_rotation.y, -head_rotation.z)
+		head_translation * translation_adjustment,
+		head_rotation * rotation_adjustment
 	)
 
-func _input(event: InputEvent) -> void:
+func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_accept"):
 		_save_offsets()
 
@@ -159,19 +207,6 @@ func _on_offset_timer_timeout() -> void:
 	open_see_data = open_see.get_open_see_data(face_id)
 	_save_offsets()
 
-func _on_file_to_load_changed(file_path: String) -> void:
-	var loaded_model
-	match file_path.get_extension():
-		"glb":
-			loaded_model = load_external_model(file_path)
-		"tscn":
-			var model_resource = load(file_path)
-			loaded_model = model_resource.instance()
-		_:
-			printerr("File extension not recognized.")
-	
-	model = loaded_model
-
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
@@ -193,11 +228,11 @@ func _save_offsets() -> void:
 # Public functions                                                            #
 ###############################################################################
 
-func load_external_model(path: String) -> Spatial:
+func load_external_model(file_path: String) -> Spatial:
 	var gltf_loader: DynamicGLTFLoader = DynamicGLTFLoader.new()
-	var loaded_model: Spatial = gltf_loader.import_scene(path, 1, 1)
+	var loaded_model: Spatial = gltf_loader.import_scene(file_path, 1, 1)
 
-	var vrm_script = load(VRM_SCRIPT_PATH)
-	loaded_model.set_script(vrm_script)
+	var model_script = load(script_to_use)
+	loaded_model.set_script(model_script)
 	
 	return loaded_model

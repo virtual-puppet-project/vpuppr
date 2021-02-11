@@ -1,9 +1,8 @@
 extends Node
 
-signal file_to_load_changed(file_path, file_type)
+enum ModelType { GENERIC, VRM }
 
-var file_to_load_path: String setget _set_file_to_load_path
-var file_to_load_type: String
+signal file_to_load_changed(file_path, file_type)
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -17,12 +16,9 @@ var file_to_load_type: String
 # Private functions                                                           #
 ###############################################################################
 
-func _set_file_to_load_path(v: String) -> void:
-	file_to_load_path = v
-	emit_signal("file_to_load_changed", file_to_load_path, file_to_load_type)
-
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
 
-
+func set_file_to_load(file_path: String, file_type: int) -> void:
+	emit_signal("file_to_load_changed", file_path, file_type)

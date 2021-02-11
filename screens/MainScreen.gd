@@ -1,15 +1,14 @@
 extends Spatial
 
-enum ModelType { VRM, GLB }
-
 const DEV_UI: Resource = preload("res://utils/gui/DevUI.tscn")
 
-const GLB_CONTAINER: String = "res://utils/OpenSee3DModelMapBasic.tscn"
-const VRM_CONTAINER: String = "res://utils/OpenSeeVRMModelMap.tscn"
+const MODEL_SCREEN: Resource = preload("res://screens/ModelDisplayScreen.tscn")
 
 var debug: bool = true
 
-export(ModelType) var current_model_type = ModelType.GLB
+export(AppManager.ModelType) var current_model_type = AppManager.ModelType.GENERIC
+
+var model_display_screen: Spatial
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -29,14 +28,9 @@ func _ready() -> void:
 	
 	AppManager.connect("file_to_load_changed", self, "_on_file_to_load_changed")
 	
-	var container
-	match current_model_type:
-		ModelType.GLB:
-			container = load(GLB_CONTAINER).instance()
-		ModelType.VRM:
-			container = load(VRM_CONTAINER).instance()
-	container.name = "ModelContainer"
-	add_child(container)
+	model_display_screen = MODEL_SCREEN.instance()
+	model_display_screen.model_type = current_model_type
+	add_child(model_display_screen)
 
 func _input(event: InputEvent) -> void:
 	if(event.is_action_pressed("ui_cancel") and debug):
@@ -46,17 +40,13 @@ func _input(event: InputEvent) -> void:
 # Connections                                                                 #
 ###############################################################################
 
-func _on_file_to_load_changed(file_path: String, file_type: String) -> void:
-	get_node("ModelContainer").free()
-	var container
-	match file_type:
-		"basic":
-			container = load(GLB_CONTAINER).instance()
-		"vrm":
-			container = load(VRM_CONTAINER).instance()
-	container.name = "ModelContainer"
-	container.model_resource_path = file_path
-	add_child(container)
+func _on_file_to_load_changed(file_path: String, file_type: int) -> void:
+	model_display_screen.free()
+	current_model_type = file_type
+	model_display_screen = MODEL_SCREEN.instance()
+	model_display_screen.model_type = current_model_type
+	model_display_screen.model_resource_path = file_path
+	add_child(model_display_screen)
 
 ###############################################################################
 # Private functions                                                           #

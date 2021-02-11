@@ -5,7 +5,6 @@
 
 [node name="MainScreen" type="Spatial"]
 script = ExtResource( 4 )
-current_model_type = 0
 
 [node name="GuiLayer" parent="." instance=ExtResource( 2 )]
 

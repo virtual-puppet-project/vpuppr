@@ -5,6 +5,7 @@
 [node name="DevUI" type="Control"]
 margin_right = 1600.0
 margin_bottom = 900.0
+mouse_filter = 2
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
