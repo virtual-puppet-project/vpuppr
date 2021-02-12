@@ -19,7 +19,7 @@ __meta__ = {
 [node name="ColorRect" type="ColorRect" parent="."]
 margin_right = 1580.0
 margin_bottom = 880.0
-color = Color( 1, 1, 1, 0.12549 )
+color = Color( 0.219608, 0.219608, 0.219608, 0.662745 )
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 margin_right = 1580.0
