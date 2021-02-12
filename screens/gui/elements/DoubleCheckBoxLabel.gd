@@ -1,13 +1,22 @@
-extends Node
+extends CheckBoxLabel
 
-enum ModelType { GENERIC, VRM }
+onready var second_check_box: CheckBox = $HBoxContainer/SecondCheckBox
 
-signal file_to_load_changed(file_path, file_type)
-signal model_loaded(model_reference)
+var second_check_box_value: bool = false
+var second_check_box_disabled: bool = false
+
+var second_check_box_text: String
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
+
+func _ready() -> void:
+	second_check_box.pressed = second_check_box_value
+	second_check_box.disabled = second_check_box_disabled
+	
+	if second_check_box_text:
+		second_check_box.text = second_check_box_text
 
 ###############################################################################
 # Connections                                                                 #
@@ -21,5 +30,4 @@ signal model_loaded(model_reference)
 # Public functions                                                            #
 ###############################################################################
 
-func set_file_to_load(file_path: String, file_type: int) -> void:
-	emit_signal("file_to_load_changed", file_path, file_type)
+

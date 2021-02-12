@@ -3,9 +3,9 @@ extends Spatial
 
 const OPEN_SEE: Resource = preload("res://utils/OpenSeeGD.tscn")
 
-const DEFAULT_GENERIC_MODEL: Resource = preload("res://entities/basic-models/Person.tscn")
+const DEFAULT_GENERIC_MODEL: Resource = preload("res://entities/basic-models/Duck.tscn")
 const DEFAULT_VRM_MODEL: Resource = preload("res://entities/vrm/AliciaSolid_vrm-051.tscn")
-const GENERIC_MODEL_SCRIPT_PATH: String = "res://entities/basic-models/BasicModel.gd"
+const GENERIC_MODEL_SCRIPT_PATH: String = "res://entities/BasicModel.gd"
 const VRM_MODEL_SCRIPT_PATH: String = "res://entities/vrm/VRMModel.gd"
 
 export(AppManager.ModelType) var model_type = AppManager.ModelType.GENERIC

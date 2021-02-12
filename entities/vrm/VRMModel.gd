@@ -19,7 +19,7 @@ func _ready() -> void:
 	additional_bones_to_pose_names.append(NECK_BONE)
 	additional_bones_to_pose_names.append(SPINE_BONE)
 
-	rescan_mapped_bones()
+	scan_mapped_bones()
 
 ###############################################################################
 # Connections                                                                 #
