@@ -1,13 +1,27 @@
-extends Node
+class_name CheckBoxLabel
+extends MarginContainer
 
-enum ModelType { GENERIC, VRM }
+onready var label: Label = $HBoxContainer/Label
+onready var check_box: CheckBox = $HBoxContainer/CheckBox
 
-signal file_to_load_changed(file_path, file_type)
-signal model_loaded(model_reference)
+var label_text: String = "changeme"
+
+var check_box_value: bool = false
+var check_box_disabled: bool = false
+var check_box_text: String
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
+
+func _ready() -> void:
+	label.text = label_text
+	
+	check_box.pressed = check_box_value
+	check_box.disabled = check_box_disabled
+	
+	if check_box_text:
+		check_box.text = check_box_text
 
 ###############################################################################
 # Connections                                                                 #
@@ -21,5 +35,4 @@ signal model_loaded(model_reference)
 # Public functions                                                            #
 ###############################################################################
 
-func set_file_to_load(file_path: String, file_type: int) -> void:
-	emit_signal("file_to_load_changed", file_path, file_type)
+

@@ -13,7 +13,11 @@ var additional_bone_damp: float = 0.3
 
 onready var skeleton: Skeleton = find_node(SKELETON_NODE)
 onready var head_bone_id: int = skeleton.find_bone(HEAD_BONE)
+# String : int
 var additional_bone_ids: Dictionary
+
+# int : Transform
+var initial_bone_poses: Dictionary
 
 var has_custom_update: bool = false
 
@@ -22,9 +26,12 @@ var has_custom_update: bool = false
 ###############################################################################
 
 func _ready() -> void:
-	rescan_mapped_bones()
+	for i in range(skeleton.get_bone_count()):
+		initial_bone_poses[i] = skeleton.get_bone_pose(i)
 
-	AppManager.emit_signal("model_loaded")
+	scan_mapped_bones()
+
+	AppManager.emit_signal("model_loaded", self)
 
 ###############################################################################
 # Connections                                                                 #
@@ -41,9 +48,24 @@ func _ready() -> void:
 func custom_update(open_see_data: OpenSeeGD.OpenSeeData) -> void:
 	push_error("Model custom update not implemented")
 
-func rescan_mapped_bones() -> void:
+func get_mapped_bones() -> Dictionary:
+	var bone_data: Dictionary = {}
+	for i in range(skeleton.get_bone_count()):
+		var bone_name = skeleton.get_bone_name(i)
+		if additional_bones_to_pose_names.has(bone_name):
+			bone_data[bone_name] = true
+		else:
+			bone_data[bone_name] = false
+
+	return bone_data
+
+func scan_mapped_bones() -> void:
 	for bone_name in additional_bones_to_pose_names:
 		additional_bone_ids[bone_name] = skeleton.find_bone(bone_name)
+
+func reset_all_bone_poses() -> void:
+	for bone_id in initial_bone_poses.keys():
+		skeleton.set_bone_pose(bone_id, initial_bone_poses[bone_id])
 
 func get_head_rest() -> Transform:
 	return skeleton.get_bone_rest(head_bone_id)

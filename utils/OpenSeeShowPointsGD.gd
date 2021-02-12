@@ -6,7 +6,7 @@ const VIS_RECTANGLE: Resource = preload("res://entities/VisualizationRectangle.t
 
 const OPEN_SEE: Resource = preload("res://utils/OpenSeeGD.tscn")
 
-const DEV_UI: Resource = preload("res://utils/OpenSeeShowPointsGD.tscn")
+const DEV_UI: Resource = preload("res://utils/gui/DevUI.tscn")
 
 var open_see: OpenSeeGD = null
 

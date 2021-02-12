@@ -1,20 +1,30 @@
 [gd_scene format=2]
 
-[node name="InputLabel" type="HBoxContainer"]
+[node name="InputLabel" type="MarginContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+margin_left = 10.0
+margin_top = 10.0
+margin_right = -10.0
+margin_bottom = -10.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="."]
-margin_top = 443.0
-margin_right = 798.0
-margin_bottom = 457.0
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+margin_right = 1580.0
+margin_bottom = 880.0
+
+[node name="Label" type="Label" parent="HBoxContainer"]
+margin_top = 433.0
+margin_right = 788.0
+margin_bottom = 447.0
 size_flags_horizontal = 3
 
-[node name="LineEdit" type="LineEdit" parent="."]
-margin_left = 802.0
-margin_right = 1600.0
-margin_bottom = 900.0
+[node name="LineEdit" type="LineEdit" parent="HBoxContainer"]
+margin_left = 792.0
+margin_right = 1580.0
+margin_bottom = 880.0
 size_flags_horizontal = 3
+caret_blink = true
+caret_blink_speed = 0.5
