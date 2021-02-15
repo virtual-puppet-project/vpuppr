@@ -1,10 +1,5 @@
-extends Node
-
-enum ModelType { GENERIC, VRM }
-
-signal file_to_load_changed(file_path, file_type)
-#warning-ignore:unused_signal
-signal model_loaded(model_reference)
+class_name BasicPhysicsAttachment
+extends PhysicalBone
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -22,5 +17,4 @@ signal model_loaded(model_reference)
 # Public functions                                                            #
 ###############################################################################
 
-func set_file_to_load(file_path: String, file_type: int) -> void:
-	emit_signal("file_to_load_changed", file_path, file_type)
+
