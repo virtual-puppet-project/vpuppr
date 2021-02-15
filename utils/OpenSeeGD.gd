@@ -79,7 +79,6 @@ class OpenSeeData:
 		var mouth_wide: float
 
 	# Added so we can pass ints by reference
-	# TODO check if we are actually passing by reference
 	class OpenSeeInt:
 		var i: int
 
@@ -104,7 +103,6 @@ class OpenSeeData:
 		o.i += 4
 		return v
 	
-	# TODO stub
 	func read_quaternion(b: StreamPeerBuffer, o: OpenSeeInt) -> Quat:
 		var x: float = read_float(b, o)
 		var y: float = read_float(b, o)
@@ -113,7 +111,6 @@ class OpenSeeData:
 		var q: Quat = Quat(x, y, z, w)
 		return q
 	
-	# TODO stub
 	func read_vector3(b: StreamPeerBuffer, o: OpenSeeInt) -> Vector3:
 		var v: Vector3 = Vector3(read_float(b, o), -read_float(b, o), read_float(b, o))
 		return v
@@ -122,7 +119,6 @@ class OpenSeeData:
 		var v: Vector2 = Vector2(read_float(b, o), read_float(b, o))
 		return v
 
-	# TODO stub
 	func read_from_packet(b: PoolByteArray, o: int) -> void:
 		var spb: StreamPeerBuffer = StreamPeerBuffer.new()
 		spb.data_array = b
@@ -205,11 +201,11 @@ func _ready() -> void:
 		self.open_see_data_map = {}
 	self.buffer = PoolByteArray()
 	
-	#ignore-warning:return_value_discarded
+	#warning-ignore:return_value_discarded
 	server.listen(listen_port, listen_address)
 
 	receive_thread = Thread.new()
-	#ignore-warning:return_value_discarded
+	#warning-ignore:return_value_discarded
 	receive_thread.start(self, "_perform_reception")
 
 func _process(_delta: float) -> void:
@@ -232,7 +228,7 @@ func _exit_tree() -> void:
 func _perform_reception(_x) -> void:
 	self.listening = true
 	while not stop_reception:
-		#ignore-warning:return_value_discarded
+		#warning-ignore:return_value_discarded
 		server.poll()
 		if server.is_connection_available():
 			var peer: PacketPeerUDP = server.take_connection()

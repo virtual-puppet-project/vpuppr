@@ -1,16 +1,24 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://entities/physics/BasicPhysicsAttachment.gd" type="Script" id=1]
 
 [sub_resource type="SphereShape" id=1]
-radius = 0.222328
+radius = 0.05
 
 [node name="BasicPhysicsAttachment" type="PhysicalBone"]
-joint_type = 3
-joint_constraints/angular_limit_enabled = false
-joint_constraints/angular_limit_upper = 90.0
-joint_constraints/angular_limit_lower = -90.0
-joint_constraints/angular_limit_bias = 0.3
-joint_constraints/angular_limit_softness = 0.9
-joint_constraints/angular_limit_relaxation = 1.0
+input_ray_pickable = false
+collision_mask = 0
+joint_type = 2
+mass = 0.164286
+weight = 1.61
+bounce = 0.15
+gravity_scale = 0.5
+joint_constraints/swing_span = 40.0
+joint_constraints/twist_span = 45.0
+joint_constraints/bias = 0.3
+joint_constraints/softness = 0.8
+joint_constraints/relaxation = 1.0
+script = ExtResource( 1 )
 
 [node name="CollisionShape" type="CollisionShape" parent="."]
 shape = SubResource( 1 )
