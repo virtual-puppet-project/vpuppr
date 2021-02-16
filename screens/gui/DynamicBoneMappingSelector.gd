@@ -40,6 +40,8 @@ func _ready() -> void:
 func _on_model_loaded(model_reference: BasicModel) -> void:
 	current_model = model_reference
 	initial_bone_state = current_model.additional_bones_to_pose_names
+
+	loaded_physics_bones.clear()
 	
 	_generate_bone_list()
 
@@ -116,7 +118,8 @@ func _trigger_bone_remap() -> void:
 				elif b in pb.loaded_children_names:
 					pb.loaded_children_names.erase(b)
 
-	# Cleanup physics bones
+	# If a bone is queued for removal and has no children, it should be removed
+	# If a bone is queued for removal but still has children, change it to static
 	var loaded_physics_bones_to_remove: Array = []
 	for pb in loaded_physics_bones:
 		if pb.is_static:
@@ -177,8 +180,6 @@ func _trigger_bone_remap() -> void:
 	for pb in loaded_physics_bones:
 		if not pb.is_static:
 			bones_to_simulate.append(pb.bone_name)
-	
-	# yield(get_tree().create_timer(1.0), "timeout")
 
 	current_model.skeleton.physical_bones_start_simulation(bones_to_simulate)
 
