@@ -11,6 +11,7 @@ collision_mask = 0
 joint_type = 2
 mass = 2.0
 weight = 19.6
+friction = 0.5
 joint_constraints/swing_span = 30.0
 joint_constraints/twist_span = 15.0
 joint_constraints/bias = 0.3
