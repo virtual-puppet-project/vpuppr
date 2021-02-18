@@ -1,48 +1,34 @@
-class_name CheckBoxLabel
+class_name BaseSidebar
 extends MarginContainer
 
-onready var label: Label = $HBoxContainer/Label
-onready var check_box: CheckBox = $HBoxContainer/CheckBox
-onready var color_rect: ColorRect = $ColorRect
+const CHECK_BOX_LABEL: Resource = preload("res://screens/gui/elements/CheckBoxLabel.tscn")
 
-var label_text: String = "changeme"
+onready var v_box_container: VBoxContainer = $Control/MarginContainer/VBoxContainer/ScrollContainer/VBoxContainer
 
-var check_box_value: bool = false
-var check_box_disabled: bool = false
-var check_box_text: String
-
-var starting_color: Color
-var mouseover_color: Color
+var current_model: BasicModel
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
 func _ready() -> void:
-	label.text = label_text
+	AppManager.connect("model_loaded", self, "_on_model_loaded")
 	
-	check_box.pressed = check_box_value
-	check_box.disabled = check_box_disabled
-	
-	if check_box_text:
-		check_box.text = check_box_text
-	
-	starting_color = color_rect.color
-	mouseover_color = starting_color
-	mouseover_color *= 1.5
-	
-	self.connect("mouse_entered", self, "_on_mouse_entered")
-	self.connect("mouse_exited", self, "_on_mouse_exited")
+	$Control/MarginContainer/VBoxContainer/HBoxContainer/MarginContainer/ApplyButton.connect("pressed", self, "_on_apply_button_pressed")
+	$Control/MarginContainer/VBoxContainer/HBoxContainer/MarginContainer2/ResetButton.connect("pressed", self, "_on_reset_button_pressed")
 
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
 
-func _on_mouse_entered() -> void:
-	color_rect.color = mouseover_color
+func _on_model_loaded(model_reference: BasicModel) -> void:
+	current_model = model_reference
 
-func _on_mouse_exited() -> void:
-	color_rect.color = starting_color
+func _on_apply_button_pressed() -> void:
+	push_error("Not yet implemented")
+
+func _on_reset_button_pressed() -> void:
+	push_error("Not yet implemented")
 
 ###############################################################################
 # Private functions                                                           #

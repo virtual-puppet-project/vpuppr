@@ -18,5 +18,6 @@ margin_left = 1556.0
 margin_right = 1580.0
 margin_bottom = 880.0
 focus_mode = 0
+mouse_filter = 1
 size_flags_horizontal = 9
 align = 2

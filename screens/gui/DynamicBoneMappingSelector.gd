@@ -1,14 +1,12 @@
-extends MarginContainer
+extends BaseSidebar
 
-const CHECK_BOX_LABEL: Resource = preload("res://screens/gui/elements/DoubleCheckBoxLabel.tscn")
 const BASIC_PHYSICS_ATTACHMENT: Resource = preload("res://entities/physics/BasicPhysicsAttachment.tscn")
+const DOUBLE_CHECK_BOX_LABEL: Resource = preload("res://screens/gui/elements/DoubleCheckBoxLabel.tscn")
 
-onready var v_box_container: VBoxContainer = $Control/MarginContainer/VBoxContainer/ScrollContainer/VBoxContainer
-
-var current_model: BasicModel
 # Whether or not the bones are currently being tracked, allows for resetting pose
 var initial_bone_state: Array = []
 
+# TODO Do I even need to reference count?
 class LoadedPhysicsBone:
 	var bone_name: String
 	var bone_id: int
@@ -27,18 +25,12 @@ var loaded_physics_bones: Array = [] # LoadedPhysicsBone
 # Builtin functions                                                           #
 ###############################################################################
 
-func _ready() -> void:
-	AppManager.connect("model_loaded", self, "_on_model_loaded")
-	
-	$Control/MarginContainer/VBoxContainer/HBoxContainer/ApplyControl/MarginContainer/ApplyButton.connect("pressed", self, "_on_apply_button_pressed")
-	$Control/MarginContainer/VBoxContainer/HBoxContainer/ResetControl/MarginContainer/ResetButton.connect("pressed", self, "_on_reset_button_pressed")
-
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
 
 func _on_model_loaded(model_reference: BasicModel) -> void:
-	current_model = model_reference
+	._on_model_loaded(model_reference)
 	initial_bone_state = current_model.additional_bones_to_pose_names
 
 	loaded_physics_bones.clear()
@@ -63,7 +55,7 @@ func _generate_bone_list() -> void:
 	
 	var bone_values = current_model.get_mapped_bones()
 	for bone_name in bone_values.keys():
-		var check_box_label = CHECK_BOX_LABEL.instance()
+		var check_box_label = DOUBLE_CHECK_BOX_LABEL.instance()
 		check_box_label.check_box_text = "Mapping"
 		check_box_label.second_check_box_text = "Physics"
 		# Don't allow the user to disable head bone tracking
