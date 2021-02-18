@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "MarginContainer",
+"class": "BaseSidebar",
+"language": "GDScript",
+"path": "res://screens/gui/BaseSidebar.gd"
+}, {
 "base": "Spatial",
 "class": "BasicModel",
 "language": "GDScript",
@@ -29,16 +34,23 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://screens/ModelDisplayScreen.gd"
 }, {
+"base": "BaseSidebar",
+"class": "ModelPropertiesSelector",
+"language": "GDScript",
+"path": "res://screens/gui/ModelPropertiesSelector.gd"
+}, {
 "base": "Node",
 "class": "OpenSeeGD",
 "language": "GDScript",
 "path": "res://utils/OpenSeeGD.gd"
 } ]
 _global_script_class_icons={
+"BaseSidebar": "",
 "BasicModel": "",
 "BasicPhysicsAttachment": "",
 "CheckBoxLabel": "",
 "ModelDisplayScreen": "",
+"ModelPropertiesSelector": "",
 "OpenSeeGD": ""
 }
 

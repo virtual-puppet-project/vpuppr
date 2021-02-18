@@ -37,11 +37,38 @@ export var show_gaze: bool = true
 
 # Various tracking options
 export var apply_translation: bool = true
-# export var translation_damp: float = 0.3
 var translation_adjustment: Vector3 = Vector3.ONE
 export var apply_rotation: bool = true
-# export var rotation_damp: float = 0.02
 var rotation_adjustment: Vector3 = Vector3.ONE
+export var interpolate_model: bool = true
+var interpolation_rate: float = 0.5
+var interpolation_data: InterpolationData = InterpolationData.new()
+
+class InterpolationData:
+	var last_updated: float
+	var last_translation: Vector3
+	var last_rotation: Vector3
+	var intended_translation: Vector3
+	var intended_rotation: Vector3
+
+	func _init() -> void:
+		last_updated = 0.0
+		last_translation = Vector3.ZERO
+		last_rotation = Vector3.ZERO
+		intended_translation = Vector3.ZERO
+		intended_rotation = Vector3.ZERO
+
+	func update_values(
+		p_last_updated: float,
+		p_intended_translation: Vector3,
+		p_intended_rotation: Vector3
+	) -> void:
+		last_updated = p_last_updated
+		last_translation = intended_translation
+		last_rotation = intended_rotation
+		intended_translation = p_intended_translation
+		intended_rotation = p_intended_rotation
+
 
 export var tracking_start_delay: float = 2.0
 
@@ -112,6 +139,8 @@ func _ready() -> void:
 	offset_timer.wait_time = tracking_start_delay
 	offset_timer.autostart = true
 
+	AppManager.connect("properties_applied", self, "_on_properties_applied")
+
 func _process(_delta: float) -> void:
 	if not stored_offsets:
 		return
@@ -123,19 +152,42 @@ func _process(_delta: float) -> void:
 	
 	if open_see_data.time > updated:
 		updated = open_see_data.time
+		if interpolate_model:
+			interpolation_data.update_values(updated, open_see_data.translation, open_see_data.raw_euler)
 	else:
 		return
 
 	var head_translation: Vector3 = Vector3.ZERO
 	var head_rotation: Vector3 = Vector3.ZERO
-	if apply_translation:
-		head_translation = (stored_offsets.translation_offset - open_see_data.translation) * model.translation_damp
+	if interpolate_model:
+		if apply_translation:
+			head_translation = lerp(
+				stored_offsets.translation_offset - interpolation_data.last_translation,
+				(stored_offsets.translation_offset - interpolation_data.intended_translation) * model.translation_damp,
+				interpolation_rate
+			)
 
-	if apply_rotation:
-		var corrected_euler: Vector3 = open_see_data.raw_euler
-		if corrected_euler.x < 0.0:
-			corrected_euler.x = 360 + corrected_euler.x
-		head_rotation = (stored_offsets.euler_offset - corrected_euler) * model.rotation_damp
+		if apply_rotation:
+			var corrected_euler: Vector3 = interpolation_data.intended_rotation
+			if corrected_euler.x < 0.0:
+				corrected_euler.x = 360 + corrected_euler.x
+			var last_corrected_euler: Vector3 = interpolation_data.last_rotation
+			if last_corrected_euler.x < 0.0:
+				last_corrected_euler.x = 360 + last_corrected_euler.x
+			head_rotation = lerp(
+				stored_offsets.euler_offset- last_corrected_euler,
+				(stored_offsets.euler_offset - corrected_euler) * model.translation_damp,
+				interpolation_rate
+			)
+	else:
+		if apply_translation:
+			head_translation = (stored_offsets.translation_offset - open_see_data.translation) * model.translation_damp
+
+		if apply_rotation:
+			var corrected_euler: Vector3 = open_see_data.raw_euler
+			if corrected_euler.x < 0.0:
+				corrected_euler.x = 360 + corrected_euler.x
+			head_rotation = (stored_offsets.euler_offset - corrected_euler) * model.rotation_damp
 
 	if model.has_custom_update:
 		model.custom_update(open_see_data)
@@ -197,6 +249,15 @@ func _on_offset_timer_timeout() -> void:
 		_save_offsets()
 	else:
 		push_error("OpenSeeData not found. Is OpenSeeFace running?")
+
+func _on_properties_applied(property_data: Dictionary) -> void:
+	model.translation_damp = property_data["translation_damp"]
+	model.rotation_damp = property_data["rotation_damp"]
+	model.additional_bone_damp = property_data["additional_bone_damp"]
+
+	self.apply_translation = property_data["apply_translation"]
+	self.apply_rotation = property_data["apply_rotation"]
+	self.interpolate_model = property_data["interpolate_model"]
 
 ###############################################################################
 # Private functions                                                           #

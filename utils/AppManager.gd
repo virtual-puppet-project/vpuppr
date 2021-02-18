@@ -5,6 +5,8 @@ enum ModelType { GENERIC, VRM }
 signal file_to_load_changed(file_path, file_type)
 #warning-ignore:unused_signal
 signal model_loaded(model_reference)
+#warning-ignore:unused_signal
+signal properties_applied(property_data)
 
 ###############################################################################
 # Builtin functions                                                           #

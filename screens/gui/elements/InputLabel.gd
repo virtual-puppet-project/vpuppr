@@ -1,15 +1,11 @@
-class_name CheckBoxLabel
 extends MarginContainer
 
 onready var label: Label = $HBoxContainer/Label
-onready var check_box: CheckBox = $HBoxContainer/CheckBox
+onready var line_edit: LineEdit = $HBoxContainer/LineEdit
 onready var color_rect: ColorRect = $ColorRect
 
 var label_text: String = "changeme"
-
-var check_box_value: bool = false
-var check_box_disabled: bool = false
-var check_box_text: String
+var line_edit_text: String = "changeme"
 
 var starting_color: Color
 var mouseover_color: Color
@@ -21,11 +17,7 @@ var mouseover_color: Color
 func _ready() -> void:
 	label.text = label_text
 	
-	check_box.pressed = check_box_value
-	check_box.disabled = check_box_disabled
-	
-	if check_box_text:
-		check_box.text = check_box_text
+	line_edit.text = line_edit_text
 	
 	starting_color = color_rect.color
 	mouseover_color = starting_color

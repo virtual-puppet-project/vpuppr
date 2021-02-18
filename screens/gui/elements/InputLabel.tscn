@@ -1,4 +1,6 @@
-[gd_scene format=2]
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://screens/gui/elements/InputLabel.gd" type="Script" id=1]
 
 [node name="InputLabel" type="MarginContainer"]
 anchor_right = 1.0
@@ -7,9 +9,15 @@ margin_left = 10.0
 margin_top = 10.0
 margin_right = -10.0
 margin_bottom = -10.0
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="ColorRect" type="ColorRect" parent="."]
+margin_right = 1580.0
+margin_bottom = 880.0
+color = Color( 0.219608, 0.219608, 0.219608, 0.662745 )
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 margin_right = 1580.0
@@ -25,6 +33,8 @@ size_flags_horizontal = 3
 margin_left = 792.0
 margin_right = 1580.0
 margin_bottom = 880.0
+mouse_filter = 1
 size_flags_horizontal = 3
+align = 2
 caret_blink = true
 caret_blink_speed = 0.5

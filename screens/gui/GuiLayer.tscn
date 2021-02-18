@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://screens/gui/GuiLayer.gd" type="Script" id=1]
 [ext_resource path="res://screens/gui/DynamicBoneMappingSelector.tscn" type="PackedScene" id=2]
+[ext_resource path="res://screens/gui/ModelPropertiesSelector.tscn" type="PackedScene" id=3]
 
 [node name="GuiLayer" type="CanvasLayer"]
 script = ExtResource( 1 )
@@ -20,20 +21,22 @@ __meta__ = {
 [node name="HBoxContainer" type="HBoxContainer" parent="ControlBar"]
 margin_right = 1580.0
 margin_bottom = 20.0
-alignment = 2
+alignment = 1
 
 [node name="LoadVRMModelButton" type="Button" parent="ControlBar/HBoxContainer"]
-margin_left = 1333.0
-margin_right = 1452.0
+margin_left = 666.0
+margin_right = 785.0
 margin_bottom = 20.0
 focus_mode = 0
 text = "Load VRM model"
 
 [node name="LoadBasicModelButton" type="Button" parent="ControlBar/HBoxContainer"]
-margin_left = 1456.0
-margin_right = 1580.0
+margin_left = 789.0
+margin_right = 913.0
 margin_bottom = 20.0
 focus_mode = 0
 text = "Load basic model"
 
 [node name="DynamicBoneMappingSelector" parent="." instance=ExtResource( 2 )]
+
+[node name="ModelProperties" parent="." instance=ExtResource( 3 )]
