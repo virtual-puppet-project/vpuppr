@@ -4,7 +4,7 @@ extends Spatial
 const OPEN_SEE: Resource = preload("res://utils/OpenSeeGD.tscn")
 
 const DEFAULT_GENERIC_MODEL: Resource = preload("res://entities/basic-models/Duck.tscn")
-const DEFAULT_VRM_MODEL: Resource = preload("res://entities/vrm/AliciaSolid_vrm-051.tscn")
+#const DEFAULT_VRM_MODEL: Resource = preload("res://entities/vrm/AliciaSolid_vrm-051.tscn")
 const GENERIC_MODEL_SCRIPT_PATH: String = "res://entities/BasicModel.gd"
 const VRM_MODEL_SCRIPT_PATH: String = "res://entities/vrm/VRMModel.gd"
 
@@ -119,8 +119,8 @@ func _ready() -> void:
 
 			script_to_use = GENERIC_MODEL_SCRIPT_PATH
 		AppManager.ModelType.VRM:
-			if not model:
-				model = DEFAULT_VRM_MODEL.instance()
+#			if not model:
+#				model = DEFAULT_VRM_MODEL.instance()
 			model.transform = model.transform.rotated(Vector3.UP, PI)
 			translation_adjustment = Vector3(-1, -1, -1)
 			rotation_adjustment = Vector3(1, -1, -1)
