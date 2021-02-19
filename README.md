@@ -26,11 +26,17 @@ Import the project in [Godot](https://godotengine.org/) (developed with version 
 
 `Escape`: quit
 
+## Known bugs
+- the exported file size is enormous
+- imported models don't reflect light correctly
+- pressing `space` when the facetracker is not running will crash the program
+- the facetracker is not automatically closed when the program crashes
+
 ## Work notes
 - [x] basic OpenSeeFace visualization
 - [x] map data to a rigged, non-vrm model
 - [x] make rigged, non-vrm models lean based on translation
-- [ ] load vrm models
+- [ ] load vrm models (technically this is already possible, just with no vrm-specific features)
 - [ ] map data to a vrm model
 - [ ] support Live2D-style sprites
 
