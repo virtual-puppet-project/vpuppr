@@ -8,13 +8,23 @@ signal model_loaded(model_reference)
 #warning-ignore:unused_signal
 signal properties_applied(property_data)
 
+var is_face_tracker_running: bool
+var face_tracker_pid: int
+
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
+func _ready() -> void:
+	self.connect("tree_exiting", self, "_on_tree_exiting")
+
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
+
+func _on_tree_exiting() -> void:
+	if is_face_tracker_running:
+		OS.kill(face_tracker_pid)
 
 ###############################################################################
 # Private functions                                                           #

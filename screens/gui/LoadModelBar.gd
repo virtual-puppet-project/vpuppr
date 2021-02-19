@@ -1,37 +1,32 @@
-extends FileDialog
-
-export(AppManager.ModelType) var model_type
+extends MarginContainer
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
 func _ready() -> void:
-	if model_type == null:
-		push_error("Model type not specified when trying to load new model")
-		return
-	
-	self.current_dir = OS.get_executable_path().get_base_dir()
-	self.current_path = self.current_dir
-	
-	self.connect("file_selected", self, "_on_file_selected")
-	
-	var screen_middle: Vector2 = Vector2(get_viewport_rect().size.x/2, get_viewport_rect().size.y/2)
-	self.set_global_position(screen_middle)
-	self.rect_size = screen_middle
-	popup_centered(screen_middle)
-	
-	self.connect("popup_hide", self, "_on_popup_hide")
+	$Control/MarginContainer/HBoxContainer/LoadVRMModelButton.connect("pressed", self, "_on_load_vrm_model_button_pressed")
+	$Control/MarginContainer/HBoxContainer/LoadBasicModelButton.connect("pressed", self, "_on_load_basic_model_button_pressed")
 
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
 
-func _on_file_selected(file_path: String) -> void:
-	AppManager.set_file_to_load(file_path, model_type)
+func _on_load_vrm_model_button_pressed() -> void:
+	var model_selection_popup: FileDialog = load("res://screens/gui/ModelSelectionPopup.tscn").instance()
+	model_selection_popup.model_type = AppManager.ModelType.VRM
+	get_parent().add_child(model_selection_popup)
+	
+	yield(model_selection_popup, "file_selected")
+	model_selection_popup.queue_free()
 
-func _on_popup_hide() -> void:
-	queue_free()
+func _on_load_basic_model_button_pressed() -> void:
+	var model_selection_popup: FileDialog = load("res://screens/gui/ModelSelectionPopup.tscn").instance()
+	model_selection_popup.model_type = AppManager.ModelType.GENERIC
+	get_parent().add_child(model_selection_popup)
+	
+	yield(model_selection_popup, "file_selected")
+	model_selection_popup.queue_free()
 
 ###############################################################################
 # Private functions                                                           #

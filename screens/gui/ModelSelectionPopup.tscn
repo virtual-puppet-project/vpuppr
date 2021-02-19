@@ -6,10 +6,11 @@
 anchor_right = 1.0
 anchor_bottom = 1.0
 window_title = "Open a File"
+resizable = true
 mode = 0
 access = 2
-current_dir = "/Users/theaz/dev/openseeface-gd"
-current_path = "/Users/theaz/dev/openseeface-gd/"
+current_dir = "/"
+current_path = "/"
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
