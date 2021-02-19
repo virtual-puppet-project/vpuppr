@@ -38,35 +38,43 @@ func _on_reset_button_pressed() -> void:
 # Private functions                                                           #
 ###############################################################################
 
-func _generate_properties() -> void:
+func _generate_properties(p_initial_properties: Dictionary = {}) -> void:
 	for child in v_box_container.get_children():
 		child.free()
 
 	yield(get_tree().create_timer(1.0), "timeout")
 
+	var data_source = p_initial_properties
+	
 	if current_model:
+		if p_initial_properties.empty():
+			data_source = current_model
 		_create_element(ElementType.INPUT, "translation_damp", "Translation Damp",
-				current_model.translation_damp)
+				data_source.translation_damp)
 
 		_create_element(ElementType.INPUT, "rotation_damp", "Rotation Damp",
-				current_model.rotation_damp)
+				data_source.rotation_damp)
 
 		_create_element(ElementType.INPUT, "additional_bone_damp", "Additional Bone Damp",
-				current_model.additional_bone_damp)
+				data_source.additional_bone_damp)
 
 	# TODO add way to dynamically find the model display screen
 	var main_screen = get_tree().root.get_node_or_null("MainScreen")
 	if main_screen:
-		var display_screen = main_screen.model_display_screen
+		if p_initial_properties.empty():
+			data_source = main_screen.model_display_screen
 
 		_create_element(ElementType.CHECK_BOX, "apply_translation", "Apply Translation",
-				display_screen.apply_translation)
+				data_source.apply_translation)
 
 		_create_element(ElementType.CHECK_BOX, "apply_rotation", "Apply Rotation",
-				display_screen.apply_rotation)
+				data_source.apply_rotation)
 
 		_create_element(ElementType.CHECK_BOX, "interpolate_model", "Interpolate Model",
-				display_screen.interpolate_model)
+				data_source.interpolate_model)
+		
+		_create_element(ElementType.INPUT, "interpolation_rate", "Interpolation Rate",
+				data_source.interpolation_rate)
 
 func _apply_properties() -> void:
 	var property_list: Dictionary = {}
@@ -115,6 +123,9 @@ func _reset_properties() -> void:
 
 		_create_element(ElementType.CHECK_BOX, "interpolate_model", "Interpolate Model",
 				initial_properties.interpolate_model)
+		
+		_create_element(ElementType.INPUT, "interpolation_rate", "Interpolation Rate",
+				initial_properties.interpolation_rate)
 
 func _create_element(element_type: int, element_name: String, element_label_text: String, element_value) -> void:
 	var result: Node

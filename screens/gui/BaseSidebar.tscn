@@ -68,7 +68,7 @@ __meta__ = {
 [node name="ApplyButton" type="Button" parent="Control/MarginContainer/VBoxContainer/HBoxContainer/MarginContainer"]
 margin_right = 223.0
 margin_bottom = 20.0
-focus_mode = 0
+focus_mode = 1
 size_flags_horizontal = 3
 text = "Apply"
 
@@ -84,6 +84,6 @@ __meta__ = {
 [node name="ResetButton" type="Button" parent="Control/MarginContainer/VBoxContainer/HBoxContainer/MarginContainer2"]
 margin_right = 223.0
 margin_bottom = 20.0
-focus_mode = 0
+focus_mode = 1
 size_flags_horizontal = 3
 text = "Reset"

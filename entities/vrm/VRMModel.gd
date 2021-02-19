@@ -13,7 +13,7 @@ onready var spine_bone_id: int = skeleton.find_bone(SPINE_BONE)
 
 func _ready() -> void:
 	translation_damp = 0.1
-	rotation_damp = 0.02
+	rotation_damp = 0.01
 	additional_bone_damp = 0.6
 
 	additional_bones_to_pose_names.append(NECK_BONE)
