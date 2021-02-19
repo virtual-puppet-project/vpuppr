@@ -39,7 +39,7 @@ export var min_confidence: float = 0.2
 export var show_gaze: bool = true
 
 # Various tracking options
-export var apply_translation: bool = true
+export var apply_translation: bool = false
 var translation_adjustment: Vector3 = Vector3.ONE
 export var apply_rotation: bool = true
 var rotation_adjustment: Vector3 = Vector3.ONE
