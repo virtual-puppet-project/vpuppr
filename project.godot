@@ -117,6 +117,11 @@ toggle_gui={
  ]
 }
 
+[physics]
+
+3d/physics_engine="Bullet"
+3d/active_soft_world=false
+
 [rendering]
 
 environment/default_clear_color=Color( 0.301961, 0.301961, 0.301961, 0 )
