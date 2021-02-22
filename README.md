@@ -2,33 +2,44 @@
 
 A Godot renderer for [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace).
 
-The mapper is located in `utils/OpenSeeGD.gd` and handles receiving OpenSeeFace packets and mapping them to GDScript objects. Heavily based on [OpenSeeFaceSample](https://github.com/emilianavt/OpenSeeFaceSample).
+The receiver is located in `utils/OpenSeeGD.gd` and handles receiving OpenSeeFace packets and wrapping that information to be Godot-compatible. `screens/ModelDisplayScreen` handles the mapping and displaying of models. Heavily based on [OpenSeeFaceSample](https://github.com/emilianavt/OpenSeeFaceSample).
 
-An example non-vrm 3d model (made by yours truly for practice) is included for basic face tracking. Custom, non-vrm models can be imported and should theoretically work as long as:
-- the `entities/basic-models/BasicModel.gd` script is added to the model
-- the model is rigged
-
-See `entities/basic-models/Person.tscn` for an example of how what an imported model should look like.
+All models should work as long as they are in `.glb` format. If you have a `.vrm` file, simply change the file extension to `.glb`. No data will be lost although currently the program does not yet handle loading `.vrm`-specific attributes. Automatic file extension conversion is on the roadmap.
 
 ## Quickstart
-Import the project in [Godot](https://godotengine.org/) (developed with version 3.2.3). Run the OpenSeeFace binary from the OpenSeeFace repo with the host set to `127.0.0.1` and port set to `11573`. Those should be the default values for OpenSeeFace. Run the default scene in Godot by pressing F5.
+### Windows
+1. Download the latest release
+2. Unzip all files into a directory (do not move any of the files)
+3. Run the `.exe`
 
-### Quickstart controls
-`Enter` or `Space`: reset face tracking offsets
+### Mac/Linux
+TODO add Mac/Linux release
 
-`Control` + `Left Click`: spin the model
+Refer to the 'Building from source' instructions. The facetracker only has a compiled binary for Windows but should still be runnable on Mac/Linux via Python. Performance might be a problem but lowering the facetracker FPS and tweaking the model interpolation rate in the program should help.
 
-`Control` + `Right Click`: move the model
+### Controls
+`Enter` or `Space`: Reset face tracking offsets
 
-`Control` + `Scroll`: zoom the model in or out
+`Control` + `Left Click`: Spin the model
 
-`Control` + `Middle Click`: reset the model
+`Control` + `Right Click`: Move the model
 
-`Escape`: quit
+`Control` + `Scroll`: Zoom the model in or out
+
+`Control` + `Middle Click`: Reset the model's transform
+
+`Tab`: Toggle the UI
+
+## Building from source
+1. Clone the [Godot source](https://github.com/godotengine/godot), version 3.2.x
+2. Clone the [Dynamic GLTF Loader module](https://github.com/you-win/godot-dynamic-gltf-loader) and place that into the modules folder in the Godot source
+3. [Recompile](https://docs.godotengine.org/en/stable/development/compiling/index.html) the engine
+4. Clone this project and load it in the new Godot binary
+5. Clone the [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace)
+6. Run the facetracker via Python or via the binary if on Windows
+7. Run the project
 
 ## Known bugs
-- the exported file size is enormous
-- imported models don't reflect light correctly
 - pressing `space` when the facetracker is not running will crash the program
 - the facetracker is not automatically closed when the program crashes
 
@@ -39,7 +50,3 @@ Import the project in [Godot](https://godotengine.org/) (developed with version 
 - [ ] load vrm models (technically this is already possible, just with no vrm-specific features)
 - [ ] map data to a vrm model
 - [ ] support Live2D-style sprites
-
-Dynamic gltf loading:
-editor_scene_importer_gltf.cpp -> import_scene() -> gltf_document.cpp -> parse() -> generate_mesh_instance()
-
