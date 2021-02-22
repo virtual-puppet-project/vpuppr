@@ -1,0 +1,7 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://entities/vrm/VRMModel.gd" type="Script" id=1]
+[ext_resource path="res://assets/vrm-models/alicia/AliciaSolid_vrm-0.51.glb" type="PackedScene" id=2]
+
+[node name="AliciaSolid_vrm-051" instance=ExtResource( 2 )]
+script = ExtResource( 1 )
