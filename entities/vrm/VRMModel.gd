@@ -1,5 +1,8 @@
 extends BasicModel
 
+const MTOON_SHADER_COMPAT: Resource = preload("res://entities/vrm/MToonShader.tres")
+const FLEXIBLE_TOON_SHADER: Resource = preload("res://addons/flexible_toon_shader/FlexibleToonMaterial.tres")
+
 # VRM guarantees neck and spine to exist
 const NECK_BONE = "neck"
 const SPINE_BONE = "spine"
@@ -20,6 +23,8 @@ func _ready() -> void:
 	additional_bones_to_pose_names.append(SPINE_BONE)
 
 	scan_mapped_bones()
+	
+	_apply_shader_to_all_meshes(self)
 
 ###############################################################################
 # Connections                                                                 #
@@ -28,6 +33,15 @@ func _ready() -> void:
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
+
+func _apply_shader_to_all_meshes(starting_node: Node) -> void:
+	for c in starting_node.get_children():
+		if c is MeshInstance:
+			for i in range(c.mesh.get_surface_count()):
+				var toon_shader = MTOON_SHADER_COMPAT.duplicate()
+				toon_shader.set_shader_param("_MainTex", c.get_active_material(i).albedo_texture)
+				c.set_surface_material(i, toon_shader)
+		_apply_shader_to_all_meshes(c)
 
 ###############################################################################
 # Public functions                                                            #

@@ -75,6 +75,10 @@ window/size/height=900
 window/per_pixel_transparency/allowed=true
 window/per_pixel_transparency/enabled=true
 
+[editor_plugins]
+
+enabled=PoolStringArray(  )
+
 [gdnative]
 
 singletons=[  ]
