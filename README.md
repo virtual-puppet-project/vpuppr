@@ -32,10 +32,8 @@ Refer to the 'Building from source' instructions. The facetracker only has a com
 `Tab`: Toggle the UI
 
 ## Building from source
-TODO I have my own fork of Godot with a minimal set of changes. I need to put that up.
-1. Clone the [Godot source](https://github.com/godotengine/godot), version 3.2.x
-2. Clone the [godot-gltf-module](https://github.com/you-win/godot-dynamic-gltf-loader) made by the [V-Sekai](https://github.com/V-Sekai) team and place that into the modules folder in the Godot source
-3. [Recompile](https://docs.godotengine.org/en/stable/development/compiling/index.html) the engine
+1. Clone my fork of [Godot](https://github.com/you-win/godot), branch 3.2-gltf (should be the default branch)
+3. [Compile](https://docs.godotengine.org/en/stable/development/compiling/index.html) the engine
 4. Clone this project and load it in the new Godot binary
 5. Clone the [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace)
 6. Run the facetracker via Python or via the binary if on Windows
@@ -43,7 +41,7 @@ TODO I have my own fork of Godot with a minimal set of changes. I need to put th
 
 ## Known bugs
 - the facetracker is not automatically closed when the program crashes
-- there is no way to get back to the default Duck model (the bundled `tscn` file is not bundled
+- there is no way to get back to the default Duck model (the bundled `tscn` file is not bundled)
 
 ## Work notes
 - [x] basic OpenSeeFace visualization
