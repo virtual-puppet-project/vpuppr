@@ -1,6 +1,6 @@
 # OpenSeeFace GD Edition
 
-A Godot renderer for [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace).
+A Godot renderer for [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace). Special thanks to the [V-Sekai](https://github.com/V-Sekai) team for their help with `.vrm` importing.
 
 ![](demo.gif)
 
