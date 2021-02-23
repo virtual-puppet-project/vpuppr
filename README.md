@@ -2,6 +2,8 @@
 
 A Godot renderer for [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace).
 
+![](demo.gif)
+
 The receiver is located in `utils/OpenSeeGD.gd` and handles receiving OpenSeeFace packets and wrapping that information to be Godot-compatible. `screens/ModelDisplayScreen` handles the mapping and displaying of models. Heavily based on [OpenSeeFaceSample](https://github.com/emilianavt/OpenSeeFaceSample).
 
 All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` have not been tested but might work. `.tscn` files created with Godot should all import correctly as well.
