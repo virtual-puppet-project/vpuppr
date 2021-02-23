@@ -24,7 +24,7 @@ func _ready() -> void:
 
 	scan_mapped_bones()
 	
-	_apply_shader_to_all_meshes(self)
+	# _apply_shader_to_all_meshes(self)
 
 ###############################################################################
 # Connections                                                                 #
