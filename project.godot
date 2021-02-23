@@ -129,6 +129,10 @@ toggle_gui={
  ]
 }
 
+[logging]
+
+file_logging/enable_file_logging=true
+
 [physics]
 
 3d/physics_engine="Bullet"

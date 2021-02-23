@@ -88,14 +88,11 @@ export var mouse_move_strength: float = 0.002
 # Builtin functions                                                           #
 ###############################################################################
 
-func _init() -> void:
-	AppManager.emit_signal("console_log", "We are here.")
-
 func _ready() -> void:
 	if model_resource_path:
 		match model_resource_path.get_extension():
 			"glb":
-				AppManager.emit_signal("console_log", "Loading GLB file.")
+				AppManager.push_log("Loading GLB file.")
 				# TODO have to use an extra match in order to get the correct model script
 				# there must be a better way
 				match model_type:
@@ -105,15 +102,15 @@ func _ready() -> void:
 						script_to_use = VRM_MODEL_SCRIPT_PATH
 				model = load_external_model(model_resource_path)
 			"vrm":
-				AppManager.emit_signal("console_log", "Loading VRM file.")
+				AppManager.push_log("Loading VRM file.")
 				script_to_use = VRM_MODEL_SCRIPT_PATH
 				model = load_external_model(model_resource_path)
 			"tscn":
-				AppManager.emit_signal("console_log", "Loading TSCN file.")
+				AppManager.push_log("Loading TSCN file.")
 				var model_resource = load(model_resource_path)
 				model = model_resource.instance()
 			_:
-				AppManager.emit_signal("console_log", "File extension not recognized.")
+				AppManager.push_log("File extension not recognized.")
 				printerr("File extension not recognized.")
 	
 	match model_type:
@@ -141,11 +138,11 @@ func _ready() -> void:
 	self.call_deferred("add_child", open_see)
 
 	var offset_timer: Timer = Timer.new()
-	self.call_deferred("add_child", offset_timer)
 	offset_timer.name = "OffsetTimer"
 	offset_timer.connect("timeout", self, "_on_offset_timer_timeout")
 	offset_timer.wait_time = tracking_start_delay
 	offset_timer.autostart = true
+	self.call_deferred("add_child", offset_timer)
 
 	AppManager.connect("properties_applied", self, "_on_properties_applied")
 
@@ -297,7 +294,7 @@ func _to_godot_quat(v: Quat) -> Quat:
 
 func _save_offsets() -> void:
 	if not open_see_data:
-		AppManager.emit_signal("console_log", "No face tracking data found.")
+		AppManager.push_log("No face tracking data found.")
 		return
 	stored_offsets.translation_offset = open_see_data.translation
 	stored_offsets.rotation_offset = open_see_data.rotation
@@ -306,23 +303,23 @@ func _save_offsets() -> void:
 	if corrected_euler.x < 0.0:
 		corrected_euler.x = 360 + corrected_euler.x
 	stored_offsets.euler_offset = corrected_euler
-	AppManager.emit_signal("console_log", "New offsets saved.")
+	AppManager.push_log("New offsets saved.")
 
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
 
 func load_external_model(file_path: String) -> Spatial:
-	AppManager.emit_signal("console_log", "Starting external loader.")
+	AppManager.push_log("Starting external loader.")
 	# var gltf_loader: DynamicGLTFLoader = DynamicGLTFLoader.new()
 	# var loaded_model: Spatial = gltf_loader.import_scene(file_path, 1, 1)
 
 	var import_vrm: ImportVRM = ImportVRM.new()
-	var loaded_model: Spatial = import_vrm.import_scene(file_path, 1, 1)
+	var loaded_model: Spatial = import_vrm.import_scene(file_path, 1, 1000)
 
 	var model_script = load(script_to_use)
 	loaded_model.set_script(model_script)
 	
-	AppManager.emit_signal("console_log", "External file loaded successfully.")
+	AppManager.push_log("External file loaded successfully.")
 	
 	return loaded_model

@@ -21,9 +21,7 @@ func _ready() -> void:
 	
 	model_display_screen = MODEL_SCREEN.instance()
 	model_display_screen.model_type = current_model_type
-	call_deferred("add_child", model_display_screen)
-	if not OS.is_debug_build():
-		model_display_screen.notification(NOTIFICATION_READY)
+	add_child(model_display_screen)
 
 func _input(event: InputEvent) -> void:
 	if(event.is_action_pressed("ui_cancel") and OS.is_debug_build()):
