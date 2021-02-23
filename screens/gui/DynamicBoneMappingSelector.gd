@@ -44,6 +44,8 @@ func _on_model_loaded(model_reference: BasicModel) -> void:
 	loaded_physics_bones.clear()
 	
 	_generate_bone_list()
+	
+	AppManager.emit_signal("console_log", "Model loaded.")
 
 func _on_apply_button_pressed() -> void:
 	_trigger_bone_remap()

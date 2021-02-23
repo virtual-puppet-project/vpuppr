@@ -84,17 +84,18 @@ var should_move_model: bool = false
 export var zoom_strength: float = 0.05
 export var mouse_move_strength: float = 0.002
 
-# TODO debug
-var imported_model
-
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
+
+func _init() -> void:
+	AppManager.emit_signal("console_log", "We are here.")
 
 func _ready() -> void:
 	if model_resource_path:
 		match model_resource_path.get_extension():
 			"glb":
+				AppManager.emit_signal("console_log", "Loading GLB file.")
 				# TODO have to use an extra match in order to get the correct model script
 				# there must be a better way
 				match model_type:
@@ -103,10 +104,16 @@ func _ready() -> void:
 					AppManager.ModelType.VRM:
 						script_to_use = VRM_MODEL_SCRIPT_PATH
 				model = load_external_model(model_resource_path)
+			"vrm":
+				AppManager.emit_signal("console_log", "Loading VRM file.")
+				script_to_use = VRM_MODEL_SCRIPT_PATH
+				model = load_external_model(model_resource_path)
 			"tscn":
+				AppManager.emit_signal("console_log", "Loading TSCN file.")
 				var model_resource = load(model_resource_path)
 				model = model_resource.instance()
 			_:
+				AppManager.emit_signal("console_log", "File extension not recognized.")
 				printerr("File extension not recognized.")
 	
 	match model_type:
@@ -143,17 +150,6 @@ func _ready() -> void:
 	AppManager.connect("properties_applied", self, "_on_properties_applied")
 
 func _process(_delta: float) -> void:
-	# if not stored_offsets:
-	# 	return
-
-	# self.open_see_data = open_see.get_open_see_data(face_id)
-
-	# if(not open_see_data or open_see_data.fit_3d_error > open_see.max_fit_3d_error):
-	# 	return
-	
-	# head_translation = Vector3.ZERO
-	# head_rotation = Vector3.ZERO
-	
 	if not interpolate_model:
 		if not stored_offsets:
 			return
@@ -279,10 +275,7 @@ func _on_offset_timer_timeout() -> void:
 
 	stored_offsets = StoredOffsets.new()
 	open_see_data = open_see.get_open_see_data(face_id)
-	if open_see_data:
-		_save_offsets()
-	else:
-		push_error("OpenSeeData not found. Is OpenSeeFace running?")
+	_save_offsets()
 
 func _on_properties_applied(property_data: Dictionary) -> void:
 	model.translation_damp = property_data["translation_damp"]
@@ -303,6 +296,9 @@ func _to_godot_quat(v: Quat) -> Quat:
 	return Quat(v.x, -v.y, v.z, v.w)
 
 func _save_offsets() -> void:
+	if not open_see_data:
+		AppManager.emit_signal("console_log", "No face tracking data found.")
+		return
 	stored_offsets.translation_offset = open_see_data.translation
 	stored_offsets.rotation_offset = open_see_data.rotation
 	stored_offsets.quat_offset = _to_godot_quat(open_see_data.raw_quaternion)
@@ -310,12 +306,14 @@ func _save_offsets() -> void:
 	if corrected_euler.x < 0.0:
 		corrected_euler.x = 360 + corrected_euler.x
 	stored_offsets.euler_offset = corrected_euler
+	AppManager.emit_signal("console_log", "New offsets saved.")
 
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
 
 func load_external_model(file_path: String) -> Spatial:
+	AppManager.emit_signal("console_log", "Starting external loader.")
 	# var gltf_loader: DynamicGLTFLoader = DynamicGLTFLoader.new()
 	# var loaded_model: Spatial = gltf_loader.import_scene(file_path, 1, 1)
 
@@ -324,5 +322,7 @@ func load_external_model(file_path: String) -> Spatial:
 
 	var model_script = load(script_to_use)
 	loaded_model.set_script(model_script)
+	
+	AppManager.emit_signal("console_log", "External file loaded successfully.")
 	
 	return loaded_model
