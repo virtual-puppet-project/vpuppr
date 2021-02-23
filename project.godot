@@ -29,6 +29,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://screens/gui/elements/CheckBoxLabel.gd"
 }, {
+"base": "Reference",
+"class": "ImportVRM",
+"language": "GDScript",
+"path": "res://addons/vrm/import_vrm.gd"
+}, {
 "base": "Spatial",
 "class": "ModelDisplayScreen",
 "language": "GDScript",
@@ -43,15 +48,22 @@ _global_script_classes=[ {
 "class": "OpenSeeGD",
 "language": "GDScript",
 "path": "res://utils/OpenSeeGD.gd"
+}, {
+"base": "Spatial",
+"class": "VRMTopLevel",
+"language": "GDScript",
+"path": "res://addons/vrm/vrm_toplevel.gd"
 } ]
 _global_script_class_icons={
 "BaseSidebar": "",
 "BasicModel": "",
 "BasicPhysicsAttachment": "",
 "CheckBoxLabel": "",
+"ImportVRM": "",
 "ModelDisplayScreen": "",
 "ModelPropertiesSelector": "",
-"OpenSeeGD": ""
+"OpenSeeGD": "",
+"VRMTopLevel": ""
 }
 
 [application]
@@ -74,10 +86,6 @@ window/size/width=1600
 window/size/height=900
 window/per_pixel_transparency/allowed=true
 window/per_pixel_transparency/enabled=true
-
-[editor_plugins]
-
-enabled=PoolStringArray(  )
 
 [gdnative]
 
