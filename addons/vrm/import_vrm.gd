@@ -653,7 +653,7 @@ func import_scene(path: String, flags: int = 1, bake_fps: int = 1):
 	read_vrm(text)
 	var gstate : GLTFState = GLTFState.new()
 	var gltf : PackedSceneGLTF = PackedSceneGLTF.new()
-	print(path);
+	
 	var root_node : Node = gltf.import_gltf_scene(path, 0, 1000.0, gstate)
 
 	var gltf_json : Dictionary = gstate.json
@@ -765,182 +765,27 @@ class MaterialAccess:
 		return null
 
 func read_vrm(json: String):
-	"""
-	db = {
-		vrm: [
-			{
-				
-			}
-		],
-		vrm_bone: [
-			
-		]
-	}
-	"""
-	# Create gdsqlite instance
-	# var db : SQLite = SQLite.new(); # <-- semicolon lmao
-	
 	var model_data
 	
 	var db: Dictionary = {} # The best kind of db
 
-	# Open database
-#	if (!db.open_in_memory()):
-#		return;
-
 	var query = "";
 	var result = null;
 
-#	query = "CREATE TABLE vrm(id INTEGER, vrm JSON);";
-#	db.query(query);
-
-#	db.query_with_args("INSERT INTO vrm(id, vrm) values (1, json(?));", [json])
-
 	db["vrm"] = JSON.parse(json).result
-
-#	query = """
-#	CREATE VIEW vrm_bone AS WITH human_bones AS (
-#	SELECT value FROM vrm,
-#	json_each(json_extract(\"vrm\", '$.extensions.VRM.humanoid.humanBones'))) SELECT
-#	json_extract(value, '$.bone') as name, json_extract(value, '$.node')
-#	AS node FROM human_bones;)
-#	"""
-#	db.query(query)
 
 	db["vrm_bone"] = {}
 	for b in db["vrm"]["extensions"]["VRM"]["humanoid"]["humanBones"]:
-#		db["vrm_bone"].append({
-#			"name": b["bone"],
-#			"node": b["node"]
-#		})
 		db["vrm_bone"][b["bone"]] = b["node"]
 
-#	query = "CREATE VIEW vrm_def AS SELECT key, value"
-#	query += " FROM vrm, json_each(json_extract(\"vrm\", '$.extensions.VRM'));"
-#	db.query(query)
 
 	db["vrm_def"] = {}
 	for k in db["vrm"].keys():
 		db["vrm_def"][k] = db["vrm"][k]
-#
-	#  https://modern-sql.com/feature/filter
-#	query = """
-#		CREATE VIEW vrm_meta AS SELECT
-#		MAX(meta.value) FILTER (WHERE meta.key = 'title') as title,
-#		MAX(meta.value) FILTER (WHERE meta.key = 'version') as version,
-#		MAX(meta.value) FILTER (WHERE meta.key = 'author') as author,
-#		MAX(meta.value) FILTER (WHERE meta.key = 'contactInformation') as contact_information,
-#		MAX(meta.value) FILTER (WHERE meta.key = 'reference') as reference,
-#		MAX(meta.value) FILTER (WHERE meta.key = 'texture') as texture,
-#		MAX(meta.value) FILTER (WHERE meta.key = 'allowedUserName') as allowed_user_name,
-#		MAX(meta.value) FILTER (WHERE meta.key = 'violentUssageName') as violent_usage_name,
-#		MAX(meta.value) FILTER (WHERE meta.key = 'sexualUssageName') as sexual_usage_name,
-#		MAX(meta.value) FILTER (WHERE meta.key = 'commercialUssageName') as commercial_usage_name,
-#		MAX(meta.value) FILTER (WHERE meta.key = 'otherPermissionUrl') as other_permission_url,
-#		MAX(meta.value) FILTER (WHERE meta.key = 'licenseName') as license_name,
-#		MAX(meta.value) FILTER (WHERE meta.key = 'otherLicenseUrl') as other_license_url
-#		FROM vrm, json_each(json_extract(\"vrm\", '$.extensions.VRM.meta')) as meta;
-#		"""
-#	db.query(query)
+
 	db["vrm_meta"] = {}
 	for k in db["vrm"]["extensions"]["VRM"]["meta"].keys():
 		db["vrm_meta"][k] = db["vrm"]["extensions"]["VRM"]["meta"][k]
-
-#	db.query("""
-#	CREATE VIEW vrm_material AS WITH float_properties AS (WITH material_properties AS (
-#	SELECT
-#		key, value
-#	FROM
-#		vrm, json_each(json_extract("vrm", '$.extensions.VRM.materialProperties')))
-#	SELECT
-#		json_extract(material_properties.value, '$.name') as name,
-#		json_extract(material_properties.value, '$.shader') as shader,
-#		json_extract(material_properties.value, '$.renderQueue') as render_queue,
-#		json_extract(material_properties.value, '$.floatProperties') as float_properties,
-#		json_extract(material_properties.value, '$.vectorProperties') as vector_properties,
-#		json_extract(material_properties.value, '$.textureProperties') as texture_properties,
-#		json_extract(material_properties.value, '$.keywordMap') as keyword_map
-#	FROM
-#		material_properties)
-#	SELECT
-#		name,
-#		shader,
-#		render_queue,
-#		keyword_map,
-#		-- https://modern-sql.com/feature/filter
-#		MAX(fp.value) FILTER (
-#		WHERE fp.key = '_Cutoff') as cutoff,
-#		MAX(fp.value) FILTER (
-#		WHERE fp.key = '_BumpScale') as bump_scale,
-#		MAX(fp.value) FILTER (
-#		WHERE fp.key = '_ReceiveShadowRate') as recieve_shadow_rate,
-#		MAX(fp.value) FILTER (
-#		WHERE fp.key = '_ShadingGradeRate') as shading_grade_rate,
-#		MAX(fp.value) FILTER (
-#		WHERE fp.key = '_ShadeShift') as shade_shift,
-#		MAX(fp.value) FILTER (
-#		WHERE fp.key = '_ShadeToony') as shade_toony,
-#		MAX(fp.value) FILTER (
-#		WHERE fp.key = '_LightColorAttenuation') as light_color_attenuation,
-#		MAX(fp.value) FILTER (
-#		WHERE fp.key = '_IndirectLightIntensity') as indirect_light_intensity,
-#		MAX(fp.value) FILTER (
-#		WHERE fp.key = '_OutlineWidth') as outline_width,
-#		MAX(fp.value) FILTER (
-#		WHERE fp.key = '_OutlineScaledMaxDistance') as outline_scaled_max_distance,
-#		MAX(fp.value) FILTER (
-#		WHERE fp.key = '_OutlineLightingMix') as outline_lighting_mix,
-#		MAX(fp.value) FILTER (
-#		WHERE fp.key = '_DebugMode') as debug_mode,
-#		MAX(fp.value) FILTER (
-#		WHERE fp.key = '_BlendMode') as blend_mode,
-#		MAX(fp.value) FILTER (
-#		WHERE fp.key = '_OutlineWidthMode') as outline_width_mode,
-#		MAX(fp.value) FILTER (
-#		WHERE fp.key = '_OutlineColorMode') as outline_color_mode,
-#		MAX(fp.value) FILTER (
-#		WHERE fp.key = '_CullMode') as cull_mode,
-#		MAX(fp.value) FILTER (
-#		WHERE fp.key = '_SrcBlend') as src_blend,
-#		MAX(fp.value) FILTER (
-#		WHERE fp.key = '_DstBlend') as dst_blend,
-#		MAX(fp.value) FILTER (
-#		WHERE fp.key = '_ZWrite') as z_write,
-#		MAX(vp.value) FILTER (
-#		WHERE vp.key = '_Color') as color,
-#		MAX(vp.value) FILTER (
-#		WHERE vp.key = '_ShadeColor') as shade_color,
-#		MAX(tp.value) FILTER (
-#		WHERE tp.key = '_BumpMap') as bump_map,
-#		MAX(tp.value) FILTER (
-#		WHERE tp.key = '_ReceiveShadowTexture') as receive_shadow_texture,
-#		MAX(tp.value) FILTER (
-#		WHERE tp.key = '_ShadingGradeTexture') as shading_grade_texture,
-#		MAX(vp.value) FILTER (
-#		WHERE vp.key = '_SphereAdd') as sphere_add,
-#		MAX(vp.value) FILTER (
-#		WHERE vp.key = '_EmissionColor') as emission_color,
-#		MAX(tp.value) FILTER (
-#		WHERE tp.key = '_EmissionMap') as emission_map,
-#		MAX(vp.value) FILTER (
-#		WHERE vp.key = '_OutlineWidthTexture') as outline_width_texture,
-#		MAX(vp.value) FILTER (
-#		WHERE vp.key = '_OutlineColor') as outline_color,
-#		MAX(tp.value) FILTER (
-#		WHERE tp.key = '_MainTex') as main_tex,
-#		MAX(tp.value) FILTER (
-#		WHERE tp.key = '_ShadeTexture') as shade_texture,
-#		MAX(tp.value) FILTER (
-#		WHERE tp.key = '_SphereAdd') as sphere_add
-#	FROM
-#		float_properties,
-#		json_each(float_properties) as fp,
-#		json_each(vector_properties) as vp ,
-#		json_each(texture_properties) as tp,
-#		json_each(keyword_map) as km
-#	GROUP BY
-#		name;
-#	""")
 
 	db["vrm_material"] = {}
 	for i in db["vrm"]["extensions"]["VRM"]["materialProperties"]:
@@ -952,45 +797,9 @@ func read_vrm(json: String):
 		var m_texture_properties = i["textureProperties"]
 		var m_keyword_map = i["keywordMap"]
 		var material_access: MaterialAccess = MaterialAccess.new(m_float_properties, m_vector_properties, m_texture_properties)
-		# db["vrm_material"][m_name] = {
-		# 	# "name": m_name,
-		# 	"shader": m_shader,
-		# 	"render_queue": m_render_queue,
-		# 	"keyword_map": m_keyword_map,
-		# 	"cutoff": m_float_properties["_Cutoff"],
-		# 	"bump_scale": m_float_properties["_BumpScale"],
-		# 	"receive_shadow_rate": m_float_properties["_ReceiveShadowRate"],
-		# 	"shading_grade_rate": m_float_properties["_ShadingGradeRate"],
-		# 	"shade_shift": m_float_properties["_ShadeShift"],
-		# 	"shade_toony": m_float_properties["_ShadeToony"],
-		# 	"light_color_attenuation": m_float_properties["_LightColorAttenuation"],
-		# 	"indirect_light_intensity": m_float_properties["_IndirectLightIntensity"],
-		# 	"outline_width": m_float_properties["_OutlineWidth"],
-		# 	"outline_scaled_max_distance": m_float_properties["_OutlineScaledMaxDistance"],
-		# 	"outline_lighting_mix": m_float_properties["_OutlineLightingMix"],
-		# 	"debug_mode": m_float_properties["_DebugMode"],
-		# 	"blend_mode": m_float_properties["_BlendMode"],
-		# 	"outline_width_mode": m_float_properties["_OutlineWidthMode"],
-		# 	"outline_color_mode": m_float_properties["_OutlineColorMode"],
-		# 	"cull_mode": m_float_properties["_CullMode"],
-		# 	"src_blend": m_float_properties["_SrcBlend"],
-		# 	"dst_blend": m_float_properties["_DstBlend"],
-		# 	"z_write": m_float_properties["_ZWrite"],
-		# 	"color": m_vector_properties["_Color"],
-		# 	"shade_color": m_vector_properties["_ShadeColor"],
-		# 	"bump_map": m_texture_properties["_BumpMap"],
-		# 	"receive_shadow_texture": m_texture_properties["_ReceiveShadowTexture"],
-		# 	"shading_grade_texture": m_texture_properties["_ShadingGradeTexture"],
-		# 	"sphere_add_v": m_vector_properties["_SphereAdd"],
-		# 	"emission_color": m_vector_properties["_EmissionColor"],
-		# 	"emission_map": m_texture_properties["_EmissionMap"],
-		# 	"outline_width_texture": m_vector_properties["_OutlineWidthTexture"],
-		# 	"outline_color": m_vector_properties["_OutlineColor"],
-		# 	"main_tex": m_texture_properties["_MainTex"],
-		# 	"shade_texture": m_texture_properties["_ShadeTexture"],
-		# 	"sphere_add_t": m_texture_properties["_SphereAdd"]
-		# }
+
 		db["vrm_material"][m_name] = {
+			# Leave out the name since it's redunddant
 			# "name": m_name,
 			"shader": m_shader,
 			"render_queue": m_render_queue,
