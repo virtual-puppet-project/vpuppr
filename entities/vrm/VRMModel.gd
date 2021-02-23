@@ -1,7 +1,6 @@
 extends BasicModel
 
 const MTOON_SHADER_COMPAT: Resource = preload("res://entities/vrm/MToonShader.tres")
-const FLEXIBLE_TOON_SHADER: Resource = preload("res://addons/flexible_toon_shader/FlexibleToonMaterial.tres")
 
 # VRM guarantees neck and spine to exist
 const NECK_BONE = "neck"
@@ -34,6 +33,7 @@ func _ready() -> void:
 # Private functions                                                           #
 ###############################################################################
 
+# TODO unused now that we are using godot-vrm
 func _apply_shader_to_all_meshes(starting_node: Node) -> void:
 	for c in starting_node.get_children():
 		if c is MeshInstance:

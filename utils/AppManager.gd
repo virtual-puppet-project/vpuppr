@@ -1,12 +1,14 @@
 extends Node
 
-enum ModelType { GENERIC, VRM }
-
 signal file_to_load_changed(file_path, file_type)
 #warning-ignore:unused_signal
 signal model_loaded(model_reference)
 #warning-ignore:unused_signal
 signal properties_applied(property_data)
+
+enum ModelType { GENERIC, VRM }
+
+const DYNAMIC_PHYSICS_BONES: bool = false
 
 var is_face_tracker_running: bool
 var face_tracker_pid: int

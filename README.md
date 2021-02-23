@@ -32,7 +32,7 @@ Refer to the 'Building from source' instructions. The facetracker only has a com
 
 ## Building from source
 1. Clone the [Godot source](https://github.com/godotengine/godot), version 3.2.x
-2. Clone the [Dynamic GLTF Loader module](https://github.com/you-win/godot-dynamic-gltf-loader) and place that into the modules folder in the Godot source
+2. Clone the [godot-gltf-module](https://github.com/you-win/godot-dynamic-gltf-loader) made by the [V-Sekai](https://github.com/V-Sekai) team and place that into the modules folder in the Godot source
 3. [Recompile](https://docs.godotengine.org/en/stable/development/compiling/index.html) the engine
 4. Clone this project and load it in the new Godot binary
 5. Clone the [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace)
