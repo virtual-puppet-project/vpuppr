@@ -51,8 +51,8 @@ func _get_extensions():
 	return ["vrm"]
 
 
-func _get_import_flags():
-	return EditorSceneImporter.IMPORT_SCENE
+#func _get_import_flags():
+#	return EditorSceneImporter.IMPORT_SCENE
 
 
 func _import_animation(path: String, flags: int, bake_fps: int) -> Animation:
@@ -712,15 +712,6 @@ func import_scene(path: String, flags: int = 1, bake_fps: int = 1):
 	# packed_scene.pack(root_node)
 	# return packed_scene.instance()
 #	return packed_scene.instance(PackedScene.GEN_EDIT_STATE_INSTANCE)
-
-
-func import_animation_from_other_importer(path: String, flags: int, bake_fps: int):
-	return self._import_animation(path, flags, bake_fps)
-
-
-func import_scene_from_other_importer(path: String, flags: int = 1, bake_fps: int = 1):
-	return self.import_scene(path, flags, bake_fps)
-#	return self._import_scene(path, flags, bake_fps)
 
 func _convert_sql_to_material_param(column_name: String, value):
 	if "color" in column_name:

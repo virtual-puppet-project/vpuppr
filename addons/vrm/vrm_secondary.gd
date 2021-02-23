@@ -1,3 +1,4 @@
+tool
 extends Spatial
 
 export var spring_bones: Array
@@ -67,10 +68,6 @@ func _physics_process(delta):
 			if secondary_gizmo != null:
 				secondary_gizmo.draw_in_editor()
 
-
-
-
-
 class SecondaryGizmo:
 	extends ImmediateGeometry
 	
@@ -90,9 +87,9 @@ class SecondaryGizmo:
 
 	func draw_in_editor():
 		clear()
-		var selected: Array = EditorPlugin.new().get_editor_interface().get_selection().get_selected_nodes()
-		if selected.has(secondary_node.get_parent()) || selected.has(secondary_node):
-			draw_collider_groups()
+#		var selected: Array = EditorPlugin.new().get_editor_interface().get_selection().get_selected_nodes()
+#		if selected.has(secondary_node.get_parent()) || selected.has(secondary_node):
+#			draw_collider_groups()
 	
 	func draw_in_game():
 		clear()
