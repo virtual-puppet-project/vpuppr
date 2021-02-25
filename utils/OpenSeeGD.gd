@@ -201,18 +201,21 @@ func _ready() -> void:
 		self.open_see_data_map = {}
 	self.buffer = PoolByteArray()
 	
-	#warning-ignore:return_value_discarded
-	server.listen(listen_port, listen_address)
+	if not AppManager.is_face_tracking_disabled:
+		AppManager.push_log("Listening for data at %s:%s" % [listen_address, str(listen_port)])
+		#warning-ignore:return_value_discarded
+		server.listen(listen_port, listen_address)
 
-	receive_thread = Thread.new()
-	#warning-ignore:return_value_discarded
-	receive_thread.start(self, "_perform_reception")
+		receive_thread = Thread.new()
+		#warning-ignore:return_value_discarded
+		receive_thread.start(self, "_perform_reception")
+	else:
+		AppManager.push_log("Face tracking is disabled. This should only happen in debug builds.")
+		AppManager.push_log("Check AppManager.gd for more information.")
 
 func _process(_delta: float) -> void:
 	if(receive_thread and not receive_thread.is_active()):
 		self._ready()
-
-	# print(self.tracking_data[0].rotation)
 
 func _exit_tree() -> void:
 	_end_receiver()
