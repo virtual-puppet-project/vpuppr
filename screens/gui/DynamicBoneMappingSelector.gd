@@ -96,7 +96,7 @@ func _trigger_bone_remap() -> void:
 	for child in v_box_container.get_children():
 		if child.check_box.pressed:
 			new_bone_list.append(child.label.text)
-		if child.second_check_box.pressed:
+		if(child.get("second_check_box") and child.second_check_box.pressed):
 			new_physics_bone_list.append(child.label.text)
 	
 	###
