@@ -16,7 +16,7 @@ var is_face_tracker_running: bool
 var face_tracker_pid: int
 
 # TODO disable OpenSeeGD during debug i guess
-var is_face_tracking_disabled: bool = true
+var is_face_tracking_disabled: bool = false
 
 ###############################################################################
 # Builtin functions                                                           #

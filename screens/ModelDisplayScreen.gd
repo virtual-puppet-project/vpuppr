@@ -4,9 +4,10 @@ extends Spatial
 const OPEN_SEE: Resource = preload("res://utils/OpenSeeGD.tscn")
 
 const DEFAULT_GENERIC_MODEL: Resource = preload("res://entities/basic-models/Duck.tscn")
-#const DEFAULT_VRM_MODEL: Resource = preload("res://entities/vrm/AliciaSolid_vrm-051.tscn")
 const GENERIC_MODEL_SCRIPT_PATH: String = "res://entities/BasicModel.gd"
 const VRM_MODEL_SCRIPT_PATH: String = "res://entities/vrm/VRMModel.gd"
+
+const IK_CUBE: Resource = preload("res://entities/IKCube.tscn")
 
 export(AppManager.ModelType) var model_type = AppManager.ModelType.GENERIC
 export var model_resource_path: String
@@ -133,6 +134,36 @@ func _ready() -> void:
 	model_initial_transform = model.transform
 	model_parent_initial_transform = model_parent.transform
 	model_parent.call_deferred("add_child", model)
+	
+	# Add IK cube helpers
+	var left_ik_cube: IKCube = IK_CUBE.instance()
+	left_ik_cube.name = "LeftIKCube"
+	left_ik_cube.transform = model_parent.transform
+	left_ik_cube.transform = left_ik_cube.transform.translated(Vector3(1.0, 0.5, 0.0))
+	model_parent.call_deferred("add_child", left_ik_cube)
+	
+	var right_ik_cube: IKCube = IK_CUBE.instance()
+	right_ik_cube.name = "RightIKCube"
+	right_ik_cube.transform = model_parent.transform
+	right_ik_cube.transform = right_ik_cube.transform.translated(Vector3(-1.0, 0.5, 0.0))
+	model_parent.call_deferred("add_child", right_ik_cube)
+	
+	# Add SkeletonIKs to model skeleton
+	var model_skeleton: Skeleton = model.find_node("Skeleton")
+	var left_skeleton_ik: SkeletonIK = SkeletonIK.new()
+	left_skeleton_ik.name = "LeftSkeletonIK"
+	left_skeleton_ik.use_magnet = true
+	left_skeleton_ik.magnet = left_ik_cube.transform.origin
+	left_skeleton_ik.override_tip_basis = false
+	left_skeleton_ik.stop()
+	var right_skeleton_ik: SkeletonIK = SkeletonIK.new()
+	right_skeleton_ik.name = "RightSkeletonIK"
+	right_skeleton_ik.use_magnet = true
+	right_skeleton_ik.magnet = right_ik_cube.transform.origin
+	right_skeleton_ik.override_tip_basis = false
+	right_skeleton_ik.stop()
+	model_skeleton.call_deferred("add_child", left_skeleton_ik)
+	model_skeleton.call_deferred("add_child", right_skeleton_ik)
 
 	self.open_see = OPEN_SEE.instance()
 	self.call_deferred("add_child", open_see)
@@ -275,14 +306,34 @@ func _on_offset_timer_timeout() -> void:
 	_save_offsets()
 
 func _on_properties_applied(property_data: Dictionary) -> void:
+	# Model-level properties
 	model.translation_damp = property_data["translation_damp"]
 	model.rotation_damp = property_data["rotation_damp"]
 	model.additional_bone_damp = property_data["additional_bone_damp"]
 
+	# Display-level properties
 	self.apply_translation = property_data["apply_translation"]
 	self.apply_rotation = property_data["apply_rotation"]
 	self.interpolate_model = property_data["interpolate_model"]
 	self.interpolation_rate = property_data["interpolation_rate"]
+	
+	# IK properties
+	if property_data.has_all(["left_arm_root", "left_arm_tip", "right_arm_root", "right_arm_tip"]):
+		var model_skeleton: Skeleton = model.find_node("Skeleton")
+		var left_skeleton_ik: SkeletonIK = model_skeleton.get_node("LeftSkeletonIK")
+		var right_skeleton_ik: SkeletonIK = model_skeleton.get_node("RightSkeletonIK")
+
+		left_skeleton_ik.target_node = model_parent.get_node("LeftIKCube").get_path()
+		left_skeleton_ik.root_bone = property_data["left_arm_root"]
+		left_skeleton_ik.tip_bone = property_data["left_arm_tip"]
+		left_skeleton_ik.start(true)
+		left_skeleton_ik.stop()
+
+		right_skeleton_ik.target_node = model_parent.get_node("RightIKCube").get_path()
+		right_skeleton_ik.root_bone = property_data["right_arm_root"]
+		right_skeleton_ik.tip_bone = property_data["right_arm_tip"]
+		right_skeleton_ik.start(true)
+		left_skeleton_ik.stop()
 
 ###############################################################################
 # Private functions                                                           #

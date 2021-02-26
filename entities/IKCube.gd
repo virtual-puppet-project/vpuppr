@@ -1,17 +1,13 @@
-class_name InputLabel
-extends BaseMenuItem
-
-onready var line_edit: LineEdit = $HBoxContainer/LineEdit
-
-var line_edit_type = TYPE_STRING
-var line_edit_text: String = "changeme"
+class_name IKCube
+extends MeshInstance
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
-func _ready() -> void:
-	line_edit.text = line_edit_text
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("toggle_gui"):
+		self.visible = not self.visible
 
 ###############################################################################
 # Connections                                                                 #
