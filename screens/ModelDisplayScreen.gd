@@ -16,7 +16,14 @@ var script_to_use: String
 
 # Model nodes
 var model
+var model_skeleton: Skeleton
 onready var model_parent: Spatial = $ModelParent
+
+# IK nodes
+var right_ik_cube: IKCube
+var left_ik_cube: IKCube
+var left_skeleton_ik: SkeletonIK
+var right_skeleton_ik: SkeletonIK
 
 # Store transforms so we can easily reset
 var model_initial_transform: Transform
@@ -136,27 +143,27 @@ func _ready() -> void:
 	model_parent.call_deferred("add_child", model)
 	
 	# Add IK cube helpers
-	var left_ik_cube: IKCube = IK_CUBE.instance()
+	left_ik_cube = IK_CUBE.instance()
 	left_ik_cube.name = "LeftIKCube"
 	left_ik_cube.transform = model_parent.transform
 	left_ik_cube.transform = left_ik_cube.transform.translated(Vector3(1.0, 0.5, 0.0))
 	model_parent.call_deferred("add_child", left_ik_cube)
 	
-	var right_ik_cube: IKCube = IK_CUBE.instance()
+	right_ik_cube = IK_CUBE.instance()
 	right_ik_cube.name = "RightIKCube"
 	right_ik_cube.transform = model_parent.transform
 	right_ik_cube.transform = right_ik_cube.transform.translated(Vector3(-1.0, 0.5, 0.0))
 	model_parent.call_deferred("add_child", right_ik_cube)
 	
 	# Add SkeletonIKs to model skeleton
-	var model_skeleton: Skeleton = model.find_node("Skeleton")
-	var left_skeleton_ik: SkeletonIK = SkeletonIK.new()
+	model_skeleton = model.find_node("Skeleton")
+	left_skeleton_ik = SkeletonIK.new()
 	left_skeleton_ik.name = "LeftSkeletonIK"
 	left_skeleton_ik.use_magnet = true
 	left_skeleton_ik.magnet = left_ik_cube.transform.origin
 	left_skeleton_ik.override_tip_basis = false
 	left_skeleton_ik.stop()
-	var right_skeleton_ik: SkeletonIK = SkeletonIK.new()
+	right_skeleton_ik = SkeletonIK.new()
 	right_skeleton_ik.name = "RightSkeletonIK"
 	right_skeleton_ik.use_magnet = true
 	right_skeleton_ik.magnet = right_ik_cube.transform.origin
@@ -208,6 +215,14 @@ func _process(_delta: float) -> void:
 			head_translation * translation_adjustment,
 			head_rotation * rotation_adjustment
 		)
+		left_ik_cube.move_cube(
+			head_translation * translation_adjustment,
+			head_rotation * rotation_adjustment
+		)
+		right_ik_cube.move_cube(
+			head_translation * translation_adjustment,
+			head_rotation * rotation_adjustment
+		)
 
 func _physics_process(_delta: float) -> void:
 	if interpolate_model:
@@ -251,6 +266,14 @@ func _physics_process(_delta: float) -> void:
 			model.custom_update(open_see_data)
 	
 		model.move_head(
+			head_translation * translation_adjustment,
+			head_rotation * rotation_adjustment
+		)
+		left_ik_cube.move_cube(
+			head_translation * translation_adjustment,
+			head_rotation * rotation_adjustment
+		)
+		right_ik_cube.move_cube(
 			head_translation * translation_adjustment,
 			head_rotation * rotation_adjustment
 		)
@@ -319,28 +342,45 @@ func _on_properties_applied(property_data: Dictionary) -> void:
 	
 	# IK properties
 	if property_data.has_all(["left_arm_root", "left_arm_tip", "right_arm_root", "right_arm_tip"]):
-		var model_skeleton: Skeleton = model.find_node("Skeleton")
-		var left_skeleton_ik: SkeletonIK = model_skeleton.get_node("LeftSkeletonIK")
-		var right_skeleton_ik: SkeletonIK = model_skeleton.get_node("RightSkeletonIK")
-
-		left_skeleton_ik.target_node = model_parent.get_node("LeftIKCube").get_path()
+		left_skeleton_ik.target_node = left_ik_cube.get_path()
 		left_skeleton_ik.root_bone = property_data["left_arm_root"]
 		left_skeleton_ik.tip_bone = property_data["left_arm_tip"]
 		left_skeleton_ik.start(true)
-		left_skeleton_ik.stop()
 
-		right_skeleton_ik.target_node = model_parent.get_node("RightIKCube").get_path()
+		right_skeleton_ik.target_node = right_ik_cube.get_path()
 		right_skeleton_ik.root_bone = property_data["right_arm_root"]
 		right_skeleton_ik.tip_bone = property_data["right_arm_tip"]
 		right_skeleton_ik.start(true)
-		left_skeleton_ik.stop()
+
+		# TODO save this dict in a config file that's associated with the current model filename
+		# String: Transform
+		var bone_poses_from_ik: Dictionary = {}
+
+		for bone_id in _find_bone_chain(model_skeleton, model_skeleton.find_bone(left_skeleton_ik.root_bone), model.skeleton.find_bone(left_skeleton_ik.tip_bone)):
+			bone_poses_from_ik[model_skeleton.get_bone_name(bone_id)] = model_skeleton.get_bone_global_pose(bone_id)
+		for bone_id in _find_bone_chain(model_skeleton, model_skeleton.find_bone(right_skeleton_ik.root_bone), model.skeleton.find_bone(right_skeleton_ik.tip_bone)):
+			bone_poses_from_ik[model_skeleton.get_bone_name(bone_id)] = model_skeleton.get_bone_global_pose(bone_id)
+
+		# IK sets the global pose override, we need to clear that in order to completely stop it
+		model_skeleton.clear_bones_global_pose_override()
+
+		# Reapply IK poses
+		for bone_name in bone_poses_from_ik.keys():
+			var transform: Transform = Transform()
+			var bone_transform: Transform = bone_poses_from_ik[bone_name] as Transform
+			transform = transform.rotated(Vector3.RIGHT, bone_transform.basis.get_euler().normalized().x)
+			transform = transform.rotated(Vector3.UP, bone_transform.basis.get_euler().normalized().y)
+			transform = transform.rotated(Vector3.BACK, bone_transform.basis.get_euler().normalized().z)
+			model_skeleton.set_bone_pose(model_skeleton.find_bone(bone_name), transform)
+		
+		AppManager.push_log("Applied IK settings.")
 
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
 
 # TODO probably incorrect?
-func _to_godot_quat(v: Quat) -> Quat:
+static func _to_godot_quat(v: Quat) -> Quat:
 	return Quat(v.x, -v.y, v.z, v.w)
 
 func _save_offsets() -> void:
@@ -355,6 +395,27 @@ func _save_offsets() -> void:
 		corrected_euler.x = 360 + corrected_euler.x
 	stored_offsets.euler_offset = corrected_euler
 	AppManager.push_log("New offsets saved.")
+
+static func _find_bone_chain(skeleton: Skeleton, root_bone: int, tip_bone: int) -> Array:
+	var result: Array = []
+
+	result.append(tip_bone)
+
+	# Work our way up from the tip bone since each bone only has 1 bone parent but
+	# potentially more than 1 bone child
+	var bone_parent: int = skeleton.get_bone_parent(tip_bone)
+	
+	# We found the entire chain
+	if bone_parent == root_bone:
+		result.append(bone_parent)
+	# Shouldn't happen but who knows
+	elif bone_parent == -1:
+		AppManager.push_log("Tip bone %s is apparently has no parent bone. Unable to find IK chain." % str(tip_bone))
+	# Recursively find the rest of the chain
+	else:
+		result.append_array(_find_bone_chain(skeleton, root_bone, bone_parent))
+
+	return result
 
 ###############################################################################
 # Public functions                                                            #
