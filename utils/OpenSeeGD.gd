@@ -257,7 +257,6 @@ func _end_receiver() -> void:
 	if receive_thread:
 		self.stop_reception = true
 		receive_thread.wait_to_finish()
-		self.stop_reception = false
 	if server.is_listening():
 		server.stop()
 
