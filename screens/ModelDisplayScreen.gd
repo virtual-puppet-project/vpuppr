@@ -89,6 +89,8 @@ var can_manipulate_model: bool = false
 var should_spin_model: bool = false
 var should_move_model: bool = false
 
+var can_manipulate_ik_cubes: bool = false
+
 export var zoom_strength: float = 0.05
 export var mouse_move_strength: float = 0.002
 
@@ -353,25 +355,24 @@ func _on_properties_applied(property_data: Dictionary) -> void:
 		right_skeleton_ik.start(true)
 
 		# TODO save this dict in a config file that's associated with the current model filename
-		# String: Transform
-		var bone_poses_from_ik: Dictionary = {}
-
-		for bone_id in _find_bone_chain(model_skeleton, model_skeleton.find_bone(left_skeleton_ik.root_bone), model.skeleton.find_bone(left_skeleton_ik.tip_bone)):
-			bone_poses_from_ik[model_skeleton.get_bone_name(bone_id)] = model_skeleton.get_bone_global_pose(bone_id)
-		for bone_id in _find_bone_chain(model_skeleton, model_skeleton.find_bone(right_skeleton_ik.root_bone), model.skeleton.find_bone(right_skeleton_ik.tip_bone)):
-			bone_poses_from_ik[model_skeleton.get_bone_name(bone_id)] = model_skeleton.get_bone_global_pose(bone_id)
+		var left_bone_transform: Transform = model_skeleton.get_bone_global_pose(model_skeleton.find_bone(left_skeleton_ik.root_bone))
+		var right_bone_transform: Transform = model_skeleton.get_bone_global_pose(model_skeleton.find_bone(right_skeleton_ik.root_bone))
 
 		# IK sets the global pose override, we need to clear that in order to completely stop it
 		model_skeleton.clear_bones_global_pose_override()
 
 		# Reapply IK poses
-		for bone_name in bone_poses_from_ik.keys():
-			var transform: Transform = Transform()
-			var bone_transform: Transform = bone_poses_from_ik[bone_name] as Transform
-			transform = transform.rotated(Vector3.RIGHT, bone_transform.basis.get_euler().normalized().x)
-			transform = transform.rotated(Vector3.UP, bone_transform.basis.get_euler().normalized().y)
-			transform = transform.rotated(Vector3.BACK, bone_transform.basis.get_euler().normalized().z)
-			model_skeleton.set_bone_pose(model_skeleton.find_bone(bone_name), transform)
+		var left_transform: Transform = Transform()
+		left_transform = left_transform.rotated(Vector3.RIGHT, left_bone_transform.basis.get_euler().normalized().x)
+		left_transform = left_transform.rotated(Vector3.UP, left_bone_transform.basis.get_euler().normalized().y)
+		left_transform = left_transform.rotated(Vector3.BACK, left_bone_transform.basis.get_euler().normalized().z)
+		model_skeleton.set_bone_pose(model_skeleton.find_bone(left_skeleton_ik.root_bone), left_transform)
+
+		var right_transform: Transform = Transform()
+		right_transform = right_transform.rotated(Vector3.RIGHT, right_bone_transform.basis.get_euler().normalized().x)
+		right_transform = right_transform.rotated(Vector3.UP, right_bone_transform.basis.get_euler().normalized().y)
+		right_transform = right_transform.rotated(Vector3.BACK, right_bone_transform.basis.get_euler().normalized().z)
+		model_skeleton.set_bone_pose(model_skeleton.find_bone(right_skeleton_ik.root_bone), right_transform)
 		
 		AppManager.push_log("Applied IK settings.")
 
