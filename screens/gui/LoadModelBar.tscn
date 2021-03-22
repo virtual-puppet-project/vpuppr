@@ -3,25 +3,21 @@
 [ext_resource path="res://screens/gui/LoadModelBar.gd" type="Script" id=1]
 
 [node name="LoadModelBar" type="MarginContainer"]
-anchor_left = 0.3
-anchor_right = 0.7
-anchor_bottom = 0.1
-margin_left = 10.0
-margin_top = 10.0
-margin_bottom = -10.0
+anchor_right = 1.0
+anchor_bottom = 1.0
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="ColorRect" type="ColorRect" parent="."]
-margin_right = 630.0
-margin_bottom = 70.0
+margin_right = 1600.0
+margin_bottom = 900.0
 color = Color( 0, 0, 0, 0.662745 )
 
 [node name="Control" type="Control" parent="."]
-margin_right = 630.0
-margin_bottom = 70.0
+margin_right = 1600.0
+margin_bottom = 900.0
 
 [node name="MarginContainer" type="MarginContainer" parent="Control"]
 anchor_right = 1.0
@@ -37,20 +33,20 @@ __meta__ = {
 }
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Control/MarginContainer"]
-margin_right = 610.0
-margin_bottom = 50.0
+margin_right = 1580.0
+margin_bottom = 880.0
 
 [node name="LoadVRMModelButton" type="Button" parent="Control/MarginContainer/HBoxContainer"]
-margin_right = 303.0
-margin_bottom = 50.0
+margin_right = 788.0
+margin_bottom = 880.0
 focus_mode = 0
 size_flags_horizontal = 3
 text = "Load VRM Model"
 
 [node name="LoadBasicModelButton" type="Button" parent="Control/MarginContainer/HBoxContainer"]
-margin_left = 307.0
-margin_right = 610.0
-margin_bottom = 50.0
+margin_left = 792.0
+margin_right = 1580.0
+margin_bottom = 880.0
 focus_mode = 0
 size_flags_horizontal = 3
 text = "Load basic model"

@@ -1,5 +1,5 @@
 class_name BaseSidebar
-extends MarginContainer
+extends Control
 
 const CHECK_BOX_LABEL: Resource = preload("res://screens/gui/elements/CheckBoxLabel.tscn")
 

@@ -4,36 +4,4 @@
 [ext_resource path="res://screens/gui/DynamicBoneMappingSelector.gd" type="Script" id=2]
 
 [node name="DynamicBoneMappingSelector" instance=ExtResource( 1 )]
-margin_right = -10.0
 script = ExtResource( 2 )
-
-[node name="ColorRect" parent="." index="0"]
-margin_right = 460.0
-
-[node name="Control" parent="." index="1"]
-margin_right = 460.0
-
-[node name="VBoxContainer" parent="Control/MarginContainer" index="0"]
-margin_right = 440.0
-
-[node name="ScrollContainer" parent="Control/MarginContainer/VBoxContainer" index="0"]
-margin_right = 440.0
-
-[node name="VBoxContainer" parent="Control/MarginContainer/VBoxContainer/ScrollContainer" index="0"]
-margin_right = 440.0
-
-[node name="HBoxContainer" parent="Control/MarginContainer/VBoxContainer" index="1"]
-margin_right = 440.0
-
-[node name="MarginContainer" parent="Control/MarginContainer/VBoxContainer/HBoxContainer" index="0"]
-margin_right = 218.0
-
-[node name="ApplyButton" parent="Control/MarginContainer/VBoxContainer/HBoxContainer/MarginContainer" index="0"]
-margin_right = 218.0
-
-[node name="MarginContainer2" parent="Control/MarginContainer/VBoxContainer/HBoxContainer" index="1"]
-margin_left = 222.0
-margin_right = 440.0
-
-[node name="ResetButton" parent="Control/MarginContainer/VBoxContainer/HBoxContainer/MarginContainer2" index="0"]
-margin_right = 218.0
