@@ -31,6 +31,10 @@ Refer to the 'Building from source' instructions. The facetracker only has a com
 
 `Control` + `Middle Click`: Reset the model's transform
 
+`Shift` + `Left Click`/`Right Click`: Move left/right IK cube
+
+`Shift` + `Left Click`/`Right Click` + `Scroll`: Move left/right IK cube on the z-axis
+
 `Tab`: Toggle the UI
 
 ## Building from source
