@@ -46,6 +46,7 @@ Refer to the 'Building from source' instructions. The facetracker only has a com
 7. Run the project
 
 ## Known bugs
+- after stopping the facetracker, if you don't wait long enough for the facetracker listener to stop, the program can crash on close. Probably, this is hard to reproduce
 - the facetracker is not automatically closed when the program crashes
 - there is no way to get back to the default Duck model (the bundled `tscn` file is not bundled)
 
