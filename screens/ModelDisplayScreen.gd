@@ -90,6 +90,8 @@ var should_spin_model: bool = false
 var should_move_model: bool = false
 
 var can_manipulate_ik_cubes: bool = false
+var should_move_left_cube: bool = false
+var should_move_right_cube: bool = false
 
 export var zoom_strength: float = 0.05
 export var mouse_move_strength: float = 0.002
@@ -217,14 +219,6 @@ func _process(_delta: float) -> void:
 			head_translation * translation_adjustment,
 			head_rotation * rotation_adjustment
 		)
-		left_ik_cube.move_cube(
-			head_translation * translation_adjustment,
-			head_rotation * rotation_adjustment
-		)
-		right_ik_cube.move_cube(
-			head_translation * translation_adjustment,
-			head_rotation * rotation_adjustment
-		)
 
 func _physics_process(_delta: float) -> void:
 	if interpolate_model:
@@ -271,14 +265,6 @@ func _physics_process(_delta: float) -> void:
 			head_translation * translation_adjustment,
 			head_rotation * rotation_adjustment
 		)
-		left_ik_cube.move_cube(
-			head_translation * translation_adjustment,
-			head_rotation * rotation_adjustment
-		)
-		right_ik_cube.move_cube(
-			head_translation * translation_adjustment,
-			head_rotation * rotation_adjustment
-		)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_accept"):
@@ -290,6 +276,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		can_manipulate_model = false
 		should_spin_model = false
 		should_move_model = false
+
+	if event.is_action_pressed("allow_move_ik_cubes"):
+		can_manipulate_ik_cubes = true
+	elif event.is_action_released("allow_move_ik_cubes"):
+		can_manipulate_ik_cubes = false
 
 	if can_manipulate_model:
 		if event.is_action_pressed("left_click"):
@@ -318,6 +309,33 @@ func _unhandled_input(event: InputEvent) -> void:
 		
 		if(should_move_model and event is InputEventMouseMotion):
 			model_parent.translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
+
+	if can_manipulate_ik_cubes:
+		if event.is_action_pressed("left_click"):
+			should_move_left_cube = true
+		elif event.is_action_released("left_click"):
+			should_move_left_cube = false
+
+		if event.is_action_pressed("right_click"):
+			should_move_right_cube = true
+		elif event.is_action_released("right_click"):
+			should_move_right_cube = false
+
+		if should_move_left_cube:
+			if event.is_action("scroll_up"):
+				right_ik_cube.translate(Vector3(0.0, 0.0, zoom_strength))
+			elif event.is_action("scroll_down"):
+				right_ik_cube.translate(Vector3(0.0, 0.0, -zoom_strength))
+			if event is InputEventMouseMotion:
+				right_ik_cube.translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
+
+		if should_move_right_cube:
+			if event.is_action("scroll_up"):
+				left_ik_cube.translate(Vector3(0.0, 0.0, zoom_strength))
+			elif event.is_action("scroll_down"):
+				left_ik_cube.translate(Vector3(0.0, 0.0, -zoom_strength))
+			if event is InputEventMouseMotion:
+				left_ik_cube.translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
 
 ###############################################################################
 # Connections                                                                 #
