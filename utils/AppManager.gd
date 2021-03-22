@@ -12,6 +12,7 @@ enum ModelType { GENERIC, VRM }
 
 const DYNAMIC_PHYSICS_BONES: bool = false
 
+# Face tracker
 var is_face_tracker_running: bool
 var face_tracker_pid: int
 
@@ -45,6 +46,16 @@ func _on_tree_exiting() -> void:
 
 func set_file_to_load(file_path: String, file_type: int) -> void:
 	emit_signal("file_to_load_changed", file_path, file_type)
+
+# TODO implement at some point
+func load_or_create_model_config() -> Dictionary:
+	var result: Dictionary = {}
+
+	return result
+
+# TODO implement at some point
+func save_model_config(value: Dictionary) -> void:
+	pass
 
 func push_log(message: String) -> void:
 	print(message)
