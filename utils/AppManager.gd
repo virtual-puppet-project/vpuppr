@@ -1,10 +1,14 @@
 extends Node
 
-signal file_to_load_changed(file_path, file_type)
+signal file_to_load_changed(file_path)
 #warning-ignore:unused_signal
 signal model_loaded(model_reference)
 #warning-ignore:unused_signal
-signal properties_applied(property_data)
+signal properties_applied()
+#warning-ignore:unused_signal
+signal properties_reset()
+#warning-ignore:unused_signal
+signal face_tracker_offsets_set()
 #warning-ignore:unused_signal
 signal console_log(message)
 
@@ -44,8 +48,17 @@ func _on_tree_exiting() -> void:
 # Public functions                                                            #
 ###############################################################################
 
-func set_file_to_load(file_path: String, file_type: int) -> void:
-	emit_signal("file_to_load_changed", file_path, file_type)
+func save_facetracker_offsets() -> void:
+	emit_signal("face_tracker_offsets_set")
+
+func apply_properties() -> void:
+	emit_signal("properties_applied")
+
+func reset_properties() -> void:
+	emit_signal("properties_reset")
+
+func set_file_to_load(file_path: String) -> void:
+	emit_signal("file_to_load_changed", file_path)
 
 # TODO implement at some point
 func load_or_create_model_config() -> Dictionary:

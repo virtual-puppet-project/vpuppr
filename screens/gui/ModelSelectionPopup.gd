@@ -1,16 +1,10 @@
 extends FileDialog
 
-export(AppManager.ModelType) var model_type
-
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
-func _ready() -> void:
-	if model_type == null:
-		push_error("Model type not specified when trying to load new model")
-		return
-	
+func _ready() -> void:	
 	self.current_dir = OS.get_executable_path().get_base_dir()
 	self.current_path = self.current_dir
 	
@@ -28,7 +22,7 @@ func _ready() -> void:
 ###############################################################################
 
 func _on_file_selected(file_path: String) -> void:
-	AppManager.set_file_to_load(file_path, model_type)
+	AppManager.set_file_to_load(file_path)
 
 func _on_popup_hide() -> void:
 	queue_free()
