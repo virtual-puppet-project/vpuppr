@@ -1,17 +1,14 @@
-class_name InputLabel
-extends BaseMenuItem
+class_name ButtonBar
+extends MarginContainer
 
-onready var line_edit: LineEdit = $HBoxContainer/LineEdit
-
-var line_edit_type = TYPE_STRING
-var line_edit_text: String = "changeme"
+onready var model_button: Button = $Control/HBoxContainer/ModelButton
+onready var pose_button: Button = $Control/HBoxContainer/PoseButton
+onready var features_button: Button = $Control/HBoxContainer/FeaturesButton
+onready var presets_button: Button = $Control/HBoxContainer/PresetsButton
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
-
-func _ready() -> void:
-	line_edit.text = line_edit_text
 
 ###############################################################################
 # Connections                                                                 #
@@ -24,6 +21,3 @@ func _ready() -> void:
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
-
-func get_value() -> String:
-	return line_edit.text

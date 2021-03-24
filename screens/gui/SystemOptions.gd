@@ -1,10 +1,11 @@
 extends MarginContainer
 
-const RUN_FACE_TRACKER_TEXT: String = "Run facetracker"
-const STOP_FACE_TRACKER_TEXT: String = "Stop facetracker"
+const RUN_FACE_TRACKER_TEXT: String = "Run face tracker"
+const STOP_FACE_TRACKER_TEXT: String = "Stop face tracker"
 
-onready var face_tracker_button: Button = $Control/MarginContainer/ScrollContainer/VBoxContainer/HBoxContainer/RunFaceTrackerButton
-onready var console_message_container: VBoxContainer = $Control/MarginContainer/ScrollContainer/VBoxContainer/ColorRect/ConsoleMessageContainer
+onready var face_tracker_button: Button = $Control/MarginContainer/VBoxContainer/MiddleColorRect/HBoxContainer/VBoxContainer/RunFaceTrackerButton
+onready var set_offsets_button: Button = $Control/MarginContainer/VBoxContainer/MiddleColorRect/HBoxContainer/VBoxContainer/SetOffsetsButton
+onready var console_message_container: VBoxContainer = $Control/MarginContainer/VBoxContainer/BottomColorRect/ScrollContainer/ConsoleMessageContainer
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -13,6 +14,9 @@ onready var console_message_container: VBoxContainer = $Control/MarginContainer/
 func _ready() -> void:
 	face_tracker_button.connect("pressed", self, "_on_run_face_tracker_button_pressed")
 	AppManager.connect("console_log", self, "_on_console_log")
+	
+	$Control/MarginContainer/VBoxContainer/TopColorRect/HBoxContainer/ApplyPropertiesButton.connect("pressed", self, "_on_apply_properties_button_pressed")
+	$Control/MarginContainer/VBoxContainer/TopColorRect/HBoxContainer/ResetPropertiesButton.connect("pressed", self, "_on_reset_properties_button_pressed")
 	
 	# TODO auto connect to port to see if face tracker is running
 	# instead of blindly starting face tracker
@@ -75,6 +79,12 @@ func _on_run_face_tracker_button_pressed() -> void:
 		AppManager.is_face_tracker_running = false
 		face_tracker_button.text = RUN_FACE_TRACKER_TEXT
 		AppManager.emit_signal("console_log", "Face tracker stopped.")
+
+func _on_apply_properties_button_pressed() -> void:
+	AppManager.apply_properties()
+
+func _on_reset_properties_button_pressed() -> void:
+	pass
 
 func _on_console_log(message: String) -> void:
 	_cull_console_logs()

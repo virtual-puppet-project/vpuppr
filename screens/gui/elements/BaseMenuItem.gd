@@ -68,4 +68,5 @@ func _set_is_selected(v: bool) -> void:
 # Public functions                                                            #
 ###############################################################################
 
-
+func get_value():
+	push_error("Not yet implemented")

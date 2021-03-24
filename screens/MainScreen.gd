@@ -1,3 +1,4 @@
+class_name MainScreen
 extends Spatial
 
 const DEV_UI: Resource = preload("res://utils/gui/DevUI.tscn")
@@ -5,7 +6,6 @@ const DEV_UI: Resource = preload("res://utils/gui/DevUI.tscn")
 const MODEL_SCREEN: Resource = preload("res://screens/ModelDisplayScreen.tscn")
 
 var current_model_path: String = ""
-export(AppManager.ModelType) var current_model_type = AppManager.ModelType.GENERIC
 
 var model_display_screen: Spatial
 
@@ -20,7 +20,6 @@ func _ready() -> void:
 	AppManager.connect("file_to_load_changed", self, "_on_file_to_load_changed")
 	
 	model_display_screen = MODEL_SCREEN.instance()
-	model_display_screen.model_type = current_model_type
 	add_child(model_display_screen)
 
 func _input(event: InputEvent) -> void:
@@ -31,9 +30,8 @@ func _input(event: InputEvent) -> void:
 # Connections                                                                 #
 ###############################################################################
 
-func _on_file_to_load_changed(file_path: String, file_type: int) -> void:
+func _on_file_to_load_changed(file_path: String) -> void:
 	current_model_path = file_path
-	current_model_type = file_type
 	_clean_load_model_display_screen()
 
 ###############################################################################
@@ -43,7 +41,6 @@ func _on_file_to_load_changed(file_path: String, file_type: int) -> void:
 func _clean_load_model_display_screen() -> void:
 	model_display_screen.free()
 	model_display_screen = MODEL_SCREEN.instance()
-	model_display_screen.model_type = current_model_type
 	model_display_screen.model_resource_path = current_model_path
 	add_child(model_display_screen)
 

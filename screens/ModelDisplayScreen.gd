@@ -9,7 +9,6 @@ const VRM_MODEL_SCRIPT_PATH: String = "res://entities/vrm/VRMModel.gd"
 
 const IK_CUBE: Resource = preload("res://entities/IKCube.tscn")
 
-export(AppManager.ModelType) var model_type = AppManager.ModelType.GENERIC
 export var model_resource_path: String
 
 var script_to_use: String
@@ -105,18 +104,18 @@ func _ready() -> void:
 		match model_resource_path.get_extension():
 			"glb":
 				AppManager.push_log("Loading GLB file.")
-				# TODO have to use an extra match in order to get the correct model script
-				# there must be a better way
-				match model_type:
-					AppManager.ModelType.GENERIC:
-						script_to_use = GENERIC_MODEL_SCRIPT_PATH
-					AppManager.ModelType.VRM:
-						script_to_use = VRM_MODEL_SCRIPT_PATH
+				script_to_use = GENERIC_MODEL_SCRIPT_PATH
 				model = load_external_model(model_resource_path)
+				model.scale_object_local(Vector3(0.4, 0.4, 0.4))
+				translation_adjustment = Vector3(1, -1, 1)
+				rotation_adjustment = Vector3(-1, -1, 1)
 			"vrm":
 				AppManager.push_log("Loading VRM file.")
 				script_to_use = VRM_MODEL_SCRIPT_PATH
 				model = load_external_model(model_resource_path)
+				model.transform = model.transform.rotated(Vector3.UP, PI)
+				translation_adjustment = Vector3(-1, -1, -1)
+				rotation_adjustment = Vector3(1, -1, -1)
 			"tscn":
 				AppManager.push_log("Loading TSCN file.")
 				var model_resource = load(model_resource_path)
@@ -125,23 +124,14 @@ func _ready() -> void:
 				AppManager.push_log("File extension not recognized.")
 				printerr("File extension not recognized.")
 	
-	match model_type:
-		AppManager.ModelType.GENERIC:
-			if not model:
-				model = DEFAULT_GENERIC_MODEL.instance()
-			model.scale_object_local(Vector3(0.4, 0.4, 0.4))
-			translation_adjustment = Vector3(1, -1, 1)
-			rotation_adjustment = Vector3(-1, -1, 1)
+	# Load in generic model if nothing is loaded
+	if not model:
+		model = DEFAULT_GENERIC_MODEL.instance()
+		model.scale_object_local(Vector3(0.4, 0.4, 0.4))
+		translation_adjustment = Vector3(1, -1, 1)
+		rotation_adjustment = Vector3(-1, -1, 1)
+		script_to_use = GENERIC_MODEL_SCRIPT_PATH
 
-			script_to_use = GENERIC_MODEL_SCRIPT_PATH
-		AppManager.ModelType.VRM:
-#			if not model:
-#				model = DEFAULT_VRM_MODEL.instance()
-			model.transform = model.transform.rotated(Vector3.UP, PI)
-			translation_adjustment = Vector3(-1, -1, -1)
-			rotation_adjustment = Vector3(1, -1, -1)
-
-			script_to_use = VRM_MODEL_SCRIPT_PATH
 	model_initial_transform = model.transform
 	model_parent_initial_transform = model_parent.transform
 	model_parent.call_deferred("add_child", model)
@@ -185,8 +175,6 @@ func _ready() -> void:
 	offset_timer.wait_time = tracking_start_delay
 	offset_timer.autostart = true
 	self.call_deferred("add_child", offset_timer)
-
-	AppManager.connect("properties_applied", self, "_on_properties_applied")
 
 func _process(_delta: float) -> void:
 	if not interpolate_model:

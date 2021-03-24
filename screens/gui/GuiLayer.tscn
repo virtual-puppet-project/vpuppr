@@ -1,10 +1,9 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://screens/gui/GuiLayer.gd" type="Script" id=1]
-[ext_resource path="res://screens/gui/DynamicBoneMappingSelector.tscn" type="PackedScene" id=2]
-[ext_resource path="res://screens/gui/ModelPropertiesSelector.tscn" type="PackedScene" id=3]
+[ext_resource path="res://screens/gui/ModelViewLeft.tscn" type="PackedScene" id=2]
+[ext_resource path="res://screens/gui/ModelViewRight.tscn" type="PackedScene" id=3]
 [ext_resource path="res://screens/gui/SystemOptions.tscn" type="PackedScene" id=4]
-[ext_resource path="res://screens/gui/LoadModelBar.tscn" type="PackedScene" id=5]
 [ext_resource path="res://screens/gui/ButtonBar.tscn" type="PackedScene" id=6]
 
 [node name="GuiLayer" type="CanvasLayer"]
@@ -20,13 +19,6 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="LoadModelBar" parent="TopContainer" instance=ExtResource( 5 )]
-visible = false
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_right = 640.0
-margin_bottom = 70.0
-
 [node name="ButtonBar" parent="TopContainer" instance=ExtResource( 6 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
@@ -35,7 +27,7 @@ margin_bottom = 70.0
 
 [node name="BottomContainer" type="MarginContainer" parent="."]
 anchor_left = 0.3
-anchor_top = 0.7
+anchor_top = 0.6
 anchor_right = 0.7
 anchor_bottom = 1.0
 margin_top = 10.0
@@ -48,7 +40,7 @@ __meta__ = {
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_right = 640.0
-margin_bottom = 250.0
+margin_bottom = 340.0
 
 [node name="LeftContainer" type="MarginContainer" parent="."]
 anchor_right = 0.3
@@ -61,7 +53,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="DynamicBoneMappingSelector" parent="LeftContainer" instance=ExtResource( 2 )]
+[node name="ModelViewLeft" parent="LeftContainer" instance=ExtResource( 2 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_right = 460.0
@@ -79,7 +71,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ModelProperties" parent="RightContainer" instance=ExtResource( 3 )]
+[node name="ModelViewRight" parent="RightContainer" instance=ExtResource( 3 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_right = 460.0
