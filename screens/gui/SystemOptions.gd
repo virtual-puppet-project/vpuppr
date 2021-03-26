@@ -84,7 +84,7 @@ func _on_apply_properties_button_pressed() -> void:
 	AppManager.apply_properties()
 
 func _on_reset_properties_button_pressed() -> void:
-	pass
+	AppManager.reset_properties()
 
 func _on_console_log(message: String) -> void:
 	_cull_console_logs()

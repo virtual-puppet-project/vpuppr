@@ -6,6 +6,7 @@ onready var color_rect: ColorRect = $ColorRect
 
 var label_text: String = "changeme"
 
+# Set in _ready, we use the values visible in the editor
 var starting_color: Color
 var mouseover_color: Color
 var mouse_color_scale: float = 1.5

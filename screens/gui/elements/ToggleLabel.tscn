@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://screens/gui/elements/BaseMenuItem.tscn" type="PackedScene" id=1]
+[ext_resource path="res://screens/gui/elements/ToggleLabel.gd" type="Script" id=2]
+
+[node name="ToggleLabel" instance=ExtResource( 1 )]
+script = ExtResource( 2 )
+
+[node name="Label" parent="HBoxContainer" index="0"]
+margin_right = 1500.0
+
+[node name="CheckButton" type="CheckButton" parent="HBoxContainer" index="1"]
+margin_left = 1504.0
+margin_right = 1580.0
+margin_bottom = 880.0

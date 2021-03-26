@@ -3,6 +3,9 @@ extends CanvasLayer
 const MODEL_VIEW_LEFT: Resource = preload("res://screens/gui/ModelViewLeft.tscn")
 const MODEL_VIEW_RIGHT: Resource = preload("res://screens/gui/ModelViewRight.tscn")
 
+const POSE_VIEW_LEFT: Resource = preload("res://screens/gui/PoseViewLeft.tscn")
+const POSE_VIEW_RIGHT: Resource = preload("res://screens/gui/PoseViewRight.tscn")
+
 enum Views { MODEL, POSE, FEATURES, PRESETS }
 
 onready var button_bar: ButtonBar = $TopContainer/ButtonBar
@@ -59,7 +62,8 @@ func _switch_view_to(view: int) -> void:
 			new_left_content = MODEL_VIEW_LEFT.instance()
 			new_right_content = MODEL_VIEW_RIGHT.instance()
 		Views.POSE:
-			pass
+			new_left_content = POSE_VIEW_LEFT.instance()
+			new_right_content = POSE_VIEW_RIGHT.instance()
 		Views.FEATURES:
 			pass
 		Views.PRESETS:

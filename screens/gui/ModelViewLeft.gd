@@ -25,27 +25,13 @@ var loaded_physics_bones: Array = [] # LoadedPhysicsBone
 # Builtin functions                                                           #
 ###############################################################################
 
+func _ready() -> void:
+	if (main_screen.model_display_screen and main_screen.model_display_screen.model):
+		_setup()
+
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
-
-func _on_model_loaded(model_reference: BasicModel) -> void:
-	._on_model_loaded(model_reference)
-	initial_bone_state = current_model.additional_bones_to_pose_names
-	
-	# TODO right now the custom build with skeleton fixes is breaking dynamic physics bones
-	# Generate all physics bones at the start instead of
-	# manually reference counting them
-#	var bone_values = current_model.get_mapped_bones()
-#	for bone_name in bone_values.keys():
-#		_create_physics_bone(current_model.skeleton.find_bone(bone_name), bone_name)
-#		yield(get_tree(), "physics_frame")
-
-	loaded_physics_bones.clear()
-	
-	_generate_bone_list()
-	
-	AppManager.push_log("Model loaded.")
 
 func _on_apply_button_pressed() -> void:
 	_trigger_bone_remap()
@@ -222,6 +208,23 @@ static func _only_in_first_array(array_1: Array, array_2: Array) -> Array:
 			only_in_array_1.append(v)
 
 	return only_in_array_1
+
+func _setup() -> void:
+	current_model = main_screen.model_display_screen.model
+
+	initial_bone_state = current_model.additional_bones_to_pose_names
+
+	# TODO right now the custom build with skeleton fixes is breaking dynamic physics bones
+	# Generate all physics bones at the start instead of
+	# manually reference counting them
+	#	var bone_values = current_model.get_mapped_bones()
+	#	for bone_name in bone_values.keys():
+	#		_create_physics_bone(current_model.skeleton.find_bone(bone_name), bone_name)
+	#		yield(get_tree(), "physics_frame")
+
+	loaded_physics_bones.clear()
+		
+	_generate_bone_list()
 
 ###############################################################################
 # Public functions                                                            #
