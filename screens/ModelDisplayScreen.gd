@@ -336,52 +336,6 @@ func _on_offset_timer_timeout() -> void:
 	open_see_data = open_see.get_open_see_data(face_id)
 	_save_offsets()
 
-func _on_properties_applied(property_data: Dictionary) -> void:
-	# Model-level properties
-	model.translation_damp = property_data["translation_damp"]
-	model.rotation_damp = property_data["rotation_damp"]
-	model.additional_bone_damp = property_data["additional_bone_damp"]
-
-	# Display-level properties
-	self.apply_translation = property_data["apply_translation"]
-	self.apply_rotation = property_data["apply_rotation"]
-	self.interpolate_model = property_data["interpolate_model"]
-	self.interpolation_rate = property_data["interpolation_rate"]
-	
-	# IK properties
-	if property_data.has_all(["left_arm_root", "left_arm_tip", "right_arm_root", "right_arm_tip"]):
-		left_skeleton_ik.target_node = left_ik_cube.get_path()
-		left_skeleton_ik.root_bone = property_data["left_arm_root"]
-		left_skeleton_ik.tip_bone = property_data["left_arm_tip"]
-		left_skeleton_ik.start(true)
-
-		right_skeleton_ik.target_node = right_ik_cube.get_path()
-		right_skeleton_ik.root_bone = property_data["right_arm_root"]
-		right_skeleton_ik.tip_bone = property_data["right_arm_tip"]
-		right_skeleton_ik.start(true)
-
-		# TODO save this dict in a config file that's associated with the current model filename
-		var left_bone_transform: Transform = model_skeleton.get_bone_global_pose(model_skeleton.find_bone(left_skeleton_ik.root_bone))
-		var right_bone_transform: Transform = model_skeleton.get_bone_global_pose(model_skeleton.find_bone(right_skeleton_ik.root_bone))
-
-		# IK sets the global pose override, we need to clear that in order to completely stop it
-		model_skeleton.clear_bones_global_pose_override()
-
-		# Reapply IK poses
-		var left_transform: Transform = Transform()
-		left_transform = left_transform.rotated(Vector3.RIGHT, left_bone_transform.basis.get_euler().normalized().x)
-		left_transform = left_transform.rotated(Vector3.UP, left_bone_transform.basis.get_euler().normalized().y)
-		left_transform = left_transform.rotated(Vector3.BACK, left_bone_transform.basis.get_euler().normalized().z)
-		model_skeleton.set_bone_pose(model_skeleton.find_bone(left_skeleton_ik.root_bone), left_transform)
-
-		var right_transform: Transform = Transform()
-		right_transform = right_transform.rotated(Vector3.RIGHT, right_bone_transform.basis.get_euler().normalized().x)
-		right_transform = right_transform.rotated(Vector3.UP, right_bone_transform.basis.get_euler().normalized().y)
-		right_transform = right_transform.rotated(Vector3.BACK, right_bone_transform.basis.get_euler().normalized().z)
-		model_skeleton.set_bone_pose(model_skeleton.find_bone(right_skeleton_ik.root_bone), right_transform)
-		
-		AppManager.push_log("Applied IK settings.")
-
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################

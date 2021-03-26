@@ -67,12 +67,17 @@ _global_script_classes=[ {
 "base": "Reference",
 "class": "ModelPropertiesSelector",
 "language": "GDScript",
-"path": "res://screens/gui/ModelViewRight.gd"
+"path": "res://screens/gui/ModelPropertiesSelector.gd"
 }, {
 "base": "Node",
 "class": "OpenSeeGD",
 "language": "GDScript",
 "path": "res://utils/OpenSeeGD.gd"
+}, {
+"base": "BaseMenuItem",
+"class": "ToggleLabel",
+"language": "GDScript",
+"path": "res://screens/gui/elements/ToggleLabel.gd"
 }, {
 "base": "Spatial",
 "class": "VRMTopLevel",
@@ -93,6 +98,7 @@ _global_script_class_icons={
 "ModelDisplayScreen": "",
 "ModelPropertiesSelector": "",
 "OpenSeeGD": "",
+"ToggleLabel": "",
 "VRMTopLevel": ""
 }
 

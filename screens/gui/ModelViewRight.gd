@@ -1,9 +1,4 @@
-class_name ModelPropertiesSelector
 extends BaseSidebar
-
-enum ElementType { INPUT, CHECK_BOX }
-
-const INPUT_LABEL: Resource = preload("res://screens/gui/elements/InputLabel.tscn")
 
 var initial_properties: Dictionary = {}
 
@@ -13,25 +8,13 @@ var initial_properties: Dictionary = {}
 
 func _ready() -> void:
 	$Control/MarginContainer/VBoxContainer/LoadModelButton.connect("pressed", self, "_on_load_model_button_pressed")
-	pass
+	
+	if (main_screen.model_display_screen and main_screen.model_display_screen.model):
+		_setup()
 
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
-
-func _on_model_loaded(model_reference: BasicModel) -> void:
-	._on_model_loaded(model_reference)
-
-	# yield(_generate_properties(), "completed")
-	_generate_properties()
-	
-	# Store initial properties
-	for child in v_box_container.get_children():
-		if child.get("check_box"):
-			initial_properties[child.name] = child.check_box.pressed
-		elif child.get("line_edit"):
-			initial_properties[child.name] = child.line_edit.text
-		
 
 func _on_apply_button_pressed() -> void:
 	_apply_properties()
@@ -111,28 +94,17 @@ func _apply_properties() -> void:
 			"interpolation_rate":
 				main_screen.model_display_screen.interpolation_rate = c.get_value()
 
-func _create_element(element_type: int, element_name: String, element_label_text: String, element_value, additional_param = null) -> void:
-	var result: Node
-	match element_type:
-		ElementType.INPUT:
-			if additional_param != null:
-				result = INPUT_LABEL.instance()
-				result.line_edit_text = element_value
-				result.line_edit_type = additional_param
-			else:
-				AppManager.push_log("%s needs additional_param for input type" % element_name)
-				push_error("%s needs additional_param for input type" % element_name)
-				return
-		ElementType.CHECK_BOX:
-			result = CHECK_BOX_LABEL.instance()
-			result.check_box_value = element_value
-		_:
-			push_error("Unhandled element type")
+func _setup() -> void:
+	current_model = main_screen.model_display_screen.model
 
-	result.name = element_name
-	result.label_text = element_label_text
+	_generate_properties()
 	
-	v_box_container.add_child(result)
+	# Store initial properties
+	for child in v_box_container.get_children():
+		if child.get("check_box"):
+			initial_properties[child.name] = child.check_box.pressed
+		elif child.get("line_edit"):
+			initial_properties[child.name] = child.line_edit.text
 
 ###############################################################################
 # Public functions                                                            #

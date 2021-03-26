@@ -2,11 +2,12 @@ extends Node
 
 signal file_to_load_changed(file_path)
 #warning-ignore:unused_signal
-signal model_loaded(model_reference)
+signal model_loaded()
 #warning-ignore:unused_signal
 signal properties_applied()
 #warning-ignore:unused_signal
 signal properties_reset()
+signal gui_toggle_set(toggle_name)
 #warning-ignore:unused_signal
 signal face_tracker_offsets_set()
 #warning-ignore:unused_signal
@@ -56,6 +57,9 @@ func apply_properties() -> void:
 
 func reset_properties() -> void:
 	emit_signal("properties_reset")
+
+func gui_toggle_set(toggle_name: String) -> void:
+	emit_signal("gui_toggle_set", toggle_name)
 
 func set_file_to_load(file_path: String) -> void:
 	emit_signal("file_to_load_changed", file_path)
