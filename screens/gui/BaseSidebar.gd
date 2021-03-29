@@ -1,11 +1,12 @@
 class_name BaseSidebar
 extends Control
 
-enum ElementType { INPUT, CHECK_BOX, TOGGLE }
+enum ElementType { NONE = 0, INPUT, CHECK_BOX, TOGGLE, COLOR_PICKER }
 
 const CHECK_BOX_LABEL: Resource = preload("res://screens/gui/elements/CheckBoxLabel.tscn")
 const INPUT_LABEL: Resource = preload("res://screens/gui/elements/InputLabel.tscn")
 const TOGGLE_LABEL: Resource = preload("res://screens/gui/elements/ToggleLabel.tscn")
+const COLOR_PICKER_LABEL: Resource = preload("res://screens/gui/elements/ColorPickerLabel.tscn")
 
 onready var v_box_container: VBoxContainer = $Control/MarginContainer/VBoxContainer/ScrollContainer/VBoxContainer
 
@@ -61,6 +62,9 @@ func _create_element(element_type: int, element_name: String, element_label_text
 			result = TOGGLE_LABEL.instance()
 			result.toggle_button_value = element_value
 			result.is_linked_to_other_toggles = additional_param
+		ElementType.COLOR_PICKER:
+			result = COLOR_PICKER_LABEL.instance()
+			(result as ColorPickerLabel).color_picker_color = element_value
 		_:
 			push_error("Unhandled element type")
 
@@ -72,3 +76,9 @@ func _create_element(element_type: int, element_name: String, element_label_text
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
+
+# TODO fill this out
+func save() -> Dictionary:
+	var result: Dictionary = {}
+	AppManager.push_log("save not yet implemented for %s" % self.name) 
+	return result

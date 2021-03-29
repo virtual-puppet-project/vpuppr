@@ -39,6 +39,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://screens/gui/elements/CheckBoxLabel.gd"
 }, {
+"base": "BaseMenuItem",
+"class": "ColorPickerLabel",
+"language": "GDScript",
+"path": "res://screens/gui/elements/ColorPickerLabel.gd"
+}, {
 "base": "MeshInstance",
 "class": "IKCube",
 "language": "GDScript",
@@ -64,7 +69,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://screens/ModelDisplayScreen.gd"
 }, {
-"base": "Reference",
+"base": "BaseSidebar",
 "class": "ModelPropertiesSelector",
 "language": "GDScript",
 "path": "res://screens/gui/ModelPropertiesSelector.gd"
@@ -91,6 +96,7 @@ _global_script_class_icons={
 "BasicPhysicsAttachment": "",
 "ButtonBar": "",
 "CheckBoxLabel": "",
+"ColorPickerLabel": "",
 "IKCube": "",
 "ImportVRM": "",
 "InputLabel": "",

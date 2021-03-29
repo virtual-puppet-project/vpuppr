@@ -7,6 +7,7 @@ const MODEL_SCREEN: Resource = preload("res://screens/ModelDisplayScreen.tscn")
 
 var current_model_path: String = ""
 
+onready var light_container: Spatial = $LightContainer
 var model_display_screen: Spatial
 
 ###############################################################################

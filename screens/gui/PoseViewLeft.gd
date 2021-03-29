@@ -67,6 +67,7 @@ func _generate_properties(p_initial_properties: Dictionary = Dictionary()) -> vo
 func _apply_properties() -> void:
 	var toggle_dirty: bool = false
 	for c in v_box_container.get_children():
+		# TODO add type check just in case we add other element types
 		if (c as ToggleLabel).get_value():
 			toggle_dirty = true
 			bone_to_modify = c.name
