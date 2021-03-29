@@ -1,21 +1,37 @@
-class_name InputLabel
+class_name ColorPickerLabel
 extends BaseMenuItem
 
-onready var line_edit: LineEdit = $HBoxContainer/LineEdit
+const SHOW_TEXT: String = "Show"
+const HIDE_TEXT: String = "Hide"
 
-var line_edit_type = TYPE_STRING
-var line_edit_text: String = "changeme"
+onready var show_hide_button: Button = $HBoxContainer/VBoxContainer/ShowHideButton
+onready var color_picker: ColorPicker = $HBoxContainer/VBoxContainer/ColorPicker
+
+var color_picker_color: Color
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
 func _ready() -> void:
-	line_edit.text = line_edit_text
+	if color_picker_color:
+		color_picker.color = color_picker_color
+	
+	show_hide_button.text = SHOW_TEXT
+	
+	show_hide_button.connect("pressed", self, "_on_show_hide_button_pressed")
 
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
+
+func _on_show_hide_button_pressed() -> void:
+	if not color_picker.visible:
+		color_picker.visible = true
+		show_hide_button.text = HIDE_TEXT
+	else:
+		color_picker.visible = false
+		show_hide_button.text = SHOW_TEXT
 
 ###############################################################################
 # Private functions                                                           #
@@ -25,11 +41,5 @@ func _ready() -> void:
 # Public functions                                                            #
 ###############################################################################
 
-func get_value():
-	match line_edit_type:
-		TYPE_STRING:
-			return line_edit.text
-		TYPE_REAL:
-			return float(line_edit.text)
-		TYPE_INT:
-			return int(line_edit.text)
+func get_value() -> Color:
+	return color_picker.color
