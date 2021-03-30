@@ -49,6 +49,8 @@ func _generate_bone_list() -> void:
 	
 	# TODO test this with a vrm model
 	# yield(get_tree().create_timer(1.0), "timeout")
+
+	_create_element(ElementType.LABEL, "bone_list", "Bone List")
 	
 	var bone_values = current_model.get_mapped_bones()
 	for bone_name in bone_values.keys():
@@ -81,9 +83,9 @@ func _trigger_bone_remap() -> void:
 	var new_bone_list: Array = [] # String
 	var new_physics_bone_list: Array = [] # String
 	for child in v_box_container.get_children():
-		if child.check_box.pressed:
+		if (child.get("check_box") and child.check_box.pressed):
 			new_bone_list.append(child.label.text)
-		if(child.get("second_check_box") and child.second_check_box.pressed):
+		if (child.get("second_check_box") and child.second_check_box.pressed):
 			new_physics_bone_list.append(child.label.text)
 	
 	###

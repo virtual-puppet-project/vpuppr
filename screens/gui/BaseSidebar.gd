@@ -1,8 +1,9 @@
 class_name BaseSidebar
 extends Control
 
-enum ElementType { NONE = 0, INPUT, CHECK_BOX, TOGGLE, COLOR_PICKER }
+enum ElementType { NONE = 0, LABEL, INPUT, CHECK_BOX, TOGGLE, COLOR_PICKER }
 
+const CENTERED_LABEL: Resource = preload("res://screens/gui/elements/CenteredLabel.tscn")
 const CHECK_BOX_LABEL: Resource = preload("res://screens/gui/elements/CheckBoxLabel.tscn")
 const INPUT_LABEL: Resource = preload("res://screens/gui/elements/InputLabel.tscn")
 const TOGGLE_LABEL: Resource = preload("res://screens/gui/elements/ToggleLabel.tscn")
@@ -43,9 +44,11 @@ func _on_reset_button_pressed() -> void:
 func _setup() -> void:
 	push_error("Not yet implemented")
 
-func _create_element(element_type: int, element_name: String, element_label_text: String, element_value, additional_param = null) -> void:
+func _create_element(element_type: int, element_name: String, element_label_text: String, element_value = null, additional_param = null) -> void:
 	var result: Node
 	match element_type:
+		ElementType.LABEL:
+			result = CENTERED_LABEL.instance()
 		ElementType.INPUT:
 			if additional_param != null:
 				result = INPUT_LABEL.instance()

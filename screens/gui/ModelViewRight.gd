@@ -45,6 +45,7 @@ func _generate_properties(p_initial_properties: Dictionary = {}) -> void:
 	if current_model:
 		if p_initial_properties.empty():
 			data_source = current_model
+		_create_element(ElementType.LABEL, "bone_movement_damps", "Bone Movement Damps")
 		_create_element(ElementType.INPUT, "translation_damp", "Translation Damp",
 				data_source.translation_damp, TYPE_REAL)
 
@@ -57,12 +58,14 @@ func _generate_properties(p_initial_properties: Dictionary = {}) -> void:
 	if p_initial_properties.empty():
 		data_source = main_screen.model_display_screen
 
+	_create_element(ElementType.LABEL, "tracking_options", "Tracking Options")
 	_create_element(ElementType.CHECK_BOX, "apply_translation", "Apply Translation",
 			data_source.apply_translation)
 
 	_create_element(ElementType.CHECK_BOX, "apply_rotation", "Apply Rotation",
 			data_source.apply_rotation)
 
+	_create_element(ElementType.LABEL, "interpolation_options", "Interpolation Options")
 	_create_element(ElementType.CHECK_BOX, "interpolate_model", "Interpolate Model",
 			data_source.interpolate_model)
 	

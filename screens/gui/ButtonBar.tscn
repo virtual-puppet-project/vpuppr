@@ -57,9 +57,9 @@ margin_bottom = 880.0
 size_flags_horizontal = 3
 text = "Presets"
 
-[node name="TBDButton" type="Button" parent="Control/HBoxContainer"]
+[node name="AppSettingsButton" type="Button" parent="Control/HBoxContainer"]
 margin_left = 1267.0
 margin_right = 1580.0
 margin_bottom = 880.0
 size_flags_horizontal = 3
-text = "TBD"
+text = "App Settings"
