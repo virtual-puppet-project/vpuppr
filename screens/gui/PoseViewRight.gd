@@ -71,6 +71,7 @@ func _generate_properties(p_initial_properties: Dictionary = Dictionary()) -> vo
 	# TODO store state and use it here
 	var data_source = p_initial_properties
 	
+	_create_element(ElementType.LABEL, "model_controls", "Model Controls")
 	_create_element(ElementType.TOGGLE, "move_model", "Move Model", false, true)
 	move_model_element = v_box_container.get_node("move_model")
 	_create_element(ElementType.TOGGLE, "spin_model", "Spin Model", false, true)
@@ -94,6 +95,7 @@ func _generate_properties(p_initial_properties: Dictionary = Dictionary()) -> vo
 			data_source = current_model
 
 		# IK input
+		_create_element(ElementType.LABEL, "ik_options", "IK Options")
 		_create_element(ElementType.INPUT, "left_arm_root", "Left Arm Root", "",
 				TYPE_STRING)
 		_create_element(ElementType.INPUT, "left_arm_tip", "Left Arm Tip", "",

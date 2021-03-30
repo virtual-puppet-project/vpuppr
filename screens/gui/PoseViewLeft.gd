@@ -60,6 +60,8 @@ func _generate_properties(p_initial_properties: Dictionary = Dictionary()) -> vo
 	for child in v_box_container.get_children():
 		child.free()
 
+	_create_element(ElementType.LABEL, "pose_controls", "Pose Controls")
+
 	var bone_values = current_model.get_mapped_bones()
 	for bone_name in bone_values.keys():
 		_create_element(ElementType.TOGGLE, bone_name, bone_name, false, true)
@@ -68,7 +70,7 @@ func _apply_properties() -> void:
 	var toggle_dirty: bool = false
 	for c in v_box_container.get_children():
 		# TODO add type check just in case we add other element types
-		if (c as ToggleLabel).get_value():
+		if c.get_value():
 			toggle_dirty = true
 			bone_to_modify = c.name
 	

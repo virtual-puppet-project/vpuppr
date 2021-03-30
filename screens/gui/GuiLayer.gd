@@ -9,7 +9,13 @@ const POSE_VIEW_RIGHT: Resource = preload("res://screens/gui/PoseViewRight.tscn"
 const FEATURE_VIEW_LEFT: Resource = preload("res://screens/gui/FeatureViewLeft.tscn")
 const FEATURE_VIEW_RIGHT: Resource = preload("res://screens/gui/FeatureViewRight.tscn")
 
-enum Views { MODEL, POSE, FEATURES, PRESETS }
+const PRESET_VIEW_LEFT: Resource = preload("res://screens/gui/PresetViewLeft.tscn")
+const PRESET_VIEW_RIGHT: Resource = preload("res://screens/gui/PresetViewRight.tscn")
+
+const APP_SETTINGS_VIEW_LEFT: Resource = preload("res://screens/gui/AppSettingsViewLeft.tscn")
+const APP_SETTINGS_VIEW_RIGHT: Resource = preload("res://screens/gui/AppSettingsViewRight.tscn")
+
+enum Views { NONE = 0, MODEL, POSE, FEATURES, PRESETS, APP_SETTINGS }
 
 onready var button_bar: ButtonBar = $TopContainer/ButtonBar
 onready var left_container: MarginContainer = $LeftContainer
@@ -26,6 +32,7 @@ func _ready() -> void:
 	button_bar.pose_button.connect("pressed", self, "_on_pose_button_pressed")
 	button_bar.features_button.connect("pressed", self, "_on_features_button_pressed")
 	button_bar.presets_button.connect("pressed", self, "_on_presets_button_pressed")
+	button_bar.app_settings_button.connect("pressed", self, "_on_app_settings_button_pressed")
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_gui"):
@@ -47,6 +54,9 @@ func _on_features_button_pressed() -> void:
 
 func _on_presets_button_pressed() -> void:
 	_switch_view_to(Views.PRESETS)
+
+func _on_app_settings_button_pressed() -> void:
+	_switch_view_to(Views.APP_SETTINGS)
 
 ###############################################################################
 # Private functions                                                           #
@@ -71,7 +81,11 @@ func _switch_view_to(view: int) -> void:
 			new_left_content = FEATURE_VIEW_LEFT.instance()
 			new_right_content = FEATURE_VIEW_RIGHT.instance()
 		Views.PRESETS:
-			pass
+			new_left_content = PRESET_VIEW_LEFT.instance()
+			new_right_content = PRESET_VIEW_RIGHT.instance()
+		Views.APP_SETTINGS:
+			new_left_content = APP_SETTINGS_VIEW_LEFT.instance()
+			new_right_content = APP_SETTINGS_VIEW_RIGHT.instance()
 		_:
 			push_error("Unhandled view in in GuiLayer")
 	

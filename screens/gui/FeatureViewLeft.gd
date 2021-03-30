@@ -34,10 +34,15 @@ func _generate_properties(p_initial_properties: Dictionary = Dictionary()) -> vo
 	for child in v_box_container.get_children():
 		child.free()
 
+	# Light values
+	_create_element(ElementType.LABEL, "main_light_label", "Main Light")
 	_create_element(ElementType.COLOR_PICKER, "light_color", "Light Color", main_light.light_color)
 	_create_element(ElementType.INPUT, "light_energy", "Light Energy", main_light.light_energy, TYPE_REAL)
 	_create_element(ElementType.INPUT, "light_indirect_energy", "Light Indirect Energy", main_light.light_indirect_energy, TYPE_REAL)
 	_create_element(ElementType.INPUT, "light_specular", "Light Specular", main_light.light_specular, TYPE_REAL)
+
+	# Environment values
+	
 
 func _apply_properties() -> void:
 	for c in v_box_container.get_children():
