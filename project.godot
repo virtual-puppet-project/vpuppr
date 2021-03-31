@@ -35,6 +35,11 @@ _global_script_classes=[ {
 "path": "res://screens/gui/ButtonBar.gd"
 }, {
 "base": "BaseMenuItem",
+"class": "ButtonLabel",
+"language": "GDScript",
+"path": "res://screens/gui/elements/ButtonLabel.gd"
+}, {
+"base": "BaseMenuItem",
 "class": "CenteredLabel",
 "language": "GDScript",
 "path": "res://screens/gui/elements/CenteredLabel.gd"
@@ -100,6 +105,7 @@ _global_script_class_icons={
 "BasicModel": "",
 "BasicPhysicsAttachment": "",
 "ButtonBar": "",
+"ButtonLabel": "",
 "CenteredLabel": "",
 "CheckBoxLabel": "",
 "ColorPickerLabel": "",

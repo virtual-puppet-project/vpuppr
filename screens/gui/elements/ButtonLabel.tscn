@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://screens/gui/elements/BaseMenuItem.tscn" type="PackedScene" id=1]
+[ext_resource path="res://screens/gui/elements/ButtonLabel.gd" type="Script" id=2]
+
+[node name="ButtonLabel" instance=ExtResource( 1 )]
+script = ExtResource( 2 )
+
+[node name="Label" parent="HBoxContainer" index="0"]
+margin_right = 788.0
+
+[node name="Button" type="Button" parent="HBoxContainer" index="1"]
+margin_left = 792.0
+margin_right = 1580.0
+margin_bottom = 880.0
+size_flags_horizontal = 3
