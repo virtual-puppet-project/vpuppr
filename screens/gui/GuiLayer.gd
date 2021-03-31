@@ -78,8 +78,13 @@ func _switch_view_to(view: int) -> void:
 			new_left_content = POSE_VIEW_LEFT.instance()
 			new_right_content = POSE_VIEW_RIGHT.instance()
 		Views.FEATURES:
+			# Connect the right view to the left view to change children on item selected
 			new_left_content = FEATURE_VIEW_LEFT.instance()
 			new_right_content = FEATURE_VIEW_RIGHT.instance()
+			# TODO this is a circular reference with more steps
+			new_left_content.feature_view_right = weakref(new_right_content)
+			new_right_content.feature_view_left = weakref(new_left_content)
+			# new_left_content.connect("element_selected", new_right_content, "_on_element_selected")
 		Views.PRESETS:
 			new_left_content = PRESET_VIEW_LEFT.instance()
 			new_right_content = PRESET_VIEW_RIGHT.instance()

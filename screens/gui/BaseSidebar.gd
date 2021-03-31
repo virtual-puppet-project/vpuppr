@@ -1,13 +1,14 @@
 class_name BaseSidebar
 extends Control
 
-enum ElementType { NONE = 0, LABEL, INPUT, CHECK_BOX, TOGGLE, COLOR_PICKER }
+enum ElementType { NONE = 0, LABEL, INPUT, CHECK_BOX, TOGGLE, COLOR_PICKER, BUTTON }
 
 const CENTERED_LABEL: Resource = preload("res://screens/gui/elements/CenteredLabel.tscn")
 const CHECK_BOX_LABEL: Resource = preload("res://screens/gui/elements/CheckBoxLabel.tscn")
 const INPUT_LABEL: Resource = preload("res://screens/gui/elements/InputLabel.tscn")
 const TOGGLE_LABEL: Resource = preload("res://screens/gui/elements/ToggleLabel.tscn")
 const COLOR_PICKER_LABEL: Resource = preload("res://screens/gui/elements/ColorPickerLabel.tscn")
+const BUTTON_LABEL: Resource = preload("res://screens/gui/elements/ButtonLabel.tscn")
 
 onready var v_box_container: VBoxContainer = $Control/MarginContainer/VBoxContainer/ScrollContainer/VBoxContainer
 
@@ -68,6 +69,14 @@ func _create_element(element_type: int, element_name: String, element_label_text
 		ElementType.COLOR_PICKER:
 			result = COLOR_PICKER_LABEL.instance()
 			(result as ColorPickerLabel).color_picker_color = element_value
+		ElementType.BUTTON:
+			result = BUTTON_LABEL.instance()
+			(result as ButtonLabel).button_text = element_value
+			if typeof(additional_param) == TYPE_DICTIONARY:
+				(result as ButtonLabel).link_to_function(additional_param["object"], additional_param["function_name"])
+			else:
+				AppManager.push_log("%s needs additional_param for button values" % element_name)
+				push_error("%s needs additional_param for button values" % element_name)
 		_:
 			push_error("Unhandled element type")
 
