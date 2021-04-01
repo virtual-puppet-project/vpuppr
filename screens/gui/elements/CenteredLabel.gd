@@ -18,4 +18,4 @@ extends BaseMenuItem
 ###############################################################################
 
 func get_value() -> void:
-	AppManager.push_log("Tried to get value on %s, access the name property instead" % self.name)
+	AppManager.log_message("Tried to get value on %s, access the name property instead" % self.name)

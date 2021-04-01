@@ -35,4 +35,4 @@ func link_to_function(object: Object, function_name: String) -> void:
 	button.connect("pressed", object, function_name)
 
 func get_value():
-	AppManager.push_log("Tried to get value on %s, access the name property instead" % self.name)
+	AppManager.log_message("Tried to get value on %s, access the name property instead" % self.name)

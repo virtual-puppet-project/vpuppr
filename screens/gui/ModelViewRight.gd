@@ -18,6 +18,7 @@ func _ready() -> void:
 
 func _on_apply_button_pressed() -> void:
 	_apply_properties()
+	# AppManager.update_config(self.name, _save())
 
 func _on_reset_button_pressed() -> void:
 	_generate_properties(initial_properties)
@@ -100,15 +101,40 @@ func _apply_properties() -> void:
 func _setup() -> void:
 	current_model = main_screen.model_display_screen.model
 
-	_generate_properties()
+	var loaded_config: Dictionary = AppManager.get_sidebar_config_safe(self.name)
+	if not loaded_config.empty():
+		for key in loaded_config.keys():
+			initial_properties[key] = loaded_config[key]
+		_generate_properties(initial_properties)
+		_apply_properties()
+	else:
+		_generate_properties()
 	
-	# Store initial properties
-	for child in v_box_container.get_children():
-		if child.get("check_box"):
-			initial_properties[child.name] = child.check_box.pressed
-		elif child.get("line_edit"):
-			initial_properties[child.name] = child.line_edit.text
+		# Store initial properties
+		for child in v_box_container.get_children():
+			if child.get("check_box"):
+				initial_properties[child.name] = child.check_box.pressed
+			elif child.get("line_edit"):
+				initial_properties[child.name] = child.line_edit.text
 
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
+
+func save() -> Dictionary:
+	var result: Dictionary = {}
+
+	for c in v_box_container.get_children():
+		# Null checks and value checks
+		if c.get("line_edit"):
+			if c.line_edit.text.empty():
+				continue
+			if c.line_edit_type == TYPE_REAL:
+				if not c.line_edit.text.is_valid_float():
+					continue
+		if c is CenteredLabel:
+			continue
+		
+		result[c.name] = c.get_value()
+
+	return result

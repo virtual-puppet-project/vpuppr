@@ -21,6 +21,8 @@ class LoadedPhysicsBone:
 
 var loaded_physics_bones: Array = [] # LoadedPhysicsBone
 
+var mapped_bones: Array = []
+
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
@@ -35,6 +37,7 @@ func _ready() -> void:
 
 func _on_apply_button_pressed() -> void:
 	_trigger_bone_remap()
+	# AppManager.update_config(self.name, _save())
 
 func _on_reset_button_pressed() -> void:
 	_reset_bone_values()
@@ -80,18 +83,16 @@ func _generate_bone_list() -> void:
 		v_box_container.add_child(check_box_label)
 
 func _trigger_bone_remap() -> void:
-	var new_bone_list: Array = [] # String
+	mapped_bones = _get_mapped_bones()
 	var new_physics_bone_list: Array = [] # String
 	for child in v_box_container.get_children():
-		if (child.get("check_box") and child.check_box.pressed):
-			new_bone_list.append(child.label.text)
 		if (child.get("second_check_box") and child.second_check_box.pressed):
 			new_physics_bone_list.append(child.label.text)
 	
 	###
 	# Handle bone mapping
 	###
-	current_model.additional_bones_to_pose_names = new_bone_list
+	current_model.additional_bones_to_pose_names = mapped_bones
 	current_model.scan_mapped_bones()
 	
 	###
@@ -211,10 +212,29 @@ static func _only_in_first_array(array_1: Array, array_2: Array) -> Array:
 
 	return only_in_array_1
 
+func _get_mapped_bones() -> Array:
+	var result: Array = []
+
+	for child in v_box_container.get_children():
+		if (child.get("check_box") and child.check_box.pressed):
+			result.append(child.label.text)
+
+	return result
+
 func _setup() -> void:
 	current_model = main_screen.model_display_screen.model
 
+	var bone_names: Array = [] # String
+
+	var loaded_config: Dictionary = AppManager.get_sidebar_config_safe(self.name)
+	if not loaded_config.empty():
+		bone_names = loaded_config["mapped_bones"].duplicate()
+		current_model.additional_bones_to_pose_names = bone_names
+		current_model.scan_mapped_bones()
+	else:
+		bone_names = current_model.additional_bones_to_pose_names
 	initial_bone_state = current_model.additional_bones_to_pose_names
+	mapped_bones = bone_names.duplicate()
 
 	# TODO right now the custom build with skeleton fixes is breaking dynamic physics bones
 	# Generate all physics bones at the start instead of
@@ -232,4 +252,9 @@ func _setup() -> void:
 # Public functions                                                            #
 ###############################################################################
 
+func save() -> Dictionary:
+	var result: Dictionary = {}
 
+	result["mapped_bones"] = mapped_bones
+
+	return result

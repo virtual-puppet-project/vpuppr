@@ -103,25 +103,25 @@ func _ready() -> void:
 	if model_resource_path:
 		match model_resource_path.get_extension():
 			"glb":
-				AppManager.push_log("Loading GLB file.")
+				AppManager.log_message("Loading GLB file.")
 				script_to_use = GENERIC_MODEL_SCRIPT_PATH
 				model = load_external_model(model_resource_path)
 				model.scale_object_local(Vector3(0.4, 0.4, 0.4))
 				translation_adjustment = Vector3(1, -1, 1)
 				rotation_adjustment = Vector3(-1, -1, 1)
 			"vrm":
-				AppManager.push_log("Loading VRM file.")
+				AppManager.log_message("Loading VRM file.")
 				script_to_use = VRM_MODEL_SCRIPT_PATH
 				model = load_external_model(model_resource_path)
 				model.transform = model.transform.rotated(Vector3.UP, PI)
 				translation_adjustment = Vector3(-1, -1, -1)
 				rotation_adjustment = Vector3(1, -1, -1)
 			"tscn":
-				AppManager.push_log("Loading TSCN file.")
+				AppManager.log_message("Loading TSCN file.")
 				var model_resource = load(model_resource_path)
 				model = model_resource.instance()
 			_:
-				AppManager.push_log("File extension not recognized.")
+				AppManager.log_message("File extension not recognized.")
 				printerr("File extension not recognized.")
 	
 	# Load in generic model if nothing is loaded
@@ -346,7 +346,7 @@ static func _to_godot_quat(v: Quat) -> Quat:
 
 func _save_offsets() -> void:
 	if not open_see_data:
-		AppManager.push_log("No face tracking data found.")
+		AppManager.log_message("No face tracking data found.")
 		return
 	stored_offsets.translation_offset = open_see_data.translation
 	stored_offsets.rotation_offset = open_see_data.rotation
@@ -355,7 +355,7 @@ func _save_offsets() -> void:
 	if corrected_euler.x < 0.0:
 		corrected_euler.x = 360 + corrected_euler.x
 	stored_offsets.euler_offset = corrected_euler
-	AppManager.push_log("New offsets saved.")
+	AppManager.log_message("New offsets saved.")
 
 static func _find_bone_chain(skeleton: Skeleton, root_bone: int, tip_bone: int) -> Array:
 	var result: Array = []
@@ -371,7 +371,7 @@ static func _find_bone_chain(skeleton: Skeleton, root_bone: int, tip_bone: int) 
 		result.append(bone_parent)
 	# Shouldn't happen but who knows
 	elif bone_parent == -1:
-		AppManager.push_log("Tip bone %s is apparently has no parent bone. Unable to find IK chain." % str(tip_bone))
+		AppManager.log_message("Tip bone %s is apparently has no parent bone. Unable to find IK chain." % str(tip_bone))
 	# Recursively find the rest of the chain
 	else:
 		result.append_array(_find_bone_chain(skeleton, root_bone, bone_parent))
@@ -383,7 +383,7 @@ static func _find_bone_chain(skeleton: Skeleton, root_bone: int, tip_bone: int) 
 ###############################################################################
 
 func load_external_model(file_path: String) -> Spatial:
-	AppManager.push_log("Starting external loader.")
+	AppManager.log_message("Starting external loader.")
 	# var gltf_loader: DynamicGLTFLoader = DynamicGLTFLoader.new()
 	# var loaded_model: Spatial = gltf_loader.import_scene(file_path, 1, 1)
 
@@ -393,6 +393,6 @@ func load_external_model(file_path: String) -> Spatial:
 	var model_script = load(script_to_use)
 	loaded_model.set_script(model_script)
 	
-	AppManager.push_log("External file loaded successfully.")
+	AppManager.log_message("External file loaded successfully.")
 	
 	return loaded_model

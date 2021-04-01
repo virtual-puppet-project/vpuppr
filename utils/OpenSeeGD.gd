@@ -202,7 +202,7 @@ func _ready() -> void:
 	self.buffer = PoolByteArray()
 	
 	if not AppManager.is_face_tracking_disabled:
-		AppManager.push_log("Listening for data at %s:%s" % [listen_address, str(listen_port)])
+		AppManager.log_message("Listening for data at %s:%s" % [listen_address, str(listen_port)])
 		#warning-ignore:return_value_discarded
 		server.listen(listen_port, listen_address)
 
@@ -210,8 +210,8 @@ func _ready() -> void:
 		#warning-ignore:return_value_discarded
 		receive_thread.start(self, "_perform_reception")
 	else:
-		AppManager.push_log("Face tracking is disabled. This should only happen in debug builds.")
-		AppManager.push_log("Check AppManager.gd for more information.")
+		AppManager.log_message("Face tracking is disabled. This should only happen in debug builds.")
+		AppManager.log_message("Check AppManager.gd for more information.")
 
 func _process(_delta: float) -> void:
 	if(receive_thread and not receive_thread.is_active()):

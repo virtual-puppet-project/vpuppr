@@ -34,6 +34,8 @@ func _ready() -> void:
 	button_bar.presets_button.connect("pressed", self, "_on_presets_button_pressed")
 	button_bar.app_settings_button.connect("pressed", self, "_on_app_settings_button_pressed")
 
+	AppManager.connect("properties_applied", self, "_on_properties_applied")
+
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_gui"):
 		for c in get_children():
@@ -57,6 +59,14 @@ func _on_presets_button_pressed() -> void:
 
 func _on_app_settings_button_pressed() -> void:
 	_switch_view_to(Views.APP_SETTINGS)
+
+func _on_properties_applied() -> void:
+	# Wait for sidebars to update
+	yield(get_tree(), "idle_frame")
+	for c in [left_container, right_container]:
+		AppManager.update_config(c.get_child(0).name, c.get_child(0).save())
+
+	AppManager.save_config()
 
 ###############################################################################
 # Private functions                                                           #
@@ -94,10 +104,9 @@ func _switch_view_to(view: int) -> void:
 		_:
 			push_error("Unhandled view in in GuiLayer")
 	
-	for c in left_container.get_children():
-		c.free()
-	for c in right_container.get_children():
-		c.free()
+	for i in [left_container, right_container]:
+		for j in i.get_children():
+			j.free()
 	
 	left_container.add_child(new_left_content)
 	right_container.add_child(new_right_content)
