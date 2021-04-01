@@ -56,7 +56,7 @@ func _create_element(element_type: int, element_name: String, element_label_text
 				result.line_edit_text = element_value
 				result.line_edit_type = additional_param
 			else:
-				AppManager.push_log("%s needs additional_param for input type" % element_name)
+				AppManager.log_message("%s needs additional_param for input type" % element_name)
 				push_error("%s needs additional_param for input type" % element_name)
 				return
 		ElementType.CHECK_BOX:
@@ -75,7 +75,7 @@ func _create_element(element_type: int, element_name: String, element_label_text
 			if typeof(additional_param) == TYPE_DICTIONARY:
 				(result as ButtonLabel).link_to_function(additional_param["object"], additional_param["function_name"])
 			else:
-				AppManager.push_log("%s needs additional_param for button values" % element_name)
+				AppManager.log_message("%s needs additional_param for button values" % element_name)
 				push_error("%s needs additional_param for button values" % element_name)
 		_:
 			push_error("Unhandled element type")
@@ -89,8 +89,7 @@ func _create_element(element_type: int, element_name: String, element_label_text
 # Public functions                                                            #
 ###############################################################################
 
-# TODO fill this out
 func save() -> Dictionary:
 	var result: Dictionary = {}
-	AppManager.push_log("save not yet implemented for %s" % self.name) 
+	AppManager.log_message("save not yet implemented for %s" % self.name) 
 	return result

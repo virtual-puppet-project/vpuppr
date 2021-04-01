@@ -8,9 +8,8 @@ var feature_view_right: WeakRef
 
 var main_light: Light
 
-var instanced_props: Dictionary = {
-
-}
+# TODO this needs to be saved somehow
+var instanced_props: Dictionary = {}
 
 # Prop movement
 var prop_to_move: Spatial
@@ -66,7 +65,7 @@ func _on_gui_toggle_set(toggle_name: String) -> void:
 		if toggle_label.toggle_button.pressed:
 			feature_view_right.get_ref().receive_element_selected(toggle_label.get_meta(PROP_DETAILS_META_KEY))
 	else:
-		AppManager.push_log("ToggleLabel %s not found in %s" % [toggle_name, self.name])
+		AppManager.log_message("ToggleLabel %s not found in %s" % [toggle_name, self.name])
 
 func _on_add_prop_button_pressed() -> void:
 	# TODO testing
@@ -202,4 +201,4 @@ func apply_properties(data: Dictionary) -> void:
 			if key != "name":
 				instanced_props[data["name"]].set(key, data[key])
 	else:
-		AppManager.push_log("%s doesn't exist in %s" % [data["name"], self.name])
+		AppManager.log_message("%s doesn't exist in %s" % [data["name"], self.name])

@@ -103,11 +103,11 @@ func _apply_properties() -> void:
 					if line_edit_value.is_valid_float():
 						property_list[child.name] = line_edit_value
 					else:
-						AppManager.push_log("Invalid value for %s" % child.name)
+						AppManager.log_message("Invalid value for %s" % child.name)
 						push_error("Invalid value for " + child.name)
 						return
 				_:
-					AppManager.push_log("InputLabel does not have a set type.")
+					AppManager.log_message("InputLabel does not have a set type.")
 					push_error("InputLabel does not have a set type.")
 					return
 
@@ -122,7 +122,7 @@ func _create_element(element_type: int, element_name: String, element_label_text
 				result.line_edit_text = element_value
 				result.line_edit_type = additional_param
 			else:
-				AppManager.push_log("%s needs additional_param for input type" % element_name)
+				AppManager.log_message("%s needs additional_param for input type" % element_name)
 				push_error("%s needs additional_param for input type" % element_name)
 				return
 		ElementType.CHECK_BOX:

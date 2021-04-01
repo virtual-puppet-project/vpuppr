@@ -17,9 +17,9 @@ func _ready() -> void:
 	additional_bone_damp = 0.6
 
 	if not neck_bone_id:
-		AppManager.push_log("Neck bone not found. Is this a .vrm model?")
+		AppManager.log_message("Neck bone not found. Is this a .vrm model?")
 	if not spine_bone_id:
-		AppManager.push_log("Spine bone not found. Is this a .vrm model?")
+		AppManager.log_message("Spine bone not found. Is this a .vrm model?")
 	
 	additional_bones_to_pose_names.append(NECK_BONE)
 	additional_bones_to_pose_names.append(SPINE_BONE)
