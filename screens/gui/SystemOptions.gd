@@ -40,7 +40,7 @@ func _on_run_face_tracker_button_pressed() -> void:
 		return
 	if not AppManager.is_face_tracker_running:
 		AppManager.emit_signal("console_log", "Starting face tracker.")
-		var face_tracker_fps: String = $Control/MarginContainer/ScrollContainer/VBoxContainer/HBoxContainer/InputLabel/HBoxContainer/FaceTrackerFPS.text
+		var face_tracker_fps: String = $Control/MarginContainer/VBoxContainer/MiddleColorRect/HBoxContainer/InputLabel/HBoxContainer/FaceTrackerFPS.text
 		var face_tracker_options: PoolStringArray = [
 			"-c",
 			"0",
