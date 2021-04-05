@@ -120,6 +120,10 @@ func _ready() -> void:
 				AppManager.log_message("Loading TSCN file.")
 				var model_resource = load(model_resource_path)
 				model = model_resource.instance()
+				model.scale_object_local(Vector3(0.4, 0.4, 0.4))
+				translation_adjustment = Vector3(1, -1, 1)
+				rotation_adjustment = Vector3(-1, -1, 1)
+				script_to_use = GENERIC_MODEL_SCRIPT_PATH
 			_:
 				AppManager.log_message("File extension not recognized.")
 				printerr("File extension not recognized.")

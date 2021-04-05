@@ -201,24 +201,14 @@ func _ready() -> void:
 		self.open_see_data_map = {}
 	self.buffer = PoolByteArray()
 	
-	if not AppManager.is_face_tracking_disabled:
-		AppManager.log_message("Listening for data at %s:%s" % [listen_address, str(listen_port)])
-		#warning-ignore:return_value_discarded
-		server.listen(listen_port, listen_address)
-
-		receive_thread = Thread.new()
-		#warning-ignore:return_value_discarded
-		receive_thread.start(self, "_perform_reception")
-	else:
-		AppManager.log_message("Face tracking is disabled. This should only happen in debug builds.")
-		AppManager.log_message("Check AppManager.gd for more information.")
+	# start_receiver()
 
 func _process(_delta: float) -> void:
 	if(receive_thread and not receive_thread.is_active()):
 		self._ready()
 
 func _exit_tree() -> void:
-	_end_receiver()
+	stop_receiver()
 
 ###############################################################################
 # Connections                                                                 #
@@ -253,16 +243,34 @@ func _perform_reception(_x) -> void:
 			tracking_data = []
 			tracking_data = open_see_data_map.values().duplicate(true)
 
-func _end_receiver() -> void:
+###############################################################################
+# Public functions                                                            #
+###############################################################################
+
+func start_receiver() -> void:
+	if not AppManager.is_face_tracking_disabled:
+		AppManager.log_message("Listening for data at %s:%s" % [listen_address, str(listen_port)])
+		#warning-ignore:return_value_discarded
+		server.listen(listen_port, listen_address)
+
+		receive_thread = Thread.new()
+		#warning-ignore:return_value_discarded
+		receive_thread.start(self, "_perform_reception")
+	else:
+		AppManager.log_message("Face tracking is disabled. This should only happen in debug builds.")
+		AppManager.log_message("Check AppManager.gd for more information.")
+
+func stop_receiver() -> void:
 	if receive_thread:
 		self.stop_reception = true
 		receive_thread.wait_to_finish()
 	if server.is_listening():
 		server.stop()
 
-###############################################################################
-# Public functions                                                            #
-###############################################################################
+func is_server_listening() -> bool:
+	if server.is_listening():
+		return true
+	return false
 
 func get_open_see_data(face_id: int) -> OpenSeeData:
 	if not open_see_data_map:

@@ -39,7 +39,7 @@ func _on_run_face_tracker_button_pressed() -> void:
 		# the facetracker correctly
 		return
 	if not AppManager.is_face_tracker_running:
-		AppManager.emit_signal("console_log", "Starting face tracker.")
+		AppManager.log_message("Starting face tracker.")
 		var face_tracker_fps: String = $Control/MarginContainer/VBoxContainer/MiddleColorRect/HBoxContainer/InputLabel/HBoxContainer/FaceTrackerFPS.text
 		var face_tracker_options: PoolStringArray = [
 			"-c",
@@ -65,20 +65,30 @@ func _on_run_face_tracker_button_pressed() -> void:
 		]
 		if face_tracker_fps.is_valid_float():
 			if float(face_tracker_fps) > 144:
-				push_error("Face tracker fps is greater than 144. This is a bad idea.")
-				AppManager.emit_signal("console_log", "Face tracker fps is greater than 144. This is a bad idea.")
+				AppManager.log_message("Face tracker fps is greater than 144. This is a bad idea.")
+				AppManager.log_message("Declining to start face tracker.")
 				return
 			var pid = OS.execute(OS.get_executable_path().get_base_dir() + "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe", face_tracker_options, false)
 			AppManager.is_face_tracker_running = true
 			AppManager.face_tracker_pid = pid
 			face_tracker_button.text = STOP_FACE_TRACKER_TEXT
-			AppManager.emit_signal("console_log", "Face tracker started.")
+
+			var main_screen: MainScreen = get_tree().root.get_node_or_null("MainScreen")
+			if main_screen:
+				main_screen.model_display_screen.open_see.start_receiver()
+
+			AppManager.log_message("Face tracker started.")
 	else:
-		AppManager.emit_signal("console_log", "Stopping face tracker.")
+		AppManager.log_message("Stopping face tracker.")
 		OS.kill(AppManager.face_tracker_pid)
 		AppManager.is_face_tracker_running = false
 		face_tracker_button.text = RUN_FACE_TRACKER_TEXT
-		AppManager.emit_signal("console_log", "Face tracker stopped.")
+
+		var main_screen: MainScreen = get_tree().root.get_node_or_null("MainScreen")
+		if main_screen:
+			main_screen.model_display_screen.open_see.stop_receiver()
+
+		AppManager.log_message("Face tracker stopped.")
 
 func _on_apply_properties_button_pressed() -> void:
 	AppManager.apply_properties()
