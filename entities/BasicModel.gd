@@ -49,6 +49,10 @@ func custom_update(_open_see_data: OpenSeeGD.OpenSeeData) -> void:
 	push_error("Model custom update not implemented")
 
 func get_mapped_bones() -> Dictionary:
+	"""
+	Returns a dictionary of all bones in the skeleton with the bones that are
+	tracking input tagged as true
+	"""
 	var bone_data: Dictionary = {}
 	for i in range(skeleton.get_bone_count()):
 		var bone_name = skeleton.get_bone_name(i)

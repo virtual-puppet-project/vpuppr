@@ -165,7 +165,20 @@ func _setup() -> void:
 	model_parent = main_screen.model_display_screen.model_parent
 	current_model = main_screen.model_display_screen.model
 
-	_generate_properties()
+	var loaded_config: Dictionary = AppManager.get_sidebar_config_safe(self.name)
+	if not loaded_config.empty():
+		for key in loaded_config.keys():
+			match key:
+				"model":
+					current_model.transform = JSONUtil.dictionary_to_transform(loaded_config[key])
+				"model_parent":
+					model_parent.transform = JSONUtil.dictionary_to_transform(loaded_config[key])
+				_:
+					AppManager.log_message("Bad key found in %s: %s" % [self.name, key], true)
+		_generate_properties()
+		_apply_properties()
+	else:
+		_generate_properties()
 	
 	# Store initial properties
 	for child in v_box_container.get_children():
@@ -178,4 +191,10 @@ func _setup() -> void:
 # Public functions                                                            #
 ###############################################################################
 
+func save() -> Dictionary:
+	var result: Dictionary = {}
 
+	result["model"] = JSONUtil.transform_to_dictionary(current_model.transform)
+	result["model_parent"] = JSONUtil.transform_to_dictionary(main_screen.model_display_screen.model_parent.transform)
+
+	return result
