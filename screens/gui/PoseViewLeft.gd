@@ -25,22 +25,22 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if should_modify_bone:
 		if (is_left_clicking and event is InputEventMouseMotion):
-			var transform: Transform = main_screen.model_display_screen.model_skeleton.get_bone_pose(main_screen.model_display_screen.model_skeleton.find_bone(bone_to_modify))
+			var transform: Transform = current_model.skeleton.get_bone_pose(current_model.skeleton.find_bone(bone_to_modify))
 			transform = transform.rotated(Vector3.UP, event.relative.x * mouse_move_strength)
 			transform = transform.rotated(Vector3.RIGHT, event.relative.y * mouse_move_strength)
 
-			main_screen.model_display_screen.model_skeleton.set_bone_pose(main_screen.model_display_screen.model_skeleton.find_bone(bone_to_modify), transform)
+			current_model.skeleton.set_bone_pose(current_model.skeleton.find_bone(bone_to_modify), transform)
 
 		if event.is_action("scroll_up"):
-			var transform: Transform = main_screen.model_display_screen.model_skeleton.get_bone_pose(main_screen.model_display_screen.model_skeleton.find_bone(bone_to_modify))
+			var transform: Transform = current_model.skeleton.get_bone_pose(current_model.skeleton.find_bone(bone_to_modify))
 			transform = transform.rotated(Vector3.FORWARD, scroll_strength)
 
-			main_screen.model_display_screen.model_skeleton.set_bone_pose(main_screen.model_display_screen.model_skeleton.find_bone(bone_to_modify), transform)
+			current_model.skeleton.set_bone_pose(current_model.skeleton.find_bone(bone_to_modify), transform)
 		elif event.is_action("scroll_down"):
-			var transform: Transform = main_screen.model_display_screen.model_skeleton.get_bone_pose(main_screen.model_display_screen.model_skeleton.find_bone(bone_to_modify))
+			var transform: Transform = current_model.skeleton.get_bone_pose(current_model.skeleton.find_bone(bone_to_modify))
 			transform = transform.rotated(Vector3.FORWARD, -scroll_strength)
 
-			main_screen.model_display_screen.model_skeleton.set_bone_pose(main_screen.model_display_screen.model_skeleton.find_bone(bone_to_modify), transform)
+			current_model.skeleton.set_bone_pose(current_model.skeleton.find_bone(bone_to_modify), transform)
 
 ###############################################################################
 # Connections                                                                 #
@@ -69,7 +69,8 @@ func _generate_properties(p_initial_properties: Dictionary = Dictionary()) -> vo
 func _apply_properties() -> void:
 	var toggle_dirty: bool = false
 	for c in v_box_container.get_children():
-		# TODO add type check just in case we add other element types
+		if c is CenteredLabel:
+			continue
 		if c.get_value():
 			toggle_dirty = true
 			bone_to_modify = c.name
@@ -82,8 +83,16 @@ func _apply_properties() -> void:
 func _setup() -> void:
 	current_model = main_screen.model_display_screen.model
 
-	_generate_properties()
+	var loaded_config: Dictionary = AppManager.get_sidebar_config_safe(self.name)
+	if not loaded_config.empty():
+		for key in loaded_config.keys():
+			current_model.skeleton.set_bone_pose(current_model.skeleton.find_bone(key), JSONUtil.dictionary_to_transform(loaded_config[key]))
+		_generate_properties()
+		_apply_properties()
+	else:
+		_generate_properties()
 	
+	# TODO unused
 	# Store initial properties
 	for child in v_box_container.get_children():
 		if child.get("check_box"):
@@ -95,4 +104,10 @@ func _setup() -> void:
 # Public functions                                                            #
 ###############################################################################
 
+func save() -> Dictionary:
+	var result: Dictionary = {}
 
+	for i in range(current_model.skeleton.get_bone_count()):
+		result[current_model.skeleton.get_bone_name(i)] = JSONUtil.transform_to_dictionary(current_model.skeleton.get_bone_pose(i))
+
+	return result

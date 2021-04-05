@@ -76,6 +76,8 @@ func _on_run_face_tracker_button_pressed() -> void:
 			var main_screen: MainScreen = get_tree().root.get_node_or_null("MainScreen")
 			if main_screen:
 				main_screen.model_display_screen.open_see.start_receiver()
+			else:
+				AppManager.log_message("Main screen not found when trying to start OpenSee receiver.", true)
 
 			AppManager.log_message("Face tracker started.")
 	else:
@@ -87,6 +89,8 @@ func _on_run_face_tracker_button_pressed() -> void:
 		var main_screen: MainScreen = get_tree().root.get_node_or_null("MainScreen")
 		if main_screen:
 			main_screen.model_display_screen.open_see.stop_receiver()
+		else:
+			AppManager.log_message("Main screen not found when trying to stop OpenSee receiver.", true)
 
 		AppManager.log_message("Face tracker stopped.")
 
