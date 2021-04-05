@@ -21,6 +21,21 @@ onready var button_bar: ButtonBar = $TopContainer/ButtonBar
 onready var left_container: MarginContainer = $LeftContainer
 onready var right_container: MarginContainer = $RightContainer
 
+var model_view_left: BaseSidebar
+var model_view_right: BaseSidebar
+
+var pose_view_left: BaseSidebar
+var pose_view_right: BaseSidebar
+
+var feature_view_left: BaseSidebar
+var feature_view_right: BaseSidebar
+
+var preset_view_left: BaseSidebar
+var preset_view_right: BaseSidebar
+
+var app_settings_view_left: BaseSidebar
+var app_settings_view_right: BaseSidebar
+
 var current_view: int = Views.MODEL
 
 ###############################################################################
@@ -35,6 +50,8 @@ func _ready() -> void:
 	button_bar.app_settings_button.connect("pressed", self, "_on_app_settings_button_pressed")
 
 	AppManager.connect("properties_applied", self, "_on_properties_applied")
+
+	_construct_views()
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_gui"):
@@ -63,8 +80,11 @@ func _on_app_settings_button_pressed() -> void:
 func _on_properties_applied() -> void:
 	# Wait for sidebars to update
 	yield(get_tree(), "idle_frame")
-	for c in [left_container, right_container]:
-		AppManager.update_config(c.get_child(0).name, c.get_child(0).save())
+
+	for i in [model_view_left, model_view_right, pose_view_left, pose_view_right,
+			feature_view_left, feature_view_right, preset_view_left, preset_view_right,
+			app_settings_view_left, app_settings_view_right]:
+		AppManager.update_config(i.name, i.save())
 
 	AppManager.save_config()
 
@@ -74,42 +94,80 @@ func _on_properties_applied() -> void:
 
 func _switch_view_to(view: int) -> void:
 	if view == current_view:
+		_toggle_view(view)
+		current_view = Views.NONE
 		return
+	_toggle_view(current_view)
+	_toggle_view(view)
 	current_view = view
-	
-	var new_left_content: Control
-	var new_right_content: Control
-	
+
+# TODO remove view from scene tree instead of just hiding it for better performance
+func _toggle_view(view: int) -> void:
 	match view:
+		Views.NONE:
+			pass
 		Views.MODEL:
-			new_left_content = MODEL_VIEW_LEFT.instance()
-			new_right_content = MODEL_VIEW_RIGHT.instance()
+			model_view_left.visible = not model_view_left.visible
+			model_view_right.visible = not model_view_right.visible
 		Views.POSE:
-			new_left_content = POSE_VIEW_LEFT.instance()
-			new_right_content = POSE_VIEW_RIGHT.instance()
+			pose_view_left.visible = not pose_view_left.visible
+			pose_view_right.visible = not pose_view_right.visible
 		Views.FEATURES:
-			# Connect the right view to the left view to change children on item selected
-			new_left_content = FEATURE_VIEW_LEFT.instance()
-			new_right_content = FEATURE_VIEW_RIGHT.instance()
-			# TODO this is a circular reference with more steps
-			new_left_content.feature_view_right = weakref(new_right_content)
-			new_right_content.feature_view_left = weakref(new_left_content)
-			# new_left_content.connect("element_selected", new_right_content, "_on_element_selected")
+			feature_view_left.visible = not feature_view_left.visible
+			feature_view_right.visible = not feature_view_right.visible
 		Views.PRESETS:
-			new_left_content = PRESET_VIEW_LEFT.instance()
-			new_right_content = PRESET_VIEW_RIGHT.instance()
+			preset_view_left.visible = not preset_view_left.visible
+			preset_view_right.visible = not preset_view_right.visible
 		Views.APP_SETTINGS:
-			new_left_content = APP_SETTINGS_VIEW_LEFT.instance()
-			new_right_content = APP_SETTINGS_VIEW_RIGHT.instance()
+			app_settings_view_left.visible = not app_settings_view_left.visible
+			app_settings_view_right.visible = not app_settings_view_right.visible
 		_:
-			push_error("Unhandled view in in GuiLayer")
-	
-	for i in [left_container, right_container]:
-		for j in i.get_children():
-			j.free()
-	
-	left_container.add_child(new_left_content)
-	right_container.add_child(new_right_content)
+			AppManager.log_message("Unhandled view in GuiLayer %s" % view)
+
+func _construct_views() -> void:
+	for i in [Views.MODEL, Views.POSE, Views.FEATURES, Views.PRESETS, Views.APP_SETTINGS]:
+		var new_left_content: Control
+		var new_right_content: Control
+		
+		match i:
+			Views.MODEL:
+				model_view_left = MODEL_VIEW_LEFT.instance()
+				model_view_right = MODEL_VIEW_RIGHT.instance()
+				new_left_content = model_view_left
+				new_right_content = model_view_right
+			Views.POSE:
+				pose_view_left = POSE_VIEW_LEFT.instance()
+				pose_view_right = POSE_VIEW_RIGHT.instance()
+				new_left_content = pose_view_left
+				new_right_content = pose_view_right
+			Views.FEATURES:
+				feature_view_left = FEATURE_VIEW_LEFT.instance()
+				feature_view_right = FEATURE_VIEW_RIGHT.instance()
+				# Connect the right view to the left view to change children on item selected
+				new_left_content = feature_view_left
+				new_right_content = feature_view_right
+				# TODO this is a circular reference with more steps
+				new_left_content.feature_view_right = weakref(new_right_content)
+				new_right_content.feature_view_left = weakref(new_left_content)
+			Views.PRESETS:
+				preset_view_left = PRESET_VIEW_LEFT.instance()
+				preset_view_right = PRESET_VIEW_RIGHT.instance()
+				new_left_content = preset_view_left
+				new_right_content = preset_view_right
+			Views.APP_SETTINGS:
+				app_settings_view_left = APP_SETTINGS_VIEW_LEFT.instance()
+				app_settings_view_right = APP_SETTINGS_VIEW_RIGHT.instance()
+				new_left_content = app_settings_view_left
+				new_right_content = app_settings_view_right
+		
+		if i != Views.MODEL:
+			new_left_content.visible = false
+			new_right_content.visible = false
+		
+		left_container.add_child(new_left_content)
+		right_container.add_child(new_right_content)
+
+		yield(get_tree(), "idle_frame")
 
 ###############################################################################
 # Public functions                                                            #
