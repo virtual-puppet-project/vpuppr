@@ -121,6 +121,7 @@ func _generate_properties(p_initial_properties: Dictionary = Dictionary()) -> vo
 	# TODO add env stuff?
 
 	# Custom props
+	# TODO extend to allow for all kinds of props
 	_create_element(ElementType.BUTTON, "custom_props", "Custom Props", "Add", {
 		"object": self,
 		"function_name": "_on_add_prop_button_pressed"
@@ -181,6 +182,8 @@ func apply_properties(data: Dictionary) -> void:
 		"node_property": node_value
 	}
 	"""
+	if data.empty():
+		return
 	if instanced_props.has(data["name"]):
 		# TODO this is gross
 		prop_to_move = instanced_props[data["name"]]
@@ -202,3 +205,8 @@ func apply_properties(data: Dictionary) -> void:
 				instanced_props[data["name"]].set(key, data[key])
 	else:
 		AppManager.log_message("%s doesn't exist in %s" % [data["name"], self.name])
+
+func save() -> Dictionary:
+	var result: Dictionary = {}
+
+	return result

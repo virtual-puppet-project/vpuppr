@@ -93,3 +93,7 @@ func receive_element_selected(data: Dictionary) -> void:
 			data[key]["value"],
 			data[key]["type"]
 		)
+
+func save() -> Dictionary:
+	# Empty return since this view doesn't carry any data
+	return {}
