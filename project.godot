@@ -89,11 +89,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://screens/ModelDisplayScreen.gd"
 }, {
-"base": "BaseSidebar",
-"class": "ModelPropertiesSelector",
-"language": "GDScript",
-"path": "res://screens/gui/ModelPropertiesSelector.gd"
-}, {
 "base": "Node",
 "class": "OpenSeeGD",
 "language": "GDScript",
@@ -126,7 +121,6 @@ _global_script_class_icons={
 "JSONUtil": "",
 "MainScreen": "",
 "ModelDisplayScreen": "",
-"ModelPropertiesSelector": "",
 "OpenSeeGD": "",
 "ToggleLabel": "",
 "VRMTopLevel": ""
