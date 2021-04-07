@@ -1,6 +1,9 @@
 extends BaseSidebar
 
+# Prop details are stored on the meta key and are sent to FeatureViewRight
 const PROP_DETAILS_META_KEY: String = "prop_details"
+
+const BASE_PROP_SCRIPT_PATH: String = "res://entities/BaseProp.gd"
 
 var initial_properties: Dictionary
 
@@ -69,21 +72,7 @@ func _on_gui_toggle_set(toggle_name: String) -> void:
 
 func _on_add_prop_button_pressed() -> void:
 	# TODO testing
-	var test_prop = load("res://entities/VisualizationRectangle.tscn").instance()
-	main_screen.model_display_screen.add_child(test_prop)
-
-	var prop_parent: Spatial = Spatial.new()
-	# After the prop gets added, the SceneTree should automatically change the name if there is a name collision
-	prop_parent.name = test_prop.name
-	main_screen.model_display_screen.add_child(prop_parent)
-	main_screen.model_display_screen.remove_child(test_prop)
-	prop_parent.add_child(test_prop)
-
-	instanced_props[prop_parent.name.capitalize().to_lower().replace(" ", "_")] = prop_parent
-
-	_create_custom_toggle(prop_parent.name, prop_parent.name.capitalize(), {
-		"name": "%s" % prop_parent.name
-	})
+	_create_prop("res://entities/VisualizationRectangle.tscn", Transform(), Transform())
 
 ###############################################################################
 # Private functions                                                           #
@@ -97,8 +86,8 @@ func _generate_properties(p_initial_properties: Dictionary = Dictionary()) -> vo
 	_create_element(ElementType.LABEL, "built_in_props", "Built-in Props")
 	
 	# Main light
-	_create_custom_toggle("main_light", "Main Light", {
-		"name": "main_light",
+	_create_custom_toggle(main_light.name, "Main Light", {
+		"name": main_light.name,
 		"light_color": {
 			"type": TYPE_COLOR,
 			"value": main_light.light_color
@@ -116,6 +105,7 @@ func _generate_properties(p_initial_properties: Dictionary = Dictionary()) -> vo
 			"value": main_light.light_specular
 		}
 	})
+	instanced_props[main_light.name] = main_light
 
 	# Environment values
 	# TODO add env stuff?
@@ -126,6 +116,12 @@ func _generate_properties(p_initial_properties: Dictionary = Dictionary()) -> vo
 		"object": self,
 		"function_name": "_on_add_prop_button_pressed"
 	})
+	for p in instanced_props.keys():
+		if p == main_light.name:
+			continue
+		_create_custom_toggle(instanced_props[p].name, instanced_props[p].name.capitalize(), {
+			"name": "%s" % instanced_props[p].name
+		})
 
 func _apply_properties() -> void:
 	pass
@@ -136,8 +132,25 @@ func _setup() -> void:
 	current_model = main_screen.model_display_screen.model
 	main_light = main_screen.light_container.get_child(0)
 
-	instanced_props["main_light"] = main_light
-
+	var loaded_config: Dictionary = AppManager.get_sidebar_config_safe(self.name)
+	if not loaded_config.empty():
+		for key in loaded_config.keys():
+			match key:
+				"instanced_props":
+					for p in loaded_config[key]:
+						_create_prop(
+							p["prop_path"],
+							JSONUtil.dictionary_to_transform(p["parent_prop_transform"]),
+							JSONUtil.dictionary_to_transform(p["child_prop_transform"]),
+							false
+						)
+				main_light.name: # TODO could potential break if there's a mismatch between save data and node name
+					var light_dictionary: Dictionary = loaded_config[main_light.name]
+					main_light.light_color = JSONUtil.dictionary_to_color(light_dictionary["light_color"])
+					main_light.light_energy = light_dictionary["light_energy"]
+					main_light.light_indirect_energy = light_dictionary["light_indirect_energy"]
+					main_light.light_specular = light_dictionary["light_specular"]
+	
 	_generate_properties()
 
 	# Store initial properties
@@ -169,6 +182,35 @@ func _create_custom_toggle(element_name: String, display_name: String, data: Dic
 	toggle_label.set_meta(PROP_DETAILS_META_KEY, data)
 
 	v_box_container.add_child(toggle_label)
+
+func _create_prop(prop_path: String, parent_transform: Transform, child_transform: Transform, should_create_toggle: bool = true) -> void:
+	var prop_parent: Spatial = Spatial.new()
+	prop_parent.set_script(load(BASE_PROP_SCRIPT_PATH))
+
+	var prop: Spatial
+	match prop_path.get_extension():
+		"tscn":
+			prop = load(prop_path).instance()
+		"glb":
+			AppManager.log_message("Loading in .glb props is not current supported @ %s" % self.name)
+
+	if prop:
+		prop_parent.name = prop.name
+		prop_parent.add_child(prop)
+
+		prop_parent.prop_path = prop_path
+		prop_parent.transform = parent_transform
+		prop.transform = child_transform
+
+		main_screen.model_display_screen.add_child(prop_parent)
+		instanced_props[prop_parent.name] = prop_parent
+
+		if should_create_toggle:
+			_create_custom_toggle(prop_parent.name, prop_parent.name.capitalize(), {
+				"name": "%s" % prop_parent.name
+			})
+	else: # If the prop was not loaded properly, don't cause a memory leak
+		prop_parent.free()
 
 ###############################################################################
 # Public functions                                                            #
@@ -208,5 +250,18 @@ func apply_properties(data: Dictionary) -> void:
 
 func save() -> Dictionary:
 	var result: Dictionary = {}
+
+	result["instanced_props"] = []
+	for p in instanced_props.keys():
+		if p == main_light.name:
+			var light_dictionary: Dictionary = {}
+			light_dictionary["light_color"] = JSONUtil.color_to_dictionary(main_light.light_color)
+			light_dictionary["light_energy"] = main_light.light_energy
+			light_dictionary["light_indirect_energy"] = main_light.light_indirect_energy
+			light_dictionary["light_specular"] = main_light.light_specular
+			
+			result[main_light.name] = light_dictionary
+		elif instanced_props[p].has_method("save"):
+			result["instanced_props"].append(instanced_props[p].save())
 
 	return result

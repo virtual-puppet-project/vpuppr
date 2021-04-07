@@ -124,6 +124,7 @@ func _ready() -> void:
 				model.scale_object_local(Vector3(0.4, 0.4, 0.4))
 				translation_adjustment = Vector3(1, -1, 1)
 				rotation_adjustment = Vector3(-1, -1, 1)
+				# TODO i dont think this is used for tscn?
 				script_to_use = GENERIC_MODEL_SCRIPT_PATH
 			_:
 				AppManager.log_message("File extension not recognized.")
@@ -135,6 +136,7 @@ func _ready() -> void:
 		model.scale_object_local(Vector3(0.4, 0.4, 0.4))
 		translation_adjustment = Vector3(1, -1, 1)
 		rotation_adjustment = Vector3(-1, -1, 1)
+		# TODO i dont think this is used for tscn?
 		script_to_use = GENERIC_MODEL_SCRIPT_PATH
 
 	model_initial_transform = model.transform

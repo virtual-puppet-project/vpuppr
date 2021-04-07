@@ -66,3 +66,19 @@ static func dictionary_to_transform(data: Dictionary) -> Transform:
 	result.origin.z = data["origin"]["z"]
 	
 	return result
+
+static func color_to_dictionary(color: Color) -> Dictionary:
+	return {
+		"r": color.r,
+		"g": color.g,
+		"b": color.b,
+		"a": color.a
+	}
+
+static func dictionary_to_color(data: Dictionary) -> Color:
+	return Color(
+		data["r"],
+		data["g"],
+		data["b"],
+		data["a"]
+	)
