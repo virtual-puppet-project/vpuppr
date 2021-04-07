@@ -39,7 +39,7 @@ func _apply_properties() -> void:
 			continue
 		
 		if c.name == ELEMENT_NAME_KEY:
-			data["name"] = c.label_text.to_lower().replace(" ", "_") # TODO this is gross
+			data["name"] = c.label_text
 		else:
 			data[c.name] = c.get_value()
 
@@ -66,7 +66,7 @@ func receive_element_selected(data: Dictionary) -> void:
 		if c.name != TITLE_TEXT:
 			c.free()
 
-	_create_element(ElementType.LABEL, ELEMENT_NAME_KEY, data["name"].capitalize())
+	_create_element(ElementType.LABEL, ELEMENT_NAME_KEY, data["name"])
 
 	_create_element(ElementType.TOGGLE, "move_prop", "Move Prop", false, false)
 	_create_element(ElementType.TOGGLE, "spin_prop", "Spin Prop", false, false)
