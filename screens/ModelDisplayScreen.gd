@@ -184,10 +184,9 @@ func _ready() -> void:
 	self.call_deferred("add_child", offset_timer)
 
 func _process(_delta: float) -> void:
+	if not stored_offsets:
+		return
 	if not interpolate_model:
-		if not stored_offsets:
-			return
-	
 		self.open_see_data = open_see.get_open_see_data(face_id)
 	
 		if(not open_see_data or open_see_data.fit_3d_error > open_see.max_fit_3d_error):
@@ -216,10 +215,9 @@ func _process(_delta: float) -> void:
 		)
 
 func _physics_process(_delta: float) -> void:
+	if not stored_offsets:
+		return
 	if interpolate_model:
-		if not stored_offsets:
-			return
-	
 		self.open_see_data = open_see.get_open_see_data(face_id)
 	
 		if(not open_see_data or open_see_data.fit_3d_error > open_see.max_fit_3d_error):
@@ -265,71 +263,71 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_accept"):
 		_save_offsets()
 
-	if event.is_action_pressed("allow_move_model"):
+	elif event.is_action_pressed("allow_move_model"):
 		can_manipulate_model = true
 	elif event.is_action_released("allow_move_model"):
 		can_manipulate_model = false
 		should_spin_model = false
 		should_move_model = false
 
-	if event.is_action_pressed("allow_move_ik_cubes"):
+	elif event.is_action_pressed("allow_move_ik_cubes"):
 		can_manipulate_ik_cubes = true
 	elif event.is_action_released("allow_move_ik_cubes"):
 		can_manipulate_ik_cubes = false
 
-	if can_manipulate_model:
+	elif can_manipulate_model:
 		if event.is_action_pressed("left_click"):
 			should_spin_model = true
 		elif event.is_action_released("left_click"):
 			should_spin_model = false
 		
 		# Reset model
-		if event.is_action_pressed("middle_click"):
+		elif event.is_action_pressed("middle_click"):
 			model.transform = model_initial_transform
 			model_parent.transform = model_parent_initial_transform
 		
-		if event.is_action_pressed("right_click"):
+		elif event.is_action_pressed("right_click"):
 			should_move_model = true
 		elif event.is_action_released("right_click"):
 			should_move_model = false
 
-		if event.is_action("scroll_up"):
+		elif event.is_action("scroll_up"):
 			model_parent.translate(Vector3(0.0, 0.0, zoom_strength))
 		elif event.is_action("scroll_down"):
 			model_parent.translate(Vector3(0.0, 0.0, -zoom_strength))
 
-		if(should_spin_model and event is InputEventMouseMotion):
+		elif(should_spin_model and event is InputEventMouseMotion):
 			model.rotate_x(event.relative.y * mouse_move_strength)
 			model.rotate_y(event.relative.x * mouse_move_strength)
 		
-		if(should_move_model and event is InputEventMouseMotion):
+		elif(should_move_model and event is InputEventMouseMotion):
 			model_parent.translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
 
-	if can_manipulate_ik_cubes:
+	elif can_manipulate_ik_cubes:
 		if event.is_action_pressed("left_click"):
 			should_move_left_cube = true
 		elif event.is_action_released("left_click"):
 			should_move_left_cube = false
 
-		if event.is_action_pressed("right_click"):
+		elif event.is_action_pressed("right_click"):
 			should_move_right_cube = true
 		elif event.is_action_released("right_click"):
 			should_move_right_cube = false
 
-		if should_move_left_cube:
+		elif should_move_left_cube:
 			if event.is_action("scroll_up"):
 				right_ik_cube.translate(Vector3(0.0, 0.0, zoom_strength))
 			elif event.is_action("scroll_down"):
 				right_ik_cube.translate(Vector3(0.0, 0.0, -zoom_strength))
-			if event is InputEventMouseMotion:
+			elif event is InputEventMouseMotion:
 				right_ik_cube.translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
 
-		if should_move_right_cube:
+		elif should_move_right_cube:
 			if event.is_action("scroll_up"):
 				left_ik_cube.translate(Vector3(0.0, 0.0, zoom_strength))
 			elif event.is_action("scroll_down"):
 				left_ik_cube.translate(Vector3(0.0, 0.0, -zoom_strength))
-			if event is InputEventMouseMotion:
+			elif event is InputEventMouseMotion:
 				left_ik_cube.translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
 
 ###############################################################################

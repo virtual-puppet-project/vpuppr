@@ -28,11 +28,15 @@ var is_face_tracker_running: bool
 var face_tracker_pid: int
 
 # TODO disable OpenSeeGD during debug i guess
-var is_face_tracking_disabled: bool = false
+var is_face_tracking_disabled: bool = true
 
+# Config file values
 var save_directory_path: String
 var app_config: Dictionary
 var current_model_name: String
+
+# Temporary VRM model data storage
+var vrm_mappings: VRMMappings
 
 ###############################################################################
 # Builtin functions                                                           #

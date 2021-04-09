@@ -224,7 +224,7 @@ func apply_properties(data: Dictionary) -> void:
 		"node_property": node_value
 	}
 	"""
-	if data.empty():
+	if (data.empty() or not data.has("name")):
 		return
 	if instanced_props.has(data["name"]):
 		# TODO this is gross

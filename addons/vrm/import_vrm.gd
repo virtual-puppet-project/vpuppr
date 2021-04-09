@@ -46,6 +46,8 @@ const FirstPersonParser: Dictionary = {
 
 const USE_COMPAT_SHADER = true
 
+var vrm_mappings: VRMMappings = VRMMappings.new()
+
 
 func _get_extensions():
 	return ["vrm"]
@@ -419,6 +421,12 @@ func _create_animation_player(animplayer: AnimationPlayer, vrm_extension: Dictio
 			#print("Bind index: " + str(bind["index"]))
 			#print("Bind weight: " + str(float(bind["weight"]) / 100.0))
 
+			vrm_mappings.create_expression_data(
+				shape["presetName"].to_lower(),
+				mesh_idx_to_meshinstance[int(bind["mesh"])].name,
+				nodeMesh.get_blend_shape_name(int(bind["index"]))
+			)
+
 		# https://github.com/vrm-c/vrm-specification/tree/master/specification/0.0#blendshape-name-identifier
 		animplayer.add_animation(shape["name"].to_upper() if shape["presetName"] == "unknown" else shape["presetName"].to_upper(), anim)
 
@@ -437,6 +445,9 @@ func _create_animation_player(animplayer: AnimationPlayer, vrm_extension: Dictio
 		var headNode: GLTFNode = nodes[head_bone_idx]
 		var skeletonPath:NodePath = animplayer.get_parent().get_path_to(_get_skel_godot_node(gstate, nodes, skeletons, headNode.skeleton))
 		var headBone: String = headNode.resource_name
+
+		vrm_mappings.head = headBone
+
 		var firstperstrack = firstpersanim.add_track(Animation.TYPE_METHOD)
 		firstpersanim.track_set_path(firstperstrack, ".")
 		firstpersanim.track_insert_key(firstperstrack, 0.0, {"method": "TODO_scale_bone", "args": [skeletonPath, headBone, 0.0]})
@@ -478,6 +489,9 @@ func _create_animation_player(animplayer: AnimationPlayer, vrm_extension: Dictio
 		skeleton = _get_skel_godot_node(gstate, nodes, skeletons,rightEyeNode.skeleton)
 		skeletonPath = animplayer.get_parent().get_path_to(skeleton)
 		var rightEyePath:String = str(skeletonPath) + ":" + nodes[human_bone_to_idx["rightEye"]].resource_name
+
+		vrm_mappings.left_eye = nodes[human_bone_to_idx["leftEye"]].resource_name
+		vrm_mappings.right_eye = nodes[human_bone_to_idx["rightEye"]].resource_name
 
 		var anim = animplayer.get_animation("LOOKLEFT")
 		if anim:
@@ -703,6 +717,16 @@ func import_scene(path: String, flags: int = 1, bake_fps: int = 1):
 
 		_parse_secondary_node(secondary_node, vrm_extension, gstate)
 
+	for anim_name in animplayer.get_animation_list():
+		var anim: Animation = animplayer.get_animation(anim_name)
+		for track_index in anim.get_track_count():
+			for key_index in anim.track_get_key_count(track_index):
+				pass
+				# print(anim_name)
+				# print(anim.track_get_key_value(track_index, key_index))
+				# print(anim.track_get_path(track_index))
+	
+
 	return root_node
 
 	# if (!ResourceLoader.exists(path + ".res")):
@@ -769,10 +793,9 @@ func read_vrm(json: String):
 	for b in db["vrm"]["extensions"]["VRM"]["humanoid"]["humanBones"]:
 		db["vrm_bone"][b["bone"]] = b["node"]
 
-
-	db["vrm_def"] = {}
-	for k in db["vrm"].keys():
-		db["vrm_def"][k] = db["vrm"][k]
+	# db["vrm_def"] = {}
+	# for k in db["vrm"].keys():
+	# 	db["vrm_def"][k] = db["vrm"][k]
 
 	db["vrm_meta"] = {}
 	for k in db["vrm"]["extensions"]["VRM"]["meta"].keys():
