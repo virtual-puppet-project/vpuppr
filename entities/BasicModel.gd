@@ -105,3 +105,6 @@ func move_head(translation: Vector3, rotation: Vector3) -> void:
 
 		for bone in additional_bones_to_pose_names:
 			skeleton.set_bone_pose(additional_bone_ids[bone], additional_transform)
+
+func move_eyes() -> void:
+	pass
