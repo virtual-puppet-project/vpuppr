@@ -14,6 +14,9 @@ class VRMExpression:
 
 		expression_data[mesh_name].append(morph_name)
 
+	func get_meshes() -> Array:
+		return expression_data.keys()
+
 # class EyeData:
 # 	var bone_name: String
 # 	var x_movement: Vector2
@@ -50,6 +53,8 @@ var o := VRMExpression.new()
 var sorrow := VRMExpression.new()
 var u := VRMExpression.new()
 
+var meshes_used: Array = [] # String
+
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
@@ -73,6 +78,8 @@ func create_expression_data(expression_name: String, mesh_name: String, morph_na
 	var expression: VRMExpression = self.get(expression_name)
 	if expression:
 		expression.create_mapping(mesh_name, morph_name)
+		if not meshes_used.has(mesh_name):
+			meshes_used.append(mesh_name)
 	else:
 		AppManager.log_message("Skipping unhandled expression name %s" % expression_name)
 

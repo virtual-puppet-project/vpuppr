@@ -717,15 +717,18 @@ func import_scene(path: String, flags: int = 1, bake_fps: int = 1):
 
 		_parse_secondary_node(secondary_node, vrm_extension, gstate)
 
-	for anim_name in animplayer.get_animation_list():
-		var anim: Animation = animplayer.get_animation(anim_name)
-		for track_index in anim.get_track_count():
-			for key_index in anim.track_get_key_count(track_index):
-				pass
+	# for anim_name in animplayer.get_animation_list():
+	# 	var anim: Animation = animplayer.get_animation(anim_name)
+	# 	for track_index in anim.get_track_count():
+	# 		for key_index in anim.track_get_key_count(track_index):
+	# 			pass
 				# print(anim_name)
 				# print(anim.track_get_key_value(track_index, key_index))
 				# print(anim.track_get_path(track_index))
+
+	animplayer.queue_free()
 	
+	AppManager.vrm_mappings = self.vrm_mappings
 
 	return root_node
 
