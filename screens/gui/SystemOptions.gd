@@ -33,11 +33,11 @@ func _ready() -> void:
 ###############################################################################
 
 func _on_run_face_tracker_button_pressed() -> void:
-	if OS.is_debug_build():
-		AppManager.emit_signal("console_log", "Running in debug mode, facetracker will not start.")
-		# Program will likely crash during testing so it won't clean up
-		# the facetracker correctly
-		return
+	# if OS.is_debug_build():
+	# 	AppManager.emit_signal("console_log", "Running in debug mode, facetracker will not start.")
+	# 	# Program will likely crash during testing so it won't clean up
+	# 	# the facetracker correctly
+	# 	return
 	if not AppManager.is_face_tracker_running:
 		AppManager.log_message("Starting face tracker.")
 		var face_tracker_fps: String = $Control/MarginContainer/VBoxContainer/MiddleColorRect/HBoxContainer/InputLabel/HBoxContainer/FaceTrackerFPS.text

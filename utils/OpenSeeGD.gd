@@ -166,8 +166,12 @@ class OpenSeeData:
 		for i in range(NUMBER_OF_POINTS + 2):
 			self.points_3d.set(i, read_vector3(spb, opi))
 
-		self.right_gaze = Quat(Transform.looking_at(swap_x(points_3d[66]) - swap_x(points_3d[68]), Vector3.UP).origin) * Quat(Vector3.RIGHT, 180) * Quat(Vector3.FORWARD, 180)
-		self.left_gaze = Quat(Transform.looking_at(swap_x(points_3d[67]) - swap_x(points_3d[69]), Vector3.UP).origin) * Quat(Vector3.RIGHT, 180) * Quat(Vector3.FORWARD, 180)
+		# self.right_gaze = Quat(Transform.looking_at(swap_x(points_3d[66]) - swap_x(points_3d[68]), Vector3.UP).origin) * Quat(Vector3.RIGHT, 180) * Quat(Vector3.FORWARD, 180)
+		# self.right_gaze = Quat(Transform.looking_at(points_3d[66] - points_3d[68], Vector3.UP).origin) * Quat(Vector3.RIGHT, 180) * Quat(Vector3.FORWARD, 180)
+		self.right_gaze = Quat(points_3d[66] - points_3d[68]) * Quat(Vector3.RIGHT, 180) * Quat(Vector3.FORWARD, 180)
+		# self.left_gaze = Quat(Transform.looking_at(swap_x(points_3d[67]) - swap_x(points_3d[69]), Vector3.UP).origin) * Quat(Vector3.RIGHT, 180) * Quat(Vector3.FORWARD, 180)
+		# self.left_gaze = Quat(Transform.looking_at(points_3d[67] - points_3d[69], Vector3.UP).origin) * Quat(Vector3.RIGHT, 180) * Quat(Vector3.FORWARD, 180)
+		self.left_gaze = Quat(points_3d[67] - points_3d[69]) * Quat(Vector3.RIGHT, 180) * Quat(Vector3.FORWARD, 180)
 
 		self.features = OpenSeeFeatures.new()
 		features.eye_left = read_float(spb, opi)
@@ -186,7 +190,7 @@ class OpenSeeData:
 		features.mouth_wide = read_float(spb, opi)
 
 var open_see_data_map: Dictionary # int: OpenSeeData
-# TODO add type, not sure what kind of socket this is
+# TODO this might be unity specific?
 # var socket
 var buffer: PoolByteArray
 var receive_thread: Thread = null

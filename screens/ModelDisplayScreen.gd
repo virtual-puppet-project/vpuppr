@@ -28,24 +28,32 @@ var right_skeleton_ik: SkeletonIK
 var model_initial_transform: Transform
 var model_parent_initial_transform: Transform
 
+# OpenSee
 var open_see: OpenSeeGD
 var open_see_data: OpenSeeGD.OpenSeeData
-
-var head_translation: Vector3 = Vector3.ZERO
-var head_rotation: Vector3 = Vector3.ZERO
-
-class StoredOffsets:
-	var translation_offset: Vector3
-	var rotation_offset: Vector3
-	var quat_offset: Quat
-	var euler_offset: Vector3
-var stored_offsets: StoredOffsets
-
 export var face_id: int = 0
 export var min_confidence: float = 0.2
 export var show_gaze: bool = true
 
+# OpenSeeData last updated time
+var updated: float = 0.0
+
+# Actual translation and rotation vectors used for manipulating the model
+var head_translation: Vector3 = Vector3.ZERO
+var head_rotation: Vector3 = Vector3.ZERO
+
+class StoredOffsets:
+	var translation_offset: Vector3 = Vector3.ZERO
+	var rotation_offset: Vector3 = Vector3.ZERO
+	var quat_offset: Quat = Quat()
+	var euler_offset: Vector3 = Vector3.ZERO
+	var left_eye_gaze_offset: Vector3 = Vector3.ZERO
+	var right_eye_gaze_offset: Vector3 = Vector3.ZERO
+var stored_offsets: StoredOffsets = StoredOffsets.new()
+
+###
 # Various tracking options
+###
 export var apply_translation: bool = false
 var translation_adjustment: Vector3 = Vector3.ONE
 export var apply_rotation: bool = true
@@ -77,13 +85,11 @@ class InterpolationData:
 		target_translation = p_target_translation
 		target_rotation = p_target_rotation
 
-
 export var tracking_start_delay: float = 2.0
 
-# OpenSeeData last updated time
-var updated: float = 0.0
-
+###
 # Input
+###
 var can_manipulate_model: bool = false
 var should_spin_model: bool = false
 var should_move_model: bool = false
@@ -116,6 +122,10 @@ func _ready() -> void:
 				model.transform = model.transform.rotated(Vector3.UP, PI)
 				translation_adjustment = Vector3(-1, -1, -1)
 				rotation_adjustment = Vector3(1, -1, -1)
+				
+				# Grab vrm mappings
+				model.vrm_mappings = AppManager.vrm_mappings
+				AppManager.vrm_mappings.dirty = false
 			"tscn":
 				AppManager.log_message("Loading TSCN file.")
 				var model_resource = load(model_resource_path)
@@ -143,6 +153,7 @@ func _ready() -> void:
 	model_parent_initial_transform = model_parent.transform
 	model_parent.call_deferred("add_child", model)
 	
+	# TODO refactor the IK stuff to be less gross
 	# Add IK cube helpers
 	left_ik_cube = IK_CUBE.instance()
 	left_ik_cube.name = "LeftIKCube"
@@ -337,7 +348,6 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_offset_timer_timeout() -> void:
 	get_node("OffsetTimer").queue_free()
 
-	stored_offsets = StoredOffsets.new()
 	open_see_data = open_see.get_open_see_data(face_id)
 	_save_offsets()
 
@@ -360,6 +370,8 @@ func _save_offsets() -> void:
 	if corrected_euler.x < 0.0:
 		corrected_euler.x = 360 + corrected_euler.x
 	stored_offsets.euler_offset = corrected_euler
+	stored_offsets.left_eye_gaze_offset = open_see_data.left_gaze.get_euler()
+	stored_offsets.right_eye_gaze_offset = open_see_data.right_gaze.get_euler()
 	AppManager.log_message("New offsets saved.")
 
 static func _find_bone_chain(skeleton: Skeleton, root_bone: int, tip_bone: int) -> Array:
