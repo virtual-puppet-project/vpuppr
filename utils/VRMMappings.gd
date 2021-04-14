@@ -1,8 +1,6 @@
 class_name VRMMappings
 extends Reference
 
-# enum EyeSide { NONE = 0, LEFT, RIGHT }
-
 var dirty: bool = true
 
 class VRMExpression:
@@ -17,22 +15,10 @@ class VRMExpression:
 	func get_meshes() -> Array:
 		return expression_data.keys()
 
-# class EyeData:
-# 	var bone_name: String
-# 	var x_movement: Vector2
-# 	var y_movement: Vector2
-
-# 	func _init(p_bone_name: String, p_x_movement: Vector2, p_y_movement: Vector2) -> void:
-# 		self.bone_name = p_bone_name
-# 		self.x_movement = p_x_movement
-# 		self.y_movement = p_y_movement
-
 # Bone names
 var head: String
 var left_eye: String
 var right_eye: String
-# var left_eye: EyeData
-# var right_eye: EyeData
 
 # Blend shapes
 var a := VRMExpression.new()

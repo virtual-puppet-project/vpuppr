@@ -74,6 +74,13 @@ func _generate_properties(p_initial_properties: Dictionary = {}) -> void:
 			data_source.interpolation_rate, TYPE_REAL)
 
 func _apply_properties() -> void:
+	# Interpolation data must be handled in a specific order since we don't check for interpolation anymore
+	main_screen.model_display_screen.interpolate_model = v_box_container.get_node("interpolate_model").get_value()
+	if not main_screen.model_display_screen.interpolate_model:
+		main_screen.model_display_screen.interpolation_rate = 1.0
+	else:
+		main_screen.model_display_screen.interpolation_rate = v_box_container.get_node("interpolation_rate").get_value()
+
 	for c in v_box_container.get_children():
 		# Null checks and value checks
 		if c.get("line_edit"):
@@ -82,6 +89,7 @@ func _apply_properties() -> void:
 			if c.line_edit_type == TYPE_REAL:
 				if not c.line_edit.text.is_valid_float():
 					continue
+
 		match c.name:
 			"translation_damp":
 				current_model.translation_damp = c.get_value()
@@ -93,10 +101,6 @@ func _apply_properties() -> void:
 				main_screen.model_display_screen.apply_translation = c.get_value()
 			"apply_rotation":
 				main_screen.model_display_screen.apply_rotation = c.get_value()
-			"interpolate_model":
-				main_screen.model_display_screen.interpolate_model = c.get_value()
-			"interpolation_rate":
-				main_screen.model_display_screen.interpolation_rate = c.get_value()
 
 func _setup() -> void:
 	current_model = main_screen.model_display_screen.model

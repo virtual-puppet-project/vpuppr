@@ -45,7 +45,7 @@ func _ready() -> void:
 # Public functions                                                            #
 ###############################################################################
 
-func custom_update(_open_see_data: OpenSeeGD.OpenSeeData) -> void:
+func custom_update(_open_see_data: OpenSeeGD.OpenSeeData, _interpolation_data: InterpolationData) -> void:
 	push_error("Model custom update not implemented")
 
 func get_mapped_bones() -> Dictionary:

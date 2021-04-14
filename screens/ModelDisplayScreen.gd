@@ -59,31 +59,8 @@ var translation_adjustment: Vector3 = Vector3.ONE
 export var apply_rotation: bool = true
 var rotation_adjustment: Vector3 = Vector3.ONE
 export var interpolate_model: bool = true
-var interpolation_rate: float = 0.1
+var interpolation_rate: float = 0.1 setget _set_interpolation_rate
 var interpolation_data: InterpolationData = InterpolationData.new()
-
-class InterpolationData:
-	var last_updated: float
-	var last_translation: Vector3
-	var last_rotation: Vector3
-	var target_translation: Vector3
-	var target_rotation: Vector3
-
-	func _init() -> void:
-		last_updated = 0.0
-		last_translation = Vector3.ZERO
-		last_rotation = Vector3.ZERO
-		target_translation = Vector3.ZERO
-		target_rotation = Vector3.ZERO
-
-	func update_values(
-		p_last_updated: float,
-		p_target_translation: Vector3,
-		p_target_rotation: Vector3
-	) -> void:
-		last_updated = p_last_updated
-		target_translation = p_target_translation
-		target_rotation = p_target_rotation
 
 export var tracking_start_delay: float = 2.0
 
@@ -194,81 +171,42 @@ func _ready() -> void:
 	offset_timer.autostart = true
 	self.call_deferred("add_child", offset_timer)
 
-func _process(_delta: float) -> void:
-	if not stored_offsets:
-		return
-	if not interpolate_model:
-		self.open_see_data = open_see.get_open_see_data(face_id)
-	
-		if(not open_see_data or open_see_data.fit_3d_error > open_see.max_fit_3d_error):
-			return
-		
-		if open_see_data.time > updated:
-			updated = open_see_data.time
-		else:
-			return
-		
-		if apply_translation:
-			head_translation = (stored_offsets.translation_offset - open_see_data.translation) * model.translation_damp
-
-		if apply_rotation:
-			var corrected_euler: Vector3 = open_see_data.raw_euler
-			if corrected_euler.x < 0.0:
-				corrected_euler.x = 360 + corrected_euler.x
-			head_rotation = (stored_offsets.euler_offset - corrected_euler) * model.rotation_damp
-
-		if model.has_custom_update:
-			model.custom_update(open_see_data)
-
-		model.move_head(
-			head_translation * translation_adjustment,
-			head_rotation * rotation_adjustment
-		)
-
 func _physics_process(_delta: float) -> void:
 	if not stored_offsets:
 		return
-	if interpolate_model:
-		self.open_see_data = open_see.get_open_see_data(face_id)
 	
-		if(not open_see_data or open_see_data.fit_3d_error > open_see.max_fit_3d_error):
-			return
-		
-		# Don't return early if we are interpolating
-		if open_see_data.time > updated:
-			updated = open_see_data.time
-			var corrected_euler: Vector3 = open_see_data.raw_euler
-			if corrected_euler.x < 0.0:
-				corrected_euler.x = 360 + corrected_euler.x
-			interpolation_data.update_values(
-				updated,
-				(stored_offsets.translation_offset - open_see_data.translation),
-				(stored_offsets.euler_offset - corrected_euler)
-			)
+	self.open_see_data = open_see.get_open_see_data(face_id)
 
-		if apply_translation:
-			head_translation = lerp(
-				interpolation_data.last_translation,
-				interpolation_data.target_translation * model.translation_damp,
-				interpolation_rate
-			)
-			interpolation_data.last_translation = head_translation
-
-		if apply_rotation:
-			head_rotation = lerp(
-				interpolation_data.last_rotation,
-				interpolation_data.target_rotation * model.rotation_damp,
-				interpolation_rate
-			)
-			interpolation_data.last_rotation = head_rotation
-
-		if model.has_custom_update:
-			model.custom_update(open_see_data)
+	if(not open_see_data or open_see_data.fit_3d_error > open_see.max_fit_3d_error):
+		return
 	
-		model.move_head(
-			head_translation * translation_adjustment,
-			head_rotation * rotation_adjustment
+	# Don't return early if we are interpolating
+	if open_see_data.time > updated:
+		updated = open_see_data.time
+		var corrected_euler: Vector3 = open_see_data.raw_euler
+		if corrected_euler.x < 0.0:
+			corrected_euler.x = 360 + corrected_euler.x
+		interpolation_data.update_values(
+			updated,
+			stored_offsets.translation_offset - open_see_data.translation,
+			stored_offsets.euler_offset - corrected_euler,
+			stored_offsets.left_eye_gaze_offset - open_see_data.left_gaze.get_euler(),
+			stored_offsets.right_eye_gaze_offset - open_see_data.right_gaze.get_euler()
 		)
+
+	if apply_translation:
+		head_translation = interpolation_data.interpolate(InterpolationData.InterpolationDataType.TRANSLATION, model.translation_damp)
+
+	if apply_rotation:
+		head_rotation = interpolation_data.interpolate(InterpolationData.InterpolationDataType.ROTATION, model.rotation_damp)
+
+	if model.has_custom_update:
+		model.custom_update(open_see_data, interpolation_data)
+
+	model.move_head(
+		head_translation * translation_adjustment,
+		head_rotation * rotation_adjustment
+	)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_accept"):
@@ -394,6 +332,10 @@ static func _find_bone_chain(skeleton: Skeleton, root_bone: int, tip_bone: int) 
 		result.append_array(_find_bone_chain(skeleton, root_bone, bone_parent))
 
 	return result
+
+func _set_interpolation_rate(value: float) -> void:
+	interpolation_rate = value
+	interpolation_data.rate = value
 
 ###############################################################################
 # Public functions                                                            #
