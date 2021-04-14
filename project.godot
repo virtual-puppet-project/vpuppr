@@ -75,6 +75,11 @@ _global_script_classes=[ {
 "path": "res://screens/gui/elements/InputLabel.gd"
 }, {
 "base": "Reference",
+"class": "InterpolationData",
+"language": "GDScript",
+"path": "res://utils/InterpolationData.gd"
+}, {
+"base": "Reference",
 "class": "JSONUtil",
 "language": "GDScript",
 "path": "res://utils/JSONUtil.gd"
@@ -123,6 +128,7 @@ _global_script_class_icons={
 "IKCube": "",
 "ImportVRM": "",
 "InputLabel": "",
+"InterpolationData": "",
 "JSONUtil": "",
 "MainScreen": "",
 "ModelDisplayScreen": "",

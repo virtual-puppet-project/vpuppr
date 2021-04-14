@@ -22,6 +22,9 @@ var mapped_meshes: Dictionary
 var blink_threshold: float = 0.3
 var eco_mode_is_blinking: bool = false
 
+# Gaze
+var gaze_strength: float = 0.5
+
 # Mouth
 var min_mouth_value: float = 0.0
 
@@ -34,6 +37,7 @@ func _ready() -> void:
 	rotation_damp = 0.01
 	additional_bone_damp = 0.6
 
+	# TODO this is gross
 	stored_offsets = get_parent().get_parent().stored_offsets
 
 	# Read vrm mappings
@@ -73,89 +77,46 @@ func _modify_blend_shape(mesh_instance: MeshInstance, blend_shape: String, value
 # Public functions                                                            #
 ###############################################################################
 
-func custom_update(data: OpenSeeGD.OpenSeeData) -> void:
+func set_expression(expression_name: String, expression_weight: float) -> void:
+	for mesh_name in vrm_mappings[expression_name].get_meshes():
+		for blend_name in vrm_mappings[expression_name].expression_data[mesh_name]:
+			_modify_blend_shape(mapped_meshes[mesh_name], blend_name, expression_weight)
+
+func custom_update(data: OpenSeeGD.OpenSeeData, interpolation_data: InterpolationData) -> void:
+	# NOTE: Eye mappings are intentionally reversed so that the model mirrors the data
 	# TODO i think this can be made more efficient
 	if not eco_mode:
 		# Left eye blinking
 		if data.left_eye_open >= blink_threshold:
-			for mesh_name in vrm_mappings.blink_l.get_meshes():
-				for blend_name in vrm_mappings.blink_l.expression_data[mesh_name]:
-					_modify_blend_shape(
-						mapped_meshes[mesh_name],
-						blend_name,
-						1.0 - data.left_eye_open
-					)
+			set_expression("blink_r", 1.0 - data.left_eye_open)
 		else:
-			for mesh_name in vrm_mappings.blink_l.get_meshes():
-				for blend_name in vrm_mappings.blink_l.expression_data[mesh_name]:
-					_modify_blend_shape(
-						mapped_meshes[mesh_name],
-						blend_name,
-						1.0
-					)
+			set_expression("blink_r", 1.0)
 
 		# Right eye blinking
 		if data.right_eye_open >= blink_threshold:
-			for mesh_name in vrm_mappings.blink_r.get_meshes():
-				for blend_name in vrm_mappings.blink_r.expression_data[mesh_name]:
-					_modify_blend_shape(
-						mapped_meshes[mesh_name],
-						blend_name,
-						1.0 - data.right_eye_open
-					)
+			set_expression("blink_l", 1.0 - data.left_eye_open)
 		else:
-			for mesh_name in vrm_mappings.blink_r.get_meshes():
-				for blend_name in vrm_mappings.blink_r.expression_data[mesh_name]:
-					_modify_blend_shape(
-						mapped_meshes[mesh_name],
-						blend_name,
-						1.0
-					)
+			set_expression("blink_l", 1.0)
 
 		# TODO eyes are a bit wonky
-		# TODO left eye is biased towards corners
-		# TODO right eye doesn't really look up or down
-		# NOTE: We don't want the y-rotation when tracking gaze otherwise your eye will rotate in its socket
 		# Left eye gaze
 		var left_eye_transform: Transform = Transform()
-		var left_eye_rotation: Vector3 = (stored_offsets.left_eye_gaze_offset - data.left_gaze.get_euler()) * 4
-		left_eye_transform = left_eye_transform.rotated(Vector3.UP, left_eye_rotation.x)
-		# if left_eye_rotation.z > 0:
-		# 	left_eye_transform = left_eye_transform.rotated(Vector3.LEFT, -left_eye_rotation.z)
-		# else:
-		# 	left_eye_transform = left_eye_transform.rotated(Vector3.LEFT, left_eye_rotation.z)
-		skeleton.set_bone_pose(left_eye_id, left_eye_transform)
+		var left_eye_rotation: Vector3 = interpolation_data.interpolate(InterpolationData.InterpolationDataType.LEFT_EYE_ROTATION, gaze_strength)
+		left_eye_transform = left_eye_transform.rotated(Vector3.RIGHT, -left_eye_rotation.x)
+		left_eye_transform = left_eye_transform.rotated(Vector3.UP, left_eye_rotation.y)
+		if Input.is_key_pressed(KEY_0): AppManager.log_message(str(left_eye_rotation))
+		skeleton.set_bone_pose(right_eye_id, left_eye_transform)
 		
 		# Right eye gaze
 		var right_eye_transform: Transform = Transform()
-		var right_eye_rotation: Vector3 = (stored_offsets.right_eye_gaze_offset - data.right_gaze.get_euler()) * 4
-		right_eye_transform = right_eye_transform.rotated(Vector3.UP, right_eye_rotation.x)
-		# if right_eye_rotation.z > 0:
-		# 	right_eye_transform = right_eye_transform.rotated(Vector3.LEFT, right_eye_rotation.z)
-		# else:
-		# 	right_eye_transform = right_eye_transform.rotated(Vector3.LEFT, -right_eye_rotation.z)
-		skeleton.set_bone_pose(right_eye_id, right_eye_transform)
-
-		# TODO im not sure what these are tracking?
-		# Features eye left
-		# var left_eye_transform: Transform = Transform()
-		# print(data.features.eye_left)
-		# left_eye_transform.rotated(Vector3.UP, data.features.eye_left * 1.5)
-		# skeleton.set_bone_pose(left_eye_id, left_eye_transform)
-
-		# # Features eye right
-		# var right_eye_transform: Transform = Transform()
-		# right_eye_transform.rotated(Vector3.UP, data.features.eye_right * 1.5)
-		# skeleton.set_bone_pose(right_eye_id, right_eye_transform)
+		var right_eye_rotation: Vector3 = interpolation_data.interpolate(InterpolationData.InterpolationDataType.RIGHT_EYE_ROTATION, gaze_strength)
+		right_eye_transform = right_eye_transform.rotated(Vector3.RIGHT, -right_eye_rotation.x)
+		right_eye_transform = right_eye_transform.rotated(Vector3.UP, right_eye_rotation.y)
+		if Input.is_key_pressed(KEY_1): AppManager.log_message(str(right_eye_rotation))
+		skeleton.set_bone_pose(left_eye_id, right_eye_transform)
 		
 		# Mouth tracking
-		for mesh_name in vrm_mappings.a.get_meshes():
-			for blend_name in vrm_mappings.a.expression_data[mesh_name]:
-				_modify_blend_shape(
-					mapped_meshes[mesh_name],
-					blend_name,
-					max(min_mouth_value, data.features.mouth_open)
-				)
+		set_expression("a", min(max(min_mouth_value, data.features.mouth_open * 2.0), 1.0))
 	else:
 		# TODO implement eco mode, should be more efficient than standard mode
 		# Eco-mode blinking

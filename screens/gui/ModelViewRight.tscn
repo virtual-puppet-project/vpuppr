@@ -9,6 +9,7 @@ script = ExtResource( 2 )
 [node name="LoadModelButton" type="Button" parent="Control/MarginContainer/VBoxContainer" index="0"]
 margin_right = 1580.0
 margin_bottom = 79.0
+focus_mode = 0
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.1
 text = "Load Model"

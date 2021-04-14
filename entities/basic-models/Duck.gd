@@ -43,7 +43,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 # Public functions                                                            #
 ###############################################################################
 
-func custom_update(open_see_data: OpenSeeGD.OpenSeeData) -> void:
+func custom_update(open_see_data: OpenSeeGD.OpenSeeData, _interpolation_data: InterpolationData) -> void:
 	if not is_blinking:
 		if(open_see_data.left_eye_open < blink_threshold and open_see_data.right_eye_open < blink_threshold):
 			blink()

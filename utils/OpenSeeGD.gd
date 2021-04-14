@@ -166,12 +166,10 @@ class OpenSeeData:
 		for i in range(NUMBER_OF_POINTS + 2):
 			self.points_3d.set(i, read_vector3(spb, opi))
 
-		# self.right_gaze = Quat(Transform.looking_at(swap_x(points_3d[66]) - swap_x(points_3d[68]), Vector3.UP).origin) * Quat(Vector3.RIGHT, 180) * Quat(Vector3.FORWARD, 180)
-		# self.right_gaze = Quat(Transform.looking_at(points_3d[66] - points_3d[68], Vector3.UP).origin) * Quat(Vector3.RIGHT, 180) * Quat(Vector3.FORWARD, 180)
-		self.right_gaze = Quat(points_3d[66] - points_3d[68]) * Quat(Vector3.RIGHT, 180) * Quat(Vector3.FORWARD, 180)
-		# self.left_gaze = Quat(Transform.looking_at(swap_x(points_3d[67]) - swap_x(points_3d[69]), Vector3.UP).origin) * Quat(Vector3.RIGHT, 180) * Quat(Vector3.FORWARD, 180)
-		# self.left_gaze = Quat(Transform.looking_at(points_3d[67] - points_3d[69], Vector3.UP).origin) * Quat(Vector3.RIGHT, 180) * Quat(Vector3.FORWARD, 180)
-		self.left_gaze = Quat(points_3d[67] - points_3d[69]) * Quat(Vector3.RIGHT, 180) * Quat(Vector3.FORWARD, 180)
+		# self.right_gaze = (Quat(points_3d[66] - points_3d[68]).normalized() * Quat(Vector3.RIGHT, 180) * Quat(Vector3.FORWARD, 180)).normalized()
+		self.right_gaze = Quat(Transform().looking_at(points_3d[66] - points_3d[68], Vector3.UP).basis).normalized()
+		# self.left_gaze = (Quat(points_3d[67] - points_3d[69]).normalized() * Quat(Vector3.RIGHT, 180) * Quat(Vector3.FORWARD, 180)).normalized()
+		self.left_gaze = Quat(Transform().looking_at(points_3d[67] - points_3d[69], Vector3.UP).basis).normalized()
 
 		self.features = OpenSeeFeatures.new()
 		features.eye_left = read_float(spb, opi)
