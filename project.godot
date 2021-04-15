@@ -147,6 +147,7 @@ config/icon="res://assets/icon.png"
 [autoload]
 
 AppManager="*res://utils/AppManager.gd"
+OpenSeeGd="*res://utils/OpenSeeGD.gd"
 
 [debug]
 
