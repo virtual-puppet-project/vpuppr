@@ -9,9 +9,10 @@ var initial_properties: Dictionary
 
 var feature_view_right: WeakRef
 
+# Builtins
 var main_light: Light
+onready var world_environment: WorldEnvironment
 
-# TODO this needs to be saved somehow
 var instanced_props: Dictionary = {}
 
 # Prop movement
@@ -88,6 +89,7 @@ func _generate_properties(p_initial_properties: Dictionary = Dictionary()) -> vo
 	# Main light
 	_create_custom_toggle(main_light.name, "Main Light", {
 		"name": main_light.name,
+		# Light
 		"light_color": {
 			"type": TYPE_COLOR,
 			"value": main_light.light_color
@@ -103,12 +105,34 @@ func _generate_properties(p_initial_properties: Dictionary = Dictionary()) -> vo
 		"light_specular": {
 			"type": TYPE_REAL,
 			"value": main_light.light_specular
+		},
+		# Shadow
+		"shadow_enabled": {
+			"type": TYPE_BOOL,
+			"value": main_light.shadow_enabled
 		}
 	})
-	instanced_props[main_light.name] = main_light
 
-	# Environment values
-	# TODO add env stuff?
+	# World Environment
+	_create_custom_toggle(world_environment.name, "World Environment", {
+		"name": world_environment.name,
+		# Ambient light
+		"ambient_light_color": {
+			"type": TYPE_COLOR,
+			"value": world_environment.environment.ambient_light_color
+		},
+		"ambient_light_energy": {
+			"type": TYPE_REAL,
+			"value": world_environment.environment.ambient_light_energy
+		},
+		"ambient_light_contribution": {
+			"type": TYPE_REAL,
+			"value": world_environment.environment.ambient_light_sky_contribution
+		}
+	})
+
+	instanced_props[main_light.name] = main_light
+	instanced_props[world_environment.name] = world_environment.environment
 
 	# Custom props
 	# TODO extend to allow for all kinds of props
@@ -117,7 +141,7 @@ func _generate_properties(p_initial_properties: Dictionary = Dictionary()) -> vo
 		"function_name": "_on_add_prop_button_pressed"
 	})
 	for p in instanced_props.keys():
-		if p == main_light.name:
+		if (p == main_light.name or p == world_environment.name):
 			continue
 		_create_custom_toggle(instanced_props[p].name, instanced_props[p].name.capitalize(), {
 			"name": "%s" % instanced_props[p].name
@@ -131,6 +155,7 @@ func _setup() -> void:
 
 	current_model = main_screen.model_display_screen.model
 	main_light = main_screen.light_container.get_child(0)
+	world_environment = main_screen.world_environment
 
 	var loaded_config: Dictionary = AppManager.get_sidebar_config_safe(self.name)
 	if not loaded_config.empty():
@@ -150,6 +175,8 @@ func _setup() -> void:
 					main_light.light_energy = light_dictionary["light_energy"]
 					main_light.light_indirect_energy = light_dictionary["light_indirect_energy"]
 					main_light.light_specular = light_dictionary["light_specular"]
+					if light_dictionary.has("shadow_enabled"):
+						main_light.shadow_enabled = light_dictionary["shadow_enabled"]
 	
 	_generate_properties()
 
@@ -228,19 +255,20 @@ func apply_properties(data: Dictionary) -> void:
 		return
 	if instanced_props.has(data["name"]):
 		# TODO this is gross
-		prop_to_move = instanced_props[data["name"]]
-		if data["move_prop"]:
-			should_move_prop = true
-		else:
-			should_move_prop = false
-		if data["spin_prop"]:
-			should_spin_prop = true
-		else:
-			should_spin_prop = false
-		if data["zoom_prop"]:
-			should_zoom_prop = true
-		else:
-			should_zoom_prop = false
+		if data["name"] is Spatial:
+			prop_to_move = instanced_props[data["name"]]
+			if data["move_prop"]:
+				should_move_prop = true
+			else:
+				should_move_prop = false
+			if data["spin_prop"]:
+				should_spin_prop = true
+			else:
+				should_spin_prop = false
+			if data["zoom_prop"]:
+				should_zoom_prop = true
+			else:
+				should_zoom_prop = false
 
 		for key in data.keys():
 			if key != "name":
@@ -259,6 +287,7 @@ func save() -> Dictionary:
 			light_dictionary["light_energy"] = main_light.light_energy
 			light_dictionary["light_indirect_energy"] = main_light.light_indirect_energy
 			light_dictionary["light_specular"] = main_light.light_specular
+			light_dictionary["shadow_enabled"] = main_light.shadow_enabled
 			
 			result[main_light.name] = light_dictionary
 		elif instanced_props[p].has_method("save"):

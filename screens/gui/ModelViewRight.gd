@@ -38,9 +38,6 @@ func _generate_properties(p_initial_properties: Dictionary = {}) -> void:
 	for child in v_box_container.get_children():
 		child.free()
 
-	# TODO test this with a vrm model
-	# yield(get_tree().create_timer(1.0), "timeout")
-
 	var data_source = p_initial_properties
 	
 	if current_model:

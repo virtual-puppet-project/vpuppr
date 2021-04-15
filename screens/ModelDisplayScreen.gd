@@ -29,7 +29,6 @@ var model_initial_transform: Transform
 var model_parent_initial_transform: Transform
 
 # OpenSee
-var open_see: OpenSeeGD
 var open_see_data: OpenSeeGD.OpenSeeData
 export var face_id: int = 0
 export var min_confidence: float = 0.2
@@ -161,9 +160,6 @@ func _ready() -> void:
 	model_skeleton.call_deferred("add_child", left_skeleton_ik)
 	model_skeleton.call_deferred("add_child", right_skeleton_ik)
 
-	self.open_see = OPEN_SEE.instance()
-	self.call_deferred("add_child", open_see)
-
 	var offset_timer: Timer = Timer.new()
 	offset_timer.name = "OffsetTimer"
 	offset_timer.connect("timeout", self, "_on_offset_timer_timeout")
@@ -175,9 +171,9 @@ func _physics_process(_delta: float) -> void:
 	if not stored_offsets:
 		return
 	
-	self.open_see_data = open_see.get_open_see_data(face_id)
+	self.open_see_data = OpenSeeGd.get_open_see_data(face_id)
 
-	if(not open_see_data or open_see_data.fit_3d_error > open_see.max_fit_3d_error):
+	if(not open_see_data or open_see_data.fit_3d_error > OpenSeeGd.max_fit_3d_error):
 		return
 	
 	# Don't return early if we are interpolating
@@ -286,7 +282,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_offset_timer_timeout() -> void:
 	get_node("OffsetTimer").queue_free()
 
-	open_see_data = open_see.get_open_see_data(face_id)
+	open_see_data = OpenSeeGd.get_open_see_data(face_id)
 	_save_offsets()
 
 ###############################################################################
