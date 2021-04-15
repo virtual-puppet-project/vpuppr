@@ -77,46 +77,56 @@ func _modify_blend_shape(mesh_instance: MeshInstance, blend_shape: String, value
 # Public functions                                                            #
 ###############################################################################
 
-func set_expression(expression_name: String, expression_weight: float) -> void:
+func set_expression_weight(expression_name: String, expression_weight: float) -> void:
 	for mesh_name in vrm_mappings[expression_name].get_meshes():
 		for blend_name in vrm_mappings[expression_name].expression_data[mesh_name]:
 			_modify_blend_shape(mapped_meshes[mesh_name], blend_name, expression_weight)
 
+func get_expression_weight(expression_name: String) -> float:
+	var mesh_name: String = vrm_mappings[expression_name].get_meshes()[0]
+	var blend_name: String = vrm_mappings[expression_name].expression_data[mesh_name]
+	
+	return mapped_meshes[mesh_name].get("blend_shapes/%s" % blend_name)
+
 func custom_update(data: OpenSeeGD.OpenSeeData, interpolation_data: InterpolationData) -> void:
 	# NOTE: Eye mappings are intentionally reversed so that the model mirrors the data
-	# TODO i think this can be made more efficient
 	if not eco_mode:
 		# Left eye blinking
 		if data.left_eye_open >= blink_threshold:
-			set_expression("blink_r", 1.0 - data.left_eye_open)
+			set_expression_weight("blink_r", 1.0 - data.left_eye_open)
 		else:
-			set_expression("blink_r", 1.0)
+			set_expression_weight("blink_r", 1.0)
 
 		# Right eye blinking
 		if data.right_eye_open >= blink_threshold:
-			set_expression("blink_l", 1.0 - data.left_eye_open)
+			set_expression_weight("blink_l", 1.0 - data.left_eye_open)
 		else:
-			set_expression("blink_l", 1.0)
+			set_expression_weight("blink_l", 1.0)
 
-		# TODO eyes are a bit wonky
+		# TODO eyes show weird behaviou when blinking
+		# TODO make sure angle between eyes' x values are at least parallel
+		# Make sure eyes are aligned on the y-axis
+		var left_eye_rotation: Vector3 = interpolation_data.interpolate(InterpolationData.InterpolationDataType.LEFT_EYE_ROTATION, gaze_strength)
+		var right_eye_rotation: Vector3 = interpolation_data.interpolate(InterpolationData.InterpolationDataType.RIGHT_EYE_ROTATION, gaze_strength)
+		var average_eye_y_rotation: float = (left_eye_rotation.x + right_eye_rotation.x) / 2
+		left_eye_rotation.x = average_eye_y_rotation
+		right_eye_rotation.x = average_eye_y_rotation
+
 		# Left eye gaze
 		var left_eye_transform: Transform = Transform()
-		var left_eye_rotation: Vector3 = interpolation_data.interpolate(InterpolationData.InterpolationDataType.LEFT_EYE_ROTATION, gaze_strength)
 		left_eye_transform = left_eye_transform.rotated(Vector3.RIGHT, -left_eye_rotation.x)
 		left_eye_transform = left_eye_transform.rotated(Vector3.UP, left_eye_rotation.y)
-		if Input.is_key_pressed(KEY_0): AppManager.log_message(str(left_eye_rotation))
-		skeleton.set_bone_pose(right_eye_id, left_eye_transform)
 		
 		# Right eye gaze
 		var right_eye_transform: Transform = Transform()
-		var right_eye_rotation: Vector3 = interpolation_data.interpolate(InterpolationData.InterpolationDataType.RIGHT_EYE_ROTATION, gaze_strength)
 		right_eye_transform = right_eye_transform.rotated(Vector3.RIGHT, -right_eye_rotation.x)
 		right_eye_transform = right_eye_transform.rotated(Vector3.UP, right_eye_rotation.y)
-		if Input.is_key_pressed(KEY_1): AppManager.log_message(str(right_eye_rotation))
+		
+		skeleton.set_bone_pose(right_eye_id, left_eye_transform)
 		skeleton.set_bone_pose(left_eye_id, right_eye_transform)
 		
 		# Mouth tracking
-		set_expression("a", min(max(min_mouth_value, data.features.mouth_open * 2.0), 1.0))
+		set_expression_weight("a", min(max(min_mouth_value, data.features.mouth_open * 2.0), 1.0))
 	else:
 		# TODO implement eco mode, should be more efficient than standard mode
 		# Eco-mode blinking
