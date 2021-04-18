@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://assets/future-tank/future-tank.glb" type="PackedScene" id=1]
+[ext_resource path="res://entities/future-tank/FutureTank.gd" type="Script" id=2]
+
+[node name="FutureTank" instance=ExtResource( 1 )]
+script = ExtResource( 2 )
+
+[node name="MushroomTween" type="Tween" parent="." index="1"]
