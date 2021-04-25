@@ -20,6 +20,8 @@ export/
 
 assets/robo/
 assets/future-tank/
+assets/local/
 
 entities/robo/
 entities/future-tank/
+entities/local/

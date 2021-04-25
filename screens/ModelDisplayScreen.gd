@@ -339,11 +339,18 @@ func _set_interpolation_rate(value: float) -> void:
 
 func load_external_model(file_path: String) -> Spatial:
 	AppManager.log_message("Starting external loader.")
-	# var gltf_loader: DynamicGLTFLoader = DynamicGLTFLoader.new()
-	# var loaded_model: Spatial = gltf_loader.import_scene(file_path, 1, 1)
-
-	var import_vrm: ImportVRM = ImportVRM.new()
-	var loaded_model: Spatial = import_vrm.import_scene(file_path, 1, 1000)
+	var loaded_model: Spatial
+	
+	match file_path.get_extension():
+		"glb":
+			var gltf_loader: DynamicGLTFLoader = DynamicGLTFLoader.new()
+			loaded_model = gltf_loader.import_scene(file_path, 1, 1)
+			# var gstate: GLTFState = GLTFState.new()
+			# var gltf: PackedSceneGLTF = PackedSceneGLTF.new()
+			# loaded_model = gltf.import_gltf_scene(file_path, 0, 1000.0, gstate)
+		"vrm":
+			var import_vrm: ImportVRM = ImportVRM.new()
+			loaded_model = import_vrm.import_scene(file_path, 1, 1000)
 
 	var model_script = load(script_to_use)
 	loaded_model.set_script(model_script)
