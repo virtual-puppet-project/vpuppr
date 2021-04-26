@@ -74,12 +74,12 @@ func _generate_bone_list() -> void:
 		else:
 			check_box_label = CHECK_BOX_LABEL.instance()
 			check_box_label.check_box_text = "Mapping"
-			if bone_name == current_model.HEAD_BONE:
-				check_box_label.label_text = bone_name + " (not editable)"
-				check_box_label.check_box_disabled = true
-			else:
-				check_box_label.label_text = bone_name
-				check_box_label.check_box_value = bone_values[bone_name]
+#			if bone_name == current_model.HEAD_BONE:
+#				check_box_label.label_text = bone_name + " (not editable)"
+#				check_box_label.check_box_disabled = true
+#			else:
+			check_box_label.label_text = bone_name
+			check_box_label.check_box_value = bone_values[bone_name]
 		v_box_container.add_child(check_box_label)
 
 func _trigger_bone_remap() -> void:

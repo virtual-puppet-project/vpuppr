@@ -70,9 +70,6 @@ func _ready() -> void:
 static func _to_godot_quat(v: Quat) -> Quat:
 	return Quat(v.x, -v.y, v.z, v.w)
 
-func _modify_blend_shape(mesh_instance: MeshInstance, blend_shape: String, value: float) -> void:
-	mesh_instance.set("blend_shapes/%s" % blend_shape, value)
-
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################

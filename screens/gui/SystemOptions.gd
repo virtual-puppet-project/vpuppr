@@ -78,11 +78,12 @@ func _on_run_face_tracker_button_pressed() -> void:
 			AppManager.log_message("Face tracker started.")
 	else:
 		AppManager.log_message("Stopping face tracker.")
+		
+		OpenSeeGd.stop_receiver()
+		
 		OS.kill(AppManager.face_tracker_pid)
 		AppManager.is_face_tracker_running = false
 		face_tracker_button.text = RUN_FACE_TRACKER_TEXT
-
-		OpenSeeGd.stop_receiver()
 
 		AppManager.log_message("Face tracker stopped.")
 
