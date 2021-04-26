@@ -41,6 +41,9 @@ func _ready() -> void:
 # Private functions                                                           #
 ###############################################################################
 
+func _modify_blend_shape(mesh_instance: MeshInstance, blend_shape: String, value: float) -> void:
+	mesh_instance.set("blend_shapes/%s" % blend_shape, value)
+
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
@@ -90,6 +93,9 @@ func rotate_head_pose_only(v: Vector3) -> void:
 	skeleton.set_bone_pose(head_bone_id, head_transform)
 
 func move_head(translation: Vector3, rotation: Vector3) -> void:
+	if not is_head_bone_id_set():
+		return
+	
 	var head_transform: Transform = Transform()
 	head_transform = head_transform.translated(translation)
 	head_transform = head_transform.rotated(Vector3.RIGHT, rotation.x)
@@ -106,5 +112,5 @@ func move_head(translation: Vector3, rotation: Vector3) -> void:
 		for bone in additional_bones_to_pose_names:
 			skeleton.set_bone_pose(additional_bone_ids[bone], additional_transform)
 
-func move_eyes() -> void:
-	pass
+func is_head_bone_id_set() -> bool:
+	return head_bone_id and head_bone_id > -1

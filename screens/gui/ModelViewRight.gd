@@ -57,6 +57,12 @@ func _generate_properties(p_initial_properties: Dictionary = {}) -> void:
 		data_source = main_screen.model_display_screen
 
 	_create_element(ElementType.LABEL, "tracking_options", "Tracking Options")
+	
+	var head_bone_name: String = ""
+	if current_model.is_head_bone_id_set():
+		head_bone_name = current_model.HEAD_BONE
+	_create_element(ElementType.INPUT, "head_bone", "Head Bone", head_bone_name, TYPE_STRING)
+	
 	_create_element(ElementType.CHECK_BOX, "apply_translation", "Apply Translation",
 			data_source.apply_translation)
 
@@ -94,6 +100,8 @@ func _apply_properties() -> void:
 				current_model.rotation_damp = c.get_value()
 			"additional_bone_damp":
 				current_model.additional_bone_damp = c.get_value()
+			"head_bone":
+				current_model.head_bone_id = current_model.skeleton.find_bone(c.get_value())
 			"apply_translation":
 				main_screen.model_display_screen.apply_translation = c.get_value()
 			"apply_rotation":
