@@ -73,7 +73,7 @@ func _on_gui_toggle_set(toggle_name: String) -> void:
 
 func _on_add_prop_button_pressed() -> void:
 	# TODO testing
-	_create_prop("res://entities/VisualizationRectangle.tscn", Transform(), Transform())
+	_create_prop("res://entities/local/hot-tub/HotTub.tscn", Transform(), Transform())
 
 ###############################################################################
 # Private functions                                                           #
@@ -255,7 +255,7 @@ func apply_properties(data: Dictionary) -> void:
 		return
 	if instanced_props.has(data["name"]):
 		# TODO this is gross
-		if data["name"] is Spatial:
+		if instanced_props[data["name"]] is Spatial:
 			prop_to_move = instanced_props[data["name"]]
 			if data["move_prop"]:
 				should_move_prop = true
