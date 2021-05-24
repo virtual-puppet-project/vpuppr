@@ -44,7 +44,7 @@ const FirstPersonParser: Dictionary = {
 	"ThirdPersonOnly": FirstPersonFlag.ThirdPersonOnly,
 }
 
-const USE_COMPAT_SHADER = true
+const USE_COMPAT_SHADER = false
 
 var vrm_mappings: VRMMappings = VRMMappings.new()
 
