@@ -53,7 +53,7 @@ func _generate_bone_list() -> void:
 	# TODO test this with a vrm model
 	# yield(get_tree().create_timer(1.0), "timeout")
 
-	_create_element(ElementType.LABEL, "bone_list", "Bone List")
+	_create_element(ElementType.LABEL, "bone_list", AppManager.tm.get_value("model_view_bone_list"))
 	
 	var bone_values = current_model.get_mapped_bones()
 	for bone_name in bone_values.keys():

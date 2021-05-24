@@ -23,6 +23,8 @@ const DEFAULT_SAVE_FILE: Dictionary = {
 	"models": {} # String: Dictionary
 }
 
+onready var tm: TranslationManager = TranslationManager.new()
+
 # Face tracker
 var is_face_tracker_running: bool
 var face_tracker_pid: int
