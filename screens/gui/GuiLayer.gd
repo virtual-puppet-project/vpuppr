@@ -1,11 +1,12 @@
 extends CanvasLayer
 
 const MODEL_VIEW: Resource = preload("res://screens/gui/ModelView.tscn")
-const MODEL_VIEW_LEFT: Resource = preload("res://screens/gui/ModelViewLeft.tscn")
-const MODEL_VIEW_RIGHT: Resource = preload("res://screens/gui/ModelViewRight.tscn")
+#const MODEL_VIEW_LEFT: Resource = preload("res://screens/gui/ModelViewLeft.tscn")
+#const MODEL_VIEW_RIGHT: Resource = preload("res://screens/gui/ModelViewRight.tscn")
 
-const POSE_VIEW_LEFT: Resource = preload("res://screens/gui/PoseViewLeft.tscn")
-const POSE_VIEW_RIGHT: Resource = preload("res://screens/gui/PoseViewRight.tscn")
+const POSE_VIEW: Resource = preload("res://screens/gui/PoseView.tscn")
+#const POSE_VIEW_LEFT: Resource = preload("res://screens/gui/PoseViewLeft.tscn")
+#const POSE_VIEW_RIGHT: Resource = preload("res://screens/gui/PoseViewRight.tscn")
 
 const FEATURE_VIEW_LEFT: Resource = preload("res://screens/gui/FeatureViewLeft.tscn")
 const FEATURE_VIEW_RIGHT: Resource = preload("res://screens/gui/FeatureViewRight.tscn")
@@ -21,13 +22,16 @@ enum Views { NONE = 0, MODEL, POSE, FEATURES, PRESETS, APP_SETTINGS }
 onready var button_bar: ButtonBar = $TopContainer/ButtonBar
 onready var left_container: MarginContainer = $LeftContainer
 onready var right_container: MarginContainer = $RightContainer
+onready var top_container: MarginContainer = $TopContainer
+onready var bottom_container: MarginContainer = $BottomContainer
 
 var model_view: ModelView
 # var model_view_left: BaseSidebar
 # var model_view_right: BaseSidebar
 
-var pose_view_left: BaseSidebar
-var pose_view_right: BaseSidebar
+var pose_view: PoseView
+#var pose_view_left: BaseSidebar
+#var pose_view_right: BaseSidebar
 
 var feature_view_left: BaseSidebar
 var feature_view_right: BaseSidebar
@@ -39,6 +43,7 @@ var app_settings_view_left: BaseSidebar
 var app_settings_view_right: BaseSidebar
 
 var current_view: int = Views.MODEL
+var should_hide: bool = false
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -58,11 +63,20 @@ func _ready() -> void:
 	_construct_views()
 	model_view = MODEL_VIEW.instance()
 	call_deferred("add_child", model_view)
+	pose_view = POSE_VIEW.instance()
+	pose_view.visible = false
+	call_deferred("add_child", pose_view)
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_gui"):
-		for c in get_children():
-			c.visible = not c.visible
+		should_hide = not should_hide
+		if should_hide:
+			for c in get_children():
+				c.visible = false
+		else:
+			top_container.visible = true
+			bottom_container.visible = true
+			_toggle_view(current_view)
 
 ###############################################################################
 # Connections                                                                 #
@@ -87,7 +101,7 @@ func _on_properties_applied() -> void:
 	# Wait for sidebars to update
 	yield(get_tree(), "idle_frame")
 
-	for i in [model_view, pose_view_left, pose_view_right,
+	for i in [model_view, pose_view,
 			feature_view_left, feature_view_right, preset_view_left, preset_view_right,
 			app_settings_view_left, app_settings_view_right]:
 		AppManager.update_config(i.name, i.save())
@@ -115,8 +129,7 @@ func _toggle_view(view: int) -> void:
 		Views.MODEL:
 			model_view.visible = not model_view.visible
 		Views.POSE:
-			pose_view_left.visible = not pose_view_left.visible
-			pose_view_right.visible = not pose_view_right.visible
+			pose_view.visible = not pose_view.visible
 		Views.FEATURES:
 			feature_view_left.visible = not feature_view_left.visible
 			feature_view_right.visible = not feature_view_right.visible
@@ -131,7 +144,7 @@ func _toggle_view(view: int) -> void:
 
 func _construct_views() -> void:
 	# TODO removed Views.MODEL for testing
-	for i in [Views.POSE, Views.FEATURES, Views.PRESETS, Views.APP_SETTINGS]:
+	for i in [Views.FEATURES, Views.PRESETS, Views.APP_SETTINGS]:
 		var new_left_content: Control
 		var new_right_content: Control
 		
@@ -141,11 +154,11 @@ func _construct_views() -> void:
 #				model_view_right = MODEL_VIEW_RIGHT.instance()
 #				new_left_content = model_view_left
 #				new_right_content = model_view_right
-			Views.POSE:
-				pose_view_left = POSE_VIEW_LEFT.instance()
-				pose_view_right = POSE_VIEW_RIGHT.instance()
-				new_left_content = pose_view_left
-				new_right_content = pose_view_right
+#			Views.POSE:
+#				pose_view_left = POSE_VIEW_LEFT.instance()
+#				pose_view_right = POSE_VIEW_RIGHT.instance()
+#				new_left_content = pose_view_left
+#				new_right_content = pose_view_right
 			Views.FEATURES:
 				feature_view_left = FEATURE_VIEW_LEFT.instance()
 				feature_view_right = FEATURE_VIEW_RIGHT.instance()
