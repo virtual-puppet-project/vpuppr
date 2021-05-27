@@ -13,8 +13,7 @@ var mapped_bones: Array = []
 ###############################################################################
 
 func _ready() -> void:
-	if (main_screen.model_display_screen and main_screen.model_display_screen.model):
-		_setup()
+	_setup()
 
 ###############################################################################
 # Connections                                                                 #
@@ -37,17 +36,8 @@ func _on_load_model_button_pressed() -> void:
 # Private functions                                                           #
 ###############################################################################
 
-func _setup() -> void:
-	current_model = main_screen.model_display_screen.model
-
-	var loaded_config: Dictionary = AppManager.get_sidebar_config_safe(self.name)
-	
-	_setup_left(loaded_config)
-
-	_setup_right(loaded_config)
-
 ###
-# Left container related functions
+# Left
 ###
 
 func _setup_left(config: Dictionary) -> void:
@@ -97,13 +87,13 @@ static func _get_mapped_bones(bone_list: Array) -> Array:
 	return result
 
 ###
-# Right container related functions
+# Right
 ###
 
 func _setup_right(config: Dictionary) -> void:
 	if not config.empty():
 		for key in config["right"].keys():
-			initial_properties[key] = config[key]
+			initial_properties[key] = config["right"][key]
 		_generate_properties(initial_properties)
 		_apply_properties()
 	else:
@@ -209,6 +199,21 @@ func save() -> Dictionary:
 	var result: Dictionary = {}
 
 	# Left container
-	result["mapped_bones"] = mapped_bones
+	result["left"] = {}
+	result["left"]["mapped_bones"] = mapped_bones
+
+	# Right container
+	result["right"] = {}
+	for c in right_container.get_inner_children():
+		if c is InputLabel:
+			if c.line_edit.text.empty():
+				continue
+			elif (c.line_edit_type == TYPE_REAL and not c.line_edit.text.is_valid_float()):
+				continue
+
+		if c is CenteredLabel:
+			continue
+
+		result["right"][c.name] = c.get_value()
 
 	return result

@@ -45,6 +45,18 @@ func _on_reset_button_pressed() -> void:
 ###############################################################################
 
 func _setup() -> void:
+	current_model = main_screen.model_display_screen.model
+
+	var loaded_config: Dictionary = AppManager.get_sidebar_config_safe(self.name)
+	
+	_setup_left(loaded_config)
+
+	_setup_right(loaded_config)
+
+func _setup_left(_config: Dictionary) -> void:
+	push_error("Not yet implemented")
+
+func _setup_right(_config: Dictionary) -> void:
 	push_error("Not yet implemented")
 
 func _create_element(element_type: int, element_name: String, element_label_text: String, element_value = null, additional_param = null) -> Control:
