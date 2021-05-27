@@ -2,7 +2,7 @@ extends Node
 
 signal file_to_load_changed(file_path)
 #warning-ignore:unused_signal
-signal model_loaded()
+signal model_loaded() # Used by model scripts to indicate when they are ready
 #warning-ignore:unused_signal
 signal properties_applied()
 #warning-ignore:unused_signal
@@ -89,6 +89,9 @@ func set_file_to_load(file_path: String) -> void:
 	if not app_config["models"].has(current_model_name):
 		app_config["models"][current_model_name] = {}
 	emit_signal("file_to_load_changed", file_path)
+
+func model_is_loaded() -> void:
+	emit_signal("model_loaded")
 
 func load_config() -> Dictionary:
 	log_message("Begin loading data")
