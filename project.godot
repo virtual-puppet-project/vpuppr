@@ -10,6 +10,11 @@ config_version=4
 
 _global_script_classes=[ {
 "base": "MarginContainer",
+"class": "BaseContainer",
+"language": "GDScript",
+"path": "res://screens/gui/BaseContainer.gd"
+}, {
+"base": "MarginContainer",
 "class": "BaseMenuItem",
 "language": "GDScript",
 "path": "res://screens/gui/elements/BaseMenuItem.gd"
@@ -23,6 +28,11 @@ _global_script_classes=[ {
 "class": "BaseSidebar",
 "language": "GDScript",
 "path": "res://screens/gui/BaseSidebar.gd"
+}, {
+"base": "Control",
+"class": "BaseView",
+"language": "GDScript",
+"path": "res://screens/gui/BaseView.gd"
 }, {
 "base": "Spatial",
 "class": "BasicModel",
@@ -94,6 +104,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://screens/ModelDisplayScreen.gd"
 }, {
+"base": "BaseView",
+"class": "ModelView",
+"language": "GDScript",
+"path": "res://screens/gui/ModelView.gd"
+}, {
 "base": "Node",
 "class": "OpenSeeGD",
 "language": "GDScript",
@@ -120,9 +135,11 @@ _global_script_classes=[ {
 "path": "res://addons/vrm/vrm_toplevel.gd"
 } ]
 _global_script_class_icons={
+"BaseContainer": "",
 "BaseMenuItem": "",
 "BaseProp": "",
 "BaseSidebar": "",
+"BaseView": "",
 "BasicModel": "",
 "BasicPhysicsAttachment": "",
 "ButtonBar": "",
@@ -137,6 +154,7 @@ _global_script_class_icons={
 "JSONUtil": "",
 "MainScreen": "",
 "ModelDisplayScreen": "",
+"ModelView": "",
 "OpenSeeGD": "",
 "ToggleLabel": "",
 "TranslationManager": "",
