@@ -22,6 +22,7 @@ onready var inner: VBoxContainer = $MarginContainer/Outer/ScrollContainer/Inner
 
 func add_to_outer(value: Control) -> void:
 	outer.add_child(value)
+	outer.move_child(value, 0)
 
 func add_to_inner(value: Control) -> void:
 	inner.add_child(value)

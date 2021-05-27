@@ -13,7 +13,8 @@ var mapped_bones: Array = []
 ###############################################################################
 
 func _ready() -> void:
-	_setup()
+	if (main_screen.model_display_screen and main_screen.model_display_screen.model):
+		_setup()
 
 ###############################################################################
 # Connections                                                                 #
@@ -117,7 +118,12 @@ func _setup_right(config: Dictionary) -> void:
 	
 	var load_model_button: Button = Button.new()
 	load_model_button.name = "load_model_button"
+	load_model_button.text = "Load model"
+	load_model_button.size_flags_vertical = SIZE_EXPAND_FILL
+	load_model_button.size_flags_stretch_ratio = 0.1
+	load_model_button.focus_mode = FOCUS_NONE
 	load_model_button.connect("pressed", self, "_on_load_model_button_pressed")
+	right_container.add_to_outer(load_model_button)
 
 func _generate_properties(p_initial_properties: Dictionary = {}) -> void:
 	right_container.clear_children()
