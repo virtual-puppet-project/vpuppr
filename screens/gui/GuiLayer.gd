@@ -1,5 +1,6 @@
 extends CanvasLayer
 
+const MODEL_VIEW: Resource = preload("res://screens/gui/ModelView.tscn")
 const MODEL_VIEW_LEFT: Resource = preload("res://screens/gui/ModelViewLeft.tscn")
 const MODEL_VIEW_RIGHT: Resource = preload("res://screens/gui/ModelViewRight.tscn")
 
@@ -21,8 +22,9 @@ onready var button_bar: ButtonBar = $TopContainer/ButtonBar
 onready var left_container: MarginContainer = $LeftContainer
 onready var right_container: MarginContainer = $RightContainer
 
-var model_view_left: BaseSidebar
-var model_view_right: BaseSidebar
+var model_view: ModelView
+# var model_view_left: BaseSidebar
+# var model_view_right: BaseSidebar
 
 var pose_view_left: BaseSidebar
 var pose_view_right: BaseSidebar
@@ -51,7 +53,11 @@ func _ready() -> void:
 
 	AppManager.connect("properties_applied", self, "_on_properties_applied")
 
+	yield(AppManager, "model_loaded")
+	
 	_construct_views()
+	model_view = MODEL_VIEW.instance()
+	call_deferred("add_child", model_view)
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_gui"):
@@ -81,7 +87,7 @@ func _on_properties_applied() -> void:
 	# Wait for sidebars to update
 	yield(get_tree(), "idle_frame")
 
-	for i in [model_view_left, model_view_right, pose_view_left, pose_view_right,
+	for i in [model_view, pose_view_left, pose_view_right,
 			feature_view_left, feature_view_right, preset_view_left, preset_view_right,
 			app_settings_view_left, app_settings_view_right]:
 		AppManager.update_config(i.name, i.save())
@@ -107,8 +113,7 @@ func _toggle_view(view: int) -> void:
 		Views.NONE:
 			pass
 		Views.MODEL:
-			model_view_left.visible = not model_view_left.visible
-			model_view_right.visible = not model_view_right.visible
+			model_view.visible = not model_view.visible
 		Views.POSE:
 			pose_view_left.visible = not pose_view_left.visible
 			pose_view_right.visible = not pose_view_right.visible
@@ -125,16 +130,17 @@ func _toggle_view(view: int) -> void:
 			AppManager.log_message("Unhandled view in GuiLayer %s" % view)
 
 func _construct_views() -> void:
-	for i in [Views.MODEL, Views.POSE, Views.FEATURES, Views.PRESETS, Views.APP_SETTINGS]:
+	# TODO removed Views.MODEL for testing
+	for i in [Views.POSE, Views.FEATURES, Views.PRESETS, Views.APP_SETTINGS]:
 		var new_left_content: Control
 		var new_right_content: Control
 		
 		match i:
-			Views.MODEL:
-				model_view_left = MODEL_VIEW_LEFT.instance()
-				model_view_right = MODEL_VIEW_RIGHT.instance()
-				new_left_content = model_view_left
-				new_right_content = model_view_right
+#			Views.MODEL:
+#				model_view_left = MODEL_VIEW_LEFT.instance()
+#				model_view_right = MODEL_VIEW_RIGHT.instance()
+#				new_left_content = model_view_left
+#				new_right_content = model_view_right
 			Views.POSE:
 				pose_view_left = POSE_VIEW_LEFT.instance()
 				pose_view_right = POSE_VIEW_RIGHT.instance()
