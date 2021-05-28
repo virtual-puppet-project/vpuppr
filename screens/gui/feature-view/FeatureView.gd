@@ -11,7 +11,7 @@ var main_light: Light
 var world_environment: WorldEnvironment
 
 # Props
-var instanced_props: Dictionary = {} # String: Spatial
+var instanced_props: Dictionary = {} # String: PropData
 var prop_to_move: Spatial
 
 var is_left_clicking: bool = false
@@ -23,8 +23,12 @@ var mouse_move_strength: float = 0.002
 var scroll_strength: float = 0.05
 
 class PropData:
+	var object: Node
 	var data: Dictionary
-	var object: Spatial
+
+	func _init(p_object: Node, p_data: Dictionary) -> void:
+		object = p_object
+		data = p_data
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -65,9 +69,8 @@ func _on_reset_button_pressed() -> void:
 
 func _on_gui_toggle_set(toggle_name: String) -> void:
 	# Courtesy null check
-	var toggle_label: ToggleLabel = left_container.inner.get_node_or_null(toggle_name)
-	if toggle_label:
-		_create_prop_info_display(toggle_label.get_meta(PROP_DETAILS_META_KEY))
+	if instanced_props.has(toggle_name):
+		_create_prop_info_display(toggle_name, instanced_props[toggle_name].data)
 	else:
 		AppManager.log_message("ToggleLabel %s not found in %s" % [toggle_name, self.name])
 
@@ -124,52 +127,57 @@ func _generate_properties(p_initial_properties: Dictionary = {}) -> void:
 			"Built-in Props"))
 
 	# Main light
-	left_container.add_to_inner(_create_custom_toggle(main_light.name, "Main Light", {
-		"name": main_light.name,
-		# Light
-		"light_color": {
-			"type": TYPE_COLOR,
-			"value": main_light.light_color
-		},
-		"light_energy": {
-			"type": TYPE_REAL,
-			"value": main_light.light_energy
-		},
-		"light_indirect_energy": {
-			"type": TYPE_REAL,
-			"value": main_light.light_indirect_energy
-		},
-		"light_specular": {
-			"type": TYPE_REAL,
-			"value": main_light.light_specular
-		},
-		# Shadow
-		"shadow_enabled": {
-			"type": TYPE_BOOL,
-			"value": main_light.shadow_enabled
-		}
-	}))
+	left_container.add_to_inner(_create_element(ElementType.TOGGLE, main_light.name, "Main Light", false, true))
 
 	# World environment
-	left_container.add_to_inner(_create_custom_toggle(world_environment.name, "World Environment", {
-		"name": world_environment.name,
-		# Ambient light
-		"ambient_light_color": {
-			"type": TYPE_COLOR,
-			"value": world_environment.environment.ambient_light_color
-		},
-		"ambient_light_energy": {
-			"type": TYPE_REAL,
-			"value": world_environment.environment.ambient_light_energy
-		},
-		"ambient_light_contribution": {
-			"type": TYPE_REAL,
-			"value": world_environment.environment.ambient_light_sky_contribution
-		}
-	}))
+	left_container.add_to_inner(_create_element(ElementType.TOGGLE, world_environment.name, "Environment", false, true))
 
-	instanced_props[main_light.name] = main_light
-	instanced_props[world_environment.name] = world_environment
+	instanced_props[main_light.name] = PropData.new(
+		main_light,
+		{
+			# Light
+			"light_color": {
+				"type": TYPE_COLOR,
+				"value": main_light.light_color
+			},
+			"light_energy": {
+				"type": TYPE_REAL,
+				"value": main_light.light_energy
+			},
+			"light_indirect_energy": {
+				"type": TYPE_REAL,
+				"value": main_light.light_indirect_energy
+			},
+			"light_specular": {
+				"type": TYPE_REAL,
+				"value": main_light.light_specular
+			},
+			# Shadow
+			"shadow_enabled": {
+				"type": TYPE_BOOL,
+				"value": main_light.shadow_enabled
+			}
+		}
+	)
+
+	instanced_props[world_environment.name] = PropData.new(
+		world_environment,
+		{
+			# Ambient light
+			"ambient_light_color": {
+				"type": TYPE_COLOR,
+				"value": world_environment.environment.ambient_light_color
+			},
+			"ambient_light_energy": {
+				"type": TYPE_REAL,
+				"value": world_environment.environment.ambient_light_energy
+			},
+			"ambient_light_contribution": {
+				"type": TYPE_REAL,
+				"value": world_environment.environment.ambient_light_sky_contribution
+			}
+		}
+	)
 
 	# Custom props
 
@@ -183,9 +191,7 @@ func _generate_properties(p_initial_properties: Dictionary = {}) -> void:
 	for p in instanced_props.keys():
 		if (p == main_light.name or p == world_environment.name):
 			continue
-		left_container.add_to_inner(_create_custom_toggle(instanced_props[p].name, instanced_props[p].name.capitalize(), {
-			"name": "%s" % instanced_props[p].name
-		}))
+		left_container.add_to_inner(_create_element(ElementType.TOGGLE, p, p, false, true))
 
 # TODO setting data on the meta property doesn't seem like a good idea
 func _create_custom_toggle(element_name: String, display_name: String, data: Dictionary) -> Control:
@@ -194,7 +200,6 @@ func _create_custom_toggle(element_name: String, display_name: String, data: Dic
 	
 	data is in the format:
 	{
-		"name": "some-string", <- must be the name of the linked prop 
 		"property_name": {
 			"type": int, <-- uses builtin type enums
 			"value": some_value
@@ -211,7 +216,7 @@ func _create_custom_toggle(element_name: String, display_name: String, data: Dic
 	return toggle_label
 
 func _create_prop(prop_path: String, parent_transform: Transform, 
-		child_transform: Transform, should_create_toggle: bool = true) -> void:
+		child_transform: Transform) -> void:
 	var prop_parent: Spatial = Spatial.new()
 	prop_parent.set_script(load(BASE_PROP_SCRIPT_PATH))
 
@@ -232,27 +237,26 @@ func _create_prop(prop_path: String, parent_transform: Transform,
 		prop.transform = child_transform
 
 		main_screen.model_display_screen.add_child(prop_parent)
-		instanced_props[prop_parent.name] = prop_parent
 
-		if should_create_toggle:
-			left_container.add_to_inner(_create_custom_toggle(prop_parent.name, prop_parent.name.capitalize(), {
-				"name": "%s" % prop_parent.name
-			}))
+		# TODO add more ways to interact with custom props
+		var prop_data: PropData = PropData.new(prop_parent, {})
+		instanced_props[prop_parent.name] = prop_data
+		left_container.add_to_inner(_create_element(ElementType.TOGGLE, prop_parent.name,
+				prop_parent.name.capitalize(), false, true))
+		
 	else: # If the prop was not loaded properly, don't cause a memory leak
 		prop_parent.free()
 
-func _create_prop_info_display(data: Dictionary) -> void:
+func _create_prop_info_display(prop_name: String, data: Dictionary) -> void:
 	right_container.clear_children()
 	
-	right_container.add_to_inner(_create_element(ElementType.LABEL, data["name"], data["name"]))
+	right_container.add_to_inner(_create_element(ElementType.LABEL, prop_name, prop_name))
 
 	right_container.add_to_inner(_create_element(ElementType.TOGGLE, "move_prop", "Move Prop", false, false))
 	right_container.add_to_inner(_create_element(ElementType.TOGGLE, "spin_prop", "Spin Prop", false, false))
 	right_container.add_to_inner(_create_element(ElementType.TOGGLE, "zoom_prop", "Zoom Prop", false, false))
 
 	for key in data.keys():
-		if key == "name":
-			continue
 		var element_type: int
 		match data[key]["type"]:
 			TYPE_STRING:
@@ -278,8 +282,8 @@ func _apply_properties() -> void:
 	should_zoom_prop = false
 	for c in right_container.get_inner_children():
 		if c is CenteredLabel:
-			if instanced_props[c.get_value()] is Spatial:
-				prop_to_move = instanced_props[c.get_value()]
+			if instanced_props[c.get_value()].object is Spatial:
+				prop_to_move = instanced_props[c.get_value()].object
 		else:
 			match c.name:
 				"move_prop":
@@ -323,7 +327,7 @@ func save() -> Dictionary:
 			we["ambient_light_sky_contribution"] = world_environment.environment.ambient_light_sky_contribution
 
 			result[world_environment.name] = we
-		elif instanced_props[i].has_method("save"):
-			result["instanced_props"].append(instanced_props[i].save())
+		elif instanced_props[i].object.has_method("save"):
+			result["instanced_props"].append(instanced_props[i].object.save())
 
 	return result
