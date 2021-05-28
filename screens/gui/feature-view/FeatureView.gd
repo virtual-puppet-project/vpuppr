@@ -106,6 +106,8 @@ func _setup_left(config: Dictionary) -> void:
 	current_model = main_screen.model_display_screen.model
 	main_light = main_screen.light_container.get_child(0)
 	world_environment = main_screen.world_environment
+	
+	instanced_props.clear()
 
 	if not config.empty():
 		for key in config.keys():
@@ -134,7 +136,7 @@ func _setup_left(config: Dictionary) -> void:
 	_generate_properties()
 
 func _setup_right(_config: Dictionary) -> void:
-	right_container.add_to_outer(_create_element(ElementType.LABEL, "prop_details",
+	right_container.add_to_inner(_create_element(ElementType.LABEL, "prop_details",
 			"Prop Details"))
 
 func _generate_properties(p_initial_properties: Dictionary = {}) -> void:
@@ -228,6 +230,16 @@ func _create_prop(prop_path: String, parent_transform: Transform,
 			var import_vrm: ImportVRM = ImportVRM.new()
 			prop = import_vrm.import_scene(prop_path, 1, 1000)
 			prop.name = prop_path.get_file().trim_suffix(prop_path.get_extension())
+		"png", "jpg", "jpeg":
+			var texture: Texture = ImageTexture.new()
+			var image: Image = Image.new()
+			var error = image.load(prop_path)
+			if error != OK:
+				continue
+			texture.create_from_image(image, 0)
+			prop = Sprite3D.new()
+			prop.texture = texture
+			prop.name = prop_path.get_file().trim_suffix(prop_path.get_extension())
 	if prop:
 		prop_parent.name = prop.name
 		prop_parent.add_child(prop)
@@ -301,7 +313,7 @@ func _apply_properties() -> void:
 				"zoom_prop":
 					if c.get_value():
 						should_zoom_prop = true
-				"delete_prop":
+				"delete_prop", "prop_details":
 					pass
 				_:
 					prop_to_move.set(c.name, c.get_value())

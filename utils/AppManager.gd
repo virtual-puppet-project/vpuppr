@@ -50,7 +50,7 @@ func _ready() -> void:
 	if not OS.is_debug_build():
 		save_directory_path = OS.get_executable_path().get_base_dir()
 	else:
-		save_directory_path = "res://export/"
+		save_directory_path = "res://export"
 
 	app_config = load_config()
 
