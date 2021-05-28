@@ -129,6 +129,9 @@ func _ready() -> void:
 	model_parent_initial_transform = model_parent.transform
 	model_parent.call_deferred("add_child", model)
 	
+	# Wait until the model is loaded else we get IK errors
+	yield(model_parent, "ready")
+	
 	# TODO refactor the IK stuff to be less gross
 	# Add IK cube helpers
 	left_ik_cube = IK_CUBE.instance()

@@ -1,7 +1,7 @@
 class_name ModelView
 extends BaseView
 
-const MODEL_SELECTION_POPUP: Resource = preload("res://screens/gui/ModelSelectionPopup.tscn")
+const MODEL_SELECTION_POPUP: Resource = preload("res://screens/gui/model-view/ModelSelectionPopup.tscn")
 
 var initial_properties: Dictionary = {}
 

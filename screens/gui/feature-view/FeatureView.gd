@@ -22,6 +22,10 @@ var should_zoom_prop: bool = false
 var mouse_move_strength: float = 0.002
 var scroll_strength: float = 0.05
 
+class PropData:
+	var data: Dictionary
+	var object: Spatial
+
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
@@ -90,17 +94,21 @@ func _setup_left(config: Dictionary) -> void:
 						_create_prop(
 							p["prop_path"],
 							JSONUtil.dictionary_to_transform(p["parent_prop_transform"]),
-							JSONUtil.dictionary_to_transform(p["child_prop_transform"]),
-							true
+							JSONUtil.dictionary_to_transform(p["child_prop_transform"])
 						)
 				main_light.name:
 					var light_data: Dictionary = config[key]
 					main_light.light_color = JSONUtil.dictionary_to_color(light_data["light_color"])
 					main_light.light_energy = light_data["light_energy"]
-					main_light.light_indirect_energy = light_data["light_indirect_engergy"]
+					main_light.light_indirect_energy = light_data["light_indirect_energy"]
 					main_light.light_specular = light_data["light_specular"]
 					if light_data.has("shadow_enabled"):
 						main_light.shadow_enabled = light_data["shadow_enabled"]
+				world_environment.name:
+					var env_data: Dictionary = config[key]
+					world_environment.environment.ambient_light_color = JSONUtil.dictionary_to_color(env_data["ambient_light_color"])
+					world_environment.environment.ambient_light_energy = env_data["ambient_light_energy"]
+					world_environment.environment.ambient_light_sky_contribution = env_data["ambient_light_sky_contribution"]
 	
 	_generate_properties()
 
@@ -172,6 +180,12 @@ func _generate_properties(p_initial_properties: Dictionary = {}) -> void:
 			"function_name": "_on_add_prop_button_pressed"
 		}
 	))
+	for p in instanced_props.keys():
+		if (p == main_light.name or p == world_environment.name):
+			continue
+		left_container.add_to_inner(_create_custom_toggle(instanced_props[p].name, instanced_props[p].name.capitalize(), {
+			"name": "%s" % instanced_props[p].name
+		}))
 
 # TODO setting data on the meta property doesn't seem like a good idea
 func _create_custom_toggle(element_name: String, display_name: String, data: Dictionary) -> Control:
@@ -264,7 +278,8 @@ func _apply_properties() -> void:
 	should_zoom_prop = false
 	for c in right_container.get_inner_children():
 		if c is CenteredLabel:
-			prop_to_move = instanced_props[c.get_value()]
+			if instanced_props[c.get_value()] is Spatial:
+				prop_to_move = instanced_props[c.get_value()]
 		else:
 			match c.name:
 				"move_prop":
@@ -287,4 +302,28 @@ func _reset_properties() -> void:
 # Public functions                                                            #
 ###############################################################################
 
+func save() -> Dictionary:
+	var result: Dictionary = {}
 
+	result["instanced_props"] = []
+	for i in instanced_props.keys():
+		if i == main_light.name:
+			var ml: Dictionary = {}
+			ml["light_color"] = JSONUtil.color_to_dictionary(main_light.light_color)
+			ml["light_energy"] = main_light.light_energy
+			ml["light_indirect_energy"] = main_light.light_indirect_energy
+			ml["light_specular"] = main_light.light_specular
+			ml["shadow_enabled"] = main_light.shadow_enabled
+
+			result[main_light.name] = ml
+		elif i == world_environment.name:
+			var we: Dictionary = {}
+			we["ambient_light_color"] = JSONUtil.color_to_dictionary(world_environment.environment.ambient_light_color)
+			we["ambient_light_energy"] = world_environment.environment.ambient_light_energy
+			we["ambient_light_sky_contribution"] = world_environment.environment.ambient_light_sky_contribution
+
+			result[world_environment.name] = we
+		elif instanced_props[i].has_method("save"):
+			result["instanced_props"].append(instanced_props[i].save())
+
+	return result

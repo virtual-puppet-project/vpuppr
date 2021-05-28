@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "BaseView",
+"class": "AppSettingsView",
+"language": "GDScript",
+"path": "res://screens/gui/app-settings-view/AppSettingsView.gd"
+}, {
 "base": "MarginContainer",
 "class": "BaseContainer",
 "language": "GDScript",
@@ -23,11 +28,6 @@ _global_script_classes=[ {
 "class": "BaseProp",
 "language": "GDScript",
 "path": "res://entities/BaseProp.gd"
-}, {
-"base": "Control",
-"class": "BaseSidebar",
-"language": "GDScript",
-"path": "res://screens/gui/BaseSidebar.gd"
 }, {
 "base": "Control",
 "class": "BaseView",
@@ -72,7 +72,7 @@ _global_script_classes=[ {
 "base": "BaseView",
 "class": "FeatureView",
 "language": "GDScript",
-"path": "res://screens/gui/FeatureView.gd"
+"path": "res://screens/gui/feature-view/FeatureView.gd"
 }, {
 "base": "MeshInstance",
 "class": "IKCube",
@@ -112,7 +112,7 @@ _global_script_classes=[ {
 "base": "BaseView",
 "class": "ModelView",
 "language": "GDScript",
-"path": "res://screens/gui/ModelView.gd"
+"path": "res://screens/gui/model-view/ModelView.gd"
 }, {
 "base": "Node",
 "class": "OpenSeeGD",
@@ -122,7 +122,12 @@ _global_script_classes=[ {
 "base": "BaseView",
 "class": "PoseView",
 "language": "GDScript",
-"path": "res://screens/gui/PoseView.gd"
+"path": "res://screens/gui/pose-view/PoseView.gd"
+}, {
+"base": "BaseView",
+"class": "PresetView",
+"language": "GDScript",
+"path": "res://screens/gui/preset-view/PresetView.gd"
 }, {
 "base": "BaseMenuItem",
 "class": "ToggleLabel",
@@ -145,10 +150,10 @@ _global_script_classes=[ {
 "path": "res://addons/vrm/vrm_toplevel.gd"
 } ]
 _global_script_class_icons={
+"AppSettingsView": "",
 "BaseContainer": "",
 "BaseMenuItem": "",
 "BaseProp": "",
-"BaseSidebar": "",
 "BaseView": "",
 "BasicModel": "",
 "BasicPhysicsAttachment": "",
@@ -168,6 +173,7 @@ _global_script_class_icons={
 "ModelView": "",
 "OpenSeeGD": "",
 "PoseView": "",
+"PresetView": "",
 "ToggleLabel": "",
 "TranslationManager": "",
 "VRMMappings": "",
