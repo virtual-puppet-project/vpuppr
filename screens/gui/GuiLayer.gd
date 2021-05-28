@@ -8,8 +8,9 @@ const POSE_VIEW: Resource = preload("res://screens/gui/PoseView.tscn")
 #const POSE_VIEW_LEFT: Resource = preload("res://screens/gui/PoseViewLeft.tscn")
 #const POSE_VIEW_RIGHT: Resource = preload("res://screens/gui/PoseViewRight.tscn")
 
-const FEATURE_VIEW_LEFT: Resource = preload("res://screens/gui/FeatureViewLeft.tscn")
-const FEATURE_VIEW_RIGHT: Resource = preload("res://screens/gui/FeatureViewRight.tscn")
+const FEATURE_VIEW: Resource = preload("res://screens/gui/FeatureView.tscn")
+#const FEATURE_VIEW_LEFT: Resource = preload("res://screens/gui/FeatureViewLeft.tscn")
+#const FEATURE_VIEW_RIGHT: Resource = preload("res://screens/gui/FeatureViewRight.tscn")
 
 const PRESET_VIEW_LEFT: Resource = preload("res://screens/gui/PresetViewLeft.tscn")
 const PRESET_VIEW_RIGHT: Resource = preload("res://screens/gui/PresetViewRight.tscn")
@@ -33,8 +34,9 @@ var pose_view: PoseView
 #var pose_view_left: BaseSidebar
 #var pose_view_right: BaseSidebar
 
-var feature_view_left: BaseSidebar
-var feature_view_right: BaseSidebar
+var feature_view: FeatureView
+#var feature_view_left: BaseSidebar
+#var feature_view_right: BaseSidebar
 
 var preset_view_left: BaseSidebar
 var preset_view_right: BaseSidebar
@@ -66,6 +68,9 @@ func _ready() -> void:
 	pose_view = POSE_VIEW.instance()
 	pose_view.visible = false
 	call_deferred("add_child", pose_view)
+	feature_view = FEATURE_VIEW.instance()
+	feature_view.visible = false
+	call_deferred("add_child", feature_view)
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_gui"):
@@ -102,7 +107,7 @@ func _on_properties_applied() -> void:
 	yield(get_tree(), "idle_frame")
 
 	for i in [model_view, pose_view,
-			feature_view_left, feature_view_right, preset_view_left, preset_view_right,
+			feature_view, preset_view_left, preset_view_right,
 			app_settings_view_left, app_settings_view_right]:
 		AppManager.update_config(i.name, i.save())
 
@@ -131,8 +136,7 @@ func _toggle_view(view: int) -> void:
 		Views.POSE:
 			pose_view.visible = not pose_view.visible
 		Views.FEATURES:
-			feature_view_left.visible = not feature_view_left.visible
-			feature_view_right.visible = not feature_view_right.visible
+			feature_view.visible = not feature_view.visible
 		Views.PRESETS:
 			preset_view_left.visible = not preset_view_left.visible
 			preset_view_right.visible = not preset_view_right.visible
@@ -144,7 +148,7 @@ func _toggle_view(view: int) -> void:
 
 func _construct_views() -> void:
 	# TODO removed Views.MODEL for testing
-	for i in [Views.FEATURES, Views.PRESETS, Views.APP_SETTINGS]:
+	for i in [Views.PRESETS, Views.APP_SETTINGS]:
 		var new_left_content: Control
 		var new_right_content: Control
 		
@@ -159,15 +163,15 @@ func _construct_views() -> void:
 #				pose_view_right = POSE_VIEW_RIGHT.instance()
 #				new_left_content = pose_view_left
 #				new_right_content = pose_view_right
-			Views.FEATURES:
-				feature_view_left = FEATURE_VIEW_LEFT.instance()
-				feature_view_right = FEATURE_VIEW_RIGHT.instance()
-				# Connect the right view to the left view to change children on item selected
-				new_left_content = feature_view_left
-				new_right_content = feature_view_right
-				# TODO this is a circular reference with more steps
-				new_left_content.feature_view_right = weakref(new_right_content)
-				new_right_content.feature_view_left = weakref(new_left_content)
+#			Views.FEATURES:
+#				feature_view_left = FEATURE_VIEW_LEFT.instance()
+#				feature_view_right = FEATURE_VIEW_RIGHT.instance()
+#				# Connect the right view to the left view to change children on item selected
+#				new_left_content = feature_view_left
+#				new_right_content = feature_view_right
+#				# TODO this is a circular reference with more steps
+#				new_left_content.feature_view_right = weakref(new_right_content)
+#				new_right_content.feature_view_left = weakref(new_left_content)
 			Views.PRESETS:
 				preset_view_left = PRESET_VIEW_LEFT.instance()
 				preset_view_right = PRESET_VIEW_RIGHT.instance()

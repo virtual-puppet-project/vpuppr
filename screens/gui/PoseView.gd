@@ -1,8 +1,6 @@
 class_name PoseView
 extends BaseView
 
-var initial_properties: Dictionary = {}
-
 # Left
 var should_modify_bone: bool = false
 var bone_to_modify: String

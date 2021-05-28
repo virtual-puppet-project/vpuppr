@@ -69,6 +69,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://screens/gui/elements/ColorPickerLabel.gd"
 }, {
+"base": "BaseView",
+"class": "FeatureView",
+"language": "GDScript",
+"path": "res://screens/gui/FeatureView.gd"
+}, {
 "base": "MeshInstance",
 "class": "IKCube",
 "language": "GDScript",
@@ -152,6 +157,7 @@ _global_script_class_icons={
 "CenteredLabel": "",
 "CheckBoxLabel": "",
 "ColorPickerLabel": "",
+"FeatureView": "",
 "IKCube": "",
 "ImportVRM": "",
 "InputLabel": "",
