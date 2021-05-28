@@ -1,4 +1,5 @@
-extends BaseSidebar
+class_name AppSettingsView
+extends BaseView
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -12,21 +13,23 @@ func _ready() -> void:
 ###############################################################################
 
 func _on_apply_button_pressed() -> void:
-	push_error("Not yet implemented")
+	pass
 
 func _on_reset_button_pressed() -> void:
-	push_error("Not yet implemented")
+	pass
 
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
 
-func _setup() -> void:
+func _setup_left(config: Dictionary) -> void:
+	pass
+
+func _setup_right(config: Dictionary) -> void:
 	pass
 
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
 
-func save() -> Dictionary:
-	return {}
+
