@@ -1,11 +1,12 @@
-extends BaseSidebar
+class_name AppSettingsView
+extends BaseView
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
 func _ready() -> void:
-	pass
+	_setup()
 
 ###############################################################################
 # Connections                                                                 #
@@ -21,9 +22,14 @@ func _on_reset_button_pressed() -> void:
 # Private functions                                                           #
 ###############################################################################
 
+func _setup_left(config: Dictionary) -> void:
+	pass
+
+func _setup_right(config: Dictionary) -> void:
+	pass
+
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
 
-func save() -> Dictionary:
-	return {}
+
