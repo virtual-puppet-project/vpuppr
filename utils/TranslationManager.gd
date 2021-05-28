@@ -18,7 +18,7 @@ func _init() -> void:
 	yield(AppManager, "ready")
 	
 	# Load translation file
-	_load_translation_file("%stranslations/%s.json" % [AppManager.save_directory_path, current_language])
+	_load_translation_file("%s/translations/%s.json" % [AppManager.save_directory_path, current_language])
 
 ###############################################################################
 # Connections                                                                 #
