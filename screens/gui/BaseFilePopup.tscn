@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://screens/gui/BaseFilePopup.gd" type="Script" id=1]
+
+[node name="BaseFilePopup" type="FileDialog"]
+margin_right = 315.0
+margin_bottom = 130.0
+window_title = "Open a File"
+resizable = true
+mode = 0
+access = 2
+show_hidden_files = true
+current_dir = "/"
+current_path = "/"
+script = ExtResource( 1 )

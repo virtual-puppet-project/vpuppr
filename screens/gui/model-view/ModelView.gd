@@ -50,11 +50,12 @@ func _setup_left(config: Dictionary) -> void:
 
 	initial_bone_state = current_model.additional_bones_to_pose_names
 
-	left_container.add_to_outer(_create_element(ElementType.LABEL, "bone_list", "Bone list"))
 	_generate_bone_list()
 
 func _generate_bone_list() -> void:
 	left_container.clear_children()
+
+	left_container.add_to_inner(_create_element(ElementType.LABEL, "bone_list", "Bone list"))
 
 	# TODO a complete list of bones in the model is only accessible from this function
 	# That doesn't seem like it makes sense
@@ -106,14 +107,15 @@ func _setup_right(config: Dictionary) -> void:
 			elif c is InputLabel:
 				initial_properties[c.name] = c.get_value()
 	
-	var load_model_button: Button = Button.new()
-	load_model_button.name = "load_model_button"
-	load_model_button.text = "Load model"
-	load_model_button.size_flags_vertical = SIZE_EXPAND_FILL
-	load_model_button.size_flags_stretch_ratio = 0.1
-	load_model_button.focus_mode = FOCUS_NONE
-	load_model_button.connect("pressed", self, "_on_load_model_button_pressed")
-	right_container.add_to_outer(load_model_button)
+	if not right_container.outer.get_node_or_null("load_model_button"):
+		var load_model_button: Button = Button.new()
+		load_model_button.name = "load_model_button"
+		load_model_button.text = "Load model"
+		load_model_button.size_flags_vertical = SIZE_EXPAND_FILL
+		load_model_button.size_flags_stretch_ratio = 0.1
+		load_model_button.focus_mode = FOCUS_NONE
+		load_model_button.connect("pressed", self, "_on_load_model_button_pressed")
+		right_container.add_to_outer(load_model_button)
 
 func _generate_properties(p_initial_properties: Dictionary = {}) -> void:
 	right_container.clear_children()

@@ -32,4 +32,6 @@ func _setup_right(config: Dictionary) -> void:
 # Public functions                                                            #
 ###############################################################################
 
-
+# TODO fill this out
+func save() -> Dictionary:
+	return {}

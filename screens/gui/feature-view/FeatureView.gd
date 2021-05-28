@@ -1,7 +1,7 @@
 class_name FeatureView
 extends BaseView
 
-const PROP_DETAILS_META_KEY: String = "prop_details"
+const PROP_SELECTION_POPUP: Resource = preload("res://screens/gui/feature-view/PropSelectionPopup.tscn")
 const BASE_PROP_SCRIPT_PATH: String = "res://entities/BaseProp.gd"
 
 var initial_properties: Dictionary = {}
@@ -75,15 +75,33 @@ func _on_gui_toggle_set(toggle_name: String) -> void:
 		AppManager.log_message("ToggleLabel %s not found in %s" % [toggle_name, self.name])
 
 func _on_add_prop_button_pressed() -> void:
-	# TODO testing
-	_create_prop("res://entities/local/hot-tub/HotTub.tscn", Transform(), Transform())
+	var popup: BaseFilePopup = PROP_SELECTION_POPUP.instance()
+	get_parent().add_child(popup)
+
+	yield(popup, "file_selected")
+	var prop_path = popup.file_to_load
+	popup.queue_free()
+	
+	_create_prop(prop_path, Transform(), Transform())
+
+func _on_delete_prop_button_pressed() -> void:
+	var prop_name: String = right_container.inner.get_child(0).name
+	instanced_props[prop_name].object.queue_free()
+	instanced_props.erase(prop_name)
+	for c in left_container.get_inner_children():
+		if c.name == prop_name:
+			c.queue_free()
+			break
+	yield(get_tree(), "idle_frame")
+	right_container.clear_children()
 
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
 
 func _setup_left(config: Dictionary) -> void:
-	AppManager.connect("gui_toggle_set", self, "_on_gui_toggle_set")
+	if not AppManager.is_connected("gui_toggle_set", self, "_on_gui_toggle_set"):
+		AppManager.connect("gui_toggle_set", self, "_on_gui_toggle_set")
 
 	current_model = main_screen.model_display_screen.model
 	main_light = main_screen.light_container.get_child(0)
@@ -193,28 +211,6 @@ func _generate_properties(p_initial_properties: Dictionary = {}) -> void:
 			continue
 		left_container.add_to_inner(_create_element(ElementType.TOGGLE, p, p, false, true))
 
-# TODO setting data on the meta property doesn't seem like a good idea
-func _create_custom_toggle(element_name: String, display_name: String, data: Dictionary) -> Control:
-	"""
-	Assigns data to the node's meta
-	
-	data is in the format:
-	{
-		"property_name": {
-			"type": int, <-- uses builtin type enums
-			"value": some_value
-		},
-		...
-	}
-	"""
-	var toggle_label: ToggleLabel = TOGGLE_LABEL.instance()
-	toggle_label.name = element_name
-	toggle_label.label_text = display_name
-
-	toggle_label.set_meta(PROP_DETAILS_META_KEY, data)
-
-	return toggle_label
-
 func _create_prop(prop_path: String, parent_transform: Transform, 
 		child_transform: Transform) -> void:
 	var prop_parent: Spatial = Spatial.new()
@@ -225,9 +221,13 @@ func _create_prop(prop_path: String, parent_transform: Transform,
 		"tscn":
 			prop = load(prop_path).instance()
 		"glb":
-			AppManager.log_message(
-					"Loading in .glb props is not currently supported @ %s" % self.name)
-
+			var gltf_loader: DynamicGLTFLoader = DynamicGLTFLoader.new()
+			prop = gltf_loader.import_scene(prop_path, 1, 1)
+			prop.name = prop_path.get_file().trim_suffix(prop_path.get_extension())
+		"vrm":
+			var import_vrm: ImportVRM = ImportVRM.new()
+			prop = import_vrm.import_scene(prop_path, 1, 1000)
+			prop.name = prop_path.get_file().trim_suffix(prop_path.get_extension())
 	if prop:
 		prop_parent.name = prop.name
 		prop_parent.add_child(prop)
@@ -275,6 +275,12 @@ func _create_prop_info_display(prop_name: String, data: Dictionary) -> void:
 			data[key]["value"],
 			data[key]["type"]
 		))
+	
+	right_container.add_to_inner(_create_element(ElementType.BUTTON, "delete_prop",
+			"Delete Prop", "Send it", {
+				"object": self,
+				"function_name": "_on_delete_prop_button_pressed"
+			}))
 
 func _apply_properties() -> void:
 	should_move_prop = false
@@ -295,6 +301,8 @@ func _apply_properties() -> void:
 				"zoom_prop":
 					if c.get_value():
 						should_zoom_prop = true
+				"delete_prop":
+					pass
 				_:
 					prop_to_move.set(c.name, c.get_value())
 				
