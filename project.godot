@@ -9,6 +9,16 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "BaseView",
+"class": "AppSettingsView",
+"language": "GDScript",
+"path": "res://screens/gui/app-settings-view/AppSettingsView.gd"
+}, {
+"base": "MarginContainer",
+"class": "BaseContainer",
+"language": "GDScript",
+"path": "res://screens/gui/BaseContainer.gd"
+}, {
 "base": "MarginContainer",
 "class": "BaseMenuItem",
 "language": "GDScript",
@@ -20,9 +30,9 @@ _global_script_classes=[ {
 "path": "res://entities/BaseProp.gd"
 }, {
 "base": "Control",
-"class": "BaseSidebar",
+"class": "BaseView",
 "language": "GDScript",
-"path": "res://screens/gui/BaseSidebar.gd"
+"path": "res://screens/gui/BaseView.gd"
 }, {
 "base": "Spatial",
 "class": "BasicModel",
@@ -59,6 +69,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://screens/gui/elements/ColorPickerLabel.gd"
 }, {
+"base": "BaseView",
+"class": "FeatureView",
+"language": "GDScript",
+"path": "res://screens/gui/feature-view/FeatureView.gd"
+}, {
 "base": "MeshInstance",
 "class": "IKCube",
 "language": "GDScript",
@@ -94,10 +109,25 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://screens/ModelDisplayScreen.gd"
 }, {
+"base": "BaseView",
+"class": "ModelView",
+"language": "GDScript",
+"path": "res://screens/gui/model-view/ModelView.gd"
+}, {
 "base": "Node",
 "class": "OpenSeeGD",
 "language": "GDScript",
 "path": "res://utils/OpenSeeGD.gd"
+}, {
+"base": "BaseView",
+"class": "PoseView",
+"language": "GDScript",
+"path": "res://screens/gui/pose-view/PoseView.gd"
+}, {
+"base": "BaseView",
+"class": "PresetView",
+"language": "GDScript",
+"path": "res://screens/gui/preset-view/PresetView.gd"
 }, {
 "base": "BaseMenuItem",
 "class": "ToggleLabel",
@@ -120,9 +150,11 @@ _global_script_classes=[ {
 "path": "res://addons/vrm/vrm_toplevel.gd"
 } ]
 _global_script_class_icons={
+"AppSettingsView": "",
+"BaseContainer": "",
 "BaseMenuItem": "",
 "BaseProp": "",
-"BaseSidebar": "",
+"BaseView": "",
 "BasicModel": "",
 "BasicPhysicsAttachment": "",
 "ButtonBar": "",
@@ -130,6 +162,7 @@ _global_script_class_icons={
 "CenteredLabel": "",
 "CheckBoxLabel": "",
 "ColorPickerLabel": "",
+"FeatureView": "",
 "IKCube": "",
 "ImportVRM": "",
 "InputLabel": "",
@@ -137,7 +170,10 @@ _global_script_class_icons={
 "JSONUtil": "",
 "MainScreen": "",
 "ModelDisplayScreen": "",
+"ModelView": "",
 "OpenSeeGD": "",
+"PoseView": "",
+"PresetView": "",
 "ToggleLabel": "",
 "TranslationManager": "",
 "VRMMappings": "",

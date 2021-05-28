@@ -1,4 +1,4 @@
-class_name BaseSidebar
+class_name BaseView
 extends Control
 
 enum ElementType { NONE = 0, LABEL, INPUT, CHECK_BOX, TOGGLE, COLOR_PICKER, BUTTON }
@@ -10,9 +10,10 @@ const TOGGLE_LABEL: Resource = preload("res://screens/gui/elements/ToggleLabel.t
 const COLOR_PICKER_LABEL: Resource = preload("res://screens/gui/elements/ColorPickerLabel.tscn")
 const BUTTON_LABEL: Resource = preload("res://screens/gui/elements/ButtonLabel.tscn")
 
-onready var v_box_container: VBoxContainer = $Control/MarginContainer/VBoxContainer/ScrollContainer/VBoxContainer
+onready var left_container: BaseContainer = $LeftContainer
+onready var right_container: BaseContainer = $RightContainer
 
-onready var main_screen: MainScreen = get_tree().root.get_node_or_null("MainScreen")
+onready var main_screen: MainScreen = get_tree().root.get_node("MainScreen")
 var current_model: BasicModel
 
 ###############################################################################
@@ -22,6 +23,7 @@ var current_model: BasicModel
 func _ready() -> void:
 	AppManager.connect("model_loaded", self, "_on_model_loaded")
 
+	# Setup stubs
 	AppManager.connect("properties_applied", self, "_on_apply_button_pressed")
 	AppManager.connect("properties_reset", self, "_on_reset_button_pressed")
 
@@ -43,10 +45,22 @@ func _on_reset_button_pressed() -> void:
 ###############################################################################
 
 func _setup() -> void:
+	current_model = main_screen.model_display_screen.model
+
+	var loaded_config: Dictionary = AppManager.get_sidebar_config_safe(self.name)
+	
+	_setup_left(loaded_config)
+
+	_setup_right(loaded_config)
+
+func _setup_left(_config: Dictionary) -> void:
 	push_error("Not yet implemented")
 
-func _create_element(element_type: int, element_name: String, element_label_text: String, element_value = null, additional_param = null) -> void:
-	var result: Node
+func _setup_right(_config: Dictionary) -> void:
+	push_error("Not yet implemented")
+
+func _create_element(element_type: int, element_name: String, element_label_text: String, element_value = null, additional_param = null) -> Control:
+	var result: Control
 	match element_type:
 		ElementType.LABEL:
 			result = CENTERED_LABEL.instance()
@@ -56,9 +70,7 @@ func _create_element(element_type: int, element_name: String, element_label_text
 				result.line_edit_text = element_value
 				result.line_edit_type = additional_param
 			else:
-				AppManager.log_message("%s needs additional_param for input type" % element_name)
-				push_error("%s needs additional_param for input type" % element_name)
-				return
+				AppManager.log_message("%s needs additional_param for input type" % element_name, true)
 		ElementType.CHECK_BOX:
 			result = CHECK_BOX_LABEL.instance()
 			result.check_box_value = element_value
@@ -75,15 +87,14 @@ func _create_element(element_type: int, element_name: String, element_label_text
 			if typeof(additional_param) == TYPE_DICTIONARY:
 				(result as ButtonLabel).link_to_function(additional_param["object"], additional_param["function_name"])
 			else:
-				AppManager.log_message("%s needs additional_param for button values" % element_name)
-				push_error("%s needs additional_param for button values" % element_name)
+				AppManager.log_message("%s needs additional_param for button values" % element_name, true)
 		_:
 			push_error("Unhandled element type")
 
 	result.name = element_name
 	result.label_text = element_label_text
 	
-	v_box_container.add_child(result)
+	return result
 
 ###############################################################################
 # Public functions                                                            #

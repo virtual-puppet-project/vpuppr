@@ -17,5 +17,5 @@ extends BaseMenuItem
 # Public functions                                                            #
 ###############################################################################
 
-func get_value() -> void:
-	AppManager.log_message("Tried to get value on %s, access the name property instead" % self.name)
+func get_value():
+	return label_text

@@ -1,32 +1,35 @@
-extends BaseSidebar
+class_name BaseContainer
+extends MarginContainer
+
+onready var outer: VBoxContainer = $MarginContainer/Outer
+onready var inner: VBoxContainer = $MarginContainer/Outer/ScrollContainer/Inner
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
-func _ready() -> void:
-	_setup()
-
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
-
-func _on_apply_button_pressed() -> void:
-	push_error("Not yet implemented")
-
-func _on_reset_button_pressed() -> void:
-	push_error("Not yet implemented")
 
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
 
-func _setup() -> void:
-	pass
-
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
 
-func save() -> Dictionary:
-	return {}
+func add_to_outer(value: Control) -> void:
+	outer.add_child(value)
+	outer.move_child(value, 0)
+
+func add_to_inner(value: Control) -> void:
+	inner.add_child(value)
+
+func get_inner_children() -> Array:
+	return inner.get_children()
+
+func clear_children() -> void:
+	for c in inner.get_children():
+		c.free()
