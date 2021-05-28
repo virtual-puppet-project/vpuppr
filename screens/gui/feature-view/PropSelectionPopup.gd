@@ -1,37 +1,24 @@
-class_name PresetView
-extends BaseView
+extends BaseFilePopup
+
+var file_to_load: String = ""
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
-func _ready() -> void:
-	_setup()
-
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
 
-func _on_apply_button_pressed() -> void:
-	pass
-
-func _on_reset_button_pressed() -> void:
-	pass
+func _on_file_selected(file_path: String) -> void:
+	file_to_load = file_path
 
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
 
-func _setup_left(config: Dictionary) -> void:
-	pass
-
-func _setup_right(config: Dictionary) -> void:
-	pass
-
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
 
-# TODO fill this out
-func save() -> Dictionary:
-	return {}
+
