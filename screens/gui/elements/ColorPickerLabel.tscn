@@ -6,22 +6,23 @@
 [node name="ColorPickerLabel" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
 
-[node name="Label" parent="HBoxContainer" index="0"]
-margin_right = 1498.0
+[node name="Label" parent="MarginContainer/HBoxContainer" index="0"]
+margin_right = 783.0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer" index="1"]
-margin_left = 1502.0
-margin_right = 1580.0
-margin_bottom = 880.0
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer" index="1"]
+margin_left = 787.0
+margin_right = 1570.0
+margin_bottom = 870.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="ShowHideButton" type="Button" parent="HBoxContainer/VBoxContainer" index="0"]
-margin_right = 78.0
+[node name="ShowHideButton" type="Button" parent="MarginContainer/HBoxContainer/VBoxContainer" index="0"]
+margin_right = 783.0
 margin_bottom = 20.0
-text = "changeme"
 
-[node name="ColorPicker" type="ColorPicker" parent="HBoxContainer/VBoxContainer" index="1"]
-visible = false
+[node name="ColorPicker" type="ColorPicker" parent="MarginContainer/HBoxContainer/VBoxContainer" index="1"]
 margin_top = 24.0
-margin_right = 308.0
-margin_bottom = 486.0
-mouse_filter = 0
+margin_right = 783.0
+margin_bottom = 870.0
+size_flags_horizontal = 3
+size_flags_vertical = 3

@@ -4,8 +4,8 @@ extends BaseMenuItem
 const SHOW_TEXT: String = "Show"
 const HIDE_TEXT: String = "Hide"
 
-onready var show_hide_button: Button = $HBoxContainer/VBoxContainer/ShowHideButton
-onready var color_picker: ColorPicker = $HBoxContainer/VBoxContainer/ColorPicker
+onready var show_hide_button: Button = $MarginContainer/HBoxContainer/VBoxContainer/ShowHideButton
+onready var color_picker: ColorPicker = $MarginContainer/HBoxContainer/VBoxContainer/ColorPicker
 
 var color_picker_color: Color
 

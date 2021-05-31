@@ -6,10 +6,10 @@
 [node name="ToggleLabel" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
 
-[node name="Label" parent="HBoxContainer" index="0"]
-margin_right = 1500.0
+[node name="Label" parent="MarginContainer/HBoxContainer" index="0"]
+margin_right = 1490.0
 
-[node name="CheckButton" type="CheckButton" parent="HBoxContainer" index="1"]
-margin_left = 1504.0
-margin_right = 1580.0
-margin_bottom = 880.0
+[node name="CheckButton" type="CheckButton" parent="MarginContainer/HBoxContainer" index="1"]
+margin_left = 1494.0
+margin_right = 1570.0
+margin_bottom = 870.0

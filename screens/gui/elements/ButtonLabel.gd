@@ -1,7 +1,7 @@
 class_name ButtonLabel
 extends BaseMenuItem
 
-onready var button: Button = $HBoxContainer/Button
+onready var button: Button = $MarginContainer/HBoxContainer/Button
 
 var button_disabled: bool = false
 var button_text: String
@@ -29,6 +29,9 @@ func _ready() -> void:
 ###############################################################################
 
 func link_to_function(object: Object, function_name: String) -> void:
+	"""
+	Inputs are programmatically assigned, so we need this function
+	"""
 	# TODO this is kinda gross
 	if not button:
 		yield(self, "ready")
