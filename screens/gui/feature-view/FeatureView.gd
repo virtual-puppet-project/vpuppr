@@ -4,8 +4,6 @@ extends BaseView
 const PROP_SELECTION_POPUP: Resource = preload("res://screens/gui/feature-view/PropSelectionPopup.tscn")
 const BASE_PROP_SCRIPT_PATH: String = "res://entities/BaseProp.gd"
 
-var initial_properties: Dictionary = {}
-
 # Builtins
 var main_light: Light
 var world_environment: WorldEnvironment
@@ -136,8 +134,9 @@ func _setup_left(config: Dictionary) -> void:
 	_generate_properties()
 
 func _setup_right(_config: Dictionary) -> void:
-	right_container.add_to_inner(_create_element(ElementType.LABEL, "prop_details",
-			"Prop Details"))
+	if not right_container.outer.get_node_or_null("prop_details"):
+		right_container.add_to_outer(_create_element(ElementType.LABEL, "prop_details",
+				"Prop Details"))
 
 func _generate_properties(p_initial_properties: Dictionary = {}) -> void:
 	left_container.clear_children()

@@ -1,7 +1,7 @@
 class_name InputLabel
 extends BaseMenuItem
 
-onready var line_edit: LineEdit = $HBoxContainer/LineEdit
+onready var line_edit: LineEdit = $MarginContainer/HBoxContainer/LineEdit
 
 var line_edit_type = TYPE_STRING
 var line_edit_text: String = "changeme"

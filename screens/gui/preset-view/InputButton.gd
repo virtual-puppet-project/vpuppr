@@ -1,39 +1,24 @@
-class_name ToggleLabel
-extends BaseMenuItem
+extends MarginContainer
 
-onready var toggle_button: CheckButton = $MarginContainer/HBoxContainer/CheckButton
+onready var line_edit: LineEdit = $MarginContainer/HBoxContainer/LineEdit
+onready var save_button: Button = $MarginContainer/HBoxContainer/SaveButton
 
-var toggle_button_value: bool = false
-var toggle_button_disabled: bool = false
-var toggle_button_text: String
-
-var is_linked_to_other_toggles: bool = true
+var save_button_disabled: bool = false
+var save_button_text: String
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
 func _ready() -> void:
-	toggle_button.pressed = toggle_button_value
-	toggle_button.disabled = toggle_button_disabled
-
-	if toggle_button_text:
-		toggle_button.text = toggle_button_text
-
-	if is_linked_to_other_toggles:
-		toggle_button.connect("pressed", self, "_on_toggle_pressed")
-		AppManager.connect("gui_toggle_set", self, "_on_gui_toggle_set")
+	save_button.disabled = save_button_disabled
+	
+	if save_button_text:
+		save_button.text = save_button_text
 
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
-
-func _on_toggle_pressed() -> void:
-	AppManager.gui_toggle_set(self.name)
-
-func _on_gui_toggle_set(toggle_name: String) -> void:
-	if self.name != toggle_name:
-		toggle_button.pressed = false
 
 ###############################################################################
 # Private functions                                                           #
@@ -43,5 +28,5 @@ func _on_gui_toggle_set(toggle_name: String) -> void:
 # Public functions                                                            #
 ###############################################################################
 
-func get_value() -> bool:
-	return toggle_button.pressed
+func get_value():
+	AppManager.log_message("Tried to get value on %s, access the name property instead" % self.name)

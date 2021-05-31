@@ -12,6 +12,8 @@ signal gui_toggle_set(toggle_name)
 signal face_tracker_offsets_set()
 #warning-ignore:unused_signal
 signal console_log(message)
+#warning-ignore:unused_signal
+signal preset_changed(preset)
 
 enum ModelType { GENERIC, VRM }
 
@@ -92,6 +94,9 @@ func set_file_to_load(file_path: String) -> void:
 
 func model_is_loaded() -> void:
 	emit_signal("model_loaded")
+
+func change_preset(preset: String) -> void:
+	emit_signal(preset)
 
 func load_config() -> Dictionary:
 	log_message("Begin loading data")
