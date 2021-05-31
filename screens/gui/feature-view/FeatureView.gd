@@ -69,8 +69,8 @@ func _on_gui_toggle_set(toggle_name: String) -> void:
 	# Courtesy null check
 	if instanced_props.has(toggle_name):
 		_create_prop_info_display(toggle_name, instanced_props[toggle_name].data)
-	else:
-		AppManager.log_message("ToggleLabel %s not found in %s" % [toggle_name, self.name])
+	# else:
+	# 	AppManager.log_message("ToggleLabel %s not found in %s" % [toggle_name, self.name])
 
 func _on_add_prop_button_pressed() -> void:
 	var popup: BaseFilePopup = PROP_SELECTION_POPUP.instance()

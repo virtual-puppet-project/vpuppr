@@ -83,6 +83,8 @@ func apply_properties() -> void:
 func reset_properties() -> void:
 	emit_signal("properties_reset")
 
+# TODO feature/preset view both use this
+# If a prop and a preset both share the same name, then they will both be toggled on
 func gui_toggle_set(toggle_name: String) -> void:
 	emit_signal("gui_toggle_set", toggle_name)
 

@@ -4,6 +4,8 @@ onready var screenshot_display: TextureRect = $MarginContainer/HBoxContainer/HBo
 onready var upper: Label = $MarginContainer/HBoxContainer/HBoxContainer/VBoxContainer/Upper
 onready var lower: Label = $MarginContainer/HBoxContainer/HBoxContainer/VBoxContainer/Lower
 
+onready var toggle_button: CheckButton = $MarginContainer/HBoxContainer/ToggleButton
+
 var screenshot_buffer_data: PoolByteArray
 var upper_text: String
 var lower_text: String
@@ -23,11 +25,21 @@ func _ready() -> void:
 	if upper_text:
 		upper.text = upper_text
 	if lower_text:
-		lower_text = lower_text
+		lower.text = lower_text
+
+	toggle_button.connect("pressed", self, "_on_toggle_pressed")
+	AppManager.connect("gui_toggle_set", self, "_on_gui_toggle_set")
 
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
+
+func _on_toggle_pressed() -> void:
+	AppManager.gui_toggle_set(self.name)
+
+func _on_gui_toggle_set(toggle_name: String) -> void:
+	if self.name != toggle_name:
+		toggle_button.pressed = false
 
 ###############################################################################
 # Private functions                                                           #

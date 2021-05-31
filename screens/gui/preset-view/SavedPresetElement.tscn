@@ -68,7 +68,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 align = 1
 
-[node name="CheckButton" type="CheckButton" parent="MarginContainer/HBoxContainer"]
+[node name="ToggleButton" type="CheckButton" parent="MarginContainer/HBoxContainer"]
 margin_left = 1494.0
 margin_right = 1570.0
 margin_bottom = 870.0
