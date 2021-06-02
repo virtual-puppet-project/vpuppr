@@ -1,25 +1,33 @@
-class_name ToggleLabel
-extends BaseMenuItem
+extends MarginContainer
 
-onready var toggle_button: CheckButton = $MarginContainer/HBoxContainer/CheckButton
+const PRESET_VIEW_NAME: String = "PresetView"
 
-var toggle_button_value: bool = false
-var toggle_button_disabled: bool = false
-var toggle_button_text: String
+onready var screenshot_display: TextureRect = $MarginContainer/HBoxContainer/HBoxContainer/ScreenshotDisplay
+onready var upper: Label = $MarginContainer/HBoxContainer/HBoxContainer/VBoxContainer/Upper
+onready var lower: Label = $MarginContainer/HBoxContainer/HBoxContainer/VBoxContainer/Lower
 
-var is_linked_to_other_toggles: bool
-var linked_screen_name: String
+onready var toggle_button: CheckButton = $MarginContainer/HBoxContainer/ToggleButton
+
+var screenshot_buffer_data: PoolByteArray
+var upper_text: String
+var lower_text: String
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
 func _ready() -> void:
-	toggle_button.pressed = toggle_button_value
-	toggle_button.disabled = toggle_button_disabled
-
-	if toggle_button_text:
-		toggle_button.text = toggle_button_text
+	# Courtesy null checks
+	if screenshot_buffer_data:
+		var image: Image = Image.new()
+		image.load_png_from_buffer(screenshot_buffer_data)
+		var texture: ImageTexture = ImageTexture.new()
+		texture.create_from_image(image)
+		screenshot_display.texture = texture
+	if upper_text:
+		upper.text = upper_text
+	if lower_text:
+		lower.text = lower_text
 
 	toggle_button.connect("pressed", self, "_on_toggle_pressed")
 
@@ -28,7 +36,7 @@ func _ready() -> void:
 ###############################################################################
 
 func _on_toggle_pressed() -> void:
-	AppManager.gui_toggle_set(self.name, linked_screen_name)
+	AppManager.gui_toggle_set(self.name, PRESET_VIEW_NAME)
 
 ###############################################################################
 # Private functions                                                           #
@@ -38,5 +46,4 @@ func _on_toggle_pressed() -> void:
 # Public functions                                                            #
 ###############################################################################
 
-func get_value() -> bool:
-	return toggle_button.pressed
+

@@ -1,6 +1,6 @@
 extends CheckBoxLabel
 
-onready var second_check_box: CheckBox = $HBoxContainer/SecondCheckBox
+onready var second_check_box: CheckBox = $MarginContainer/HBoxContainer/SecondCheckBox
 
 var second_check_box_value: bool = false
 var second_check_box_disabled: bool = false

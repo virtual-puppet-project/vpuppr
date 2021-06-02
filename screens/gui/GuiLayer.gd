@@ -76,7 +76,7 @@ func _on_properties_applied() -> void:
 	# Wait for sidebars to update
 	yield(get_tree(), "idle_frame")
 
-	for i in [model_view, pose_view, feature_view, preset_view, app_settings_view]:
+	for i in [model_view, pose_view, feature_view]:
 		AppManager.update_config(i.name, i.save())
 
 	AppManager.save_config()
@@ -136,4 +136,5 @@ func _construct_views() -> void:
 # Public functions                                                            #
 ###############################################################################
 
-
+func apply_properties() -> void:
+	_on_properties_applied()

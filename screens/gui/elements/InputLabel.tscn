@@ -6,12 +6,12 @@
 [node name="InputLabel" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
 
-[node name="Label" parent="HBoxContainer" index="0"]
-margin_right = 788.0
+[node name="Label" parent="MarginContainer/HBoxContainer" index="0"]
+margin_right = 783.0
 
-[node name="LineEdit" type="LineEdit" parent="HBoxContainer" index="1"]
-margin_left = 792.0
-margin_right = 1580.0
-margin_bottom = 880.0
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/HBoxContainer" index="1"]
+margin_left = 787.0
+margin_right = 1570.0
+margin_bottom = 870.0
 size_flags_horizontal = 3
-align = 2
+size_flags_vertical = 3

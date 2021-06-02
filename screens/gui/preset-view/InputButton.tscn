@@ -1,8 +1,8 @@
 [gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://screens/gui/elements/BaseMenuItem.gd" type="Script" id=1]
+[ext_resource path="res://screens/gui/preset-view/InputButton.gd" type="Script" id=1]
 
-[node name="BaseMenuItem" type="MarginContainer"]
+[node name="InputButton" type="MarginContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 10.0
@@ -33,9 +33,18 @@ margin_left = 5.0
 margin_top = 5.0
 margin_right = 1575.0
 margin_bottom = 875.0
+custom_constants/separation = 5
 
-[node name="Label" type="Label" parent="MarginContainer/HBoxContainer"]
-margin_top = 428.0
-margin_right = 1570.0
-margin_bottom = 442.0
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/HBoxContainer"]
+margin_right = 1524.0
+margin_bottom = 870.0
 size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SaveButton" type="Button" parent="MarginContainer/HBoxContainer"]
+margin_left = 1529.0
+margin_right = 1570.0
+margin_bottom = 870.0
+focus_mode = 0
+size_flags_vertical = 3
+text = "Save"
