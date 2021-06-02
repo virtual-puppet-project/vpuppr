@@ -22,10 +22,12 @@ var scroll_strength: float = 0.05
 
 class PropData:
 	var object: Node
+	var toggle: ToggleLabel
 	var data: Dictionary
 
-	func _init(p_object: Node, p_data: Dictionary) -> void:
+	func _init(p_object: Node, p_toggle: ToggleLabel, p_data: Dictionary) -> void:
 		object = p_object
+		toggle = p_toggle
 		data = p_data
 
 ###############################################################################
@@ -65,12 +67,11 @@ func _on_apply_button_pressed() -> void:
 func _on_reset_button_pressed() -> void:
 	_reset_properties()
 
-func _on_gui_toggle_set(toggle_name: String) -> void:
-	# Courtesy null check
+func _on_gui_toggle_set(toggle_name: String, view_name: String) -> void:
+	._on_gui_toggle_set(toggle_name, view_name)
+	
 	if instanced_props.has(toggle_name):
 		_create_prop_info_display(toggle_name, instanced_props[toggle_name].data)
-	# else:
-	# 	AppManager.log_message("ToggleLabel %s not found in %s" % [toggle_name, self.name])
 
 func _on_add_prop_button_pressed() -> void:
 	var popup: BaseFilePopup = PROP_SELECTION_POPUP.instance()
@@ -100,8 +101,12 @@ func _on_delete_prop_button_pressed() -> void:
 func _setup_left(config: Dictionary) -> void:
 	if not AppManager.is_connected("gui_toggle_set", self, "_on_gui_toggle_set"):
 		AppManager.connect("gui_toggle_set", self, "_on_gui_toggle_set")
+	
+	for child in main_screen.model_display_screen.props.get_children():
+		child.queue_free()
+	
+	yield(get_tree(), "idle_frame")
 
-	current_model = main_screen.model_display_screen.model
 	main_light = main_screen.light_container.get_child(0)
 	world_environment = main_screen.world_environment
 	
@@ -146,13 +151,16 @@ func _generate_properties(p_initial_properties: Dictionary = {}) -> void:
 			"Built-in Props"))
 
 	# Main light
-	left_container.add_to_inner(_create_element(ElementType.TOGGLE, main_light.name, "Main Light", false, true))
+	var main_light_toggle: ToggleLabel = _create_element(ElementType.TOGGLE, main_light.name, "Main Light", false, true)
+	left_container.add_to_inner(main_light_toggle)
 
 	# World environment
-	left_container.add_to_inner(_create_element(ElementType.TOGGLE, world_environment.name, "Environment", false, true))
+	var world_environment_toggle: ToggleLabel = _create_element(ElementType.TOGGLE, world_environment.name, "Environment", false, true)
+	left_container.add_to_inner(world_environment_toggle)
 
 	instanced_props[main_light.name] = PropData.new(
 		main_light,
+		main_light_toggle,
 		{
 			# Light
 			"light_color": {
@@ -181,6 +189,7 @@ func _generate_properties(p_initial_properties: Dictionary = {}) -> void:
 
 	instanced_props[world_environment.name] = PropData.new(
 		world_environment,
+		world_environment_toggle,
 		{
 			# Ambient light
 			"ambient_light_color": {
@@ -218,7 +227,7 @@ func _create_prop(prop_path: String, parent_transform: Transform,
 	prop_parent.set_script(load(BASE_PROP_SCRIPT_PATH))
 
 	var prop: Spatial
-	match prop_path.get_extension():
+	match prop_path.get_extension().to_lower():
 		"tscn":
 			prop = load(prop_path).instance()
 		"glb":
@@ -247,13 +256,13 @@ func _create_prop(prop_path: String, parent_transform: Transform,
 		prop_parent.transform = parent_transform
 		prop.transform = child_transform
 
-		main_screen.model_display_screen.add_child(prop_parent)
+		main_screen.model_display_screen.props.add_child(prop_parent)
 
 		# TODO add more ways to interact with custom props
-		var prop_data: PropData = PropData.new(prop_parent, {})
-		instanced_props[prop_parent.name] = prop_data
-		left_container.add_to_inner(_create_element(ElementType.TOGGLE, prop_parent.name,
-				prop_parent.name.capitalize(), false, true))
+		var prop_toggle: ToggleLabel = _create_element(ElementType.TOGGLE, prop_parent.name, prop_parent.name.capitalize(), false, true)
+		left_container.add_to_inner(prop_toggle)
+
+		instanced_props[prop_parent.name] = PropData.new(prop_parent, prop_toggle, {})
 		
 	else: # If the prop was not loaded properly, don't cause a memory leak
 		prop_parent.free()

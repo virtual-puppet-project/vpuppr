@@ -17,6 +17,7 @@ var script_to_use: String
 var model
 var model_skeleton: Skeleton
 onready var model_parent: Spatial = $ModelParent
+onready var props: Spatial = $Props
 
 # IK nodes
 var right_ik_cube: IKCube

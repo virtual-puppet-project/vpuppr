@@ -1,5 +1,7 @@
 extends MarginContainer
 
+const PRESET_VIEW_NAME: String = "PresetView"
+
 onready var screenshot_display: TextureRect = $MarginContainer/HBoxContainer/HBoxContainer/ScreenshotDisplay
 onready var upper: Label = $MarginContainer/HBoxContainer/HBoxContainer/VBoxContainer/Upper
 onready var lower: Label = $MarginContainer/HBoxContainer/HBoxContainer/VBoxContainer/Lower
@@ -28,18 +30,13 @@ func _ready() -> void:
 		lower.text = lower_text
 
 	toggle_button.connect("pressed", self, "_on_toggle_pressed")
-	AppManager.connect("gui_toggle_set", self, "_on_gui_toggle_set")
 
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
 
 func _on_toggle_pressed() -> void:
-	AppManager.gui_toggle_set(self.name)
-
-func _on_gui_toggle_set(toggle_name: String) -> void:
-	if self.name != toggle_name:
-		toggle_button.pressed = false
+	AppManager.gui_toggle_set(self.name, PRESET_VIEW_NAME)
 
 ###############################################################################
 # Private functions                                                           #

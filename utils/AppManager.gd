@@ -7,7 +7,7 @@ signal model_loaded() # Used by model scripts to indicate when they are ready
 signal properties_applied()
 #warning-ignore:unused_signal
 signal properties_reset()
-signal gui_toggle_set(toggle_name)
+signal gui_toggle_set(toggle_name, view_name)
 #warning-ignore:unused_signal
 signal face_tracker_offsets_set()
 #warning-ignore:unused_signal
@@ -83,10 +83,10 @@ func apply_properties() -> void:
 func reset_properties() -> void:
 	emit_signal("properties_reset")
 
-# TODO feature/preset view both use this
+# TODO pose/feature/preset view all use this
 # If a prop and a preset both share the same name, then they will both be toggled on
-func gui_toggle_set(toggle_name: String) -> void:
-	emit_signal("gui_toggle_set", toggle_name)
+func gui_toggle_set(toggle_name: String, view_name: String) -> void:
+	emit_signal("gui_toggle_set", toggle_name, view_name)
 
 func set_file_to_load(file_path: String) -> void:
 	current_model_name = file_path.get_file()
