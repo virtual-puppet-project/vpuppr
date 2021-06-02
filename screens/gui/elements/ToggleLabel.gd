@@ -7,7 +7,8 @@ var toggle_button_value: bool = false
 var toggle_button_disabled: bool = false
 var toggle_button_text: String
 
-var is_linked_to_other_toggles: bool = true
+var is_linked_to_other_toggles: bool
+var linked_screen_name: String
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -20,20 +21,14 @@ func _ready() -> void:
 	if toggle_button_text:
 		toggle_button.text = toggle_button_text
 
-	if is_linked_to_other_toggles:
-		toggle_button.connect("pressed", self, "_on_toggle_pressed")
-		AppManager.connect("gui_toggle_set", self, "_on_gui_toggle_set")
+	toggle_button.connect("pressed", self, "_on_toggle_pressed")
 
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
 
 func _on_toggle_pressed() -> void:
-	AppManager.gui_toggle_set(self.name)
-
-func _on_gui_toggle_set(toggle_name: String) -> void:
-	if self.name != toggle_name:
-		toggle_button.pressed = false
+	AppManager.gui_toggle_set(self.name, linked_screen_name)
 
 ###############################################################################
 # Private functions                                                           #

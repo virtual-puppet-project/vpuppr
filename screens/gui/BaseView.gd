@@ -40,6 +40,16 @@ func _on_apply_button_pressed() -> void:
 func _on_reset_button_pressed() -> void:
 	push_error("Not yet implemented")
 
+func _on_gui_toggle_set(toggle_name: String, view_name: String) -> void:
+	if view_name != self.name:
+		return
+	for child in left_container.get_inner_children():
+		if not child.get("toggle_button"):
+			continue
+		
+		if toggle_name != child.name:
+			child.toggle_button.pressed = false
+
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
@@ -78,6 +88,7 @@ func _create_element(element_type: int, element_name: String, element_label_text
 			result = TOGGLE_LABEL.instance()
 			result.toggle_button_value = element_value
 			result.is_linked_to_other_toggles = additional_param
+			result.linked_screen_name = self.name
 		ElementType.COLOR_PICKER:
 			result = COLOR_PICKER_LABEL.instance()
 			(result as ColorPickerLabel).color_picker_color = element_value
@@ -99,6 +110,13 @@ func _create_element(element_type: int, element_name: String, element_label_text
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
+
+func setup_from_preset(data: Dictionary) -> void:
+	current_model = main_screen.model_display_screen.model
+
+	_setup_left(data)
+
+	_setup_right(data)
 
 func save() -> Dictionary:
 	var result: Dictionary = {}
