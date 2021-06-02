@@ -1,17 +1,20 @@
-class_name InputLabel
-extends BaseMenuItem
+extends MarginContainer
 
 onready var line_edit: LineEdit = $MarginContainer/HBoxContainer/LineEdit
+onready var save_button: Button = $MarginContainer/HBoxContainer/SaveButton
 
-var line_edit_type = TYPE_STRING
-var line_edit_text: String = "changeme"
+var save_button_disabled: bool = false
+var save_button_text: String
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
 func _ready() -> void:
-	line_edit.text = line_edit_text
+	save_button.disabled = save_button_disabled
+	
+	if save_button_text:
+		save_button.text = save_button_text
 
 ###############################################################################
 # Connections                                                                 #
@@ -26,10 +29,4 @@ func _ready() -> void:
 ###############################################################################
 
 func get_value():
-	match line_edit_type:
-		TYPE_STRING:
-			return line_edit.text
-		TYPE_REAL:
-			return float(line_edit.text)
-		TYPE_INT:
-			return int(line_edit.text)
+	AppManager.log_message("Tried to get value on %s, access the name property instead" % self.name)

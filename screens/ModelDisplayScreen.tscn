@@ -6,3 +6,5 @@
 script = ExtResource( 1 )
 
 [node name="ModelParent" type="Spatial" parent="."]
+
+[node name="Props" type="Spatial" parent="."]

@@ -1,7 +1,7 @@
 class_name CheckBoxLabel
 extends BaseMenuItem
 
-onready var check_box: CheckBox = $HBoxContainer/CheckBox
+onready var check_box: CheckBox = $MarginContainer/HBoxContainer/CheckBox
 
 var check_box_value: bool = false
 var check_box_disabled: bool = false

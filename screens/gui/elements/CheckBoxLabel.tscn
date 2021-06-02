@@ -6,13 +6,12 @@
 [node name="CheckBoxLabel" instance=ExtResource( 2 )]
 script = ExtResource( 1 )
 
-[node name="Label" parent="HBoxContainer" index="0"]
-margin_right = 1552.0
+[node name="Label" parent="MarginContainer/HBoxContainer" index="0"]
+margin_right = 1542.0
 
-[node name="CheckBox" type="CheckBox" parent="HBoxContainer" index="1"]
-margin_left = 1556.0
-margin_right = 1580.0
-margin_bottom = 880.0
+[node name="CheckBox" type="CheckBox" parent="MarginContainer/HBoxContainer" index="1"]
+margin_left = 1546.0
+margin_right = 1570.0
+margin_bottom = 870.0
 focus_mode = 0
-size_flags_horizontal = 9
-align = 2
+size_flags_vertical = 3

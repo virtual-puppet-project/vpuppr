@@ -91,6 +91,9 @@ func _on_reset_model_pose_button_pressed() -> void:
 	for i in current_model.initial_bone_poses.keys():
 		current_model.skeleton.set_bone_pose(i, current_model.initial_bone_poses[i])
 
+func _on_gui_toggle_set(toggle_name: String, view_name: String) -> void:
+	._on_gui_toggle_set(toggle_name, view_name)
+
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
@@ -100,6 +103,9 @@ func _on_reset_model_pose_button_pressed() -> void:
 ###
 
 func _setup_left(config: Dictionary) -> void:
+	if not AppManager.is_connected("gui_toggle_set", self, "_on_gui_toggle_set"):
+		AppManager.connect("gui_toggle_set", self, "_on_gui_toggle_set")
+	
 	if not config.empty():
 		for key in config["left"].keys():
 			current_model.skeleton.set_bone_pose(

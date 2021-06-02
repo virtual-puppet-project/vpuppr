@@ -1,7 +1,7 @@
 class_name BaseMenuItem
 extends MarginContainer
 
-onready var label: Label = $HBoxContainer/Label
+onready var label: Label = $MarginContainer/HBoxContainer/Label
 onready var color_rect: ColorRect = $ColorRect
 
 var label_text: String = "changeme"
