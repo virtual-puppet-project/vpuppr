@@ -79,6 +79,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://screens/gui/feature-view/FeatureView.gd"
 }, {
+"base": "Reference",
+"class": "GOTH",
+"language": "GDScript",
+"path": "res://tests/GOTH.gd"
+}, {
 "base": "MeshInstance",
 "class": "IKCube",
 "language": "GDScript",
@@ -134,6 +139,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://screens/gui/preset-view/PresetView.gd"
 }, {
+"base": "Reference",
+"class": "TestBase",
+"language": "GDScript",
+"path": "res://tests/TestBase.gd"
+}, {
 "base": "BaseMenuItem",
 "class": "ToggleLabel",
 "language": "GDScript",
@@ -169,6 +179,7 @@ _global_script_class_icons={
 "CheckBoxLabel": "",
 "ColorPickerLabel": "",
 "FeatureView": "",
+"GOTH": "",
 "IKCube": "",
 "ImportVRM": "",
 "InputLabel": "",
@@ -180,6 +191,7 @@ _global_script_class_icons={
 "OpenSeeGD": "",
 "PoseView": "",
 "PresetView": "",
+"TestBase": "",
 "ToggleLabel": "",
 "TranslationManager": "",
 "VRMMappings": "",

@@ -53,9 +53,11 @@ func _ready() -> void:
 		save_directory_path = OS.get_executable_path().get_base_dir()
 	else:
 		save_directory_path = "res://export"
+		# Run unit tests
+		var goth: GOTH = GOTH.new()
+		goth.run()
 
 	app_config = load_config()
-
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
