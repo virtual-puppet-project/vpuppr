@@ -100,7 +100,7 @@ func custom_update(data: OpenSeeGD.OpenSeeData, interpolation_data: Interpolatio
 		else:
 			set_expression_weight("blink_l", 1.0)
 
-		# TODO eyes show weird behaviou when blinking
+		# TODO eyes show weird behaviour when blinking
 		# TODO make sure angle between eyes' x values are at least parallel
 		# Make sure eyes are aligned on the y-axis
 		var left_eye_rotation: Vector3 = interpolation_data.interpolate(InterpolationData.InterpolationDataType.LEFT_EYE_ROTATION, gaze_strength)

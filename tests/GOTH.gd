@@ -2,7 +2,7 @@ class_name GOTH
 extends Reference
 
 """
-GOdot Test Harness
+Godot (...) Test Harness
 uwu
 """
 
