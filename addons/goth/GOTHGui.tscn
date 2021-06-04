@@ -1,0 +1,132 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://addons/goth/GOTHGui.gd" type="Script" id=1]
+
+[node name="GOTHGui" type="MarginContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_min_size = Vector2( 0, 200 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+margin_right = 1600.0
+margin_bottom = 900.0
+custom_constants/margin_right = 5
+custom_constants/margin_top = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 1595.0
+margin_bottom = 895.0
+custom_constants/separation = 10
+
+[node name="OptionContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer"]
+margin_right = 263.0
+margin_bottom = 890.0
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.2
+
+[node name="ColorRect" type="ColorRect" parent="MarginContainer/HBoxContainer/OptionContainer"]
+margin_right = 263.0
+margin_bottom = 890.0
+color = Color( 0, 0, 0, 0.270588 )
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer/OptionContainer"]
+margin_right = 263.0
+margin_bottom = 890.0
+custom_constants/margin_right = 5
+custom_constants/margin_top = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+
+[node name="OptionList" type="VBoxContainer" parent="MarginContainer/HBoxContainer/OptionContainer/MarginContainer"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 258.0
+margin_bottom = 885.0
+size_flags_horizontal = 3
+
+[node name="UnitTestHBox" type="HBoxContainer" parent="MarginContainer/HBoxContainer/OptionContainer/MarginContainer/OptionList"]
+margin_right = 253.0
+margin_bottom = 24.0
+
+[node name="RunUnitTestsButton" type="Button" parent="MarginContainer/HBoxContainer/OptionContainer/MarginContainer/OptionList/UnitTestHBox"]
+margin_right = 124.0
+margin_bottom = 24.0
+focus_mode = 0
+size_flags_horizontal = 3
+text = "Run unit tests"
+
+[node name="UnitTestLineEdit" type="LineEdit" parent="MarginContainer/HBoxContainer/OptionContainer/MarginContainer/OptionList/UnitTestHBox"]
+margin_left = 128.0
+margin_right = 253.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="BDDTestHBox" type="HBoxContainer" parent="MarginContainer/HBoxContainer/OptionContainer/MarginContainer/OptionList"]
+margin_top = 28.0
+margin_right = 253.0
+margin_bottom = 52.0
+
+[node name="RunBDDTestsButton" type="Button" parent="MarginContainer/HBoxContainer/OptionContainer/MarginContainer/OptionList/BDDTestHBox"]
+margin_right = 124.0
+margin_bottom = 24.0
+focus_mode = 0
+size_flags_horizontal = 3
+text = "Run BDD tests"
+
+[node name="BDDTestLineEdit" type="LineEdit" parent="MarginContainer/HBoxContainer/OptionContainer/MarginContainer/OptionList/BDDTestHBox"]
+margin_left = 128.0
+margin_right = 253.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="Rescan" type="Button" parent="MarginContainer/HBoxContainer/OptionContainer/MarginContainer/OptionList"]
+margin_top = 56.0
+margin_right = 253.0
+margin_bottom = 76.0
+focus_mode = 0
+text = "Rescan"
+
+[node name="ClearOutput" type="Button" parent="MarginContainer/HBoxContainer/OptionContainer/MarginContainer/OptionList"]
+margin_top = 860.0
+margin_right = 253.0
+margin_bottom = 880.0
+focus_mode = 0
+size_flags_vertical = 10
+text = "Clear output"
+
+[node name="OutputContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer"]
+margin_left = 273.0
+margin_right = 1590.0
+margin_bottom = 890.0
+size_flags_horizontal = 3
+
+[node name="ColorRect" type="ColorRect" parent="MarginContainer/HBoxContainer/OutputContainer"]
+margin_right = 1317.0
+margin_bottom = 890.0
+color = Color( 0, 0, 0, 0.270588 )
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer/OutputContainer"]
+margin_right = 1317.0
+margin_bottom = 890.0
+custom_constants/margin_right = 5
+custom_constants/margin_top = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/HBoxContainer/OutputContainer/MarginContainer"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 1312.0
+margin_bottom = 885.0
+
+[node name="Output" type="VBoxContainer" parent="MarginContainer/HBoxContainer/OutputContainer/MarginContainer/ScrollContainer"]
+margin_right = 1307.0
+size_flags_horizontal = 3
