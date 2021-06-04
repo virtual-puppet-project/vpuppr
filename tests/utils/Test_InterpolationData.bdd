@@ -1,0 +1,9 @@
+; Given some setup method
+; When some user ("some value") scenario ("other value")
+; And some other user scenario
+; Then some (1) result
+
+Scenario: Interpolation test
+Given there is interpolation data
+When target translation is (Vector3(0, 1, 0))
+Then print ("some value") here

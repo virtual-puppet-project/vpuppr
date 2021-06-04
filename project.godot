@@ -14,6 +14,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://screens/gui/app-settings-view/AppSettingsView.gd"
 }, {
+"base": "Reference",
+"class": "BDD",
+"language": "GDScript",
+"path": "res://addons/goth/BDD.gd"
+}, {
 "base": "MarginContainer",
 "class": "BaseContainer",
 "language": "GDScript",
@@ -33,6 +38,11 @@ _global_script_classes=[ {
 "class": "BaseProp",
 "language": "GDScript",
 "path": "res://entities/BaseProp.gd"
+}, {
+"base": "Reference",
+"class": "BaseTest",
+"language": "GDScript",
+"path": "res://addons/goth/BaseTest.gd"
 }, {
 "base": "Control",
 "class": "BaseView",
@@ -78,6 +88,16 @@ _global_script_classes=[ {
 "class": "FeatureView",
 "language": "GDScript",
 "path": "res://screens/gui/feature-view/FeatureView.gd"
+}, {
+"base": "Reference",
+"class": "GOTH",
+"language": "GDScript",
+"path": "res://addons/goth/GOTH.gd"
+}, {
+"base": "MarginContainer",
+"class": "GOTHGui",
+"language": "GDScript",
+"path": "res://addons/goth/GOTHGui.gd"
 }, {
 "base": "MeshInstance",
 "class": "IKCube",
@@ -156,10 +176,12 @@ _global_script_classes=[ {
 } ]
 _global_script_class_icons={
 "AppSettingsView": "",
+"BDD": "",
 "BaseContainer": "",
 "BaseFilePopup": "",
 "BaseMenuItem": "",
 "BaseProp": "",
+"BaseTest": "",
 "BaseView": "",
 "BasicModel": "",
 "BasicPhysicsAttachment": "",
@@ -169,6 +191,8 @@ _global_script_class_icons={
 "CheckBoxLabel": "",
 "ColorPickerLabel": "",
 "FeatureView": "",
+"GOTH": "",
+"GOTHGui": "",
 "IKCube": "",
 "ImportVRM": "",
 "InputLabel": "",
@@ -207,6 +231,10 @@ window/size/width=1600
 window/size/height=900
 window/per_pixel_transparency/allowed=true
 window/per_pixel_transparency/enabled=true
+
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/goth/plugin.cfg" )
 
 [gdnative]
 
