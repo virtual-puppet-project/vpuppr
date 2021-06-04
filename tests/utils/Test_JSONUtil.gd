@@ -1,4 +1,4 @@
-extends TestBase
+extends BaseTest
 
 const JSON_UTIL: Resource = preload("res://utils/JSONUtil.gd")
 

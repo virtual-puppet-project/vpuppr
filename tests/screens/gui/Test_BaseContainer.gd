@@ -1,4 +1,4 @@
-extends TestBase
+extends BaseTest
 
 const BASE_CONTAINER: Resource = preload("res://screens/gui/BaseContainer.tscn")
 
@@ -13,9 +13,10 @@ var tree: SceneTree
 ###############################################################################
 
 func _construct_test() -> void:
-	if tree:
-		tree.free()
 	tree = SceneTree.new()
+
+func _cleanup_test() -> void:
+	tree.free()
 
 ###############################################################################
 # Tests                                                                       #
@@ -44,6 +45,8 @@ func test_add_to_outer() -> void:
 
 	# No inner children are present
 	assert(bc.inner.get_child_count() == 0)
+	
+	_cleanup_test()
 
 func test_add_to_inner() -> void:
 	_construct_test()
@@ -67,6 +70,8 @@ func test_add_to_inner() -> void:
 	assert(bc.inner.get_child(1).name == control_1.name)
 
 	assert(bc.outer.get_child_count() == 0)
+	
+	_cleanup_test()
 
 func test_get_inner_children() -> void:
 	_construct_test()
@@ -88,6 +93,8 @@ func test_get_inner_children() -> void:
 	# Check inner children
 	assert(bc.get_inner_children().size() == 2)
 	assert(bc.inner.get_child_count() == 2)
+	
+	_cleanup_test()
 
 func test_clear_children() -> void:
 	_construct_test()
@@ -115,3 +122,5 @@ func test_clear_children() -> void:
 	yield(tree, "idle_frame")
 
 	assert(bc.get_inner_children() == 0)
+	
+	_cleanup_test()
