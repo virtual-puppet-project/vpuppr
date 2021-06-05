@@ -55,8 +55,8 @@ func _ready() -> void:
 		save_directory_path = "res://export"
 		# Run unit tests
 		var goth: GOTH = GOTH.new()
-		goth.run_unit_tests()
-		# goth.run_bdd_tests()
+		# goth.run_unit_tests()
+		goth.run_bdd_tests()
 
 	app_config = load_config()
 ###############################################################################

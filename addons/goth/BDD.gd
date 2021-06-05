@@ -171,22 +171,28 @@ class Parser:
 			match _current_type:
 				Scenario:
 					_current_scenario = method_name
-					_method_param_mapping[_current_scenario] = {
-						"given": {},
-						"when": {},
-						"then": {}
-					}
+					# _method_param_mapping[_current_scenario] = {
+					# 	"given": {},
+					# 	"when": {},
+					# 	"then": {}
+					# }
+					_method_param_mapping[_current_scenario] = ScenarioData.new()
 				_:
 					if _param_builder.size() != 0:
 						_build_param()
 					
+					var scenario_method: ScenarioMethod = ScenarioMethod.new(method_name, _params.duplicate())
+					
 					match _current_type:
 						Given:
-							_method_param_mapping[_current_scenario]["given"][method_name] = _params.duplicate()
+							# _method_param_mapping[_current_scenario]["given"][method_name] = _params.duplicate()
+							_method_param_mapping[_current_scenario].given.append(scenario_method)
 						When:
-							_method_param_mapping[_current_scenario]["when"][method_name] = _params.duplicate()
+							# _method_param_mapping[_current_scenario]["when"][method_name] = _params.duplicate()
+							_method_param_mapping[_current_scenario].when.append(scenario_method)
 						Then:
-							_method_param_mapping[_current_scenario]["then"][method_name] = _params.duplicate()
+							# _method_param_mapping[_current_scenario]["then"][method_name] = _params.duplicate()
+							_method_param_mapping[_current_scenario].then.append(scenario_method)
 						_:
 							printerr("Invalid scenario type")
 							return false
@@ -295,6 +301,19 @@ class Parser:
 
 		return Result.new(_method_param_mapping, error)
 
+class ScenarioData:
+	var given: Array = [] # ScenarioMethod
+	var when: Array = [] # ScenarioMethod
+	var then: Array = [] # ScenarioMethod
+
+class ScenarioMethod:
+	var name: String
+	var params: Array = []
+
+	func _init(p_name: String, p_params: Array) -> void:
+		name = p_name
+		params = p_params
+
 var step_definitions: Dictionary
 var goth
 
@@ -317,12 +336,17 @@ var goth
 func run(file_name: String) -> void:
 	var tokenizer: Tokenizer = Tokenizer.new()
 	var parser: Parser = Parser.new()
-
+	
+	var ids: Array = ["given", "when", "then"]
+	
 	var file: File = File.new()
+	
+	# Read file and immediately close
 	if file.open(file_name, File.READ) == OK:
 		var content: String = file.get_as_text()
 		file.close()
 
+		# Tokenize
 		var t_result: Result = tokenizer.tokenize(content)
 		if t_result.is_err():
 			goth.log_message("Unable to tokenize %s" % file_name)
@@ -331,6 +355,7 @@ func run(file_name: String) -> void:
 		
 		var tokens: Array = t_result.unwrap()
 		
+		# Parse
 		var p_result: Result = parser.parse(tokens)
 		if p_result.is_err():
 			goth.log_message("Unable to parse %s" % file_name)
@@ -339,21 +364,23 @@ func run(file_name: String) -> void:
 
 		var bdd_data: Dictionary = p_result.unwrap()
 
+		# Process and run each scenario
 		for scen_name in bdd_data.keys():
 			var usable_step_definitions: Dictionary = {} # Dictionary method name: file name
 			var needed_step_definitions: Array = [] # String
 			
-			var scenario_data: Dictionary = bdd_data[scen_name]
+			var scenario_data: ScenarioData = bdd_data[scen_name]
 
-			for id in ["given", "when", "then"]:
-				var id_data: Dictionary = scenario_data[id]
+			# Check known methods against methods in BDD file
+			for id in ids:
+				var id_data: Array = scenario_data.get(id)
 
-				for m_name in id_data.keys():
+				for m_data in id_data:
 					var found_method: bool = false
 					for f_name in step_definitions.keys():
 						for step_def in step_definitions[f_name]:
-							if step_def["name"] == m_name:
-								usable_step_definitions[m_name] = f_name
+							if step_def["name"] == m_data.name:
+								usable_step_definitions[m_data.name] = f_name
 								found_method = true
 								break
 						if found_method:
@@ -361,7 +388,7 @@ func run(file_name: String) -> void:
 					if found_method:
 						break
 					else:
-						needed_step_definitions.append(m_name)
+						needed_step_definitions.append(m_data.name)
 			
 			# Data is missing, cannot continue processing Scenario
 			if not needed_step_definitions.empty():
@@ -371,12 +398,16 @@ func run(file_name: String) -> void:
 			var context: SceneTree = SceneTree.new()
 			var file_refs: Dictionary = {} # File name to loaded script
 			
+			# Load in the actual files so we can call methods
 			for m_name in usable_step_definitions.keys():
 				var f_name: String = usable_step_definitions[m_name]
 				file_refs[f_name] = load(f_name).new()
 			
-			for id in ["given", "when", "then"]:
-				var id_data: Dictionary = scenario_data[id] # String: Array [String]
+			# Run the scenario
+			for id in ids:
+				var id_data: Array = scenario_data.get(id) # Array [ScenarioMethod]
 				
-				for m_name in id_data.keys():
-					file_refs[usable_step_definitions[m_name]].callv(m_name, id_data[m_name])
+				for m_data in id_data:
+					file_refs[usable_step_definitions[m_data.name]].callv(m_data.name, m_data.params)
+	else:
+		goth.log_message("Unable to open file %s" % file_name)
