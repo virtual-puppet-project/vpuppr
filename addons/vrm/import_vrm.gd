@@ -489,8 +489,6 @@ func _create_animation_player(animplayer: AnimationPlayer, vrm_extension: Dictio
 		var skeletonPath:NodePath = animplayer.get_parent().get_path_to(_get_skel_godot_node(gstate, nodes, skeletons, headNode.skeleton))
 		var headBone: String = headNode.resource_name
 
-		vrm_mappings.head = headBone
-
 		var firstperstrack = firstpersanim.add_track(Animation.TYPE_METHOD)
 		firstpersanim.track_set_path(firstperstrack, ".")
 		firstpersanim.track_insert_key(firstperstrack, 0.0, {"method": "TODO_scale_bone", "args": [skeletonPath, headBone, 0.0]})
@@ -538,9 +536,6 @@ func _create_animation_player(animplayer: AnimationPlayer, vrm_extension: Dictio
 			var skeleton:Skeleton = _get_skel_godot_node(gstate, nodes, skeletons,rightEyeNode.skeleton)
 			var skeletonPath:NodePath = animplayer.get_parent().get_path_to(skeleton)
 			rightEyePath = str(skeletonPath) + ":" + nodes[human_bone_to_idx["rightEye"]].resource_name
-
-		vrm_mappings.left_eye = nodes[human_bone_to_idx["leftEye"]].resource_name
-		vrm_mappings.right_eye = nodes[human_bone_to_idx["rightEye"]].resource_name
 
 		var anim: Animation = null
 		if not animplayer.has_animation("LOOKLEFT"):
@@ -717,7 +712,8 @@ func _add_joints_recursive(new_joints_set: Dictionary, gltf_nodes: Array, bone: 
 			_add_joints_recursive(new_joints_set, gltf_nodes, int(child_node))
 
 func _add_joint_set_as_skin(obj: Dictionary, new_joints_set: Dictionary):
-	var new_joints = [].duplicate()
+	# var new_joints = [].duplicate()
+	var new_joints = []
 	for node in new_joints_set:
 		new_joints.push_back(node)
 	new_joints.sort()
@@ -725,7 +721,8 @@ func _add_joint_set_as_skin(obj: Dictionary, new_joints_set: Dictionary):
 	var new_skin: Dictionary = {"joints": new_joints}
 
 	if not obj.has("skins"):
-		obj["skins"] = [].duplicate()
+		# obj["skins"] = [].duplicate()
+		obj["skins"] = []
 
 	obj["skins"].push_back(new_skin)
 
@@ -733,7 +730,8 @@ func _add_vrm_nodes_to_skin(obj: Dictionary) -> bool:
 	var vrm_extension: Dictionary = obj.get("extensions", {}).get("VRM", {})
 	if not vrm_extension.has("humanoid"):
 		return false
-	var new_joints_set = {}.duplicate()
+	# var new_joints_set = {}.duplicate()
+	var new_joints_set = {}
 
 	var secondaryAnimation = vrm_extension.get("secondaryAnimation", {})
 	for bone_group in secondaryAnimation.get("boneGroups", []):
@@ -807,6 +805,38 @@ func import_scene(path: String, flags: int = 1, bake_fps: int = 1):
 		# Ignoring: max
 		# Ignoring: center
 		# Ingoring: axisLength
+
+	var gstate_nodes = gstate.get_nodes()
+
+	var head_index: int = human_bone_to_idx.get("head", -1)
+	if head_index >= 0:
+		vrm_mappings.head = gstate_nodes[head_index].resource_name
+	var left_eye_index: int = human_bone_to_idx.get("leftEye", -1)
+	if left_eye_index >= 0:
+		vrm_mappings.left_eye = gstate_nodes[left_eye_index].resource_name
+	var right_eye_index: int = human_bone_to_idx.get("rightEye", -1)
+	if right_eye_index >= 0:
+		vrm_mappings.right_eye = gstate_nodes[right_eye_index].resource_name
+
+	var left_shoulder_index: int = human_bone_to_idx.get("leftShoulder", -1)
+	if left_shoulder_index >= 0:
+		vrm_mappings.left_shoulder = gstate_nodes[left_shoulder_index].resource_name
+	var left_upper_arm_index: int = human_bone_to_idx.get("leftUpperArm", -1)
+	if left_upper_arm_index >= 0:
+		vrm_mappings.left_upper_arm = gstate_nodes[left_upper_arm_index].resource_name
+	var left_lower_arm_index: int = human_bone_to_idx.get("leftLowerArm", -1)
+	if left_lower_arm_index >= 0:
+		vrm_mappings.left_lower_arm = gstate_nodes[left_lower_arm_index].resource_name
+	
+	var right_shoulder_index: int = human_bone_to_idx.get("rightShoulder", -1)
+	if left_shoulder_index >= 0:
+		vrm_mappings.right_shoulder = gstate_nodes[right_shoulder_index].resource_name
+	var right_upper_arm_index: int = human_bone_to_idx.get("rightUpperArm", -1)
+	if right_upper_arm_index >= 0:
+		vrm_mappings.right_upper_arm = gstate_nodes[right_upper_arm_index].resource_name
+	var right_lower_arm_index: int = human_bone_to_idx.get("rightLowerArm", -1)
+	if right_lower_arm_index >= 0:
+		vrm_mappings.right_lower_arm = gstate_nodes[right_lower_arm_index].resource_name
 
 	_update_materials(vrm_extension, gstate)
 
