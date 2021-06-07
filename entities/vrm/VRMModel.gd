@@ -49,6 +49,21 @@ func _ready() -> void:
 	for mesh_name in vrm_mappings.meshes_used:
 		mapped_meshes[mesh_name] = find_node(mesh_name) as MeshInstance
 
+	# Automatically A pose
+	if vrm_mappings.left_shoulder:
+		skeleton.set_bone_pose(skeleton.find_bone(vrm_mappings.left_shoulder),
+				Transform(Quat(0, 0, 0.1, 0.85)))
+	if vrm_mappings.right_shoulder:
+		skeleton.set_bone_pose(skeleton.find_bone(vrm_mappings.right_shoulder),
+				Transform(Quat(0, 0, -0.1, 0.85)))
+
+	if vrm_mappings.left_upper_arm:
+		skeleton.set_bone_pose(skeleton.find_bone(vrm_mappings.left_upper_arm),
+				Transform(Quat(0, 0, 0.4, 0.85)))
+	if vrm_mappings.right_upper_arm:
+		skeleton.set_bone_pose(skeleton.find_bone(vrm_mappings.right_upper_arm),
+				Transform(Quat(0, 0, -0.4, 0.85)))
+
 	if not neck_bone_id:
 		AppManager.log_message("Neck bone not found. Is this a .vrm model?")
 	if not spine_bone_id:
@@ -58,6 +73,11 @@ func _ready() -> void:
 	additional_bones_to_pose_names.append(SPINE_BONE)
 
 	scan_mapped_bones()
+
+func _unhandled_input(event):
+	if Input.is_key_pressed(KEY_0):
+		print("left %s" % skeleton.get_bone_pose(skeleton.find_bone(vrm_mappings.left_upper_arm)).basis.get_rotation_quat())
+		print("right %s" % skeleton.get_bone_pose(skeleton.find_bone(vrm_mappings.right_upper_arm)).basis.get_rotation_quat())
 
 ###############################################################################
 # Connections                                                                 #
