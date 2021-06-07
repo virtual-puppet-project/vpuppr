@@ -1,13 +1,5 @@
 extends BasicModel
 
-# VRM guarantees neck and spine to exist
-# These might not be named exactly 'neck' and 'spine', so this is best effort only
-const NECK_BONE = "neck"
-const SPINE_BONE = "spine"
-
-onready var neck_bone_id: int = skeleton.find_bone(NECK_BONE)
-onready var spine_bone_id: int = skeleton.find_bone(SPINE_BONE)
-
 var eco_mode: bool = false
 
 var stored_offsets: ModelDisplayScreen.StoredOffsets
@@ -15,6 +7,9 @@ var stored_offsets: ModelDisplayScreen.StoredOffsets
 var vrm_mappings: VRMMappings
 var left_eye_id: int
 var right_eye_id: int
+
+var neck_bone_id: int
+var spine_bone_id: int
 
 var mapped_meshes: Dictionary
 
@@ -49,6 +44,11 @@ func _ready() -> void:
 	for mesh_name in vrm_mappings.meshes_used:
 		mapped_meshes[mesh_name] = find_node(mesh_name) as MeshInstance
 
+	if vrm_mappings.neck:
+		neck_bone_id = skeleton.find_bone(vrm_mappings.neck)
+	if vrm_mappings.spine:
+		spine_bone_id = skeleton.find_bone(vrm_mappings.spine)
+
 	# Automatically A pose
 	if vrm_mappings.left_shoulder:
 		skeleton.set_bone_pose(skeleton.find_bone(vrm_mappings.left_shoulder),
@@ -69,15 +69,10 @@ func _ready() -> void:
 	if not spine_bone_id:
 		AppManager.log_message("Spine bone not found. Is this a .vrm model?")
 	
-	additional_bones_to_pose_names.append(NECK_BONE)
-	additional_bones_to_pose_names.append(SPINE_BONE)
+	additional_bones_to_pose_names.append(vrm_mappings.neck)
+	additional_bones_to_pose_names.append(vrm_mappings.spine)
 
 	scan_mapped_bones()
-
-func _unhandled_input(event):
-	if Input.is_key_pressed(KEY_0):
-		print("left %s" % skeleton.get_bone_pose(skeleton.find_bone(vrm_mappings.left_upper_arm)).basis.get_rotation_quat())
-		print("right %s" % skeleton.get_bone_pose(skeleton.find_bone(vrm_mappings.right_upper_arm)).basis.get_rotation_quat())
 
 ###############################################################################
 # Connections                                                                 #
@@ -93,6 +88,11 @@ static func _to_godot_quat(v: Quat) -> Quat:
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
+
+func scan_mapped_bones() -> void:
+	for bone_name in additional_bones_to_pose_names:
+		if bone_name.to_lower() == "root":
+			additional_bones_to_pose_names.erase(bone_name)
 
 func set_expression_weight(expression_name: String, expression_weight: float) -> void:
 	for mesh_name in vrm_mappings[expression_name].get_meshes():

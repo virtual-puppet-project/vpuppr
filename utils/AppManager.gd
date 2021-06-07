@@ -54,7 +54,7 @@ func _ready() -> void:
 	else:
 		save_directory_path = "res://export"
 		# Run unit tests
-		var goth: GOTH = GOTH.new()
+		var goth = load("res://addons/goth/GOTH.gd").new()
 		goth.run_unit_tests()
 		# goth.run_bdd_tests()
 

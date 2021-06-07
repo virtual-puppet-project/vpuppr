@@ -818,6 +818,13 @@ func import_scene(path: String, flags: int = 1, bake_fps: int = 1):
 	if right_eye_index >= 0:
 		vrm_mappings.right_eye = gstate_nodes[right_eye_index].resource_name
 
+	var neck_index: int = human_bone_to_idx.get("neck", -1)
+	if neck_index >= 0:
+		vrm_mappings.neck = gstate_nodes[neck_index].resource_name
+	var spine_index: int = human_bone_to_idx.get("spine", -1)
+	if spine_index >= 0:
+		vrm_mappings.spine = gstate_nodes[spine_index].resource_name
+
 	var left_shoulder_index: int = human_bone_to_idx.get("leftShoulder", -1)
 	if left_shoulder_index >= 0:
 		vrm_mappings.left_shoulder = gstate_nodes[left_shoulder_index].resource_name
