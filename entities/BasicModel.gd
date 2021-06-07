@@ -68,7 +68,9 @@ func get_mapped_bones() -> Dictionary:
 
 func scan_mapped_bones() -> void:
 	for bone_name in additional_bones_to_pose_names:
-		additional_bone_ids[bone_name] = skeleton.find_bone(bone_name)
+		var bone_id: int = skeleton.find_bone(bone_name)
+		if bone_id >= 0:
+			additional_bone_ids[bone_name] = bone_id
 
 func reset_all_bone_poses() -> void:
 	for bone_id in initial_bone_poses.keys():

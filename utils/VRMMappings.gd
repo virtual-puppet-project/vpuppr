@@ -20,6 +20,9 @@ var head: String
 var left_eye: String
 var right_eye: String
 
+var neck: String
+var spine: String
+
 var left_shoulder: String
 var left_upper_arm: String
 var left_lower_arm: String
