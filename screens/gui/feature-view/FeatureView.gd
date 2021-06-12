@@ -231,8 +231,10 @@ func _create_prop(prop_path: String, parent_transform: Transform,
 		"tscn":
 			prop = load(prop_path).instance()
 		"glb":
-			var gltf_loader: DynamicGLTFLoader = DynamicGLTFLoader.new()
-			prop = gltf_loader.import_scene(prop_path, 1, 1)
+			# var gltf_loader: DynamicGLTFLoader = DynamicGLTFLoader.new()
+			var gstate: GLTFState = GLTFState.new()
+			var gltf: PackedSceneGLTF = PackedSceneGLTF.new()
+			prop = gltf.import_gltf_scene(prop_path, 0, 1000.0, gstate)
 			prop.name = prop_path.get_file().trim_suffix(prop_path.get_extension())
 		"vrm":
 			var import_vrm: ImportVRM = ImportVRM.new()
