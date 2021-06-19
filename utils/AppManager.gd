@@ -14,8 +14,11 @@ signal face_tracker_offsets_set()
 signal console_log(message)
 #warning-ignore:unused_signal
 signal preset_changed(preset)
+signal default_model_set()
 
 enum ModelType { GENERIC, VRM }
+
+const DEMO_MODEL: String = "res://entities/basic-models/Duck.gd"
 
 const DYNAMIC_PHYSICS_BONES: bool = false
 
@@ -38,6 +41,9 @@ var is_face_tracking_disabled: bool = false
 var save_directory_path: String
 var app_config: Dictionary
 var current_model_name: String
+
+# Temporary storage for model path
+var current_model_path: String = "res://entities/basic-models/Duck.tscn"
 
 # Temporary VRM model data storage
 var vrm_mappings: VRMMappings
@@ -93,9 +99,41 @@ func gui_toggle_set(toggle_name: String, view_name: String) -> void:
 
 func set_file_to_load(file_path: String) -> void:
 	current_model_name = file_path.get_file()
+	# Grab the full model path to allow setting model as default
+	current_model_path = file_path
 	if not app_config["models"].has(current_model_name):
 		app_config["models"][current_model_name] = {}
 	emit_signal("file_to_load_changed", file_path)
+
+func set_model_default() -> void:
+	if not app_config.has("settings"):
+		app_config["settings"] = {}
+	#if "default_model" not in app_config:
+	#	app_config["settings"]["default_model"] = {}
+	app_config["settings"]["default_model"] = current_model_path
+	save_config()
+	emit_signal("default_model_set")
+
+# Load DEMO_MODEL by default, otherwise load the user's saved default_model
+# setting
+func get_default_model_path() -> String:
+	var result: String = DEMO_MODEL
+	if app_config.has("settings"):
+		if app_config["settings"].has("default_model"):
+			result = app_config["settings"]["default_model"]
+	return result
+
+func get_current_model_path() -> String:
+	var result: String = ""
+	if current_model_path:
+		result = current_model_path
+	return result
+
+func is_current_model_default() -> bool:
+	var result: bool = false
+	if get_current_model_path() == get_default_model_path():
+		result = true
+	return result
 
 func model_is_loaded() -> void:
 	emit_signal("model_loaded")
