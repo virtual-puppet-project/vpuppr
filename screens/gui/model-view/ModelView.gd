@@ -32,6 +32,14 @@ func _on_load_model_button_pressed() -> void:
 	yield(model_selection_popup, "file_selected")
 	model_selection_popup.queue_free()
 
+func _set_model_default_button_pressed() -> void:
+	AppManager.set_model_default()
+
+func _on_default_model_set() -> void:
+	var default_button: Button = right_container.outer.get_node_or_null("set_model_default_button")
+	if default_button:
+		default_button.disabled = true
+
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
@@ -106,7 +114,25 @@ func _setup_right(config: Dictionary) -> void:
 				initial_properties[c.name] = c.get_value()
 			elif c is InputLabel:
 				initial_properties[c.name] = c.get_value()
-	
+
+	if not right_container.outer.get_node_or_null("set_model_default_button"):
+		var set_model_default_button: Button = Button.new()
+		set_model_default_button.name = "set_model_default_button"
+		set_model_default_button.text = "Set as default"
+		set_model_default_button.size_flags_vertical = SIZE_EXPAND_FILL
+		set_model_default_button.size_flags_vertical = SIZE_EXPAND_FILL
+		set_model_default_button.size_flags_stretch_ratio = 0.1
+		set_model_default_button.focus_mode = FOCUS_NONE
+		set_model_default_button.connect("pressed", self, "_set_model_default_button_pressed")
+		right_container.add_to_outer(set_model_default_button)
+
+	var tempButton: Button = right_container.outer.get_node_or_null("set_model_default_button")
+	# Toggle button disabled property if model is or is not default
+	if AppManager.is_current_model_default():
+		tempButton.disabled = true
+	else:
+		tempButton.disabled = false
+
 	if not right_container.outer.get_node_or_null("load_model_button"):
 		var load_model_button: Button = Button.new()
 		load_model_button.name = "load_model_button"
