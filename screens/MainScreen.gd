@@ -21,7 +21,7 @@ func _ready() -> void:
 	
 	AppManager.connect("file_to_load_changed", self, "_on_file_to_load_changed")
 
-	AppManager.set_file_to_load("res://entities/basic-models/Duck.tscn")
+	AppManager.set_file_to_load(AppManager.get_default_model_path())
 
 func _input(event: InputEvent) -> void:
 	if(event.is_action_pressed("ui_cancel") and OS.is_debug_build()):
