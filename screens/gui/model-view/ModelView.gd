@@ -121,7 +121,6 @@ func _setup_right(config: Dictionary) -> void:
 		set_model_default_button.name = "set_model_default_button"
 		set_model_default_button.text = "Set as default"
 		set_model_default_button.size_flags_vertical = SIZE_EXPAND_FILL
-		set_model_default_button.size_flags_vertical = SIZE_EXPAND_FILL
 		set_model_default_button.size_flags_stretch_ratio = 0.1
 		set_model_default_button.focus_mode = FOCUS_NONE
 		set_model_default_button.connect("pressed", self, "_set_model_default_button_pressed")
