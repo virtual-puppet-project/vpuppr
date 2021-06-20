@@ -13,6 +13,7 @@ var mapped_bones: Array = []
 ###############################################################################
 
 func _ready() -> void:
+	AppManager.connect("default_model_set", self, "_on_default_model_set")
 	_setup()
 
 ###############################################################################
