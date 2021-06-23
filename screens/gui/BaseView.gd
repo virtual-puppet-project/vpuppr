@@ -120,6 +120,18 @@ func _create_element(element_type: int, element_name: String, element_label_text
 	
 	return result
 
+func _create_hslider(hslider_name: String, text_box: MarginContainer, value: int) -> HSlider:
+	var new_hslider: HSlider = HSlider.new()
+	new_hslider.name = "hslider_name"
+	new_hslider.value = value
+	new_hslider.set_ticks(3)
+	new_hslider.min_value = -1000
+	new_hslider.max_value = 1000
+	new_hslider.connect("value_changed", self, "_on_hslider_changed", [text_box])
+	text_box.line_edit.connect("text_changed", self, "_on_hslider_text_changed", [new_hslider, text_box.line_edit])
+
+	return new_hslider
+
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
