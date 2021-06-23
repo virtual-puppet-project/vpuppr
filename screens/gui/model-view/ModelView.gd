@@ -177,6 +177,25 @@ func _generate_properties(p_initial_properties: Dictionary = {}) -> void:
 		right_container.inner.get_node_or_null("additional_bone_damp"),
 		data_source.additional_bone_damp))
 
+	# Eye Trackig Options
+	right_container.add_to_inner(_create_element(ElementType.LABEL, "eye_tracking",
+			"Eye Tracking"))
+	right_container.add_to_inner(_create_element(ElementType.INPUT,
+			"gaze_strength", "Gaze strength",
+			data_source.gaze_strength, TYPE_REAL))
+	right_container.add_to_inner(_create_hslider(
+		"gaze_strength_hslider",
+		right_container.inner.get_node_or_null("gaze_strength"),
+		data_source.additional_bone_damp))
+
+	right_container.add_to_inner(_create_element(ElementType.INPUT,
+			"blink_threshold", "Blink threshold",
+			data_source.gaze_strength, TYPE_REAL))
+	right_container.add_to_inner(_create_hslider(
+		"blink_threshold_hslider",
+		right_container.inner.get_node_or_null("blink_threshold"),
+		data_source.additional_bone_damp))
+
 	# Tracking options
 	if p_initial_properties.empty():
 		data_source = main_screen.model_display_screen
