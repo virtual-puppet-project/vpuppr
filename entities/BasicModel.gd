@@ -2,7 +2,7 @@ class_name BasicModel
 extends Spatial
 
 const SKELETON_NODE = "Skeleton"
-const HEAD_BONE = "head"
+var HEAD_BONE = "head"
 
 # Used to make the model lean with head movement
 export(Array, String) var additional_bones_to_pose_names: Array
