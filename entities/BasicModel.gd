@@ -2,17 +2,18 @@ class_name BasicModel
 extends Spatial
 
 const SKELETON_NODE = "Skeleton"
-var HEAD_BONE = "head"
 
 # Used to make the model lean with head movement
 export(Array, String) var additional_bones_to_pose_names: Array
+
+var head_bone = "head"
 
 var translation_damp: float = 0.3
 var rotation_damp: float = 0.02
 var additional_bone_damp: float = 0.3
 
 onready var skeleton: Skeleton = find_node(SKELETON_NODE)
-onready var head_bone_id: int = skeleton.find_bone(HEAD_BONE)
+onready var head_bone_id: int = skeleton.find_bone(head_bone)
 # String : int
 var additional_bone_ids: Dictionary
 

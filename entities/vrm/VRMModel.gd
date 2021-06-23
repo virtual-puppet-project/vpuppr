@@ -37,9 +37,9 @@ func _ready() -> void:
 
 	# Read vrm mappings
 	has_custom_update = true
-	if vrm_mappings.head != HEAD_BONE:
-		HEAD_BONE = vrm_mappings.head
-		head_bone_id = skeleton.find_bone(HEAD_BONE)
+	if vrm_mappings.head != head_bone:
+		head_bone = vrm_mappings.head
+		head_bone_id = skeleton.find_bone(head_bone)
 
 	left_eye_id = skeleton.find_bone(vrm_mappings.left_eye)
 	right_eye_id = skeleton.find_bone(vrm_mappings.right_eye)
