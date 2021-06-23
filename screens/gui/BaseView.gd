@@ -50,6 +50,19 @@ func _on_gui_toggle_set(toggle_name: String, view_name: String) -> void:
 		if toggle_name != child.name:
 			child.toggle_button.pressed = false
 
+# Callback to update the text value of a an assioated `LineEdit` objected
+# contained within a `MarginContainer`
+# value: int - The value returned by `Range.change_value)
+# text_box: MarginContainer - The MarginContainer that holds the LineEdit
+#	object to update
+func _on_hslider_changed(value: int, text_box: MarginContainer) -> void:
+	text_box.line_edit.text = str(float(value)/1000)
+
+func _on_hslider_text_changed(text: String, slider: HSlider, text_box: LineEdit) -> void:
+	slider.value = int(text)
+	# Stop cursor from resetting to start of line
+	text_box.set_cursor_position(text.length())
+
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
