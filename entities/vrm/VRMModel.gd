@@ -14,11 +14,7 @@ var spine_bone_id: int
 var mapped_meshes: Dictionary
 
 # Blinking
-var blink_threshold: float = 0.3
 var eco_mode_is_blinking: bool = false
-
-# Gaze
-var gaze_strength: float = 0.5
 
 # Mouth
 var min_mouth_value: float = 0.0

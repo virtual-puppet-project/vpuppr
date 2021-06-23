@@ -2,7 +2,6 @@ extends BasicModel
 
 enum ExpressionTypes { DEFAULT, HAPPY, ANGRY, SAD, SHOCKED, BASHFUL }
 
-var blink_threshold: float = 0.3
 var is_blinking: bool = false
 var current_animation: String
 
