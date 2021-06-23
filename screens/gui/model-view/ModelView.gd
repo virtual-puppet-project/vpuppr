@@ -171,7 +171,7 @@ func _generate_properties(p_initial_properties: Dictionary = {}) -> void:
 	
 	var head_bone_name: String = ""
 	if current_model.is_head_bone_id_set():
-		head_bone_name = current_model.HEAD_BONE
+		head_bone_name = current_model.head_bone
 	right_container.add_to_inner(_create_element(ElementType.INPUT, "head_bone",
 			"Head Bone", head_bone_name, TYPE_STRING))
 
