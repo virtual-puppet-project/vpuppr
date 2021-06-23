@@ -154,14 +154,28 @@ func _generate_properties(p_initial_properties: Dictionary = {}) -> void:
 		data_source = current_model
 	right_container.add_to_inner(_create_element(ElementType.LABEL,
 			"bone_movement_damps", "Bone Movement Damps"))
+
 	right_container.add_to_inner(_create_element(ElementType.INPUT,
 			"translation_damp", "Translation Damp", data_source.translation_damp,
 			TYPE_REAL))
+	right_container.add_to_inner(_create_hslider(
+		"translation_damp_hslider",
+		right_container.inner.get_node_or_null("translation_damp"),
+		data_source.translation_damp))
+
 	right_container.add_to_inner(_create_element(ElementType.INPUT,
 			"rotation_damp", "Rotation Damp", data_source.rotation_damp, TYPE_REAL))
+	right_container.add_to_inner(_create_hslider("rotation_damp_hslider",
+	right_container.inner.get_node_or_null("rotation_damp"),
+	data_source.rotation_damp))
+
 	right_container.add_to_inner(_create_element(ElementType.INPUT,
 			"additional_bone_damp", "Additional Bone Damp",
 			data_source.additional_bone_damp, TYPE_REAL))
+	right_container.add_to_inner(_create_hslider(
+		"additional_bone_damp_hslider",
+		right_container.inner.get_node_or_null("additional_bone_damp"),
+		data_source.additional_bone_damp))
 
 	# Tracking options
 	if p_initial_properties.empty():
