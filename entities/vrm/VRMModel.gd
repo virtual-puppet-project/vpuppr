@@ -37,8 +37,10 @@ func _ready() -> void:
 
 	# Read vrm mappings
 	has_custom_update = true
-	if vrm_mappings.head != HEAD_BONE:
-		head_bone_id = skeleton.find_bone(vrm_mappings.head)
+	if vrm_mappings.head != head_bone:
+		head_bone = vrm_mappings.head
+		head_bone_id = skeleton.find_bone(head_bone)
+
 	left_eye_id = skeleton.find_bone(vrm_mappings.left_eye)
 	right_eye_id = skeleton.find_bone(vrm_mappings.right_eye)
 	for mesh_name in vrm_mappings.meshes_used:
@@ -90,6 +92,7 @@ static func _to_godot_quat(v: Quat) -> Quat:
 ###############################################################################
 
 func scan_mapped_bones() -> void:
+	.scan_mapped_bones()
 	for bone_name in additional_bones_to_pose_names:
 		if bone_name.to_lower() == "root":
 			additional_bones_to_pose_names.erase(bone_name)
