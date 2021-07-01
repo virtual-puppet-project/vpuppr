@@ -29,6 +29,15 @@ func _on_reset_button_pressed() -> void:
 func _on_load_model_button_pressed() -> void:
 	var model_selection_popup: FileDialog = MODEL_SELECTION_POPUP.instance()
 	get_parent().add_child(model_selection_popup)
+
+	yield(get_tree(), "idle_frame")
+
+	if not AppManager.default_load_path.empty():
+		var load_path = AppManager.default_load_path
+		if not load_path.ends_with("/"):
+			load_path += "/"
+		model_selection_popup.current_dir = load_path
+		model_selection_popup.current_path = load_path
 	
 	yield(model_selection_popup, "file_selected")
 	model_selection_popup.queue_free()

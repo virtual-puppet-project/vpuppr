@@ -48,6 +48,10 @@ var current_model_path: String = "res://entities/basic-models/Duck.tscn"
 # Temporary VRM model data storage
 var vrm_mappings: VRMMappings
 
+# AppSettings
+var default_load_path: String = "/"
+var should_track_eye: float = 1.0
+
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
