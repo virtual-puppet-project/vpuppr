@@ -190,8 +190,10 @@ func _physics_process(_delta: float) -> void:
 			updated,
 			stored_offsets.translation_offset - open_see_data.translation,
 			stored_offsets.euler_offset - corrected_euler,
-			stored_offsets.left_eye_gaze_offset - open_see_data.left_gaze.get_euler(),
-			stored_offsets.right_eye_gaze_offset - open_see_data.right_gaze.get_euler()
+			(stored_offsets.left_eye_gaze_offset - open_see_data.left_gaze.get_euler()) *
+					AppManager.should_track_eye,
+			(stored_offsets.right_eye_gaze_offset - open_see_data.right_gaze.get_euler()) *
+					AppManager.should_track_eye
 		)
 
 	if apply_translation:
