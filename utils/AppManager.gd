@@ -18,7 +18,7 @@ signal default_model_set()
 
 enum ModelType { GENERIC, VRM }
 
-const DEMO_MODEL: String = "res://entities/basic-models/Duck.gd"
+const DEMO_MODEL: String = "res://entities/basic-models/Duck.tscn"
 
 const DYNAMIC_PHYSICS_BONES: bool = false
 
