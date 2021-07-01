@@ -11,6 +11,8 @@ var world_environment: WorldEnvironment
 # Props
 var instanced_props: Dictionary = {} # String: PropData
 var prop_to_move: Spatial
+# Bone names to all objects tracking that bone
+var motion_tracked_props: Dictionary = {} # String: Array of Spatials
 
 var is_left_clicking: bool = false
 var should_move_prop: bool = false
@@ -36,6 +38,12 @@ class PropData:
 
 func _ready() -> void:
 	_setup()
+
+func _physics_process(_delta: float) -> void:
+	for key in motion_tracked_props.keys():
+		var bone_transform: Transform = current_model.skeleton.get_bone_pose(current_model.skeleton.find_bone(key))
+		for prop in motion_tracked_props[key]:
+			prop.transform = bone_transform * prop.offset
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("left_click"):
@@ -274,9 +282,13 @@ func _create_prop_info_display(prop_name: String, data: Dictionary) -> void:
 	
 	right_container.add_to_inner(_create_element(ElementType.LABEL, prop_name, prop_name))
 
+	# Move the prop around
 	right_container.add_to_inner(_create_element(ElementType.TOGGLE, "move_prop", "Move Prop", false, false))
 	right_container.add_to_inner(_create_element(ElementType.TOGGLE, "spin_prop", "Spin Prop", false, false))
 	right_container.add_to_inner(_create_element(ElementType.TOGGLE, "zoom_prop", "Zoom Prop", false, false))
+
+	# Face tracking
+	right_container.add_to_inner(_create_element(ElementType.TOGGLE, "track_face", "Track Face", false, false))
 
 	for key in data.keys():
 		var element_type: int
@@ -323,6 +335,22 @@ func _apply_properties() -> void:
 				"zoom_prop":
 					if c.get_value():
 						should_zoom_prop = true
+				"track_face":
+					if c.get_value():
+						# TODO a little scary depending prop_to_move being set
+						# before we process this
+						# TODO hardcoded to the head bone for now
+						if not motion_tracked_props.has("head"):
+							motion_tracked_props["head"] = []
+						motion_tracked_props["head"].append(prop_to_move)
+						prop_to_move.offset = prop_to_move.transform
+					else:
+						for key in motion_tracked_props.keys():
+							# TODO check to see if we even need a null check
+							# or if we can do a blind erase like with dictionaries
+							if motion_tracked_props[key].has(prop_to_move):
+								motion_tracked_props[key].erase(prop_to_move)
+								prop_to_move.transform = prop_to_move.offset
 				"delete_prop", "prop_details":
 					pass
 				_:
