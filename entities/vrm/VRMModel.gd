@@ -28,6 +28,7 @@ var min_mouth_value: float = 0.0
 ###############################################################################
 
 func _ready() -> void:
+	has_custom_update = true
 	translation_damp = 0.1
 	rotation_damp = 0.01
 	additional_bone_damp = 0.6
@@ -35,8 +36,11 @@ func _ready() -> void:
 	# TODO this is gross
 	stored_offsets = get_parent().get_parent().stored_offsets
 
+	var anim_player = find_node("AnimationPlayer")
+	
+
+	# TODO remove all of this
 	# Read vrm mappings
-	has_custom_update = true
 	if vrm_mappings.head != head_bone:
 		head_bone = vrm_mappings.head
 		head_bone_id = skeleton.find_bone(head_bone)
@@ -65,6 +69,7 @@ func _ready() -> void:
 	if vrm_mappings.right_upper_arm:
 		skeleton.set_bone_pose(skeleton.find_bone(vrm_mappings.right_upper_arm),
 				Transform(Quat(0, 0, -0.4, 0.85)))
+	# TODO remove the above stuff
 
 	if not neck_bone_id:
 		AppManager.log_message("Neck bone not found. Is this a .vrm model?")

@@ -3,6 +3,7 @@ extends BaseView
 
 const PROP_SELECTION_POPUP: Resource = preload("res://screens/gui/feature-view/PropSelectionPopup.tscn")
 const BASE_PROP_SCRIPT_PATH: String = "res://entities/BaseProp.gd"
+const VrmLoader: Resource = preload("res://addons/vrm/vrm_loader.gd")
 
 # Builtins
 var main_light: Light
@@ -245,8 +246,8 @@ func _create_prop(prop_path: String, parent_transform: Transform,
 			prop = gltf.import_gltf_scene(prop_path, 0, 1000.0, gstate)
 			prop.name = prop_path.get_file().trim_suffix(prop_path.get_extension())
 		"vrm":
-			var import_vrm: ImportVRM = ImportVRM.new()
-			prop = import_vrm.import_scene(prop_path, 1, 1000)
+			var vrm_loader = VrmLoader.new()
+			prop = vrm_loader.import_scene(prop_path, 1, 1000)
 			prop.name = prop_path.get_file().trim_suffix(prop_path.get_extension())
 		"png", "jpg", "jpeg":
 			var texture: Texture = ImageTexture.new()
