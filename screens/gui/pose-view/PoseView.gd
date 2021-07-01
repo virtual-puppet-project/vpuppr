@@ -189,21 +189,7 @@ func _generate_properties_right() -> void:
 	reset_model_pose_button.connect("pressed", self, "_on_reset_model_pose_button_pressed")
 	right_container.add_to_inner(reset_model_pose_button)
 
-	# IK input
-	right_container.add_to_inner(_create_element(ElementType.LABEL, "ik_options",
-			"IK Options"))
-	right_container.add_to_inner(_create_element(ElementType.INPUT, "left_arm_root",
-			"Left Arm Root", "", TYPE_STRING))
-	right_container.add_to_inner(_create_element(ElementType.INPUT, "left_arm_tip",
-			"Left Arm Tip", "", TYPE_STRING))
-	right_container.add_to_inner(_create_element(ElementType.INPUT, "right_arm_root",
-			"Right Arm Root", "", TYPE_STRING))
-	right_container.add_to_inner(_create_element(ElementType.INPUT, "right_arm_tip",
-			"Right Arm Tip", "", TYPE_STRING))
-
 func _apply_properties_right() -> void:
-	var should_left_ik_start: int = 0
-	var should_right_ik_start: int = 0
 	for c in right_container.get_inner_children():
 		if c is InputLabel:
 			if c.line_edit.text.empty():
@@ -218,43 +204,6 @@ func _apply_properties_right() -> void:
 				should_spin_model = c.get_value()
 			"zoom":
 				should_zoom_model = c.get_value()
-			"left_arm_root":
-				main_screen.model_display_screen.left_skeleton_ik.root_bone = c.get_value()
-				should_left_ik_start += 1
-			"left_arm_tip":
-				main_screen.model_display_screen.left_skeleton_ik.tip_bone = c.get_value()
-				should_left_ik_start += 1
-			"right_arm_root":
-				main_screen.model_display_screen.right_skeleton_ik.root_bone = c.get_value()
-				should_right_ik_start += 1
-			"right_arm_tip":
-				main_screen.model_display_screen.right_skeleton_ik.tip_bone = c.get_value()
-				should_right_ik_start += 1
-
-	# TODO this isn't great
-	# Apply IK
-	if should_left_ik_start == 2:
-		main_screen.model_display_screen.left_skeleton_ik.target_node = main_screen.model_display_screen.left_ik_cube.get_path()
-		main_screen.model_display_screen.left_skeleton_ik.start(true)
-		
-		var left_bone_transform: Transform = main_screen.model_display_screen.model_skeleton.get_bone_global_pose(main_screen.model_display_screen.model_skeleton.find_bone(main_screen.model_display_screen.left_skeleton_ik.root_bone))
-		main_screen.model_display_screen.model_skeleton.clear_bones_global_pose_override()
-		var left_transform: Transform = Transform()
-		left_transform = left_transform.rotated(Vector3.RIGHT, left_bone_transform.basis.get_euler().normalized().x)
-		left_transform = left_transform.rotated(Vector3.UP, left_bone_transform.basis.get_euler().normalized().y)
-		left_transform = left_transform.rotated(Vector3.BACK, left_bone_transform.basis.get_euler().normalized().z)
-		main_screen.model_display_screen.model_skeleton.set_bone_pose(main_screen.model_display_screen.model_skeleton.find_bone(main_screen.model_display_screen.left_skeleton_ik.root_bone), left_transform)
-	if should_right_ik_start == 2:
-		main_screen.model_display_screen.right_skeleton_ik.target_node = main_screen.model_display_screen.right_ik_cube.get_path()
-		main_screen.model_display_screen.right_skeleton_ik.start(true)
-
-		var right_bone_transform: Transform = main_screen.model_display_screen.model_skeleton.get_bone_global_pose(main_screen.model_display_screen.model_skeleton.find_bone(main_screen.model_display_screen.right_skeleton_ik.root_bone))
-		main_screen.model_display_screen.model_skeleton.clear_bones_global_pose_override()
-		var right_transform: Transform = Transform()
-		right_transform = right_transform.rotated(Vector3.RIGHT, right_bone_transform.basis.get_euler().normalized().x)
-		right_transform = right_transform.rotated(Vector3.UP, right_bone_transform.basis.get_euler().normalized().y)
-		right_transform = right_transform.rotated(Vector3.BACK, right_bone_transform.basis.get_euler().normalized().z)
-		main_screen.model_display_screen.model_skeleton.set_bone_pose(main_screen.model_display_screen.model_skeleton.find_bone(main_screen.model_display_screen.right_skeleton_ik.root_bone), right_transform)
 
 ###############################################################################
 # Public functions                                                            #
