@@ -7,8 +7,6 @@ const DEFAULT_GENERIC_MODEL: Resource = preload("res://entities/basic-models/Duc
 const GENERIC_MODEL_SCRIPT_PATH: String = "res://entities/BasicModel.gd"
 const VRM_MODEL_SCRIPT_PATH: String = "res://entities/vrm/VRMModel.gd"
 
-const IK_CUBE: Resource = preload("res://entities/IKCube.tscn")
-
 export var model_resource_path: String
 
 var script_to_use: String
@@ -18,12 +16,6 @@ var model
 var model_skeleton: Skeleton
 onready var model_parent: Spatial = $ModelParent
 onready var props: Spatial = $Props
-
-# IK nodes
-var right_ik_cube: IKCube
-var left_ik_cube: IKCube
-var left_skeleton_ik: SkeletonIK
-var right_skeleton_ik: SkeletonIK
 
 # Store transforms so we can easily reset
 var model_initial_transform: Transform
@@ -70,10 +62,6 @@ export var tracking_start_delay: float = 2.0
 var can_manipulate_model: bool = false
 var should_spin_model: bool = false
 var should_move_model: bool = false
-
-var can_manipulate_ik_cubes: bool = false
-var should_move_left_cube: bool = false
-var should_move_right_cube: bool = false
 
 export var zoom_strength: float = 0.05
 export var mouse_move_strength: float = 0.002
@@ -132,37 +120,6 @@ func _ready() -> void:
 	
 	# Wait until the model is loaded else we get IK errors
 	yield(model_parent, "ready")
-	
-	# TODO refactor the IK stuff to be less gross
-	# Add IK cube helpers
-	left_ik_cube = IK_CUBE.instance()
-	left_ik_cube.name = "LeftIKCube"
-	left_ik_cube.transform = model_parent.transform
-	left_ik_cube.transform = left_ik_cube.transform.translated(Vector3(1.0, 0.5, 0.0))
-	model_parent.call_deferred("add_child", left_ik_cube)
-	
-	right_ik_cube = IK_CUBE.instance()
-	right_ik_cube.name = "RightIKCube"
-	right_ik_cube.transform = model_parent.transform
-	right_ik_cube.transform = right_ik_cube.transform.translated(Vector3(-1.0, 0.5, 0.0))
-	model_parent.call_deferred("add_child", right_ik_cube)
-	
-	# Add SkeletonIKs to model skeleton
-	model_skeleton = model.find_node("Skeleton")
-	left_skeleton_ik = SkeletonIK.new()
-	left_skeleton_ik.name = "LeftSkeletonIK"
-	left_skeleton_ik.use_magnet = true
-	left_skeleton_ik.magnet = left_ik_cube.transform.origin
-	left_skeleton_ik.override_tip_basis = false
-	left_skeleton_ik.stop()
-	right_skeleton_ik = SkeletonIK.new()
-	right_skeleton_ik.name = "RightSkeletonIK"
-	right_skeleton_ik.use_magnet = true
-	right_skeleton_ik.magnet = right_ik_cube.transform.origin
-	right_skeleton_ik.override_tip_basis = false
-	right_skeleton_ik.stop()
-	model_skeleton.call_deferred("add_child", left_skeleton_ik)
-	model_skeleton.call_deferred("add_child", right_skeleton_ik)
 
 	var offset_timer: Timer = Timer.new()
 	offset_timer.name = "OffsetTimer"
@@ -221,11 +178,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		should_spin_model = false
 		should_move_model = false
 
-	elif event.is_action_pressed("allow_move_ik_cubes"):
-		can_manipulate_ik_cubes = true
-	elif event.is_action_released("allow_move_ik_cubes"):
-		can_manipulate_ik_cubes = false
-
 	elif can_manipulate_model:
 		if event.is_action_pressed("left_click"):
 			should_spin_model = true
@@ -253,33 +205,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		
 		elif(should_move_model and event is InputEventMouseMotion):
 			model_parent.translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
-
-	elif can_manipulate_ik_cubes:
-		if event.is_action_pressed("left_click"):
-			should_move_left_cube = true
-		elif event.is_action_released("left_click"):
-			should_move_left_cube = false
-
-		elif event.is_action_pressed("right_click"):
-			should_move_right_cube = true
-		elif event.is_action_released("right_click"):
-			should_move_right_cube = false
-
-		elif should_move_left_cube:
-			if event.is_action("scroll_up"):
-				right_ik_cube.translate(Vector3(0.0, 0.0, zoom_strength))
-			elif event.is_action("scroll_down"):
-				right_ik_cube.translate(Vector3(0.0, 0.0, -zoom_strength))
-			elif event is InputEventMouseMotion:
-				right_ik_cube.translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
-
-		elif should_move_right_cube:
-			if event.is_action("scroll_up"):
-				left_ik_cube.translate(Vector3(0.0, 0.0, zoom_strength))
-			elif event.is_action("scroll_down"):
-				left_ik_cube.translate(Vector3(0.0, 0.0, -zoom_strength))
-			elif event is InputEventMouseMotion:
-				left_ik_cube.translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
 
 ###############################################################################
 # Connections                                                                 #
