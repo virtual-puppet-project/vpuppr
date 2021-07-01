@@ -129,11 +129,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://screens/MainScreen.gd"
 }, {
-"base": "Spatial",
-"class": "ModelDisplayScreen",
-"language": "GDScript",
-"path": "res://screens/ModelDisplayScreen.gd"
-}, {
 "base": "BaseView",
 "class": "ModelView",
 "language": "GDScript",
@@ -199,7 +194,6 @@ _global_script_class_icons={
 "InterpolationData": "",
 "JSONUtil": "",
 "MainScreen": "",
-"ModelDisplayScreen": "",
 "ModelView": "",
 "OpenSeeGD": "",
 "PoseView": "",

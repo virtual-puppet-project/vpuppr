@@ -114,8 +114,8 @@ func _ready() -> void:
 				# TODO i dont think this is used for tscn?
 				script_to_use = GENERIC_MODEL_SCRIPT_PATH
 			_:
-				AppManager.log_message("File extension not recognized.")
-				printerr("File extension not recognized.")
+				AppManager.log_message("File extension not recognized. %s" % model_resource_path)
+				printerr("File extension not recognized. %s" % model_resource_path)
 	
 	# Load in generic model if nothing is loaded
 	if not model:
