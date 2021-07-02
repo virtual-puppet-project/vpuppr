@@ -4,6 +4,8 @@ var eco_mode: bool = false
 
 var stored_offsets: ModelDisplayScreen.StoredOffsets
 
+var vrm_meta: Resource
+
 var vrm_mappings: VRMMappings
 var left_eye_id: int
 var right_eye_id: int
@@ -36,48 +38,47 @@ func _ready() -> void:
 	# TODO this is gross
 	stored_offsets = get_parent().get_parent().stored_offsets
 
-	var anim_player = find_node("AnimationPlayer")
-	
+	# Map expressions
+	vrm_mappings = VRMMappings.new()
+	var anim_player: AnimationPlayer = find_node("anim")
+	for a in anim_player.get_animation_list():
+		
+		pass
 
-	# TODO remove all of this
-	# Read vrm mappings
-	if vrm_mappings.head != head_bone:
-		head_bone = vrm_mappings.head
-		head_bone_id = skeleton.find_bone(head_bone)
-
-	left_eye_id = skeleton.find_bone(vrm_mappings.left_eye)
-	right_eye_id = skeleton.find_bone(vrm_mappings.right_eye)
 	for mesh_name in vrm_mappings.meshes_used:
 		mapped_meshes[mesh_name] = find_node(mesh_name) as MeshInstance
 
-	if vrm_mappings.neck:
-		neck_bone_id = skeleton.find_bone(vrm_mappings.neck)
-	if vrm_mappings.spine:
-		spine_bone_id = skeleton.find_bone(vrm_mappings.spine)
+	# Map bones
+	if vrm_meta.humanoid_bone_mapping.has("head"):
+		head_bone = vrm_meta.humanoid_bone_mapping["head"]
+		head_bone_id = skeleton.find_bone(head_bone)
 
-	# Automatically A pose
-	if vrm_mappings.left_shoulder:
-		skeleton.set_bone_pose(skeleton.find_bone(vrm_mappings.left_shoulder),
+	if vrm_meta.humanoid_bone_mapping.has("leftEye"):
+		left_eye_id = skeleton.find_bone(vrm_meta.humanoid_bone_mapping["leftEye"])
+	if vrm_meta.humanoid_bone_mapping.has("rightEye"):
+		right_eye_id = skeleton.find_bone(vrm_meta.humanoid_bone_mapping["rightEye"])
+
+	if vrm_meta.humanoid_bone_mapping.has("neck"):
+		neck_bone_id = skeleton.find_bone(vrm_meta.humanoid_bone_mapping["neck"])
+		additional_bones_to_pose_names.append(vrm_meta.humanoid_bone_mapping["neck"])
+
+	if vrm_meta.humanoid_bone_mapping.has("spine"):
+		spine_bone_id = skeleton.find_bone(vrm_meta.humanoid_bone_mapping["spine"])
+		additional_bones_to_pose_names.append(vrm_meta.humanoid_bone_mapping["spine"])
+
+	if vrm_meta.humanoid_bone_mapping.has("leftShoulder"):
+		skeleton.set_bone_pose(skeleton.find_bone(vrm_meta.humanoid_bone_mapping["leftShoulder"]),
 				Transform(Quat(0, 0, 0.1, 0.85)))
-	if vrm_mappings.right_shoulder:
-		skeleton.set_bone_pose(skeleton.find_bone(vrm_mappings.right_shoulder),
+	if vrm_meta.humanoid_bone_mapping.has("rightShoulder"):
+		skeleton.set_bone_pose(skeleton.find_bone(vrm_meta.humanoid_bone_mapping["rightShoulder"]),
 				Transform(Quat(0, 0, -0.1, 0.85)))
 
-	if vrm_mappings.left_upper_arm:
-		skeleton.set_bone_pose(skeleton.find_bone(vrm_mappings.left_upper_arm),
+	if vrm_meta.humanoid_bone_mapping.has("leftUpperArm"):
+		skeleton.set_bone_pose(skeleton.find_bone(vrm_meta.humanoid_bone_mapping["leftUpperArm"]),
 				Transform(Quat(0, 0, 0.4, 0.85)))
-	if vrm_mappings.right_upper_arm:
-		skeleton.set_bone_pose(skeleton.find_bone(vrm_mappings.right_upper_arm),
+	if vrm_meta.humanoid_bone_mapping.has("rightUpperArm"):
+		skeleton.set_bone_pose(skeleton.find_bone(vrm_meta.humanoid_bone_mapping["rightUpperArm"]),
 				Transform(Quat(0, 0, -0.4, 0.85)))
-	# TODO remove the above stuff
-
-	if not neck_bone_id:
-		AppManager.log_message("Neck bone not found. Is this a .vrm model?")
-	if not spine_bone_id:
-		AppManager.log_message("Spine bone not found. Is this a .vrm model?")
-	
-	additional_bones_to_pose_names.append(vrm_mappings.neck)
-	additional_bones_to_pose_names.append(vrm_mappings.spine)
 
 	scan_mapped_bones()
 

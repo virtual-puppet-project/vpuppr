@@ -15,22 +15,6 @@ class VRMExpression:
 	func get_meshes() -> Array:
 		return expression_data.keys()
 
-# Bone names
-var head: String
-var left_eye: String
-var right_eye: String
-
-var neck: String
-var spine: String
-
-var left_shoulder: String
-var left_upper_arm: String
-var left_lower_arm: String
-
-var right_shoulder: String
-var right_upper_arm: String
-var right_lower_arm: String
-
 # Blend shapes
 var a := VRMExpression.new()
 var angry := VRMExpression.new()
