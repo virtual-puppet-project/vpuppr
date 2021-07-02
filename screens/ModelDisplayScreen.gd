@@ -90,8 +90,8 @@ func _ready() -> void:
 				rotation_adjustment = Vector3(1, -1, -1)
 				
 				# Grab vrm mappings
-				model.vrm_mappings = AppManager.vrm_mappings
-				AppManager.vrm_mappings.dirty = false
+				# model.vrm_mappings = AppManager.vrm_mappings
+				# AppManager.vrm_mappings.dirty = false
 			"tscn":
 				AppManager.log_message("Loading TSCN file.")
 				var model_resource = load(model_resource_path)
@@ -272,6 +272,7 @@ func _set_interpolation_rate(value: float) -> void:
 func load_external_model(file_path: String) -> Spatial:
 	AppManager.log_message("Starting external loader.")
 	var loaded_model: Spatial
+	var vrm_meta: Resource
 	
 	match file_path.get_extension():
 		"glb":
@@ -284,9 +285,13 @@ func load_external_model(file_path: String) -> Spatial:
 			# var import_vrm: ImportVRM = ImportVRM.new()
 			var vrm_loader = VrmLoader.new()
 			loaded_model = vrm_loader.import_scene(file_path, 1, 1000)
+			vrm_meta = loaded_model.vrm_meta
 
 	var model_script = load(script_to_use)
 	loaded_model.set_script(model_script)
+
+	if vrm_meta:
+		loaded_model.vrm_meta = vrm_meta
 	
 	AppManager.log_message("External file loaded successfully.")
 	
