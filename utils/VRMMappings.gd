@@ -4,6 +4,7 @@ extends Reference
 var dirty: bool = true
 
 class VRMExpression:
+	# Stores
 	var expression_data: Dictionary = {} # String: Array[String]
 	
 	func create_mapping(mesh_name: String, morph_name: String) -> void:
