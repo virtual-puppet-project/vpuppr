@@ -333,6 +333,9 @@ void light() {
 	if (isOutline == 1.0 && _OutlineColorMode == 1.0) {
 		lit.rgb = GammaToLinearSpace(_OutlineColor).rgb * _OutlineLightingMix;
 		shade.rgb = lit.rgb;
+	} else if (isOutline == 1.0 && _OutlineColorMode == 0.0) {
+		lit.rgb = vec3(0.0);
+		shade.rgb = vec3(0.0);
 	}
 
 	bool isFirstLight = false;
