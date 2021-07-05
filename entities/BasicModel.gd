@@ -43,7 +43,7 @@ func _ready() -> void:
 ###############################################################################
 
 func _modify_blend_shape(mesh_instance: MeshInstance, blend_shape: String, value: float) -> void:
-	mesh_instance.set("blend_shapes/%s" % blend_shape, value)
+	mesh_instance.set(blend_shape, value)
 
 ###############################################################################
 # Public functions                                                            #
