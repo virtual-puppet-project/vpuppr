@@ -7,7 +7,6 @@ var stored_offsets: ModelDisplayScreen.StoredOffsets
 var vrm_meta: Resource
 
 var vrm_mappings: VRMMappings
-var expression_data: Dictionary # [ExpressionData]
 var left_eye_id: int
 var right_eye_id: int
 
@@ -32,6 +31,9 @@ var gaze_strength: float = 0.5
 var min_mouth_value: float = 0.0
 
 class ExpressionData:
+	var morphs: Array # MorphData
+
+class MorphData:
 	var mesh: MeshInstance
 	var morph: String
 	var values: Array
@@ -69,9 +71,9 @@ func _ready() -> void:
 	# Map expressions
 	var anim_player: AnimationPlayer = find_node("anim")
 
-	expression_data = {}
+	var expression_data: Dictionary = {}
 	for animation_name in anim_player.get_animation_list():
-		expression_data[animation_name] = []
+		expression_data[animation_name] = ExpressionData.new()
 		var animation: Animation = anim_player.get_animation(animation_name)
 		for track_index in animation.get_track_count():
 			var track_name: String = animation.track_get_path(track_index)
@@ -86,14 +88,31 @@ func _ready() -> void:
 				AppManager.log_message("Unable to find mesh: %s" % split_name[0])
 				continue
 			
-			var ed = ExpressionData.new()
-			ed.mesh = mesh
-			ed.morph = split_name[1]
+			var md = MorphData.new()
+			md.mesh = mesh
+			md.morph = split_name[1]
 			
 			for key_index in animation.track_get_key_count(track_index):
-				ed.values.append(animation.track_get_key_value(track_index, key_index))
+				md.values.append(animation.track_get_key_value(track_index, key_index))
 
-			expression_data[animation_name].append(ed)
+			expression_data[animation_name].morphs.append(md)
+
+	a = expression_data["A"]
+	angry = expression_data["ANGRY"]
+	blink = expression_data["BLINK"]
+	blink_l = expression_data["BLINK_L"]
+	blink_r = expression_data["BLINK_R"]
+	e = expression_data["E"]
+	fun = expression_data["FUN"]
+	i = expression_data["I"]
+	joy = expression_data["JOY"]
+	lookdown = expression_data["LOOKDOWN"]
+	lookleft = expression_data["LOOKLEFT"]
+	lookright = expression_data["LOOKRIGHT"]
+	lookup = expression_data["LOOKUP"]
+	o = expression_data["O"]
+	sorrow = expression_data["SORROW"]
+	u = expression_data["U"]
 
 	anim_player.queue_free()
 
@@ -161,18 +180,16 @@ func custom_update(data: OpenSeeGD.OpenSeeData, interpolation_data: Interpolatio
 	# NOTE: Eye mappings are intentionally reversed so that the model mirrors the data
 	if not eco_mode:
 		# Left eye blinking
-		var blink_right = expression_data["BLINK_R"][0]
 		if data.left_eye_open >= blink_threshold:
-			_modify_blend_shape(blink_right.mesh, blink_right.morph, blink_right.values[1] - data.left_eye_open)
+			_modify_blend_shape(blink_r.morphs[0].mesh, blink_r.morphs[0].morph, blink_r.morphs[0].values[1] - data.left_eye_open)
 		else:
-			_modify_blend_shape(blink_right.mesh, blink_right.morph, blink_right.values[1])
+			_modify_blend_shape(blink_r.morphs[0].mesh, blink_r.morphs[0].morph, blink_r.morphs[0].values[1])
 
 		# Right eye blinking
-		var blink_left = expression_data["BLINK_L"][0]
 		if data.right_eye_open >= blink_threshold:
-			_modify_blend_shape(blink_left.mesh, blink_left.morph, blink_left.values[1] - data.right_eye_open)
+			_modify_blend_shape(blink_l.morphs[0].mesh, blink_l.morphs[0].morph, blink_l.morphs[0].values[1] - data.right_eye_open)
 		else:
-			_modify_blend_shape(blink_left.mesh, blink_left.morph, blink_left.values[1])
+			_modify_blend_shape(blink_l.morphs[0].mesh, blink_l.morphs[0].morph, blink_l.morphs[0].values[1])
 
 		# TODO eyes show weird behaviour when blinking
 		# TODO make sure angle between eyes' x values are at least parallel
@@ -195,28 +212,12 @@ func custom_update(data: OpenSeeGD.OpenSeeData, interpolation_data: Interpolatio
 
 		skeleton.set_bone_pose(right_eye_id, left_eye_transform)
 		skeleton.set_bone_pose(left_eye_id, right_eye_transform)
-#		var average_eye_x_rotation: float = (left_eye_rotation.y + right_eye_rotation.y) / 2
-#		var average_eye_y_rotation: float = (left_eye_rotation.x + right_eye_rotation.x) / 2
-#		if Input.is_key_pressed(KEY_0):
-#			AppManager.log_message(str(average_eye_x_rotation))
-#		if Input.is_key_pressed(KEY_1):
-#			AppManager.log_message(str(average_eye_y_rotation))
-#		if average_eye_x_rotation >= average_eye_y_rotation:
-#			if average_eye_x_rotation >= 0:
-#				set_eye_movement("LOOKLEFT", min(average_eye_x_rotation * 2, 0.99999))
-#			else:
-#				set_eye_movement("LOOKRIGHT", min(abs(average_eye_x_rotation * 2), 0.99999))
-#		else:
-#			if average_eye_y_rotation >= 0:
-#				set_eye_movement("LOOKUP", min(average_eye_y_rotation * 2, 0.99999))
-#			else:
-#				set_eye_movement("LOOKDOWN", min(abs(average_eye_y_rotation) * 2, 0.99999))
+		
+		
 		
 		# Mouth tracking
-		# set_expression_weight("a", min(max(min_mouth_value, data.features.mouth_open * 2.0), 1.0))
-		# set_mouth_shape("A", min(max(min_mouth_value, data.features.mouth_open * 2.0), 1.0))
-		_modify_blend_shape(expression_data["A"][0].mesh, expression_data["A"][0].morph,
-				min(max(expression_data["A"][0].values[0], data.features.mouth_open * 2.0), 1.0))
+		_modify_blend_shape(a.morphs[0].mesh, a.morphs[0].morph,
+				min(max(a.morphs[0].values[0], data.features.mouth_open * 2.0), 1.0))
 	else:
 		# TODO implement eco mode, should be more efficient than standard mode
 		# Eco-mode blinking
