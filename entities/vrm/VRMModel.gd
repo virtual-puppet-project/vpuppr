@@ -27,6 +27,20 @@ var eco_mode_is_blinking: bool = false
 # Gaze
 var gaze_strength: float = 0.5
 
+var min_left_eye: Quat = Quat()
+var max_left_eye: Quat = Quat()
+var min_right_eye: Quat = Quat()
+var max_right_eye: Quat = Quat()
+
+class EyeClamps:
+	var up: Quat
+	var down: Quat
+	var left: Quat
+	var right: Quat
+
+var left_eye: EyeClamps
+var right_eye: EyeClamps
+
 # Mouth
 var min_mouth_value: float = 0.0
 
@@ -47,10 +61,12 @@ var e := ExpressionData.new()
 var fun := ExpressionData.new()
 var i := ExpressionData.new()
 var joy := ExpressionData.new()
-var lookdown := ExpressionData.new()
-var lookleft := ExpressionData.new()
-var lookright := ExpressionData.new()
-var lookup := ExpressionData.new()
+# var lookdown := ExpressionData.new()
+# var lookleft := ExpressionData.new()
+# var lookright := ExpressionData.new()
+# var lookup := ExpressionData.new()
+var look_h := ExpressionData.new()
+var look_v := ExpressionData.new()
 var o := ExpressionData.new()
 var sorrow := ExpressionData.new()
 var u := ExpressionData.new()
@@ -106,13 +122,58 @@ func _ready() -> void:
 	fun = expression_data["FUN"]
 	i = expression_data["I"]
 	joy = expression_data["JOY"]
-	lookdown = expression_data["LOOKDOWN"]
-	lookleft = expression_data["LOOKLEFT"]
-	lookright = expression_data["LOOKRIGHT"]
-	lookup = expression_data["LOOKUP"]
 	o = expression_data["O"]
 	sorrow = expression_data["SORROW"]
 	u = expression_data["U"]
+
+	look_h = ExpressionData.new()
+	
+	left_eye = EyeClamps.new()
+	right_eye = EyeClamps.new()
+
+	for look_up_value in expression_data["LOOKUP"].morphs:
+		if look_up_value:
+			var val = look_up_value.values.pop_back()
+			if val:
+				var rot: Quat = val["rotation"]
+				match look_up_value.morph:
+					"eye_L":
+						left_eye.up = rot
+					"eye_R":
+						right_eye.up = rot
+
+	for look_down_value in expression_data["LOOKDOWN"].morphs:
+		if look_down_value:
+			var val = look_down_value.values.pop_back()
+			if val:
+				var rot: Quat = val["rotation"]
+				match look_down_value.morph:
+					"eye_L":
+						left_eye.down = rot
+					"eye_R":
+						right_eye.down = rot
+	
+	for look_left_value in expression_data["LOOKLEFT"].morphs:
+		if look_left_value:
+			var val = look_left_value.values.pop_back()
+			if val:
+				var rot: Quat = val["rotation"]
+				match look_left_value.morph:
+					"eye_L":
+						left_eye.left = rot
+					"eye_R":
+						right_eye.left = rot
+
+	for look_right_value in expression_data["LOOKRIGHT"].morphs:
+		if look_right_value:
+			var val = look_right_value.values.pop_back()
+			if val:
+				var rot: Quat = val["rotation"]
+				match look_right_value.morph:
+					"eye_L":
+						left_eye.right = rot
+					"eye_R":
+						right_eye.right = rot
 
 	anim_player.queue_free()
 
@@ -194,30 +255,80 @@ func custom_update(data: OpenSeeGD.OpenSeeData, interpolation_data: Interpolatio
 		# TODO eyes show weird behaviour when blinking
 		# TODO make sure angle between eyes' x values are at least parallel
 		# Make sure eyes are aligned on the y-axis
-		var left_eye_rotation: Vector3 = interpolation_data.interpolate(InterpolationData.InterpolationDataType.LEFT_EYE_ROTATION, gaze_strength)
-		var right_eye_rotation: Vector3 = interpolation_data.interpolate(InterpolationData.InterpolationDataType.RIGHT_EYE_ROTATION, gaze_strength)
+		var left_eye_rotation: Quat = interpolation_data.interpolate_quat(InterpolationData.InterpolationDataType.LEFT_EYE_ROTATION, gaze_strength)
+		var right_eye_rotation: Quat = interpolation_data.interpolate_quat(InterpolationData.InterpolationDataType.RIGHT_EYE_ROTATION, gaze_strength)
 		var average_eye_y_rotation: float = (left_eye_rotation.x + right_eye_rotation.x) / 2
+		# var average_eye_x_rotation: float = (left_eye_rotation.y + right_eye_rotation.y) / 2
 		left_eye_rotation.x = average_eye_y_rotation
 		right_eye_rotation.x = average_eye_y_rotation
+		
+		if left_eye_rotation.x > max_left_eye.x:
+			max_left_eye.x = left_eye_rotation.x
+		elif left_eye_rotation.x < min_left_eye.x:
+			min_left_eye.x = left_eye_rotation.x
+		if left_eye_rotation.y > max_left_eye.y:
+			max_left_eye.y = left_eye_rotation.y
+		elif left_eye_rotation.y < min_left_eye.y:
+			min_left_eye.y = left_eye_rotation.y
+		
+		if right_eye_rotation.x > max_right_eye.x:
+			max_right_eye.x = right_eye_rotation.x
+		elif right_eye_rotation.x < min_right_eye.x:
+			min_right_eye.x = right_eye_rotation.x
+		if right_eye_rotation.y > max_right_eye.y:
+			max_right_eye.y = right_eye_rotation.y
+		elif right_eye_rotation.y < min_right_eye.y:
+			min_right_eye.y = right_eye_rotation.y
+
+		# # Left eye gaze
+		# var left_eye_transform: Transform = Transform()
+		# left_eye_transform = left_eye_transform.rotated(Vector3.RIGHT, -left_eye_rotation.x)
+		# left_eye_transform = left_eye_transform.rotated(Vector3.UP, left_eye_rotation.y)
+
+		# # Right eye gaze
+		# var right_eye_transform: Transform = Transform()
+		# right_eye_transform = right_eye_transform.rotated(Vector3.RIGHT, -right_eye_rotation.x)
+		# right_eye_transform = right_eye_transform.rotated(Vector3.UP, right_eye_rotation.y)
 
 		# Left eye gaze
-		var left_eye_transform: Transform = Transform()
-		left_eye_transform = left_eye_transform.rotated(Vector3.RIGHT, -left_eye_rotation.x)
-		left_eye_transform = left_eye_transform.rotated(Vector3.UP, left_eye_rotation.y)
+		var left_model_x_range: float = left_eye.up.x - left_eye.down.x
+		left_model_x_range = 1.0/left_model_x_range
+		var left_model_y_range: float = left_eye.up.y - left_eye.down.y
+		left_model_y_range = 1.0/left_model_y_range
+		
+		var left_tracking_x_range: float = max_left_eye.x - min_left_eye.x
+		left_tracking_x_range = 1.0/left_tracking_x_range
+		var left_tracking_y_range: float = max_left_eye.y - min_left_eye.y
+		left_tracking_y_range = 1.0/left_tracking_y_range
+		
+		var left_eye_quat: Quat = left_eye_rotation
+		
+		left_eye_quat.x = clamp(left_eye_quat.x, left_eye.down.x, left_eye.up.x)
+		left_eye_quat.y = clamp(left_eye_quat.y, left_eye.left.y, left_eye.right.y)
+		left_eye_quat.z = 0.0
+		left_eye_quat.w = clamp(left_eye_quat.w, left_eye.down.w, left_eye.up.w)
+		
+		# 0.08 * x = 1.0
+		# left_y_range * x = 1.0
+		
+		# given a bigger range scale it to a smaller range
 
 		# Right eye gaze
-		var right_eye_transform: Transform = Transform()
-		right_eye_transform = right_eye_transform.rotated(Vector3.RIGHT, -right_eye_rotation.x)
-		right_eye_transform = right_eye_transform.rotated(Vector3.UP, right_eye_rotation.y)
+		var right_eye_quat: Quat = left_eye_rotation
+		right_eye_quat.x = clamp(right_eye_quat.x, right_eye.down.x, right_eye.up.x)
+		right_eye_quat.y = clamp(right_eye_quat.y, right_eye.left.y, right_eye.right.y)
+		right_eye_quat.z = 0.0
+		right_eye_quat.w = clamp(right_eye_quat.w, right_eye.down.w, right_eye.up.w)
 
-		skeleton.set_bone_pose(right_eye_id, left_eye_transform)
-		skeleton.set_bone_pose(left_eye_id, right_eye_transform)
-		
-		
+#		skeleton.set_bone_pose(right_eye_id, left_eye_transform)
+#		skeleton.set_bone_pose(left_eye_id, right_eye_transform)
+		skeleton.set_bone_pose(right_eye_id, Transform(Quat(left_eye_quat.y, -left_eye_quat.x, left_eye_quat.z, left_eye_quat.w)))
+		skeleton.set_bone_pose(left_eye_id, Transform(Quat(right_eye_quat.y, -right_eye_quat.x, right_eye_quat.z, right_eye_quat.w)))
 		
 		# Mouth tracking
 		_modify_blend_shape(a.morphs[0].mesh, a.morphs[0].morph,
-				min(max(a.morphs[0].values[0], data.features.mouth_open * 2.0), 1.0))
+				min(max(a.morphs[0].values[0], data.features.mouth_open * 2.0),
+				a.morphs[0].values[1]))
 	else:
 		# TODO implement eco mode, should be more efficient than standard mode
 		# Eco-mode blinking
