@@ -220,7 +220,7 @@ func _exit_tree() -> void:
 # Private functions                                                           #
 ###############################################################################
 
-func _perform_reception(_x) -> void:
+func _perform_reception() -> void:
 	self.listening = true
 	while not stop_reception:
 		#warning-ignore:return_value_discarded
@@ -263,7 +263,7 @@ func start_receiver() -> void:
 		AppManager.log_message("Check AppManager.gd for more information.")
 
 func stop_receiver() -> void:
-	if receive_thread:
+	if (receive_thread and receive_thread.is_active()):
 		self.stop_reception = true
 		receive_thread.wait_to_finish()
 	if server.is_listening():
