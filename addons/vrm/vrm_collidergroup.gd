@@ -1,3 +1,4 @@
+tool
 extends Resource
 
 # Bone name references are only valid within the given Skeleton.
@@ -23,46 +24,48 @@ export var gizmo_color: Color = Color.magenta
 
 # Props
 var colliders: Array = []
-var skeleton_or_node_spatial: Spatial
-var bone_idx: int
+var bone_idx: int = -1
+var parent: Spatial = null
+
+var skel_polyfill: Object = null
 
 func setup():
-	if skeleton_or_node_spatial != null:
+	if parent != null:
 		colliders.clear()
 		for collider in sphere_colliders:
-			colliders.append(SphereCollider.new(skeleton_or_node_spatial, bone_idx, collider.normal, collider.d))
+			colliders.append(SphereCollider.new(bone_idx, collider.normal, collider.d))
 
-func _ready(skeleton_or_node_ref):
-	skeleton_or_node_spatial = skeleton_or_node_ref
-	bone_idx = skeleton_or_node_spatial.find_bone(bone)
+func _ready(parent: Spatial, skel_polyfill: Object):
+	self.parent = parent
+	if parent.get_class() == "Skeleton":
+		self.skel_polyfill = skel_polyfill
+		bone_idx = parent.find_bone(bone)
 	setup()
 
 func _process():
 	for collider in colliders:
-		collider.update()
+		collider.update(parent, skel_polyfill)
 
 
 
 
 
 class SphereCollider:
-	var parent: Spatial
 	var idx: int
 	var offset: Vector3
 	var radius: float
 	var position: Vector3
 	
-	func _init(parent_ref: Spatial, bone_idx: int, collider_offset: Vector3 = Vector3.ZERO, collider_radius: float = 0.1):
-		parent = parent_ref
+	func _init(bone_idx: int, collider_offset: Vector3 = Vector3.ZERO, collider_radius: float = 0.1):
 		idx = bone_idx
 		offset = VRMTopLevel.VRMUtil.coordinate_u2g(collider_offset)
 		radius = collider_radius
 		return
 	
-	func update():
+	func update(parent: Spatial, skel_polyfill: Object):
 		if parent.get_class() == "Skeleton" && idx != -1:
 			var skeleton: Skeleton = parent as Skeleton
-			position = VRMTopLevel.VRMUtil.transform_point((skeleton.global_transform * skeleton.get_bone_global_pose(idx)), offset)
+			position = VRMTopLevel.VRMUtil.transform_point((skeleton.global_transform * skel_polyfill.get_bone_global_pose_without_override(idx)), offset)
 		else:
 			position = VRMTopLevel.VRMUtil.transform_point(parent.global_transform, offset)
 		return

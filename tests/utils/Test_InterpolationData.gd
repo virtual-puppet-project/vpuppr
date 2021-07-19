@@ -59,10 +59,10 @@ func test_interpolate() -> void:
 
 	var i_translation: Vector3 = interpolation_data.interpolate(interpolation_data.InterpolationDataType.TRANSLATION, interpolation_rate)
 	var i_rotation: Vector3 = interpolation_data.interpolate(interpolation_data.InterpolationDataType.ROTATION, interpolation_rate)
-	var i_left_eye_rotation: Vector3 = interpolation_data.interpolate(interpolation_data.InterpolationDataType.LEFT_EYE_ROTATION, interpolation_rate)
-	var i_right_eye_rotation: Vector3 = interpolation_data.interpolate(interpolation_data.InterpolationDataType.RIGHT_EYE_ROTATION, interpolation_rate)
+#	var i_left_eye_rotation: Vector3 = interpolation_data.interpolate(interpolation_data.InterpolationDataType.LEFT_EYE_ROTATION, interpolation_rate)
+#	var i_right_eye_rotation: Vector3 = interpolation_data.interpolate(interpolation_data.InterpolationDataType.RIGHT_EYE_ROTATION, interpolation_rate)
 
 	assert(i_translation == input_target_translation * interpolation_rate * interpolation_data.rate)
 	assert(i_rotation == input_target_rotation * interpolation_rate * interpolation_data.rate)
-	assert(i_left_eye_rotation == input_target_left_eye_rotation * interpolation_rate * interpolation_data.rate)
-	assert(i_right_eye_rotation == input_target_right_eye_rotation * interpolation_rate * interpolation_data.rate)
+#	assert(i_left_eye_rotation == input_target_left_eye_rotation * interpolation_rate * interpolation_data.rate)
+#	assert(i_right_eye_rotation == input_target_right_eye_rotation * interpolation_rate * interpolation_data.rate)

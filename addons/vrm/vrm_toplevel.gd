@@ -9,14 +9,15 @@ export var vrm_meta: Resource
 
 export var update_secondary_fixed: bool = false
 
+export var update_in_editor: bool = false
 export var gizmo_spring_bone: bool = false
 export var gizmo_spring_bone_color: Color = Color.yellow
 
 class VRMUtil:
 	static func from_to_rotation(from: Vector3, to: Vector3):
 		var axis: Vector3 = from.cross(to)
-		if axis == Vector3.ZERO:
-			return null
+		if is_equal_approx(axis.x, 0.0) and is_equal_approx(axis.y, 0.0) and is_equal_approx(axis.z, 0.0):
+			return Quat.IDENTITY
 		var angle: float = from.angle_to(to)
 		if is_equal_approx(angle, 0.0):
 			angle = 0.0
