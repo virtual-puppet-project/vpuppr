@@ -9,13 +9,13 @@ var rate: float
 
 var last_translation: Vector3
 var last_rotation: Vector3
-var last_left_eye_rotation: Quat
-var last_right_eye_rotation: Quat
+var last_left_eye_rotation: Vector3
+var last_right_eye_rotation: Vector3
 
 var target_translation: Vector3
 var target_rotation: Vector3
-var target_left_eye_rotation: Quat
-var target_right_eye_rotation: Quat
+var target_left_eye_rotation: Vector3
+var target_right_eye_rotation: Vector3
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -48,14 +48,14 @@ func update_values(
 		p_last_updated: float,
 		p_target_translation: Vector3,
 		p_target_rotation: Vector3,
-		p_target_left_eye_rotation: Quat,
-		p_target_right_eye_rotation: Quat
+		p_target_left_eye_rotation: Vector3,
+		p_target_right_eye_rotation: Vector3
 	)-> void:
 	last_updated = p_last_updated
 	target_translation = p_target_translation
 	target_rotation = p_target_rotation
-	target_left_eye_rotation = p_target_left_eye_rotation.normalized()
-	target_right_eye_rotation = p_target_right_eye_rotation.normalized()
+	target_left_eye_rotation = p_target_left_eye_rotation
+	target_right_eye_rotation = p_target_right_eye_rotation
 
 func interpolate(interpolation_data_type: int, damp_modifier: float) -> Vector3:
 	var result: Vector3
@@ -66,17 +66,11 @@ func interpolate(interpolation_data_type: int, damp_modifier: float) -> Vector3:
 		InterpolationDataType.ROTATION:
 			result = lerp(last_rotation, target_rotation * damp_modifier, rate)
 			last_rotation = result
-
-	return result
-
-func interpolate_quat(interpolation_data_type: int, damp_modifier: float) -> Quat:
-	var result: Quat
-	match interpolation_data_type:
 		InterpolationDataType.LEFT_EYE_ROTATION:
-			result = last_left_eye_rotation.slerp(target_left_eye_rotation, damp_modifier)
+			result = lerp(last_left_eye_rotation, target_left_eye_rotation * damp_modifier, rate)
 			last_left_eye_rotation = result
 		InterpolationDataType.RIGHT_EYE_ROTATION:
-			result = last_right_eye_rotation.slerp(target_right_eye_rotation, damp_modifier)
+			result = lerp(last_right_eye_rotation, target_right_eye_rotation * damp_modifier, rate)
 			last_right_eye_rotation = result
-	
+
 	return result

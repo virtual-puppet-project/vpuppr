@@ -20,8 +20,8 @@ func test_update_values() -> void:
 	var input_updated: float = 1.0
 	var input_target_translation: Vector3 = Vector3(1, 1, 1)
 	var input_target_rotation: Vector3 = Vector3(1, 1, 1)
-	var input_target_left_eye_rotation: Quat = Quat()
-	var input_target_right_eye_rotation: Quat = Quat()
+	var input_target_left_eye_rotation: Vector3 = Vector3(1, 1, 1)
+	var input_target_right_eye_rotation: Vector3 = Vector3(1, 1, 1)
 
 	interpolation_data.update_values(
 		input_updated,
@@ -46,8 +46,8 @@ func test_interpolate() -> void:
 	var input_updated: float = 1.0
 	var input_target_translation: Vector3 = Vector3(1, 1, 1)
 	var input_target_rotation: Vector3 = Vector3(1, 1, 1)
-	var input_target_left_eye_rotation: Quat = Quat()
-	var input_target_right_eye_rotation: Quat = Quat()
+	var input_target_left_eye_rotation: Vector3 = Vector3(1, 1, 1)
+	var input_target_right_eye_rotation: Vector3 = Vector3(1, 1, 1)
 
 	interpolation_data.update_values(
 		input_updated,

@@ -40,8 +40,8 @@ class StoredOffsets:
 	var rotation_offset: Vector3 = Vector3.ZERO
 	var quat_offset: Quat = Quat()
 	var euler_offset: Vector3 = Vector3.ZERO
-	var left_eye_gaze_offset: Quat = Quat()
-	var right_eye_gaze_offset: Quat = Quat()
+	var left_eye_gaze_offset: Vector3 = Vector3.ZERO
+	var right_eye_gaze_offset: Vector3 = Vector3.ZERO
 var stored_offsets: StoredOffsets = StoredOffsets.new()
 
 ###
@@ -148,9 +148,9 @@ func _physics_process(_delta: float) -> void:
 			updated,
 			stored_offsets.translation_offset - open_see_data.translation,
 			stored_offsets.euler_offset - corrected_euler,
-			(stored_offsets.left_eye_gaze_offset - open_see_data.left_gaze) *
+			(stored_offsets.left_eye_gaze_offset - open_see_data.left_gaze.get_euler()) *
 					AppManager.should_track_eye,
-			(stored_offsets.right_eye_gaze_offset - open_see_data.right_gaze) *
+			(stored_offsets.right_eye_gaze_offset - open_see_data.right_gaze.get_euler()) *
 					AppManager.should_track_eye
 		)
 
@@ -236,8 +236,8 @@ func _save_offsets() -> void:
 	if corrected_euler.x < 0.0:
 		corrected_euler.x = 360 + corrected_euler.x
 	stored_offsets.euler_offset = corrected_euler
-	stored_offsets.left_eye_gaze_offset = open_see_data.left_gaze
-	stored_offsets.right_eye_gaze_offset = open_see_data.right_gaze
+	stored_offsets.left_eye_gaze_offset = open_see_data.left_gaze.get_euler()
+	stored_offsets.right_eye_gaze_offset = open_see_data.right_gaze.get_euler()
 	AppManager.log_message("New offsets saved.")
 
 static func _find_bone_chain(skeleton: Skeleton, root_bone: int, tip_bone: int) -> Array:
