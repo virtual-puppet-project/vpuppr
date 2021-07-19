@@ -68,7 +68,8 @@ func _on_run_face_tracker_button_pressed() -> void:
 				AppManager.log_message("Face tracker fps is greater than 144. This is a bad idea.")
 				AppManager.log_message("Declining to start face tracker.")
 				return
-			var pid = OS.execute(OS.get_executable_path().get_base_dir() + "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe", face_tracker_options, false)
+			var pid = OS.execute(OS.get_executable_path().get_base_dir() + "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe",
+					face_tracker_options, false, [], true)
 			AppManager.is_face_tracker_running = true
 			AppManager.face_tracker_pid = pid
 			face_tracker_button.text = STOP_FACE_TRACKER_TEXT

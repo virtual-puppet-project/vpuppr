@@ -22,6 +22,7 @@ func _ready() -> void:
 
 func _on_apply_button_pressed() -> void:
 	_trigger_bone_remap()
+	_apply_properties()
 
 func _on_reset_button_pressed() -> void:
 	_reset_bone_values()
@@ -171,6 +172,11 @@ func _generate_properties(p_initial_properties: Dictionary = {}) -> void:
 	right_container.add_to_inner(_create_element(ElementType.INPUT,
 			"additional_bone_damp", "Additional Bone Damp",
 			data_source.additional_bone_damp, TYPE_REAL))
+	
+	right_container.add_to_inner(_create_element(ElementType.LABEL, "Model options", "Model options"))
+	if current_model is VRMModel:
+		right_container.add_to_inner(_create_element(ElementType.INPUT, "gaze_strength",
+				"Gaze Strength", data_source.gaze_strength, TYPE_REAL))
 
 	# Tracking options
 	if p_initial_properties.empty():
@@ -223,6 +229,8 @@ func _apply_properties() -> void:
 				current_model.additional_bone_damp = c.get_value()
 			"head_bone":
 				current_model.head_bone_id = current_model.skeleton.find_bone(c.get_value())
+			"gaze_strength":
+				current_model.gaze_strength = c.get_value()
 			"apply_translation":
 				main_screen.model_display_screen.apply_translation = c.get_value()
 			"apply_rotation":
