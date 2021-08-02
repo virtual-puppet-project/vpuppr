@@ -18,7 +18,7 @@ signal default_model_set()
 
 enum ModelType { GENERIC, VRM }
 
-const DEMO_MODEL: String = "res://entities/basic-models/Duck.tscn"
+const DEMO_MODEL_PATH: String = "res://entities/basic-models/Duck.tscn"
 
 const DYNAMIC_PHYSICS_BONES: bool = false
 
@@ -29,6 +29,7 @@ const DEFAULT_SAVE_FILE: Dictionary = {
 }
 
 onready var tm: TranslationManager = TranslationManager.new()
+onready var cm: Reference = load("res://utils/ConfigManager.gd").new()
 
 # Face tracker
 var is_face_tracker_running: bool
@@ -68,7 +69,11 @@ func _ready() -> void:
 #		goth.run_unit_tests()
 		# goth.run_bdd_tests()
 
+	# TODO take this out once we finish rewriting the config stuff
 	app_config = load_config()
+
+	cm.setup()
+
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
@@ -109,6 +114,8 @@ func set_file_to_load(file_path: String) -> void:
 		app_config["models"][current_model_name] = {}
 	emit_signal("file_to_load_changed", file_path)
 
+	# TODO change this to use config manager
+
 func set_model_default() -> void:
 	if not app_config.has("settings"):
 		app_config["settings"] = {}
@@ -121,7 +128,7 @@ func set_model_default() -> void:
 # Load DEMO_MODEL by default, otherwise load the user's saved default_model
 # setting
 func get_default_model_path() -> String:
-	var result: String = DEMO_MODEL
+	var result: String = DEMO_MODEL_PATH
 	if app_config.has("settings"):
 		if app_config["settings"].has("default_model"):
 			result = app_config["settings"]["default_model"]
