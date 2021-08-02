@@ -52,7 +52,7 @@ func _modify_blend_shape(mesh_instance: MeshInstance, blend_shape: String, value
 func custom_update(_open_see_data: OpenSeeGD.OpenSeeData, _interpolation_data: InterpolationData) -> void:
 	push_error("Model custom update not implemented")
 
-func get_mapped_bones() -> Dictionary:
+func get_mapped_bones() -> Dictionary: # String: bool
 	"""
 	Returns a dictionary of all bones in the skeleton with the bones that are
 	tracking input tagged as true
