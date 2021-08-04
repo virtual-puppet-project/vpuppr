@@ -34,6 +34,9 @@ All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` h
 4. Run the facetracker via Python or via the binary if on Windows
 5. Run the project
 
+## Discussion
+A Discord server [is available here](https://discord.gg/6mcdWWBkrr) if you need help, like to contribute, or just want to chat.
+
 ## Known bugs
 - after stopping the facetracker, if you don't wait long enough for the facetracker listener to stop, the program can crash on close. Probably, this is hard to reproduce
 - the facetracker is not automatically closed when the program crashes
