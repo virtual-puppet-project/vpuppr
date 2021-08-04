@@ -365,28 +365,22 @@ func _reset_properties() -> void:
 # Public functions                                                            #
 ###############################################################################
 
-func save() -> Dictionary:
+func save() -> void:
 	var result: Dictionary = {}
+
+	var config = AppManager.cm.current_model_config
 
 	result["instanced_props"] = []
 	for i in instanced_props.keys():
 		if i == main_light.name:
-			var ml: Dictionary = {}
-			ml["light_color"] = JSONUtil.color_to_dictionary(main_light.light_color)
-			ml["light_energy"] = main_light.light_energy
-			ml["light_indirect_energy"] = main_light.light_indirect_energy
-			ml["light_specular"] = main_light.light_specular
-			ml["shadow_enabled"] = main_light.shadow_enabled
-
-			result[main_light.name] = ml
+			config.main_light_light_color = main_light.light_color
+			config.main_light_energy = main_light.light_energy
+			config.main_light_light_indirect_energy = main_light.light_indirect_energy
+			config.main_light_light_specular = main_light.light_specular
+			config.main_light_shadow_enabled = main_light.shadow_enabled
 		elif i == world_environment.name:
-			var we: Dictionary = {}
-			we["ambient_light_color"] = JSONUtil.color_to_dictionary(world_environment.environment.ambient_light_color)
-			we["ambient_light_energy"] = world_environment.environment.ambient_light_energy
-			we["ambient_light_sky_contribution"] = world_environment.environment.ambient_light_sky_contribution
-
-			result[world_environment.name] = we
+			config.world_environment_ambient_light_color = world_environment.environment.ambient_light_color
+			config.world_environment_ambient_light_energy = world_environment.environment.ambient_light_energy
+			config.world_environment_ambient_light_sky_contribution = world_environment.environment.ambient_light_sky_contribution
 		elif instanced_props[i].object.has_method("save"):
-			result["instanced_props"].append(instanced_props[i].object.save())
-
-	return result
+			config.instanced_props.append(instanced_props[i].object.save())

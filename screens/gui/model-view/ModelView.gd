@@ -240,15 +240,11 @@ func _apply_properties() -> void:
 # Public functions                                                            #
 ###############################################################################
 
-func save() -> Dictionary:
-	var result: Dictionary = {}
+func save() -> void:
+	# Left
+	AppManager.cm.current_model_config.mapped_bones = mapped_bones
 
-	# Left container
-	result["left"] = {}
-	result["left"]["mapped_bones"] = mapped_bones
-
-	# Right container
-	result["right"] = {}
+	# Right
 	for c in right_container.get_inner_children():
 		if c is InputLabel:
 			if c.line_edit.text.empty():
@@ -259,6 +255,4 @@ func save() -> Dictionary:
 		if c is CenteredLabel:
 			continue
 
-		result["right"][c.name] = c.get_value()
-
-	return result
+		AppManager.cm.current_model_config.set(c.name, c.get_value())

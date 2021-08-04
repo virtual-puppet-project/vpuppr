@@ -209,20 +209,13 @@ func _apply_properties_right() -> void:
 # Public functions                                                            #
 ###############################################################################
 
-func save() -> Dictionary:
-	var result: Dictionary = {}
-
+func save() -> void:
+	var config = AppManager.cm.current_model_config
+	
 	# Left
-	result["left"] = {}
 	for i in current_model.skeleton.get_bone_count():
-		result["left"][current_model.skeleton.get_bone_name(i)] = JSONUtil.transform_to_dictionary(
-			current_model.skeleton.get_bone_pose(i)
-		)
+		config.bone_transforms[current_model.skeleton.get_bone_name(i)] = current_model.skeleton.get_bone_pose(i)
 
 	# Right
-	result["right"] = {}
-	result["right"]["model"] = JSONUtil.transform_to_dictionary(current_model.transform)
-	result["right"]["model_parent"] = JSONUtil.transform_to_dictionary(
-			main_screen.model_display_screen.model_parent.transform)
-
-	return result
+	config.model_transform = current_model.transform
+	config.model_parent_transform = main_screen.model_display_screen.model_parent.transform
