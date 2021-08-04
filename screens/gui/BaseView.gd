@@ -57,7 +57,10 @@ func _on_gui_toggle_set(toggle_name: String, view_name: String) -> void:
 func _setup() -> void:
 	current_model = main_screen.model_display_screen.model
 
-	var loaded_config: Dictionary = AppManager.get_sidebar_config_safe(self.name)
+	# TODO reenable once everything is fixed
+	# var loaded_config: Dictionary = AppManager.cm.current_model_config.get_as_dict()
+
+	var loaded_config = {}
 	
 	_setup_left(loaded_config)
 
@@ -118,7 +121,5 @@ func setup_from_preset(data: Dictionary) -> void:
 
 	_setup_right(data)
 
-func save() -> Dictionary:
-	var result: Dictionary = {}
+func save() -> void:
 	AppManager.log_message("save not yet implemented for %s" % self.name) 
-	return result

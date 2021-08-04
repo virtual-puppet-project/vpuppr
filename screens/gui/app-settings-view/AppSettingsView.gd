@@ -57,14 +57,12 @@ func _apply_properties() -> void:
 # Public functions                                                            #
 ###############################################################################
 
-func save() -> Dictionary:
-	var result: Dictionary = {}
-
-	result["QOL"] = {}
+func save() -> void:
 	for c in left_container.get_inner_children():
 		if c is CenteredLabel:
 			continue
-		else:
-			result["QOL"][c.name] = c.get_value()
+		elif c.name == "default_load_path":
+			AppManager.cm.metadata_config.default_search_path = c.get_value()
+		elif c.name == "should_track_eye":
+			AppManager.cm.current_model_config.should_track_eye = c.get_value()
 
-	return result

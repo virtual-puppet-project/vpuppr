@@ -69,9 +69,6 @@ func _ready() -> void:
 #		goth.run_unit_tests()
 		# goth.run_bdd_tests()
 
-	# TODO take this out once we finish rewriting the config stuff
-	app_config = load_config()
-
 	cm.setup()
 
 ###############################################################################
@@ -110,19 +107,17 @@ func set_file_to_load(file_path: String) -> void:
 	current_model_name = file_path.get_file()
 	# Grab the full model path to allow setting model as default
 	current_model_path = file_path
-	if not app_config["models"].has(current_model_name):
-		app_config["models"][current_model_name] = {}
+
 	emit_signal("file_to_load_changed", file_path)
 
-	# TODO change this to use config manager
-
+# TODO update this to use cm
 func set_model_default() -> void:
 	if not app_config.has("settings"):
 		app_config["settings"] = {}
 	#if "default_model" not in app_config:
 	#	app_config["settings"]["default_model"] = {}
 	app_config["settings"]["default_model"] = current_model_path
-	save_config()
+	# save_config()
 	emit_signal("default_model_set")
 
 # Load DEMO_MODEL by default, otherwise load the user's saved default_model
@@ -181,31 +176,35 @@ func load_config() -> Dictionary:
 	
 	return result
 
-func update_config(key_name: String, data: Dictionary) -> void:
-	"""
-	data is a dictionary of values from a sidebar
-	"""
-	app_config["models"][current_model_name][key_name] = data
+# func update_config(key_name: String, data: Dictionary) -> void:
+# 	"""
+# 	data is a dictionary of values from a sidebar
+# 	"""
+# 	app_config["models"][current_model_name][key_name] = data
 	# TODO currently saves the file twice since this is called by both sidebars
 	# save_config()
 
-func save_config() -> void:
-	var file_path: String = "%s/%s" % [save_directory_path, SAVE_FILE_NAME]
+	# cm.save_config()
 
-	var save_file: File = File.new()
-	save_file.open(file_path, File.WRITE)
+# func save_config() -> void:
+	# var file_path: String = "%s/%s" % [save_directory_path, SAVE_FILE_NAME]
 
-	save_file.store_string(to_json(app_config))
+	# var save_file: File = File.new()
+	# save_file.open(file_path, File.WRITE)
 
-	save_file.close()
+	# save_file.store_string(to_json(app_config))
 
-func get_sidebar_config_safe(sidebar_name: String) -> Dictionary:
-	var result: Dictionary = {}
+	# save_file.close()
 
-	if app_config["models"][current_model_name].has(sidebar_name):
-		result = app_config["models"][current_model_name][sidebar_name]
+	# cm.save_config()
 
-	return result
+# func get_sidebar_config_safe(sidebar_name: String) -> Dictionary:
+# 	var result: Dictionary = {}
+
+# 	if app_config["models"][current_model_name].has(sidebar_name):
+# 		result = app_config["models"][current_model_name][sidebar_name]
+
+# 	return result
 
 func log_message(message: String, is_error: bool = false) -> void:
 	if is_error:

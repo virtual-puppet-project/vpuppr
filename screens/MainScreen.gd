@@ -50,7 +50,7 @@ func _on_file_to_load_changed(file_path: String) -> void:
 func _clean_load_model_display_screen() -> void:
 	if model_display_screen:
 		# Prevent null pointers by pausing execution AND THEN freeing resources
-		model_display_screen.pause_mode = PAUSE_MODE_STOP
+		model_display_screen.pause_mode = PAUSE_MODE_STOP # TODO i dont think this does anything
 		yield(get_tree(), "idle_frame")
 		model_display_screen.free()
 	model_display_screen = MODEL_SCREEN.instance()

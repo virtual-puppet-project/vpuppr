@@ -189,6 +189,5 @@ func _create_preset_info_display(data: Dictionary) -> void:
 # Public functions                                                            #
 ###############################################################################
 
-func save() -> Dictionary:
+func save() -> void:
 	_setup()
-	return presets
