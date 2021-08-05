@@ -2,6 +2,8 @@ extends Reference
 
 const DEMO_MODEL_PATH: String = "res://entities/basic-models/Duck.tscn"
 
+const CONFIG_FORMAT: String = "%s/%s.json"
+
 const METADATA_NAME: String = "app-config.json"
 var metadata_path: String = ""
 var metadata_config := Metadata.new()
@@ -14,9 +16,9 @@ class Metadata:
 	var should_use_portable_config_files: bool = false
 	
 	# Config name to config path
-	var model_data: Dictionary = {} # String: String
+	var config_data: Dictionary = {} # String: String
 
-	# Model name to config name
+	# Model file name to config name
 	var model_defaults: Dictionary = {} # String: String
 
 	func load_from_json(json_string: String) -> bool:
@@ -29,7 +31,7 @@ class Metadata:
 		default_model_to_load_path = json_data["default_model_to_load_path"]
 		default_search_path = json_data["default_search_path"]
 		should_use_portable_config_files = json_data["should_use_portable_config_files"]
-		model_data = json_data["model_data"]
+		config_data = json_data["config_data"]
 		model_defaults = json_data["model_defaults"]
 
 		return true
@@ -39,7 +41,7 @@ class Metadata:
 			"default_model_to_load_path": default_model_to_load_path,
 			"default_search_path": default_search_path,
 			"should_use_portable_config_files": should_use_portable_config_files,
-			"model_data": model_data,
+			"config_data": config_data,
 			"model_defaults": model_defaults
 		})
 
@@ -51,6 +53,7 @@ class ConfigData:
 	###
 	var config_name: String = "changeme"
 	var model_name: String = "changeme"
+	var model_path: String = "changeme"
 	var is_default_for_model := false
 
 	###
@@ -76,19 +79,20 @@ class ConfigData:
 	var interpolation_rate: float = 0.1
 
 	var should_track_eye: bool = true
+	var gaze_strength: float = 0.5
 
 	###
 	# Feature
 	###
 	var main_light_light_color := Color.white
-	var main_light_energy: float = 0.0
-	var main_light_light_indirect_energy: float = 0.0
+	var main_light_energy: float = 0.7
+	var main_light_light_indirect_energy: float = 1.0
 	var main_light_light_specular: float = 0.0
 	var main_light_shadow_enabled: float = true
 
-	var world_environment_ambient_light_color := Color.white
-	var world_environment_ambient_light_energy: float = 0.0
-	var world_environment_ambient_light_sky_contribution: float = 0.0
+	var world_environment_ambient_light_color := Color.black
+	var world_environment_ambient_light_energy: float = 0.5
+	var world_environment_ambient_light_sky_contribution: float = 1.0
 
 	var instanced_props: Array = []
 
@@ -158,11 +162,13 @@ class ConfigData:
 			
 			var data_value = data[DataPoint.VALUE_KEY]
 
-			match data[DataPoint.TYPE_KEY]:
+			match int(data[DataPoint.TYPE_KEY]):
 				TYPE_COLOR:
 					data_value = JSONUtil.dictionary_to_color(data_value)
 				TYPE_TRANSFORM:
 					data_value = JSONUtil.dictionary_to_transform(data_value)
+				_:
+					pass
 			
 			set(key, data_value)
 
@@ -205,6 +211,8 @@ func _load_metadata() -> bool:
 
 	metadata_file.close()
 	
+	AppManager.log_message("Finished loading metadata")
+
 	return true
 
 ###############################################################################
@@ -227,25 +235,28 @@ func setup() -> void:
 
 	has_loaded_metadata = true
 
-	if metadata_config.model_defaults.has(metadata_config.default_model_to_load_path):
-		load_config(metadata_config.model_defaults[metadata_config.default_model_to_load_path])
-	else:
-		current_model_config = ConfigData.new()
+func load_config(model_path: String) -> void:
+	var model_name: String = model_path.get_file()
+	var full_path: String = CONFIG_FORMAT % [metadata_path, model_name]
 
-func load_config(path: String) -> void:
-	AppManager.log_message("Begin loading config for %s" % path)
+	AppManager.log_message("Begin loading config for %s" % full_path)
 
 	current_model_config = ConfigData.new()
 
 	var dir := Directory.new()
-	if not dir.file_exists(path):
-		AppManager.log_message("%s does not exist" % path)
+	if not dir.file_exists(full_path):
+		AppManager.log_message("%s does not exist" % full_path)
+		current_model_config.config_name = model_name
+		current_model_config.model_name = model_name
+		current_model_config.model_path = model_path
 		return
 
 	var config_file := File.new()
-	config_file.open(path, File.READ)
+	config_file.open(full_path, File.READ)
 	current_model_config.load_from_json(config_file.get_as_text())
 	config_file.close()
+
+	AppManager.log_message("Finished loading config")
 
 func save_config() -> void:
 	AppManager.log_message("Saving config")
@@ -253,9 +264,9 @@ func save_config() -> void:
 	var model_name = current_model_config.model_name
 	var is_default = current_model_config.is_default_for_model
 
-	var config_path := "%s/%s" % [metadata_path, config_name]
+	var config_path := CONFIG_FORMAT % [metadata_path, config_name]
 
-	metadata_config.model_data[config_name] = config_path
+	metadata_config.config_data[config_name] = config_path
 
 	if metadata_config.model_defaults.has(model_name):
 		if is_default:
@@ -274,4 +285,4 @@ func save_config() -> void:
 	metadata_file.store_string(metadata_config.get_as_json())
 	metadata_file.close()
 
-	AppManager.log_message("Config saved")
+	AppManager.log_message("Finished saving config")

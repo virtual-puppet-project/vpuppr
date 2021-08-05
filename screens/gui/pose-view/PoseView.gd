@@ -107,10 +107,10 @@ func _setup_left(config: Dictionary) -> void:
 		AppManager.connect("gui_toggle_set", self, "_on_gui_toggle_set")
 	
 	if not config.empty():
-		for key in config["left"].keys():
+		for key in config.bone_transforms.value.keys():
 			current_model.skeleton.set_bone_pose(
 				current_model.skeleton.find_bone(key),
-				JSONUtil.dictionary_to_transform(config["left"][key])
+				JSONUtil.dictionary_to_transform(config.bone_transforms.value[key])
 			)
 		
 		_generate_properties_left()
@@ -151,14 +151,18 @@ func _setup_right(config: Dictionary) -> void:
 	model_parent = main_screen.model_display_screen.model_parent
 
 	if not config.empty():
-		for key in config["right"].keys():
-			match key:
-				"model":
-					current_model.transform = JSONUtil.dictionary_to_transform(config["right"][key])
-				"model_parent":
-					model_parent.transform = JSONUtil.dictionary_to_transform(config["right"][key])
-				_:
-					AppManager.log_message("Bad key found in %s: %s" % [self.name, key], true)
+		# for key in config["right"].keys():
+		# 	match key:
+		# 		"model":
+		# 			current_model.transform = JSONUtil.dictionary_to_transform(config["right"][key])
+		# 		"model_parent":
+		# 			model_parent.transform = JSONUtil.dictionary_to_transform(config["right"][key])
+		# 		_:
+		# 			AppManager.log_message("Bad key found in %s: %s" % [self.name, key], true)
+		
+		current_model.transform = JSONUtil.dictionary_to_transform(config.model_transform.value)
+		model_parent.transform = JSONUtil.dictionary_to_transform(config.model_parent_transform.value)
+		
 		_generate_properties_right()
 		_apply_properties_right()
 	else:
