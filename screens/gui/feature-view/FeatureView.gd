@@ -121,29 +121,22 @@ func _setup_left(config: Dictionary) -> void:
 	
 	instanced_props.clear()
 
-	if not config.empty():
-		for key in config.keys():
-			match key:
-				"instanced_props":
-					for p in config[key]:
-						_create_prop(
-							p["prop_path"],
-							JSONUtil.dictionary_to_transform(p["parent_prop_transform"]),
-							JSONUtil.dictionary_to_transform(p["child_prop_transform"])
-						)
-				main_light.name:
-					var light_data: Dictionary = config[key]
-					main_light.light_color = JSONUtil.dictionary_to_color(light_data["light_color"])
-					main_light.light_energy = light_data["light_energy"]
-					main_light.light_indirect_energy = light_data["light_indirect_energy"]
-					main_light.light_specular = light_data["light_specular"]
-					if light_data.has("shadow_enabled"):
-						main_light.shadow_enabled = light_data["shadow_enabled"]
-				world_environment.name:
-					var env_data: Dictionary = config[key]
-					world_environment.environment.ambient_light_color = JSONUtil.dictionary_to_color(env_data["ambient_light_color"])
-					world_environment.environment.ambient_light_energy = env_data["ambient_light_energy"]
-					world_environment.environment.ambient_light_sky_contribution = env_data["ambient_light_sky_contribution"]
+	for prop in config.instanced_props.value:
+		_create_prop(
+			prop["prop_path"],
+			JSONUtil.dictionary_to_transform(prop["parent_prop_transform"]),
+			JSONUtil.dictionary_to_transform(prop["child_prop_transform"])
+		)
+	
+	main_light.light_color = JSONUtil.dictionary_to_color(config.main_light_light_color.value)
+	main_light.light_energy = config.main_light_energy.value
+	main_light.light_indirect_energy = config.main_light_light_indirect_energy.value
+	main_light.light_specular = config.main_light_light_specular.value
+	main_light.shadow_enabled = config.main_light_shadow_enabled.value
+
+	world_environment.environment.ambient_light_color = JSONUtil.dictionary_to_color(config.world_environment_ambient_light_color.value)
+	world_environment.environment.ambient_light_energy = config.world_environment_ambient_light_energy.value
+	world_environment.environment.ambient_light_sky_contribution = config.world_environment_ambient_light_sky_contribution.value
 	
 	_generate_properties()
 

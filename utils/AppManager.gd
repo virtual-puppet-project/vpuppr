@@ -108,36 +108,19 @@ func set_file_to_load(file_path: String) -> void:
 	# Grab the full model path to allow setting model as default
 	current_model_path = file_path
 
+	cm.load_config(file_path)
+
 	emit_signal("file_to_load_changed", file_path)
 
 # TODO update this to use cm
 func set_model_default() -> void:
-	if not app_config.has("settings"):
-		app_config["settings"] = {}
-	#if "default_model" not in app_config:
-	#	app_config["settings"]["default_model"] = {}
-	app_config["settings"]["default_model"] = current_model_path
-	# save_config()
+	cm.metadata_config.default_model_to_load_path = current_model_path
+	cm.save_config()
 	emit_signal("default_model_set")
-
-# Load DEMO_MODEL by default, otherwise load the user's saved default_model
-# setting
-func get_default_model_path() -> String:
-	var result: String = DEMO_MODEL_PATH
-	if app_config.has("settings"):
-		if app_config["settings"].has("default_model"):
-			result = app_config["settings"]["default_model"]
-	return result
-
-func get_current_model_path() -> String:
-	var result: String = ""
-	if current_model_path:
-		result = current_model_path
-	return result
 
 func is_current_model_default() -> bool:
 	var result: bool = false
-	if get_current_model_path() == get_default_model_path():
+	if current_model_path == cm.metadata_config.default_model_to_load_path:
 		result = true
 	return result
 
@@ -147,34 +130,34 @@ func model_is_loaded() -> void:
 func change_preset(preset: String) -> void:
 	emit_signal(preset)
 
-func load_config() -> Dictionary:
-	log_message("Begin loading data")
+# func load_config() -> Dictionary:
+# 	log_message("Begin loading data")
 
-	var result: Dictionary
+# 	var result: Dictionary
 
-	var file_path: String = "%s/%s" % [save_directory_path, SAVE_FILE_NAME]
+# 	var file_path: String = "%s/%s" % [save_directory_path, SAVE_FILE_NAME]
 
-	var dir: Directory = Directory.new()
-	if dir.file_exists(file_path):
-		var save_file: File = File.new()
-		save_file.open(file_path, File.READ)
+# 	var dir: Directory = Directory.new()
+# 	if dir.file_exists(file_path):
+# 		var save_file: File = File.new()
+# 		save_file.open(file_path, File.READ)
 		
-		var data: JSONParseResult = JSON.parse(save_file.get_as_text())
-		if (data.error == OK and typeof(data.result) == TYPE_DICTIONARY):
-			log_message("Config file found")
-			result = data.result
-		else:
-			log_message("Corrupted config file found. Please delete %s located next to your executable." % SAVE_FILE_NAME, true)
-			return {}
+# 		var data: JSONParseResult = JSON.parse(save_file.get_as_text())
+# 		if (data.error == OK and typeof(data.result) == TYPE_DICTIONARY):
+# 			log_message("Config file found")
+# 			result = data.result
+# 		else:
+# 			log_message("Corrupted config file found. Please delete %s located next to your executable." % SAVE_FILE_NAME, true)
+# 			return {}
 		
-		save_file.close()
-	else:
-		log_message("No config file found, creating new config")
-		result = DEFAULT_SAVE_FILE
+# 		save_file.close()
+# 	else:
+# 		log_message("No config file found, creating new config")
+# 		result = DEFAULT_SAVE_FILE
 	
-	log_message("Finished loading data")
+# 	log_message("Finished loading data")
 	
-	return result
+# 	return result
 
 # func update_config(key_name: String, data: Dictionary) -> void:
 # 	"""

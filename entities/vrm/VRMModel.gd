@@ -25,9 +25,6 @@ var eye_movement
 var blink_threshold: float = 0.3
 var eco_mode_is_blinking: bool = false
 
-# Gaze
-var gaze_strength: float = 0.5
-
 class EyeClamps:
 	var up: Vector3
 	var down: Vector3

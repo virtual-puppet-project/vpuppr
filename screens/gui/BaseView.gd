@@ -58,9 +58,9 @@ func _setup() -> void:
 	current_model = main_screen.model_display_screen.model
 
 	# TODO reenable once everything is fixed
-	# var loaded_config: Dictionary = AppManager.cm.current_model_config.get_as_dict()
+	var loaded_config: Dictionary = AppManager.cm.current_model_config.get_as_dict()
 
-	var loaded_config = {}
+	# var loaded_config = {}
 	
 	_setup_left(loaded_config)
 

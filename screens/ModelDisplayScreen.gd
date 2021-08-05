@@ -86,6 +86,7 @@ func _ready() -> void:
 				script_to_use = VRM_MODEL_SCRIPT_PATH
 				model = load_external_model(model_resource_path)
 				model.transform = model.transform.rotated(Vector3.UP, PI)
+				AppManager.cm.current_model_config.model_transform = model.transform
 				translation_adjustment = Vector3(-1, -1, -1)
 				rotation_adjustment = Vector3(1, -1, -1)
 				
