@@ -130,65 +130,6 @@ func model_is_loaded() -> void:
 func change_preset(preset: String) -> void:
 	emit_signal(preset)
 
-# func load_config() -> Dictionary:
-# 	log_message("Begin loading data")
-
-# 	var result: Dictionary
-
-# 	var file_path: String = "%s/%s" % [save_directory_path, SAVE_FILE_NAME]
-
-# 	var dir: Directory = Directory.new()
-# 	if dir.file_exists(file_path):
-# 		var save_file: File = File.new()
-# 		save_file.open(file_path, File.READ)
-		
-# 		var data: JSONParseResult = JSON.parse(save_file.get_as_text())
-# 		if (data.error == OK and typeof(data.result) == TYPE_DICTIONARY):
-# 			log_message("Config file found")
-# 			result = data.result
-# 		else:
-# 			log_message("Corrupted config file found. Please delete %s located next to your executable." % SAVE_FILE_NAME, true)
-# 			return {}
-		
-# 		save_file.close()
-# 	else:
-# 		log_message("No config file found, creating new config")
-# 		result = DEFAULT_SAVE_FILE
-	
-# 	log_message("Finished loading data")
-	
-# 	return result
-
-# func update_config(key_name: String, data: Dictionary) -> void:
-# 	"""
-# 	data is a dictionary of values from a sidebar
-# 	"""
-# 	app_config["models"][current_model_name][key_name] = data
-	# TODO currently saves the file twice since this is called by both sidebars
-	# save_config()
-
-	# cm.save_config()
-
-# func save_config() -> void:
-	# var file_path: String = "%s/%s" % [save_directory_path, SAVE_FILE_NAME]
-
-	# var save_file: File = File.new()
-	# save_file.open(file_path, File.WRITE)
-
-	# save_file.store_string(to_json(app_config))
-
-	# save_file.close()
-
-	# cm.save_config()
-
-# func get_sidebar_config_safe(sidebar_name: String) -> Dictionary:
-# 	var result: Dictionary = {}
-
-# 	if app_config["models"][current_model_name].has(sidebar_name):
-# 		result = app_config["models"][current_model_name][sidebar_name]
-
-# 	return result
-
 func log_message(message: String, is_error: bool = false) -> void:
 	if is_error:
 		message = "[ERROR] %s" % message
