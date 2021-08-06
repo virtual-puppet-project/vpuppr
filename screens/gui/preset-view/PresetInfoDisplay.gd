@@ -59,7 +59,7 @@ func save() -> Dictionary:
 
 	result["name"] = preset_name.get_value()
 	result["description"] = preset_description.get_value()
-	result["hotkey"] = preset_description.get_value()
+	result["hotkey"] = preset_hotkey.get_value()
 	result["notes"] = preset_notes.get_value()
 	result["set_as_default"] = preset_set_as_default.get_value()
 

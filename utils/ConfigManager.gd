@@ -15,6 +15,7 @@ class Metadata:
 	var default_search_path: String = "/"
 	var should_use_portable_config_files: bool = false
 	
+	# TODO load in all config data at the start?
 	# Config name to config path
 	var config_data: Dictionary = {} # String: String
 
@@ -52,9 +53,13 @@ class ConfigData:
 	# Metadata
 	###
 	var config_name: String = "changeme"
+	var description: String = "changeme"
+	var hotkey: String = ""
+	var notes: String = ""
+	var is_default_for_model := false
+
 	var model_name: String = "changeme"
 	var model_path: String = "changeme"
-	var is_default_for_model := false
 
 	###
 	# Model
@@ -96,22 +101,6 @@ class ConfigData:
 
 	var instanced_props: Array = []
 
-	class DataPoint:
-		"""
-		Each field in the saved json must follow this format
-		"""
-		const TYPE_KEY: String = "type"
-		const VALUE_KEY: String = "value"
-
-		var data_type: int
-		var data_value
-
-		func get_as_dict() -> Dictionary:
-			return {
-				TYPE_KEY: data_type,
-				VALUE_KEY: data_value
-			}
-
 	func get_as_dict() -> Dictionary:
 		"""
 		Iterate through all variables using reflection, convert variables
@@ -147,6 +136,9 @@ class ConfigData:
 		return result
 
 	func load_from_json(json_string: String) -> void:
+		"""
+		Converts json string to a dictionary with the appropriate values
+		"""
 		var json_result = parse_json(json_string)
 
 		if typeof(json_result) != TYPE_DICTIONARY:
@@ -171,6 +163,30 @@ class ConfigData:
 					pass
 			
 			set(key, data_value)
+
+	func load_from_dict(json_dict: Dictionary) -> void:
+		"""
+		Since we are using the class as a struct, we can't just set the
+		dict to a value
+		"""
+		for key in json_dict.keys():
+			set(key, json_dict[key])
+
+class DataPoint:
+	"""
+	Each field in the saved json must follow this format
+	"""
+	const TYPE_KEY: String = "type"
+	const VALUE_KEY: String = "value"
+
+	var data_type: int
+	var data_value
+
+	func get_as_dict() -> Dictionary:
+		return {
+			TYPE_KEY: data_type,
+			VALUE_KEY: data_value
+		}
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -251,10 +267,11 @@ func load_config(model_path: String) -> void:
 		current_model_config.model_path = model_path
 		return
 
-	var config_file := File.new()
-	config_file.open(full_path, File.READ)
-	current_model_config.load_from_json(config_file.get_as_text())
-	config_file.close()
+	# var config_file := File.new()
+	# config_file.open(full_path, File.READ)
+	# current_model_config.load_from_json(config_file.get_as_text())
+	current_model_config.load_from_dict(get_config_as_dict(full_path))
+	# config_file.close()
 
 	AppManager.log_message("Finished loading config")
 
@@ -286,3 +303,77 @@ func save_config() -> void:
 	metadata_file.close()
 
 	AppManager.log_message("Finished saving config")
+
+func get_config_as_dict(config_path: String) -> Dictionary:
+	var result: Dictionary = {}
+
+	var config_file := File.new()
+	config_file.open(config_path, File.READ)
+
+	var json_dict = parse_json(config_file.get_as_text())
+	config_file.close()
+	if typeof(json_dict) != TYPE_DICTIONARY:
+		AppManager.log_message("Invalid config data loaded", true)
+		return {}
+
+	for key in json_dict.keys():
+		var data = json_dict[key]
+
+		if typeof(data) != TYPE_DICTIONARY:
+			AppManager.log_message("Invalid data point loaded", true)
+			return {}
+
+		var data_value = data[DataPoint.VALUE_KEY]
+
+		match int(data[DataPoint.TYPE_KEY]):
+			TYPE_COLOR:
+				data_value = JSONUtil.dictionary_to_color(data_value)
+			TYPE_TRANSFORM:
+				data_value = JSONUtil.dictionary_to_transform(data_value)
+			_:
+				pass
+
+		result[key] = data_value
+
+	return result
+
+func update_config_from_dict(old_name: String, new_config: Dictionary) -> void:
+	"""
+	Assume that the config name has changed, regardless of whether or not that is true
+
+	Store all information in the old config file
+	Move the file if necessary (because the name was changed)
+	"""
+	var config_name: String = new_config["config_name"]
+	var model_name: String = new_config["model_name"]
+	var is_default: bool = new_config["is_default_for_model"]
+	
+	var config_path := CONFIG_FORMAT % [metadata_path, old_name]
+
+	# NOTE necessary because we can't just store the raw dictionary
+	var cd := ConfigData.new()
+	cd.load_from_dict(new_config)
+
+	var config_file := File.new()
+	config_file.open(config_path, File.WRITE)
+	config_file.store_string(to_json(cd.get_as_dict()))
+
+	var should_resave_metadata := false
+	if config_name != old_name:
+		should_resave_metadata = true
+		var new_config_path := CONFIG_FORMAT % [metadata_path, config_name]
+		var dir := Directory.new()
+		dir.rename(config_path, new_config_path)
+
+		metadata_config.config_data.erase(old_name)
+		metadata_config.config_data[config_name] = new_config
+
+	if is_default:
+		should_resave_metadata = true
+		metadata_config.model_defaults[model_name] = config_name
+
+	if should_resave_metadata:
+		var metadata_file := File.new()
+		metadata_file.open("%s/%s" % [metadata_path, METADATA_NAME], File.WRITE)
+		metadata_file.store_string(metadata_config.get_as_json())
+		metadata_file.close()
