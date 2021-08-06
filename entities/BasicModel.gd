@@ -12,6 +12,9 @@ var translation_damp: float = 0.3
 var rotation_damp: float = 0.02
 var additional_bone_damp: float = 0.3
 
+# Gaze
+var gaze_strength: float = 0.5
+
 onready var skeleton: Skeleton = find_node(SKELETON_NODE)
 onready var head_bone_id: int = skeleton.find_bone(head_bone)
 # String : int
@@ -52,7 +55,7 @@ func _modify_blend_shape(mesh_instance: MeshInstance, blend_shape: String, value
 func custom_update(_open_see_data: OpenSeeGD.OpenSeeData, _interpolation_data: InterpolationData) -> void:
 	push_error("Model custom update not implemented")
 
-func get_mapped_bones() -> Dictionary:
+func get_mapped_bones() -> Dictionary: # String: bool
 	"""
 	Returns a dictionary of all bones in the skeleton with the bones that are
 	tracking input tagged as true
