@@ -27,9 +27,9 @@ func _setup_left(config: Dictionary) -> void:
 
 	var default_load_path = "/"
 	var should_track_eye = true
-	if config.has("QOL"):
-		default_load_path = config["QOL"].get("default_load_path", "/")
-		should_track_eye = config["QOL"].get("should_track_eye", true)
+	default_load_path = AppManager.cm.metadata_config.default_search_path
+	should_track_eye = config.should_track_eye.value
+
 	AppManager.default_load_path = default_load_path
 	AppManager.should_track_eye = should_track_eye
 	left_container.add_to_inner(_create_element(ElementType.INPUT, "default_load_path",
@@ -57,14 +57,12 @@ func _apply_properties() -> void:
 # Public functions                                                            #
 ###############################################################################
 
-func save() -> Dictionary:
-	var result: Dictionary = {}
-
-	result["QOL"] = {}
+func save() -> void:
 	for c in left_container.get_inner_children():
 		if c is CenteredLabel:
 			continue
-		else:
-			result["QOL"][c.name] = c.get_value()
+		elif c.name == "default_load_path":
+			AppManager.cm.metadata_config.default_search_path = c.get_value()
+		elif c.name == "should_track_eye":
+			AppManager.cm.current_model_config.should_track_eye = c.get_value()
 
-	return result

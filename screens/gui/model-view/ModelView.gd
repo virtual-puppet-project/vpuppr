@@ -61,7 +61,7 @@ func _on_default_model_set() -> void:
 
 func _setup_left(config: Dictionary) -> void:
 	if not config.empty():
-		mapped_bones = config["left"]["mapped_bones"].duplicate()
+		mapped_bones = config.mapped_bones.value
 		current_model.additional_bones_to_pose_names = mapped_bones
 		current_model.scan_mapped_bones()
 	else:
@@ -112,8 +112,20 @@ static func _get_mapped_bones(bone_list: Array) -> Array:
 
 func _setup_right(config: Dictionary) -> void:
 	if not config.empty():
-		for key in config["right"].keys():
-			initial_properties[key] = config["right"][key]
+		# TODO this is ugly
+		initial_properties["translation_damp"] = config.translation_damp.value
+		initial_properties["rotation_damp"] = config.rotation_damp.value
+		initial_properties["additional_bone_damp"] = config.additional_bone_damp.value
+		
+		initial_properties["gaze_strength"] = config.gaze_strength.value
+
+		initial_properties["head_bone"] = config.head_bone.value
+		initial_properties["apply_translation"] = config.apply_translation.value
+		initial_properties["apply_rotation"] = config.apply_rotation.value
+
+		initial_properties["interpolate_model"] = config.interpolate_model.value
+		initial_properties["interpolation_rate"] = config.interpolation_rate.value
+		
 		_generate_properties(initial_properties)
 		_apply_properties()
 	else:
@@ -174,9 +186,8 @@ func _generate_properties(p_initial_properties: Dictionary = {}) -> void:
 			data_source.additional_bone_damp, TYPE_REAL))
 	
 	right_container.add_to_inner(_create_element(ElementType.LABEL, "Model options", "Model options"))
-	if current_model is VRMModel:
-		right_container.add_to_inner(_create_element(ElementType.INPUT, "gaze_strength",
-				"Gaze Strength", data_source.gaze_strength, TYPE_REAL))
+	right_container.add_to_inner(_create_element(ElementType.INPUT, "gaze_strength",
+			"Gaze Strength", data_source.gaze_strength, TYPE_REAL))
 
 	# Tracking options
 	if p_initial_properties.empty():
@@ -240,15 +251,11 @@ func _apply_properties() -> void:
 # Public functions                                                            #
 ###############################################################################
 
-func save() -> Dictionary:
-	var result: Dictionary = {}
+func save() -> void:
+	# Left
+	AppManager.cm.current_model_config.mapped_bones = mapped_bones
 
-	# Left container
-	result["left"] = {}
-	result["left"]["mapped_bones"] = mapped_bones
-
-	# Right container
-	result["right"] = {}
+	# Right
 	for c in right_container.get_inner_children():
 		if c is InputLabel:
 			if c.line_edit.text.empty():
@@ -259,6 +266,4 @@ func save() -> Dictionary:
 		if c is CenteredLabel:
 			continue
 
-		result["right"][c.name] = c.get_value()
-
-	return result
+		AppManager.cm.current_model_config.set(c.name, c.get_value())

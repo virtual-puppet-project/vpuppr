@@ -77,9 +77,10 @@ func _on_properties_applied() -> void:
 	yield(get_tree(), "idle_frame")
 
 	for i in [model_view, pose_view, feature_view, app_settings_view]:
-		AppManager.update_config(i.name, i.save())
+		i.save()
+		# AppManager.update_config(i.name, i.save())
 
-	AppManager.save_config()
+	AppManager.cm.save_config()
 
 ###############################################################################
 # Private functions                                                           #
@@ -100,7 +101,7 @@ func _toggle_view(view: int) -> void:
 		Views.NONE:
 			pass
 		Views.MODEL:
-			model_view.visible = not model_view.visible
+				model_view.visible = not model_view.visible
 		Views.POSE:
 			pose_view.visible = not pose_view.visible
 		Views.FEATURES:

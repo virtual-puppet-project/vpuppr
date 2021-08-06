@@ -107,10 +107,10 @@ func _setup_left(config: Dictionary) -> void:
 		AppManager.connect("gui_toggle_set", self, "_on_gui_toggle_set")
 	
 	if not config.empty():
-		for key in config["left"].keys():
+		for key in config.bone_transforms.value.keys():
 			current_model.skeleton.set_bone_pose(
 				current_model.skeleton.find_bone(key),
-				JSONUtil.dictionary_to_transform(config["left"][key])
+				JSONUtil.dictionary_to_transform(config.bone_transforms.value[key])
 			)
 		
 		_generate_properties_left()
@@ -151,14 +151,18 @@ func _setup_right(config: Dictionary) -> void:
 	model_parent = main_screen.model_display_screen.model_parent
 
 	if not config.empty():
-		for key in config["right"].keys():
-			match key:
-				"model":
-					current_model.transform = JSONUtil.dictionary_to_transform(config["right"][key])
-				"model_parent":
-					model_parent.transform = JSONUtil.dictionary_to_transform(config["right"][key])
-				_:
-					AppManager.log_message("Bad key found in %s: %s" % [self.name, key], true)
+		# for key in config["right"].keys():
+		# 	match key:
+		# 		"model":
+		# 			current_model.transform = JSONUtil.dictionary_to_transform(config["right"][key])
+		# 		"model_parent":
+		# 			model_parent.transform = JSONUtil.dictionary_to_transform(config["right"][key])
+		# 		_:
+		# 			AppManager.log_message("Bad key found in %s: %s" % [self.name, key], true)
+		
+		current_model.transform = JSONUtil.dictionary_to_transform(config.model_transform.value)
+		model_parent.transform = JSONUtil.dictionary_to_transform(config.model_parent_transform.value)
+		
 		_generate_properties_right()
 		_apply_properties_right()
 	else:
@@ -209,20 +213,13 @@ func _apply_properties_right() -> void:
 # Public functions                                                            #
 ###############################################################################
 
-func save() -> Dictionary:
-	var result: Dictionary = {}
-
+func save() -> void:
+	var config = AppManager.cm.current_model_config
+	
 	# Left
-	result["left"] = {}
 	for i in current_model.skeleton.get_bone_count():
-		result["left"][current_model.skeleton.get_bone_name(i)] = JSONUtil.transform_to_dictionary(
-			current_model.skeleton.get_bone_pose(i)
-		)
+		config.bone_transforms[current_model.skeleton.get_bone_name(i)] = current_model.skeleton.get_bone_pose(i)
 
 	# Right
-	result["right"] = {}
-	result["right"]["model"] = JSONUtil.transform_to_dictionary(current_model.transform)
-	result["right"]["model_parent"] = JSONUtil.transform_to_dictionary(
-			main_screen.model_display_screen.model_parent.transform)
-
-	return result
+	config.model_transform = current_model.transform
+	config.model_parent_transform = main_screen.model_display_screen.model_parent.transform
