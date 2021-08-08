@@ -93,8 +93,9 @@ func _ready():
 	var skel_to_polyfill: Dictionary = {}.duplicate()
 	if true or not Engine.editor_hint:
 		for collider_group in collider_groups:
-			var new_collider_group = collider_group.duplicate(true)
-			var parent: Spatial = get_node_or_null(new_collider_group.skeleton_or_node)
+#			var new_collider_group = collider_group.duplicate(true)
+			var new_collider_group = collider_group.duplicate()
+			var parent: Spatial = get_node_or_null(new_collider_group.get("skeleton_or_node"))
 			var parent_polyfill: Object = parent
 			if parent != null:
 				if skel_to_polyfill.has(parent):
@@ -108,7 +109,8 @@ func _ready():
 				new_collider_group._ready(parent, parent_polyfill)
 				collider_groups_internal.append(new_collider_group)
 		for spring_bone in spring_bones:
-			var new_spring_bone = spring_bone.duplicate(true)
+#			var new_spring_bone = spring_bone.duplicate(true)
+			var new_spring_bone = spring_bone.duplicate()
 			var tmp_colliders: Array = []
 			for i in range(collider_groups.size()):
 				if new_spring_bone.collider_groups.has(collider_groups[i]):
@@ -211,12 +213,12 @@ class SecondaryGizmo:
 	
 	func draw_in_editor(do_draw_spring_bones: bool = false):
 		clear()
-		var selected: Array = EditorPlugin.new().get_editor_interface().get_selection().get_selected_nodes()
-		if (secondary_node.get_parent() is VRMTopLevel && selected.has(secondary_node.get_parent())) || selected.has(secondary_node):
-			if do_draw_spring_bones:
-				draw_spring_bones(secondary_node.get_parent().gizmo_spring_bone_color)
-			if secondary_node.get_parent() is VRMTopLevel && secondary_node.get_parent().gizmo_spring_bone:
-				draw_collider_groups()
+#		var selected: Array = EditorPlugin.new().get_editor_interface().get_selection().get_selected_nodes()
+#		if (secondary_node.get_parent() is VRMTopLevel && selected.has(secondary_node.get_parent())) || selected.has(secondary_node):
+#			if do_draw_spring_bones:
+#				draw_spring_bones(secondary_node.get_parent().gizmo_spring_bone_color)
+#			if secondary_node.get_parent() is VRMTopLevel && secondary_node.get_parent().gizmo_spring_bone:
+#				draw_collider_groups()
 	
 	func draw_in_game():
 		clear()

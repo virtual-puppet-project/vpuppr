@@ -1,5 +1,5 @@
 tool
-extends Resource
+extends Reference
 
 # Bone name references are only valid within the given Skeleton.
 # If the node was not a skeleton, bone is "" and contains a path to the node.
@@ -29,11 +29,26 @@ var parent: Spatial = null
 
 var skel_polyfill: Object = null
 
+var resource_name: String = ""
+
 func setup():
 	if parent != null:
 		colliders.clear()
 		for collider in sphere_colliders:
 			colliders.append(SphereCollider.new(bone_idx, collider.normal, collider.d))
+
+func duplicate():
+	var cg = load("res://addons/vrm/vrm_collidergroup.gd").new()
+	cg.skeleton_or_node = skeleton_or_node
+	cg.bone = bone
+	cg.sphere_colliders = sphere_colliders
+	cg.gizmo_color = gizmo_color
+	cg.colliders = colliders
+	cg.bone_idx = bone_idx
+	cg.parent = parent
+	cg.skel_polyfill = skel_polyfill
+	
+	return cg
 
 func _ready(parent: Spatial, skel_polyfill: Object):
 	self.parent = parent

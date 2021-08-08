@@ -279,14 +279,15 @@ func load_external_model(file_path: String) -> Spatial:
 		"glb":
 			#var gltf_loader: DynamicGLTFLoader = DynamicGLTFLoader.new()
 			#loaded_model = gltf_loader.import_scene(file_path, 1, 1)
-			var gstate: GLTFState = GLTFState.new()
-			var gltf: PackedSceneGLTF = PackedSceneGLTF.new()
-			loaded_model = gltf.import_gltf_scene(file_path, 0, 1000.0, gstate)
+#			var gstate: GLTFState = GLTFState.new()
+			var gltf := PackedSceneGLTF.new()
+#			loaded_model = gltf.import_gltf_scene(file_path, 0, 1000.0, gstate)
+			loaded_model = gltf.import_gltf_scene(file_path)
 		"vrm":
 			# var import_vrm: ImportVRM = ImportVRM.new()
 			var vrm_loader = VrmLoader.new()
 			loaded_model = vrm_loader.import_scene(file_path, 1, 1000)
-			vrm_meta = loaded_model.vrm_meta
+			vrm_meta = loaded_model.vrm_meta.duplicate()
 
 	var model_script = load(script_to_use)
 	loaded_model.set_script(model_script)
