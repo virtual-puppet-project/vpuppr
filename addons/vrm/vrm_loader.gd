@@ -302,7 +302,7 @@ class SkelBone:
 # "rightLittleProximal","rightLittleIntermediate","rightLittleDistal", "upperChest"]
 
 
-func _create_meta(root_node: Node, animplayer: AnimationPlayer, vrm_extension: Dictionary, gstate: Resource, human_bone_to_idx: Dictionary) -> Resource: # GLTFState
+func _create_meta(root_node: Node, animplayer: AnimationPlayer, vrm_extension: Dictionary, gstate: Resource, human_bone_to_idx: Dictionary) -> Reference: # GLTFState
 	var nodes = gstate.nodes
 	var skeletons = gstate.skeletons
 	var hipsNode: Resource = nodes[human_bone_to_idx["hips"]] # GLTFNode
@@ -333,7 +333,7 @@ func _create_meta(root_node: Node, animplayer: AnimationPlayer, vrm_extension: D
 	for humanBoneName in human_bone_to_idx:
 		humanBoneDictionary[humanBoneName] = gltfnodes[human_bone_to_idx[humanBoneName]].resource_name
 
-	var vrm_meta: Resource = load("res://addons/vrm/vrm_meta.gd").new()
+	var vrm_meta: Reference = load("res://addons/vrm/vrm_meta.gd").new()
 
 	vrm_meta.resource_name = "CLICK TO SEE METADATA"
 	vrm_meta.exporter_version = vrm_extension.get("exporterVersion", "")
@@ -359,7 +359,7 @@ func _create_meta(root_node: Node, animplayer: AnimationPlayer, vrm_extension: D
 
 	vrm_meta.eye_offset = eyeOffset
 	vrm_meta.humanoid_bone_mapping = humanBoneDictionary
-	return vrm_meta.duplicate(true)
+	return vrm_meta
 
 
 func _create_animation_player(animplayer: AnimationPlayer, vrm_extension: Dictionary, gstate: Resource, human_bone_to_idx: Dictionary) -> AnimationPlayer: # GLTFState
@@ -829,8 +829,8 @@ func import_scene(path: String, flags: int, bake_fps: int, use_tmp: bool = false
 	var vrm_top_level:GDScript = load("res://addons/vrm/vrm_toplevel.gd")
 	root_node.set_script(vrm_top_level)
 
-	var vrm_meta: Resource = _create_meta(root_node, animplayer, vrm_extension, gstate, human_bone_to_idx)
-	root_node.set("vrm_meta", vrm_meta)
+	var vrm_meta: Reference = _create_meta(root_node, animplayer, vrm_extension, gstate, human_bone_to_idx)
+	root_node.set("vrm_meta", vrm_meta.duplicate())
 	root_node.set("vrm_secondary", NodePath())
 
 	if (vrm_extension.has("secondaryAnimation") and \

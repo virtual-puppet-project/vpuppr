@@ -1,4 +1,4 @@
-extends Resource
+extends Reference
 
 # VRM extension is for 3d humanoid avatars (and models) in VR applications.
 # Meta schema:
@@ -63,3 +63,27 @@ export var exporter_version: String
 
 # Version of VRM specification. 0.0
 export var spec_version: String
+
+var resource_name: String = ""
+
+func duplicate():
+	var vm = load("res://addons/vrm/vrm_meta.gd").new()
+	vm.title = title
+	vm.version = version
+	vm.author = author
+	vm.contact_information = contact_information
+	vm.reference_information = reference_information
+	vm.texture = texture
+	vm.allowed_user_name = allowed_user_name
+	vm.violent_usage = violent_usage
+	vm.sexual_usage = sexual_usage
+	vm.commercial_usage = commercial_usage
+	vm.other_permission_url = other_permission_url
+	vm.license_name = license_name
+	vm.other_license_url = other_license_url
+	vm.humanoid_bone_mapping = humanoid_bone_mapping
+	vm.eye_offset = eye_offset
+	vm.exporter_version = exporter_version
+	vm.spec_version = spec_version
+	
+	return vm
