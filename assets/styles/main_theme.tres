@@ -1,0 +1,14 @@
+[gd_resource type="Theme" load_steps=5 format=2]
+
+[ext_resource path="res://assets/styles/main_stylebox.tres" type="StyleBox" id=1]
+[ext_resource path="res://assets/styles/button/pressed_stylebox.tres" type="StyleBox" id=2]
+[ext_resource path="res://assets/styles/button/hover_stylebox.tres" type="StyleBox" id=3]
+[ext_resource path="res://assets/styles/button/disabled_stylebox.tres" type="StyleBox" id=4]
+
+[resource]
+Button/styles/disabled = ExtResource( 4 )
+Button/styles/focus = ExtResource( 3 )
+Button/styles/hover = ExtResource( 3 )
+Button/styles/normal = ExtResource( 1 )
+Button/styles/pressed = ExtResource( 2 )
+PanelContainer/styles/panel = ExtResource( 1 )

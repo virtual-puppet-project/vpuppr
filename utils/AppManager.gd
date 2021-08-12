@@ -28,7 +28,8 @@ const DEFAULT_SAVE_FILE: Dictionary = {
 	"models": {} # String: Dictionary
 }
 
-onready var tm: TranslationManager = TranslationManager.new()
+# TODO currently unused
+# onready var tm: TranslationManager = TranslationManager.new()
 onready var cm: Reference = load("res://utils/ConfigManager.gd").new()
 
 # Face tracker
