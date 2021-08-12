@@ -1,8 +1,14 @@
-extends Control
+extends BaseElement
+
+onready var label: Label = $HBoxContainer/Label
+onready var line_edit: LineEdit = $HBoxContainer/LineEdit
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
+
+func _ready() -> void:
+	label.text = label_text
 
 ###############################################################################
 # Connections                                                                 #
@@ -15,3 +21,6 @@ extends Control
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
+
+func get_value():
+	return line_edit.text

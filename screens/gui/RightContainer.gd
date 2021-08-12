@@ -1,4 +1,6 @@
-extends Control
+extends PanelContainer
+
+onready var vbox: VBoxContainer = $VBoxContainer
 
 ###############################################################################
 # Builtin functions                                                           #

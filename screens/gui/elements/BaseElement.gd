@@ -1,4 +1,7 @@
-extends Control
+class_name BaseElement
+extends PanelContainer
+
+var label_text: String
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -15,3 +18,7 @@ extends Control
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
+
+func get_value():
+	AppManager.log_message("%s.get_value() not implemented" % self.name)
+	return null
