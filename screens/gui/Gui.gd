@@ -1,5 +1,7 @@
 extends CanvasLayer
 
+signal setup_completed
+
 const DEFAULT_METADATA: String = "metadata.xml"
 
 const XmlConstants: Dictionary = {
@@ -16,6 +18,7 @@ const XmlConstants: Dictionary = {
 	"TOGGLE": "toggle",
 	"INPUT": "input",
 	"BUTTON": "button",
+	"PRESET": "preset",
 
 	# Attribute names
 	"NAME": "name",
@@ -46,11 +49,27 @@ onready var button_bar_hbox: HBoxContainer = $ButtonBar/HBoxContainer
 
 var base_path: String
 
+# Model references
+var model: BasicModel
+var model_parent: Spatial
+
+# Input
+var is_left_clicking := false
+var should_modify_bone := false
+var should_zoom_model := false
+var should_move_model := false
+var should_spin_model := false
+
+var mouse_move_strength: float = 0.002
+var scroll_strength: float = 0.05
+
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
 func _ready() -> void:
+	AppManager.sb.connect("model_loaded", self, "_on_model_loaded")
+
 	if not OS.is_debug_build():
 		base_path = "%s/%s" % [OS.get_executable_path().get_base_dir(), "resources/gui"]
 	else:
@@ -127,7 +146,8 @@ func _ready() -> void:
 						script.reload()
 						base_view.set_script(script)
 					_:
-						var element: Control = _generate_ui_element(data.node_name, data.data)
+						var element: Control = generate_ui_element(data.node_name, data.data)
+						element.connect("event", self, "_on_event")
 						match current_view:
 							XmlConstants.LEFT:
 								left.vbox.call_deferred("add_child", element)
@@ -147,15 +167,87 @@ func _ready() -> void:
 
 		base_view.setup()
 
+		yield(get_tree(), "idle_frame")
+
+		emit_signal("setup_completed")
+
+func _unhandled_input(event: InputEvent) -> void:
+	# Long if/else chain because unhandled input processes only 1 input at a time
+
+	if event.is_action_pressed("left_click"):
+		is_left_clicking = true
+	elif event.is_action_released("left_click"):
+		is_left_clicking = false
+
+	# Intentionally verbose so logic can cancel out
+	# i.e. we don't want to modify bone and move model at the same time
+	elif should_modify_bone:
+		if (is_left_clicking and event is InputEventMouseMotion):
+			# var transform: Transform = model.skeleton.get_bone_pose(
+			# 		model.skeleton.find_bone(bone_to_modify))
+			# transform = transform.rotated(Vector3.UP, event.relative.x * mouse_move_strength)
+			# transform = transform.rotated(Vector3.RIGHT, event.relative.y * mouse_move_strength)
+
+			# model.skeleton.set_bone_pose(
+			# 		model.skeleton.find_bone(bone_to_modify), transform)
+			pass
+		elif event.is_action("scroll_up"):
+			# var transform: Transform = model.skeleton.get_bone_pose(
+			# 		model.skeleton.find_bone(bone_to_modify))
+			# transform = transform.rotated(Vector3.FORWARD, scroll_strength)
+
+			# model.skeleton.set_bone_pose(
+			# 		model.skeleton.find_bone(bone_to_modify), transform)
+			pass
+		elif event.is_action("scroll_down"):
+			# var transform: Transform = model.skeleton.get_bone_pose(
+			# 		model.skeleton.find_bone(bone_to_modify))
+			# transform = transform.rotated(Vector3.FORWARD, -scroll_strength)
+
+			# model.skeleton.set_bone_pose(
+			# 		model.skeleton.find_bone(bone_to_modify), transform)
+			pass
+	elif (is_left_clicking and event is InputEventMouseMotion):
+		if should_move_model:
+			model_parent.translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
+		elif should_spin_model:
+			model.rotate_x(event.relative.y * mouse_move_strength)
+			model.rotate_y(event.relative.x * mouse_move_strength)
+	elif should_zoom_model:
+		if event.is_action("scroll_up"):
+			model_parent.translate(Vector3(0.0, 0.0, scroll_strength))
+		elif event.is_action("scroll_down"):
+			model_parent.translate(Vector3(0.0, 0.0, -scroll_strength))
+
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
+
+func _on_event(event_value) -> void:
+	match typeof(event_value):
+		TYPE_ARRAY: # input and toggle
+			AppManager.sb.call("broadcast_%s" % event_value[0], event_value[1])
+		TYPE_STRING:
+			AppManager.sb.call("broadcast_%s" % event_value)
+		_:
+			AppManager.log_message("Unhandled gui event" % str(event_value), true)
+
+func _on_model_loaded(p_model: BasicModel) -> void:
+	model = p_model
+	model_parent = model.get_parent()
+
+	for node in get_tree().get_nodes_in_group(XmlConstants.LIST):
+		node.setup(self, p_model)
 
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
 
-static func _generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
+###############################################################################
+# Public functions                                                            #
+###############################################################################
+
+static func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 	var result: BaseElement
 
 	if not data.has("name"):
@@ -174,6 +266,11 @@ static func _generate_ui_element(tag_name: String, data: Dictionary) -> BaseElem
 			result = ListElement.instance()
 			result.name = node_name
 			result.label_text = display_name
+			
+			if not data.has("type"):
+				AppManager.log_message("Element type must be specified for lists", true)
+				return result
+			result.element_type = data["type"]
 		XmlConstants.TOGGLE:
 			result = ToggleElement.instance()
 			result.name = node_name
@@ -190,10 +287,7 @@ static func _generate_ui_element(tag_name: String, data: Dictionary) -> BaseElem
 			AppManager.log_message("Unhandled tag_name: %s" % tag_name)
 			return result
 
+	if data.has("event"):
+		result.event_name = data["event"]
+
 	return result
-
-###############################################################################
-# Public functions                                                            #
-###############################################################################
-
-

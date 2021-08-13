@@ -8,10 +8,15 @@ onready var button: Button = $Button
 
 func _ready() -> void:
 	button.text = label_text
+	
+	button.connect("pressed", self, "_on_pressed")
 
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
+
+func _on_pressed() -> void:
+	emit_signal("event", event_name)
 
 ###############################################################################
 # Private functions                                                           #
@@ -23,3 +28,6 @@ func _ready() -> void:
 
 func get_value():
 	return button.text
+
+func set_value(value) -> void:
+	AppManager.log_message("Tried to set value on a Button element", true)

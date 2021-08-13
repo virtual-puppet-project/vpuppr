@@ -19,6 +19,8 @@ func _ready() -> void:
 	get_viewport().transparent_bg = true
 	OS.window_per_pixel_transparency_enabled = true
 	
+	yield($GuiHandler, "setup_completed")
+	
 	AppManager.connect("file_to_load_changed", self, "_on_file_to_load_changed")
 
 	# TODO remove this

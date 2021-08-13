@@ -1,6 +1,6 @@
 extends BaseTest
 
-const BASE_CONTAINER: Resource = preload("res://screens/gui/BaseContainer.tscn")
+#const BASE_CONTAINER: Resource = preload("res://screens/gui/BaseContainer.tscn") # TODO reworked
 
 var tree: SceneTree
 
