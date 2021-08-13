@@ -23,3 +23,6 @@ func _ready() -> void:
 
 func get_value():
 	return label.text
+
+func set_value(value) -> void:
+	label.text = str(value)

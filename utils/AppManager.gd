@@ -31,6 +31,7 @@ const DEFAULT_SAVE_FILE: Dictionary = {
 # TODO currently unused
 # onready var tm: TranslationManager = TranslationManager.new()
 onready var cm: Reference = load("res://utils/ConfigManager.gd").new()
+onready var sb: Reference = load("res://utils/SignalBroadcaster.gd").new()
 
 # Face tracker
 var is_face_tracker_running: bool
@@ -113,7 +114,6 @@ func set_file_to_load(file_path: String) -> void:
 
 	emit_signal("file_to_load_changed", file_path)
 
-# TODO update this to use cm
 func set_model_default() -> void:
 	cm.metadata_config.default_model_to_load_path = current_model_path
 	cm.save_config()

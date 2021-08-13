@@ -35,7 +35,7 @@ func _ready() -> void:
 
 	scan_mapped_bones()
 
-	AppManager.model_is_loaded()
+	AppManager.sb.model_is_loaded(self)
 
 ###############################################################################
 # Connections                                                                 #
