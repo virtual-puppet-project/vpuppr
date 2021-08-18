@@ -44,6 +44,8 @@ const LeftContainer: Resource = preload("res://screens/gui/LeftContainer.tscn")
 const RightContainer: Resource = preload("res://screens/gui/RightContainer.tscn")
 const FloatingContainer: Resource = preload("res://screens/gui/FloatingContainer.tscn")
 
+const FilePopup: Resource = preload("res://screens/gui/BaseFilePopup.tscn")
+
 # Elements
 const ButtonElement: Resource = preload("res://screens/gui/elements/ButtonElement.tscn")
 const InputElement: Resource = preload("res://screens/gui/elements/InputElement.tscn")
@@ -279,7 +281,19 @@ func _on_zoom_model(value: bool) -> void:
 	should_zoom_model = value
 
 func _on_load_model() -> void:
-	pass # TODO method stub
+	var popup: FileDialog = FilePopup.instance()
+	get_parent().add_child(popup)
+
+	yield(get_tree(), "idle_frame")
+
+	var load_path: String = AppManager.cm.metadata_config.default_search_path
+	if not load_path.ends_with("/"):
+		load_path += "/"
+	popup.current_dir = load_path
+	popup.current_path = load_path
+
+	yield(popup, "file_selected")
+	popup.queue_free()
 
 func _on_reset_model_transform() -> void:
 	model.transform = initial_model_transform
