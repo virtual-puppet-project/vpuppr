@@ -16,6 +16,7 @@ const XmlConstants: Dictionary = {
 	"LABEL": "label",
 	"LIST": "list",
 	"TOGGLE": "toggle",
+	"DOUBLE_TOGGLE": "double_toggle",
 	"INPUT": "input",
 	"BUTTON": "button",
 	"PRESET": "preset",
@@ -28,6 +29,11 @@ const XmlConstants: Dictionary = {
 	"TYPE": "type",
 
 	"SCRIPT": "script"
+}
+
+const DoubleToggleConstants: Dictionary = {
+	"TRACK": "track",
+	"POSE": "pose"
 }
 
 const GuiFileParser: Resource = preload("res://screens/gui/GuiFileParser.gd")
@@ -44,6 +50,7 @@ const InputElement: Resource = preload("res://screens/gui/elements/InputElement.
 const LabelElement: Resource = preload("res://screens/gui/elements/LabelElement.tscn")
 const ListElement: Resource = preload("res://screens/gui/elements/ListElement.tscn")
 const ToggleElement: Resource = preload("res://screens/gui/elements/ToggleElement.tscn")
+const DoubleToggleElement: Resource = preload("res://screens/gui/elements/DoubleToggleElement.tscn")
 
 onready var button_bar_hbox: HBoxContainer = $ButtonBar/HBoxContainer
 
@@ -53,12 +60,16 @@ var base_path: String
 var model: BasicModel
 var model_parent: Spatial
 
+var initial_model_transform: Transform
+var initial_model_parent_transform: Transform
+
 # Input
 var is_left_clicking := false
 var should_modify_bone := false
+var bone_to_modify: String = ""
 var should_zoom_model := false
 var should_move_model := false
-var should_spin_model := false
+var should_rotate_model := false
 
 var mouse_move_strength: float = 0.002
 var scroll_strength: float = 0.05
@@ -69,6 +80,17 @@ var scroll_strength: float = 0.05
 
 func _ready() -> void:
 	AppManager.sb.connect("model_loaded", self, "_on_model_loaded")
+	
+	AppManager.sb.connect("move_model", self, "_on_move_model")
+	AppManager.sb.connect("rotate_model", self, "_on_rotate_model")
+	AppManager.sb.connect("zoom_model", self, "_on_zoom_model")
+
+	AppManager.sb.connect("load_model", self, "_on_load_model")
+	
+	AppManager.sb.connect("reset_model_transform", self, "_on_reset_model_transform")
+	AppManager.sb.connect("reset_model_pose", self, "_on_reset_model_pose")
+
+	AppManager.sb.connect("bone_toggled", self, "_on_bone_toggled")
 
 	if not OS.is_debug_build():
 		base_path = "%s/%s" % [OS.get_executable_path().get_base_dir(), "resources/gui"]
@@ -136,15 +158,16 @@ func _ready() -> void:
 					XmlConstants.VIEW:
 						base_view.name = data.data["name"]
 						
-						var file := File.new()
-						if file.open("%s/%s" % [base_path, data.data["script"]], File.READ) != OK:
-							AppManager.log_message("Failed to open script", true)
+						if data.data.has("script"):
+							var file := File.new()
+							if file.open("%s/%s" % [base_path, data.data["script"]], File.READ) != OK:
+								AppManager.log_message("Failed to open script", true)
 
-						var script: Script = base_view.get_script()
-						script.source_code = file.get_as_text()
-						base_view.set_script(null)
-						script.reload()
-						base_view.set_script(script)
+							var script: Script = base_view.get_script()
+							script.source_code = file.get_as_text()
+							base_view.set_script(null)
+							script.reload()
+							base_view.set_script(script)
 					_:
 						var element: Control = generate_ui_element(data.node_name, data.data)
 						element.connect("event", self, "_on_event")
@@ -161,7 +184,7 @@ func _ready() -> void:
 
 		# Create buttons
 		var button := Button.new()
-		button.text = xml_file.get_file()
+		button.text = xml_file.get_file() # TODO get rid of the xml suffix
 		# TODO connect this to some toggling logic
 		button_bar_hbox.call_deferred("add_child", button)
 
@@ -181,36 +204,34 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	# Intentionally verbose so logic can cancel out
 	# i.e. we don't want to modify bone and move model at the same time
-	elif should_modify_bone:
+	if should_modify_bone:
 		if (is_left_clicking and event is InputEventMouseMotion):
-			# var transform: Transform = model.skeleton.get_bone_pose(
-			# 		model.skeleton.find_bone(bone_to_modify))
-			# transform = transform.rotated(Vector3.UP, event.relative.x * mouse_move_strength)
-			# transform = transform.rotated(Vector3.RIGHT, event.relative.y * mouse_move_strength)
+			var transform: Transform = model.skeleton.get_bone_pose(
+					model.skeleton.find_bone(bone_to_modify))
+			transform = transform.rotated(Vector3.UP, event.relative.x * mouse_move_strength)
+			transform = transform.rotated(Vector3.RIGHT, event.relative.y * mouse_move_strength)
 
-			# model.skeleton.set_bone_pose(
-			# 		model.skeleton.find_bone(bone_to_modify), transform)
-			pass
+			model.skeleton.set_bone_pose(
+					model.skeleton.find_bone(bone_to_modify), transform)
 		elif event.is_action("scroll_up"):
-			# var transform: Transform = model.skeleton.get_bone_pose(
-			# 		model.skeleton.find_bone(bone_to_modify))
-			# transform = transform.rotated(Vector3.FORWARD, scroll_strength)
+			var transform: Transform = model.skeleton.get_bone_pose(
+					model.skeleton.find_bone(bone_to_modify))
+			transform = transform.rotated(Vector3.FORWARD, scroll_strength)
 
-			# model.skeleton.set_bone_pose(
-			# 		model.skeleton.find_bone(bone_to_modify), transform)
-			pass
+			model.skeleton.set_bone_pose(
+					model.skeleton.find_bone(bone_to_modify), transform)
 		elif event.is_action("scroll_down"):
-			# var transform: Transform = model.skeleton.get_bone_pose(
-			# 		model.skeleton.find_bone(bone_to_modify))
-			# transform = transform.rotated(Vector3.FORWARD, -scroll_strength)
+			var transform: Transform = model.skeleton.get_bone_pose(
+					model.skeleton.find_bone(bone_to_modify))
+			transform = transform.rotated(Vector3.FORWARD, -scroll_strength)
 
-			# model.skeleton.set_bone_pose(
-			# 		model.skeleton.find_bone(bone_to_modify), transform)
-			pass
-	elif (is_left_clicking and event is InputEventMouseMotion):
+			model.skeleton.set_bone_pose(
+					model.skeleton.find_bone(bone_to_modify), transform)
+	
+	if (is_left_clicking and event is InputEventMouseMotion):
 		if should_move_model:
 			model_parent.translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
-		elif should_spin_model:
+		if should_rotate_model:
 			model.rotate_x(event.relative.y * mouse_move_strength)
 			model.rotate_y(event.relative.x * mouse_move_strength)
 	elif should_zoom_model:
@@ -226,7 +247,10 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_event(event_value) -> void:
 	match typeof(event_value):
 		TYPE_ARRAY: # input and toggle
-			AppManager.sb.call("broadcast_%s" % event_value[0], event_value[1])
+			if event_value.size() > 2:
+				AppManager.sb.call("broadcast_%s" % event_value[0], event_value.slice(1, event_value.size() - 1))
+			else:
+				AppManager.sb.call("broadcast_%s" % event_value[0], event_value[1])
 		TYPE_STRING:
 			AppManager.sb.call("broadcast_%s" % event_value)
 		_:
@@ -234,10 +258,52 @@ func _on_event(event_value) -> void:
 
 func _on_model_loaded(p_model: BasicModel) -> void:
 	model = p_model
+	initial_model_transform = model.transform
+	
 	model_parent = model.get_parent()
+	initial_model_parent_transform = model_parent.transform
+
+	model.additional_bones_to_pose_names = AppManager.cm.current_model_config.mapped_bones
+	model.scan_mapped_bones()
 
 	for node in get_tree().get_nodes_in_group(XmlConstants.LIST):
 		node.setup(self, p_model)
+
+func _on_move_model(value: bool) -> void:
+	should_move_model = value
+
+func _on_rotate_model(value: bool) -> void:
+	should_rotate_model = value
+
+func _on_zoom_model(value: bool) -> void:
+	should_zoom_model = value
+
+func _on_load_model() -> void:
+	pass # TODO method stub
+
+func _on_reset_model_transform() -> void:
+	model.transform = initial_model_transform
+	model_parent.transform = initial_model_parent_transform
+
+func _on_reset_model_pose() -> void:
+	model.reset_all_bone_poses()
+
+func _on_bone_toggled(bone_name: String, toggle_type: String, toggle_value: bool) -> void:
+	match toggle_type:
+		DoubleToggleConstants.TRACK:
+			if toggle_value:
+				AppManager.cm.current_model_config.mapped_bones.append(bone_name)
+			else:
+				AppManager.cm.current_model_config.mapped_bones.erase(bone_name)
+			model.scan_mapped_bones()
+		DoubleToggleConstants.POSE:
+			if toggle_value:
+				should_modify_bone = true
+				bone_to_modify = bone_name
+			else:
+				should_modify_bone = false
+		_:
+			AppManager.log_message("Unhandled toggle received: %s" % toggle_type, true)
 
 ###############################################################################
 # Private functions                                                           #
@@ -266,19 +332,25 @@ static func generate_ui_element(tag_name: String, data: Dictionary) -> BaseEleme
 			result = ListElement.instance()
 			result.name = node_name
 			result.label_text = display_name
-			
-			if not data.has("type"):
-				AppManager.log_message("Element type must be specified for lists", true)
+
+			if not data.has("data"):
+				AppManager.log_message("Data mapping must be specified for lists", true)
 				return result
-			result.element_type = data["type"]
+			result.data_mapping = data["data"]
 		XmlConstants.TOGGLE:
 			result = ToggleElement.instance()
+			result.name = node_name
+			result.label_text = display_name
+		XmlConstants.DOUBLE_TOGGLE:
+			result = DoubleToggleElement.instance()
 			result.name = node_name
 			result.label_text = display_name
 		XmlConstants.INPUT:
 			result = InputElement.instance()
 			result.name = node_name
 			result.label_text = display_name
+			if data.has("type"):
+				result.data_type = data["type"]
 		XmlConstants.BUTTON:
 			result = ButtonElement.instance()
 			result.name = node_name

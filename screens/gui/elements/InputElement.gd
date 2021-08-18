@@ -3,6 +3,8 @@ extends BaseElement
 onready var label: Label = $HBoxContainer/Label
 onready var line_edit: LineEdit = $HBoxContainer/LineEdit
 
+var data_type: String
+
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
@@ -17,6 +19,14 @@ func _ready() -> void:
 ###############################################################################
 
 func _on_text_entered(text: String) -> void:
+	if data_type:
+		match data_type:
+			"string", "String":
+				pass
+			"float":
+				pass
+			"integer", "int":
+				pass
 	emit_signal("event", [event_name, text])
 
 ###############################################################################

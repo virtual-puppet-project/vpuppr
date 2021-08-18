@@ -33,8 +33,6 @@ func _ready() -> void:
 	for i in range(skeleton.get_bone_count()):
 		initial_bone_poses[i] = skeleton.get_bone_pose(i)
 
-	scan_mapped_bones()
-
 	AppManager.sb.model_is_loaded(self)
 
 ###############################################################################

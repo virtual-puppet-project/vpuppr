@@ -31,8 +31,11 @@ func broadcast_reset_model_pose() -> void:
 	emit_signal("reset_model_pose")
 
 signal bone_toggled()
-func broadcast_bone_toggled(bone_name: String, value: bool) -> void:
-	emit_signal("bone_toggled", bone_name, value)
+func broadcast_bone_toggled(value: Array) -> void:
+	"""
+	value param contains bone name, toggle type, and toggle value
+	"""
+	emit_signal("bone_toggled", value[0], value[1], value[2])
 
 # File select popup
 
