@@ -1,0 +1,24 @@
+<view name="Tracking">
+    <left>
+        <label name="Damps"/>
+        <input name="Translation Damp" event="translation_damp" type="float"/>
+        <input name="Rotation Damp" event="rotation_damp" type="float"/>
+        <input name="Additional Bone Damp" event="additional_bone_damp" type="float"/>
+
+        <label name="Model Manipulation"/>
+        <input name="Head Bone" event="head_bone" type="string"/>
+        <toggle name="Apply Translation" event="apply_translation"/>
+        <toggle name="Apply Rotation" event="apply_rotation"/>
+
+        <label name="Interpolation Options"/>
+        <toggle name="Interpolate Model" event="interpolate_model"/>
+        <toggle name="Interpolation Rate" event="interpolation_rate"/>
+
+        <label name="Misc."/>
+        <toggle name="Should Track Eye" event="should_track_eye"/>
+        <input name="Gaze Strength" event="gaze_strength" type="float"/>
+    </left>
+    <right>
+
+    </right>
+</view>
