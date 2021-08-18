@@ -21,7 +21,8 @@ func _ready() -> void:
 	
 	yield($GuiHandler, "setup_completed")
 	
-	AppManager.connect("file_to_load_changed", self, "_on_file_to_load_changed")
+	# AppManager.connect("file_to_load_changed", self, "_on_file_to_load_changed")
+	AppManager.sb.connect("file_to_load_changed", self, "_on_file_to_load_changed")
 
 	# TODO remove this
 	# AppManager.set_file_to_load(AppManager.get_default_model_path())
@@ -31,7 +32,7 @@ func _ready() -> void:
 		yield(get_tree(), "idle_frame")
 
 	# Request model to load information
-	AppManager.set_file_to_load(AppManager.cm.metadata_config.default_model_to_load_path)
+	AppManager.sb.set_file_to_load(AppManager.cm.metadata_config.default_model_to_load_path)
 
 func _input(event: InputEvent) -> void:
 	if(event.is_action_pressed("ui_cancel") and OS.is_debug_build()):

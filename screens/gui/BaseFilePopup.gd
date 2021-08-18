@@ -6,8 +6,8 @@ extends FileDialog
 ###############################################################################
 
 func _ready() -> void:
-	self.current_dir = OS.get_executable_path().get_base_dir()
-	self.current_path = self.current_dir
+#	self.current_dir = OS.get_executable_path().get_base_dir()
+#	self.current_path = self.current_dir
 	
 	self.connect("file_selected", self, "_on_file_selected")
 	
@@ -23,7 +23,7 @@ func _ready() -> void:
 ###############################################################################
 
 func _on_file_selected(file_path: String) -> void:
-	AppManager.set_file_to_load(file_path)
+	AppManager.sb.set_file_to_load(file_path)
 
 func _on_popup_hide() -> void:
 	queue_free()
