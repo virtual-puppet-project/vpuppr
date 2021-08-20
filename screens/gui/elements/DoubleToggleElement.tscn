@@ -30,10 +30,12 @@ margin_bottom = 886.0
 [node name="CheckButton1" type="CheckButton" parent="HBoxContainer/HBoxContainer"]
 margin_right = 76.0
 margin_bottom = 886.0
+focus_mode = 0
 size_flags_horizontal = 10
 
 [node name="CheckButton2" type="CheckButton" parent="HBoxContainer/HBoxContainer"]
 margin_left = 80.0
 margin_right = 156.0
 margin_bottom = 886.0
+focus_mode = 0
 size_flags_horizontal = 10

@@ -3,8 +3,6 @@ extends BaseElement
 onready var label: Label = $VBoxContainer/Label
 onready var vbox: VBoxContainer = $VBoxContainer
 
-var data_mapping: String
-
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
@@ -15,6 +13,16 @@ func _ready() -> void:
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
+
+func _load_prop_information(prop_name: String) -> void:
+	if not AppManager.cm.current_model_config.instanced_props.has(prop_name):
+		return
+
+	var prop: Spatial = AppManager.cm.current_model_config.instanced_props[prop_name]
+	for c in vbox.get_children():
+		c.queue_free()
+
+	yield(get_tree(), "idle_free")
 
 ###############################################################################
 # Private functions                                                           #
@@ -30,11 +38,12 @@ func get_value():
 func set_value(_value) -> void:
 	AppManager.log_message("Tried to set value on a List element", true)
 
-func setup(parent: Node, model: BasicModel) -> void:
-	match data_mapping:
+# Override base setup() function
+func setup() -> void:
+	match data_bind:
 		"mapped_bones":
-			for bone_i in model.skeleton.get_bone_count():
-				var bone_name: String = model.skeleton.get_bone_name(bone_i)
+			for bone_i in parent.model.skeleton.get_bone_count():
+				var bone_name: String = parent.model.skeleton.get_bone_name(bone_i)
 				var elem: BaseElement = parent.generate_ui_element(
 					"double_toggle",
 					{

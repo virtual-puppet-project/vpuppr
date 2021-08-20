@@ -1,0 +1,9 @@
+<view name="Presets">
+    <left>
+
+        <list name="Saved Presets"/>
+    </left>
+    <right>
+        <list name="Preset Info" type="receiver"/>
+    </right>
+</view>

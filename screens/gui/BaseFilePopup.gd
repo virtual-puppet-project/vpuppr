@@ -1,6 +1,8 @@
 class_name BaseFilePopup
 extends FileDialog
 
+var file: String
+
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
@@ -23,7 +25,8 @@ func _ready() -> void:
 ###############################################################################
 
 func _on_file_selected(file_path: String) -> void:
-	AppManager.sb.set_file_to_load(file_path)
+	file = file_path
+	# AppManager.sb.set_file_to_load(file_path)
 
 func _on_popup_hide() -> void:
 	queue_free()

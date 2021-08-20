@@ -29,5 +29,8 @@ func _on_pressed() -> void:
 func get_value():
 	return button.text
 
-func set_value(value) -> void:
+func set_value(_value) -> void:
 	AppManager.log_message("Tried to set value on a Button element", true)
+
+func setup() -> void:
+	pass # Do nothing on setup
