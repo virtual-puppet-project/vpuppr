@@ -1,6 +1,6 @@
 extends Reference
 
-# Gui signals
+# Model gui
 
 signal move_model(value)
 func broadcast_move_model(value: bool) -> void:
@@ -36,6 +36,58 @@ func broadcast_bone_toggled(value: Array) -> void:
 	value param contains bone name, toggle type, and toggle value
 	"""
 	emit_signal("bone_toggled", value[0], value[1], value[2])
+
+# Tracking
+
+signal translation_damp(value)
+func broadcast_translation_damp(value: float) -> void:
+	emit_signal("translation_damp", value)
+
+signal rotation_damp(value)
+func broadcast_rotation_damp(value: float) -> void:
+	emit_signal("rotation_damp", value)
+
+signal additional_bone_damp(value)
+func broadcast_additional_bone_damp(value: float) -> void:
+	emit_signal("additional_bone_damp", value)
+
+signal head_bone(value)
+func broadcast_head_bone(value: String) -> void:
+	emit_signal("head_bone", value)
+
+signal apply_translation(value)
+func broadcast_apply_translation(value: bool) -> void:
+	emit_signal("apply_translation", value)
+
+signal apply_rotation(value)
+func broadcast_apply_rotation(value: bool) -> void:
+	emit_signal("apply_rotation", value)
+
+signal interpolate_model(value)
+func broadcast_interpolate_model(value: bool) -> void:
+	emit_signal("interpolate_model", value)
+
+signal interpolation_rate(value)
+func broadcast_interpolation_rate(value: float) -> void:
+	emit_signal("interpolation_rate", value)
+
+signal should_track_eye(value)
+func broadcast_should_track_eye(value: bool) -> void:
+	emit_signal("should_track_eye", value)
+
+signal gaze_strength(value)
+func broadcast_gaze_strength(value: bool) -> void:
+	emit_signal("gaze_strength", value)
+
+# Features gui
+
+signal prop_gui_toggled(prop_name)
+func broadcast_prop_toggled(prop_name: String) -> void:
+	emit_signal("prop_gui_toggled", prop_name)
+
+signal add_custom_prop()
+func broadcast_add_custom_prop() -> void:
+	emit_signal("add_custom_prop")
 
 # File select popup
 

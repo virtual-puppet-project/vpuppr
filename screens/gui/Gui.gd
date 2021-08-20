@@ -36,6 +36,10 @@ const DoubleToggleConstants: Dictionary = {
 	"POSE": "pose"
 }
 
+const ListTypes: Dictionary = {
+	"RECEIVER": "receiver"
+}
+
 const GuiFileParser: Resource = preload("res://screens/gui/GuiFileParser.gd")
 
 # Containers
@@ -53,7 +57,15 @@ const LabelElement: Resource = preload("res://screens/gui/elements/LabelElement.
 const ListElement: Resource = preload("res://screens/gui/elements/ListElement.tscn")
 const ToggleElement: Resource = preload("res://screens/gui/elements/ToggleElement.tscn")
 const DoubleToggleElement: Resource = preload("res://screens/gui/elements/DoubleToggleElement.tscn")
+const ViewButton: Resource = preload("res://screens/gui/elements/ViewButton.tscn")
 
+const BaseProp: Resource = preload("res://entities/BaseProp.gd")
+
+const GUI_GROUP: String = "Gui"
+const GUI_VIEWS: Dictionary = {} # String: BaseView
+const PROPS: Dictionary = {} # String: Spatial
+
+onready var button_bar: Control = $ButtonBar
 onready var button_bar_hbox: HBoxContainer = $ButtonBar/HBoxContainer
 
 var base_path: String
@@ -76,6 +88,10 @@ var should_rotate_model := false
 var mouse_move_strength: float = 0.002
 var scroll_strength: float = 0.05
 
+# View toggling
+var current_view: String = ""
+var should_hide := false
+
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
@@ -93,6 +109,8 @@ func _ready() -> void:
 	AppManager.sb.connect("reset_model_pose", self, "_on_reset_model_pose")
 
 	AppManager.sb.connect("bone_toggled", self, "_on_bone_toggled")
+
+	AppManager.sb.connect("add_custom_prop", self, "_on_add_custom_prop")
 
 	if not OS.is_debug_build():
 		base_path = "%s/%s" % [OS.get_executable_path().get_base_dir(), "resources/gui"]
@@ -184,20 +202,38 @@ func _ready() -> void:
 			if data.is_complete:
 				break
 
-		# Create buttons
-		var button := Button.new()
-		button.text = xml_file.get_file() # TODO get rid of the xml suffix
-		# TODO connect this to some toggling logic
+		# Create top bar buttons
+		var button := ViewButton.instance()
+		button.button_text = base_view.name
+		button.name = base_view.name
+		button.connect("view_selected", self, "_on_view_button_pressed")
 		button_bar_hbox.call_deferred("add_child", button)
 
+		GUI_VIEWS[base_view.name] = base_view
 		base_view.setup()
 
 		yield(get_tree(), "idle_frame")
 
 		emit_signal("setup_completed")
+	# Toggle initial views
+	current_view = button_bar_hbox.get_child(0).name
+	for key in GUI_VIEWS.keys():
+		if key == current_view:
+			continue
+		_toggle_view(key)
 
 func _unhandled_input(event: InputEvent) -> void:
 	# Long if/else chain because unhandled input processes only 1 input at a time
+
+	if event.is_action_pressed("toggle_gui"):
+		should_hide = not should_hide
+		if should_hide:
+			for c in get_children():
+				c.visible = false
+		else:
+			button_bar.visible = true
+			# bottom_container.visible = true
+			_toggle_view(current_view)
 
 	if event.is_action_pressed("left_click"):
 		is_left_clicking = true
@@ -246,6 +282,9 @@ func _unhandled_input(event: InputEvent) -> void:
 # Connections                                                                 #
 ###############################################################################
 
+func _on_view_button_pressed(view_name: String) -> void:
+	_switch_view_to(view_name)
+
 func _on_event(event_value) -> void:
 	match typeof(event_value):
 		TYPE_ARRAY: # input and toggle
@@ -268,8 +307,8 @@ func _on_model_loaded(p_model: BasicModel) -> void:
 	model.additional_bones_to_pose_names = AppManager.cm.current_model_config.mapped_bones
 	model.scan_mapped_bones()
 
-	for node in get_tree().get_nodes_in_group(XmlConstants.LIST):
-		node.setup(self, p_model)
+	for node in get_tree().get_nodes_in_group(GUI_GROUP):
+		node.setup()
 
 func _on_move_model(value: bool) -> void:
 	should_move_model = value
@@ -293,6 +332,9 @@ func _on_load_model() -> void:
 	popup.current_path = load_path
 
 	yield(popup, "file_selected")
+
+	AppManager.sb.set_file_to_load(popup.file)
+
 	popup.queue_free()
 
 func _on_reset_model_transform() -> void:
@@ -319,15 +361,56 @@ func _on_bone_toggled(bone_name: String, toggle_type: String, toggle_value: bool
 		_:
 			AppManager.log_message("Unhandled toggle received: %s" % toggle_type, true)
 
+func _on_add_custom_prop() -> void:
+	var popup: FileDialog = FilePopup.instance()
+	get_parent().add_child(popup)
+
+	yield(get_tree(), "idle_frame")
+
+	var load_path: String = AppManager.cm.metadata_config.default_search_path
+	if not load_path.ends_with("/"):
+		load_path += "/"
+	popup.current_dir = load_path
+	popup.current_path = load_path
+
+	yield(popup, "file_selected")
+
+	var prop: Spatial = _create_prop(popup.file)
+	get_parent().call_deferred("add_child", prop)
+
+	popup.queue_free()
+
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
+
+func _switch_view_to(view_name: String) -> void:
+	if view_name == current_view:
+		_toggle_view(view_name)
+		current_view = ""
+		return
+	_toggle_view(current_view)
+	_toggle_view(view_name)
+	current_view = view_name
+
+func _toggle_view(view_name: String) -> void:
+	if view_name:
+		GUI_VIEWS[view_name].visible = not GUI_VIEWS[view_name].visible
+
+# TODO method stub
+func _create_prop(prop_path: String) -> Spatial:
+	var prop_parent := Spatial.new()
+	prop_parent.set_script(BaseProp)
+
+	var prop: Spatial
+
+	return prop_parent
 
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
 
-static func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
+func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 	var result: BaseElement
 
 	if not data.has("name"):
@@ -340,40 +423,38 @@ static func generate_ui_element(tag_name: String, data: Dictionary) -> BaseEleme
 	match tag_name:
 		XmlConstants.LABEL:
 			result = LabelElement.instance()
-			result.name = node_name
-			result.label_text = display_name
 		XmlConstants.LIST:
 			result = ListElement.instance()
-			result.name = node_name
-			result.label_text = display_name
-
-			if not data.has("data"):
-				AppManager.log_message("Data mapping must be specified for lists", true)
-				return result
-			result.data_mapping = data["data"]
+			if data.has(XmlConstants.TYPE):
+				match data[XmlConstants.TYPE]:
+					ListTypes.RECEIVER:
+						AppManager.sb.connect("prop_gui_toggled", result, "_load_prop_information")
+					_:
+						AppManager.log_message("Unhandled list type %s" % data[XmlConstants.TYPE])
 		XmlConstants.TOGGLE:
 			result = ToggleElement.instance()
-			result.name = node_name
-			result.label_text = display_name
 		XmlConstants.DOUBLE_TOGGLE:
 			result = DoubleToggleElement.instance()
-			result.name = node_name
-			result.label_text = display_name
 		XmlConstants.INPUT:
 			result = InputElement.instance()
-			result.name = node_name
-			result.label_text = display_name
-			if data.has("type"):
-				result.data_type = data["type"]
+			if data.has(XmlConstants.TYPE):
+				result.data_type = data[XmlConstants.TYPE]
 		XmlConstants.BUTTON:
 			result = ButtonElement.instance()
-			result.name = node_name
-			result.label_text = display_name
 		_:
 			AppManager.log_message("Unhandled tag_name: %s" % tag_name)
 			return result
 
-	if data.has("event"):
-		result.event_name = data["event"]
+	result.name = node_name
+	result.label_text = display_name
+	if data.has(XmlConstants.DATA):
+		result.data_bind = data[XmlConstants.DATA]
+
+	result.add_to_group(GUI_GROUP)
+
+	if data.has(XmlConstants.EVENT):
+		result.event_name = data[XmlConstants.EVENT]
+
+	result.parent = self
 
 	return result

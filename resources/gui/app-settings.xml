@@ -1,0 +1,8 @@
+<view name="App Settings">
+    <left>
+        <input name="Default Search Path" data="default_search_path"/>
+    </left>
+    <right>
+
+    </right>
+</view>

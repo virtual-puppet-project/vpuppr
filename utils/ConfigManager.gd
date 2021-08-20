@@ -99,7 +99,7 @@ class ConfigData:
 	var world_environment_ambient_light_energy: float = 0.5
 	var world_environment_ambient_light_sky_contribution: float = 1.0
 
-	var instanced_props: Array = []
+	var instanced_props: Array = [] # String, Prop data
 
 	func get_as_dict() -> Dictionary:
 		"""
