@@ -8,6 +8,6 @@
         <list name="Custom Props" data="instanced_props"/>
     </left>
     <right>
-        <list name="Prop Details" type="receiver"/>
+        <list name="Prop Details" type="prop_receiver"/>
     </right>
 </view>

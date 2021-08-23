@@ -2,6 +2,8 @@ extends CanvasLayer
 
 signal setup_completed
 
+const PropData: Resource = preload("res://screens/gui/PropData.gd")
+
 const DEFAULT_METADATA: String = "metadata.xml"
 
 const XmlConstants: Dictionary = {
@@ -37,7 +39,8 @@ const DoubleToggleConstants: Dictionary = {
 }
 
 const ListTypes: Dictionary = {
-	"RECEIVER": "receiver"
+	"PROP_RECEIVER": "prop_receiver",
+	"PRESET_RECEIVER": "preset_receiver"
 }
 
 const GuiFileParser: Resource = preload("res://screens/gui/GuiFileParser.gd")
@@ -92,6 +95,9 @@ var scroll_strength: float = 0.05
 var current_view: String = ""
 var should_hide := false
 
+# Props
+var instanced_props: Dictionary = {} # String: PropData
+
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
@@ -111,6 +117,10 @@ func _ready() -> void:
 	AppManager.sb.connect("bone_toggled", self, "_on_bone_toggled")
 
 	AppManager.sb.connect("add_custom_prop", self, "_on_add_custom_prop")
+
+	AppManager.sb.connect("move_prop", self, "_on_move_prop")
+	AppManager.sb.connect("rotate_prop", self, "_on_rotate_prop")
+	AppManager.sb.connect("zoom_prop", self, "_on_zoom_prop")
 
 	if not OS.is_debug_build():
 		base_path = "%s/%s" % [OS.get_executable_path().get_base_dir(), "resources/gui"]
@@ -321,7 +331,7 @@ func _on_zoom_model(value: bool) -> void:
 
 func _on_load_model() -> void:
 	var popup: FileDialog = FilePopup.instance()
-	get_parent().add_child(popup)
+	add_child(popup)
 
 	yield(get_tree(), "idle_frame")
 
@@ -363,7 +373,7 @@ func _on_bone_toggled(bone_name: String, toggle_type: String, toggle_value: bool
 
 func _on_add_custom_prop() -> void:
 	var popup: FileDialog = FilePopup.instance()
-	get_parent().add_child(popup)
+	add_child(popup)
 
 	yield(get_tree(), "idle_frame")
 
@@ -375,10 +385,29 @@ func _on_add_custom_prop() -> void:
 
 	yield(popup, "file_selected")
 
-	var prop: Spatial = _create_prop(popup.file)
+	var prop: Spatial = create_prop(popup.file)
+	if (prop and prop.get_child_count() == 0):
+		AppManager.log_message("Invalid prop", true)
+		return
+
 	get_parent().call_deferred("add_child", prop)
 
+	var toggle: BaseElement = generate_ui_element(XmlConstants.TOGGLE, {
+		"name": "",
+		"data": "",
+		"event": ""
+	})
+
 	popup.queue_free()
+
+func _on_move_prop() -> void:
+	pass
+
+func _on_rotate_prop() -> void:
+	pass
+
+func _on_zoom_prop() -> void:
+	pass
 
 ###############################################################################
 # Private functions                                                           #
@@ -396,15 +425,6 @@ func _switch_view_to(view_name: String) -> void:
 func _toggle_view(view_name: String) -> void:
 	if view_name:
 		GUI_VIEWS[view_name].visible = not GUI_VIEWS[view_name].visible
-
-# TODO method stub
-func _create_prop(prop_path: String) -> Spatial:
-	var prop_parent := Spatial.new()
-	prop_parent.set_script(BaseProp)
-
-	var prop: Spatial
-
-	return prop_parent
 
 ###############################################################################
 # Public functions                                                            #
@@ -427,8 +447,8 @@ func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 			result = ListElement.instance()
 			if data.has(XmlConstants.TYPE):
 				match data[XmlConstants.TYPE]:
-					ListTypes.RECEIVER:
-						AppManager.sb.connect("prop_gui_toggled", result, "_load_prop_information")
+					ListTypes.PROP_RECEIVER:
+						AppManager.sb.connect("prop_toggled", result, "_load_prop_information")
 					_:
 						AppManager.log_message("Unhandled list type %s" % data[XmlConstants.TYPE])
 		XmlConstants.TOGGLE:
@@ -458,3 +478,49 @@ func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 	result.parent = self
 
 	return result
+
+func create_prop(prop_path: String, parent_transform: Transform = Transform(),
+			child_transform: Transform = Transform()) -> Spatial:
+	var prop_parent := Spatial.new()
+	prop_parent.set_script(BaseProp)
+
+	var prop: Spatial
+	match prop_path.get_extension().to_lower():
+		"tscn":
+			prop = ResourceLoader.load(prop_path).instance()
+		"glb":
+			var gstate: GLTFState = GLTFState.new()
+			var gltf: PackedSceneGLTF = PackedSceneGLTF.new()
+			prop = gltf.import_gltf_scene(prop_path, 0, 1000.0, gstate)
+			prop.name = prop_path.get_file().trim_suffix(prop_path.get_extension())
+		"vrm":
+			var vrm_loader = load("res://addons/vrm/vrm_loader.gd")
+			prop = vrm_loader.import_scene(prop_path, 1, 1000)
+			prop.name = prop_path.get_file().trim_suffix(prop_path.get_extension())
+		"png", "jpg", "jpeg":
+			var texture: Texture = ImageTexture.new()
+			var image: Image = Image.new()
+			var error = image.load(prop_path)
+			if error != OK:
+				continue
+			texture.create_from_image(image, 0)
+			prop = Sprite3D.new()
+			prop.texture = texture
+			prop.name = prop_path.get_file().trim_suffix(prop_path.get_extension())
+		_:
+			AppManager.log_message("Unhandled filetype: %s" % prop_path, true)
+
+	if not prop:
+		return prop_parent
+
+	prop_parent.name = prop.name
+	prop_parent.add_child(prop)
+
+	prop_parent.prop_path = prop_path
+	prop_parent.transform = parent_transform
+	prop.transform = child_transform
+
+	# AppManager.main.model_display_screen.call_deferred("add_child", prop_parent)
+	AppManager.main.model_display_screen.add_child(prop_parent)
+
+	return prop_parent

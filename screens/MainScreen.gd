@@ -18,6 +18,8 @@ var model_display_screen: Spatial
 func _ready() -> void:
 	get_viewport().transparent_bg = true
 	OS.window_per_pixel_transparency_enabled = true
+
+	AppManager.main = self
 	
 	yield($GuiHandler, "setup_completed")
 	
