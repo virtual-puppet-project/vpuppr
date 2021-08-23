@@ -273,7 +273,7 @@ func _set_interpolation_rate(value: float) -> void:
 func load_external_model(file_path: String) -> Spatial:
 	AppManager.log_message("Starting external loader.")
 	var loaded_model: Spatial
-	var vrm_meta: Resource
+	var vrm_meta: Dictionary
 	
 	match file_path.get_extension():
 		"glb":
@@ -287,7 +287,7 @@ func load_external_model(file_path: String) -> Spatial:
 			# var import_vrm: ImportVRM = ImportVRM.new()
 			var vrm_loader = VrmLoader.new()
 			loaded_model = vrm_loader.import_scene(file_path, 1, 1000)
-			vrm_meta = loaded_model.vrm_meta.duplicate()
+			vrm_meta = loaded_model.vrm_meta
 
 	var model_script = load(script_to_use)
 	loaded_model.set_script(model_script)
