@@ -830,7 +830,7 @@ func import_scene(path: String, flags: int, bake_fps: int, use_tmp: bool = false
 	root_node.set_script(vrm_top_level)
 
 	var vrm_meta: Reference = _create_meta(root_node, animplayer, vrm_extension, gstate, human_bone_to_idx)
-	root_node.set("vrm_meta", vrm_meta.duplicate())
+	root_node.set("vrm_meta", vrm_meta.get_as_dict())
 	root_node.set("vrm_secondary", NodePath())
 
 	if (vrm_extension.has("secondaryAnimation") and \
