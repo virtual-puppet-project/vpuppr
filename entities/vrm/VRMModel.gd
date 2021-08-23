@@ -5,7 +5,7 @@ var eco_mode: bool = false
 
 var stored_offsets: ModelDisplayScreen.StoredOffsets
 
-var vrm_meta: Resource
+var vrm_meta: Dictionary
 
 var vrm_mappings: VRMMappings
 var left_eye_id: int

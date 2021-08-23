@@ -1,5 +1,5 @@
 tool
-extends Resource
+extends Reference
 
 # Annotation comment
 export var comment: String
@@ -43,6 +43,8 @@ var center = null
 var skel: Skeleton = null
 var skel_polyfill: Object = null
 
+var resource_name: String = ""
+
 func setup(force: bool = false) -> void:
 	if typeof(self.root_bones) != TYPE_NIL && ! self.root_bones.empty() && skeleton != null:
 		if force || verlets.empty():
@@ -69,6 +71,27 @@ func setup_recursive(id: int, center_tr) -> void:
 	for child in skel_polyfill.get_bone_children(id):
 		setup_recursive(child, center_tr)
 	return
+
+func duplicate():
+	var sb = load("res://addons/vrm/vrm_springbone.gd").new()
+	sb.comment = comment
+	sb.stiffness_force = stiffness_force
+	sb.gravity_power = gravity_power
+	sb.gravity_dir = gravity_dir
+	sb.drag_force = drag_force
+	sb.skeleton = skeleton
+	sb.center_bone = center_bone
+	sb.center_node = center_node
+	sb.hit_radius = hit_radius
+	sb.root_bones = root_bones
+	sb.collider_groups = collider_groups
+	sb.verlets = verlets
+	sb.colliders = colliders
+	sb.center = center
+	sb.skel = skel
+	sb.skel_polyfill = skel_polyfill
+	
+	return sb
 
 # Called when the node enters the scene tree for the first time.
 func _ready(skel: Skeleton, skel_polyfill: Object, colliders_ref: Array):
