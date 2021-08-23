@@ -55,6 +55,8 @@ var vrm_mappings: VRMMappings
 var default_load_path: String = "/"
 var should_track_eye: float = 1.0
 
+var main: MainScreen
+
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
