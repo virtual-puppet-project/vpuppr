@@ -19,6 +19,7 @@ const XmlConstants: Dictionary = {
 	"LIST": "list",
 	"TOGGLE": "toggle",
 	"DOUBLE_TOGGLE": "double_toggle",
+	"PROP_TOGGLE": "prop_toggle",
 	"INPUT": "input",
 	"BUTTON": "button",
 	"PRESET": "preset",
@@ -60,6 +61,8 @@ const LabelElement: Resource = preload("res://screens/gui/elements/LabelElement.
 const ListElement: Resource = preload("res://screens/gui/elements/ListElement.tscn")
 const ToggleElement: Resource = preload("res://screens/gui/elements/ToggleElement.tscn")
 const DoubleToggleElement: Resource = preload("res://screens/gui/elements/DoubleToggleElement.tscn")
+# TODO remove this maybe?
+const PropToggleElement: Resource = preload("res://screens/gui/elements/PropToggleElement.tscn")
 const ViewButton: Resource = preload("res://screens/gui/elements/ViewButton.tscn")
 
 const BaseProp: Resource = preload("res://entities/BaseProp.gd")
@@ -97,6 +100,11 @@ var should_hide := false
 
 # Props
 var instanced_props: Dictionary = {} # String: PropData
+var current_prop_data: Reference
+var prop_to_move: Spatial
+var should_move_prop := false
+var should_rotate_prop := false
+var should_zoom_prop := false
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -105,6 +113,8 @@ var instanced_props: Dictionary = {} # String: PropData
 func _ready() -> void:
 	AppManager.sb.connect("model_loaded", self, "_on_model_loaded")
 	
+	# Model callbacks
+
 	AppManager.sb.connect("move_model", self, "_on_move_model")
 	AppManager.sb.connect("rotate_model", self, "_on_rotate_model")
 	AppManager.sb.connect("zoom_model", self, "_on_zoom_model")
@@ -116,7 +126,28 @@ func _ready() -> void:
 
 	AppManager.sb.connect("bone_toggled", self, "_on_bone_toggled")
 
+	# Tracking
+
+	AppManager.sb.connect("translation_damp", self, "_on_translation_damp")
+	AppManager.sb.connect("rotation_damp", self, "_on_rotation_damp")
+	AppManager.sb.connect("additional_bone_damp", self, "_on_additional_bone_damp")
+
+	AppManager.sb.connect("head_bone", self, "_on_head_bone")
+
+	AppManager.sb.connect("apply_translation", self, "_on_apply_translation")
+	AppManager.sb.connect("apply_rotation", self, "_on_apply_rotation")
+
+	AppManager.sb.connect("interpolate_model", self, "_on_interpolate_model")
+	AppManager.sb.connect("interpolation_rate", self, "_on_interpolation_rate")
+
+	AppManager.sb.connect("should_track_eye", self, "_on_should_track_eye")
+	AppManager.sb.connect("gaze_strength", self, "_on_gaze_strength")
+
+	# Features callbacks
+
 	AppManager.sb.connect("add_custom_prop", self, "_on_add_custom_prop")
+
+	AppManager.sb.connect("prop_toggled", self, "_on_prop_toggled")
 
 	AppManager.sb.connect("move_prop", self, "_on_move_prop")
 	AppManager.sb.connect("rotate_prop", self, "_on_rotate_prop")
@@ -220,11 +251,14 @@ func _ready() -> void:
 		button_bar_hbox.call_deferred("add_child", button)
 
 		GUI_VIEWS[base_view.name] = base_view
-		base_view.setup()
 
 		yield(get_tree(), "idle_frame")
 
-		emit_signal("setup_completed")
+		if base_view.has_method("setup"):
+			base_view.setup()
+
+	emit_signal("setup_completed")
+
 	# Toggle initial views
 	current_view = button_bar_hbox.get_child(0).name
 	for key in GUI_VIEWS.keys():
@@ -250,8 +284,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_released("left_click"):
 		is_left_clicking = false
 
-	# Intentionally verbose so logic can cancel out
-	# i.e. we don't want to modify bone and move model at the same time
+	# Bone posing
 	if should_modify_bone:
 		if (is_left_clicking and event is InputEventMouseMotion):
 			var transform: Transform = model.skeleton.get_bone_pose(
@@ -276,17 +309,30 @@ func _unhandled_input(event: InputEvent) -> void:
 			model.skeleton.set_bone_pose(
 					model.skeleton.find_bone(bone_to_modify), transform)
 	
+	# TODO there is a better way of structuring this
+	# Model and prop movement
 	if (is_left_clicking and event is InputEventMouseMotion):
 		if should_move_model:
 			model_parent.translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
 		if should_rotate_model:
 			model.rotate_x(event.relative.y * mouse_move_strength)
 			model.rotate_y(event.relative.x * mouse_move_strength)
-	elif should_zoom_model:
-		if event.is_action("scroll_up"):
+
+		if should_move_prop:
+			prop_to_move.get_child(0).translate.translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
+		if should_rotate_prop:
+			prop_to_move.rotate_x(event.relative.y * mouse_move_strength)
+			prop_to_move.rotate_y(event.relative.x * mouse_move_strength)
+	elif event.is_action("scroll_up"):
+		if should_zoom_model:
 			model_parent.translate(Vector3(0.0, 0.0, scroll_strength))
-		elif event.is_action("scroll_down"):
+		if should_zoom_prop:
+			prop_to_move.get_child(0).translate(Vector3(0.0, 0.0, scroll_strength))
+	elif event.is_action("scroll_down"):
+		if should_zoom_model:
 			model_parent.translate(Vector3(0.0, 0.0, -scroll_strength))
+		if should_zoom_prop:
+			prop_to_move.get_child(0).translate(Vector3(0.0, 0.0, -scroll_strength))
 
 ###############################################################################
 # Connections                                                                 #
@@ -317,8 +363,9 @@ func _on_model_loaded(p_model: BasicModel) -> void:
 	model.additional_bones_to_pose_names = AppManager.cm.current_model_config.mapped_bones
 	model.scan_mapped_bones()
 
-	for node in get_tree().get_nodes_in_group(GUI_GROUP):
-		node.setup()
+	_setup_gui_nodes()
+
+# Model
 
 func _on_move_model(value: bool) -> void:
 	should_move_model = value
@@ -371,6 +418,41 @@ func _on_bone_toggled(bone_name: String, toggle_type: String, toggle_value: bool
 		_:
 			AppManager.log_message("Unhandled toggle received: %s" % toggle_type, true)
 
+# Tracking
+
+func _on_translation_damp(value: float) -> void:
+	# TODO 
+	pass
+
+func _on_rotation_damp(value: float) -> void:
+	pass
+
+func _on_additional_bone_damp(value: float) -> void:
+	pass
+
+func _on_head_bone(value: String) -> void:
+	pass
+
+func _on_apply_translation(value: bool) -> void:
+	pass
+
+func _on_apply_rotation(value: bool) -> void:
+	pass
+
+func _on_interpolate_model(value: bool) -> void:
+	pass
+
+func _on_interpolation_rate(value: float) -> void:
+	pass
+
+func _on_should_track_eye(value: float) -> void:
+	pass
+
+func _on_gaze_strength(value: float) -> void:
+	pass
+
+# Features
+
 func _on_add_custom_prop() -> void:
 	var popup: FileDialog = FilePopup.instance()
 	add_child(popup)
@@ -393,21 +475,26 @@ func _on_add_custom_prop() -> void:
 	get_parent().call_deferred("add_child", prop)
 
 	var toggle: BaseElement = generate_ui_element(XmlConstants.TOGGLE, {
-		"name": "",
-		"data": "",
-		"event": ""
+		"name": popup.file.get_file().trim_suffix(popup.file.get_extension()),
+		"event": "prop_toggled"
 	})
+	AppManager.sb.broadcast_custom_prop_toggle_created(toggle)
 
 	popup.queue_free()
 
-func _on_move_prop() -> void:
-	pass
+func _on_prop_toggled(prop_name: String) -> void:
+	if AppManager.cm.current_model_config.instanced_props[prop_name]:
+		current_prop_data = AppManager.cm.current_model_config.instanced_props[prop_name]
+		prop_to_move = AppManager.cm.current_model_config.instanced_props[prop_name].props
 
-func _on_rotate_prop() -> void:
-	pass
+func _on_move_prop(value: bool) -> void:
+	should_move_prop = value
 
-func _on_zoom_prop() -> void:
-	pass
+func _on_rotate_prop(value: bool) -> void:
+	should_rotate_prop = value
+
+func _on_zoom_prop(value: bool) -> void:
+	should_zoom_prop = value
 
 ###############################################################################
 # Private functions                                                           #
@@ -425,6 +512,10 @@ func _switch_view_to(view_name: String) -> void:
 func _toggle_view(view_name: String) -> void:
 	if view_name:
 		GUI_VIEWS[view_name].visible = not GUI_VIEWS[view_name].visible
+
+func _setup_gui_nodes() -> void:
+	for node in get_tree().get_nodes_in_group(GUI_GROUP):
+		node.setup()
 
 ###############################################################################
 # Public functions                                                            #
@@ -455,6 +546,9 @@ func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 			result = ToggleElement.instance()
 		XmlConstants.DOUBLE_TOGGLE:
 			result = DoubleToggleElement.instance()
+		XmlConstants.PROP_TOGGLE: # TODO remove maybe?
+			result = PropToggleElement.instance()
+			result.prop_name = data["prop_name"]
 		XmlConstants.INPUT:
 			result = InputElement.instance()
 			if data.has(XmlConstants.TYPE):
@@ -521,6 +615,6 @@ func create_prop(prop_path: String, parent_transform: Transform = Transform(),
 	prop.transform = child_transform
 
 	# AppManager.main.model_display_screen.call_deferred("add_child", prop_parent)
-	AppManager.main.model_display_screen.add_child(prop_parent)
+	# AppManager.main.model_display_screen.add_child(prop_parent)
 
 	return prop_parent

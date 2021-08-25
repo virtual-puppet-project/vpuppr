@@ -85,6 +85,10 @@ signal add_custom_prop()
 func broadcast_add_custom_prop() -> void:
 	emit_signal("add_custom_prop")
 
+signal custom_prop_toggle_created(value)
+func broadcast_custom_prop_toggle_created(value: BaseElement) -> void:
+	emit_signal("custom_prop_toggle_created", value)
+
 # Props
 
 signal prop_toggled(prop_name)
@@ -92,16 +96,16 @@ func broadcast_prop_toggled(prop_name: String) -> void:
 	emit_signal("prop_toggled", prop_name)
 
 signal move_prop(prop_name)
-func broadcast_move_prop(prop_name: String) -> void:
-	emit_signal("move_prop", prop_name)
+func broadcast_move_prop(value: bool) -> void:
+	emit_signal("move_prop", value)
 
 signal rotate_prop(prop_name)
-func broadcast_rotate_prop(prop_name: String) -> void:
-	emit_signal("rotate_prop", prop_name)
+func broadcast_rotate_prop(value: bool) -> void:
+	emit_signal("rotate_prop", value)
 
 signal zoom_prop(prop_name)
-func broadcast_zoom_prop(prop_name: String) -> void:
-	emit_signal("zoom_prop", prop_name)
+func broadcast_zoom_prop(value: bool) -> void:
+	emit_signal("zoom_prop", value)
 
 # File select popup
 
