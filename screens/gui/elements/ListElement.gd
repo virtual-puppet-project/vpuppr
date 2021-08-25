@@ -16,6 +16,11 @@ func _ready() -> void:
 # Connections                                                                 #
 ###############################################################################
 
+# Features
+
+func _on_custom_prop_toggle_created(value: BaseElement) -> void:
+	vbox.call_deferred("add_child", value)
+
 func _load_prop_information(prop_name: String) -> void:
 	if not AppManager.cm.current_model_config.instanced_props.has(prop_name):
 		return
@@ -35,16 +40,21 @@ func _load_prop_information(prop_name: String) -> void:
 		"name": "Move",
 		"event": "move_prop"
 	})
+	vbox.call_deferred("add_child", move_elem)
 
 	var rotate_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.TOGGLE, {
-		"name": "Move",
+		"name": "Rotate",
 		"event": "rotate_prop"
 	})
+	vbox.call_deferred("add_child", rotate_elem)
 
 	var zoom_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.TOGGLE, {
-		"name": "Move",
+		"name": "Zoom",
 		"event": "zoom_prop"
 	})
+	vbox.call_deferred("add_child", zoom_elem)
+
+# Presets
 
 ###############################################################################
 # Private functions                                                           #
@@ -62,6 +72,8 @@ func set_value(_value) -> void:
 
 # Override base setup() function
 func setup() -> void:
+	if not data_bind:
+		return
 	match data_bind:
 		"mapped_bones":
 			for bone_i in parent.model.skeleton.get_bone_count():
@@ -84,6 +96,9 @@ func setup() -> void:
 				
 				vbox.call_deferred("add_child", elem)
 		"instanced_props":
+			if not AppManager.sb.is_connected("custom_prop_toggle_created", self, "_on_custom_prop_toggle_created"):
+				AppManager.sb.connect("custom_prop_toggle_created", self, "_on_custom_prop_toggle_created")
+			
 			for prop_name in AppManager.cm.current_model_config.instanced_props.keys():
 				var prop_data = PropData.new()
 				prop_data.load_from_dict(
@@ -96,11 +111,10 @@ func setup() -> void:
 					prop_data.child_transform
 				)
 
-				# TODO generate toggle
 				prop_data.toggle = parent.generate_ui_element(
 					parent.XmlConstants.TOGGLE,
 					{
-						"name": "",
+						"name": prop_data.prop_path.get_file().trim_suffix(prop_data.prop_path.get_extension()),
 						"event": "prop_toggled"
 					}
 				)
@@ -109,4 +123,5 @@ func setup() -> void:
 				vbox.call_deferred("add_child", prop_data.toggle)
 
 				parent.instanced_props[prop_name] = prop_data
-
+		_:
+			AppManager.log_message("Unhandled data bind: %s" % data_bind, true)

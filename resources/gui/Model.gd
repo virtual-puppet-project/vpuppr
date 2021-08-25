@@ -1,4 +1,5 @@
 extends Control
 
 func setup() -> void:
-	print("model xml loaded")
+	# print("model xml loaded")
+	pass

@@ -4,6 +4,6 @@
         <list name="Saved Presets"/>
     </left>
     <right>
-        <list name="Preset Info" type="receiver"/>
+        <list name="Preset Info" type="preset_receiver"/>
     </right>
 </view>
