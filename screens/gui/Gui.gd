@@ -61,7 +61,6 @@ const LabelElement: Resource = preload("res://screens/gui/elements/LabelElement.
 const ListElement: Resource = preload("res://screens/gui/elements/ListElement.tscn")
 const ToggleElement: Resource = preload("res://screens/gui/elements/ToggleElement.tscn")
 const DoubleToggleElement: Resource = preload("res://screens/gui/elements/DoubleToggleElement.tscn")
-# TODO remove this maybe?
 const PropToggleElement: Resource = preload("res://screens/gui/elements/PropToggleElement.tscn")
 const ViewButton: Resource = preload("res://screens/gui/elements/ViewButton.tscn")
 
@@ -69,7 +68,8 @@ const BaseProp: Resource = preload("res://entities/BaseProp.gd")
 
 const GUI_GROUP: String = "Gui"
 const GUI_VIEWS: Dictionary = {} # String: BaseView
-const PROPS: Dictionary = {} # String: Spatial
+const PROPS: Dictionary = {} # String: PropData
+const PROP_SCRIPT_PATH := "res://entities/BaseProp.gd"
 
 onready var button_bar: Control = $ButtonBar
 onready var button_bar_hbox: HBoxContainer = $ButtonBar/HBoxContainer
@@ -99,8 +99,7 @@ var current_view: String = ""
 var should_hide := false
 
 # Props
-var instanced_props: Dictionary = {} # String: PropData
-var current_prop_data: Reference
+var current_prop_data: Reference = PropData.new()
 var prop_to_move: Spatial
 var should_move_prop := false
 var should_rotate_prop := false
@@ -319,7 +318,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			model.rotate_y(event.relative.x * mouse_move_strength)
 
 		if should_move_prop:
-			prop_to_move.get_child(0).translate.translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
+			prop_to_move.get_child(0).translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
 		if should_rotate_prop:
 			prop_to_move.rotate_x(event.relative.y * mouse_move_strength)
 			prop_to_move.rotate_y(event.relative.x * mouse_move_strength)
@@ -467,6 +466,15 @@ func _on_add_custom_prop() -> void:
 
 	yield(popup, "file_selected")
 
+	var prop_name: String = popup.file.get_file() \
+		.trim_suffix(popup.file.get_extension()).trim_suffix(".")
+	# Set distinct prop name so we don't accidentally override existing props
+	var final_prop_name := prop_name
+	var counter: int = 0
+	while PROPS.has(final_prop_name):
+		final_prop_name = "%s%d" % [prop_name, counter]
+		counter += 1
+
 	var prop: Spatial = create_prop(popup.file)
 	if (prop and prop.get_child_count() == 0):
 		AppManager.log_message("Invalid prop", true)
@@ -474,18 +482,28 @@ func _on_add_custom_prop() -> void:
 
 	get_parent().call_deferred("add_child", prop)
 
-	var toggle: BaseElement = generate_ui_element(XmlConstants.TOGGLE, {
-		"name": popup.file.get_file().trim_suffix(popup.file.get_extension()),
+	var toggle: BaseElement = generate_ui_element(XmlConstants.PROP_TOGGLE, {
+		"name": final_prop_name,
 		"event": "prop_toggled"
 	})
+	toggle.connect("event", self, "_on_event")
 	AppManager.sb.broadcast_custom_prop_toggle_created(toggle)
+	
+	var prop_data = PropData.new()
+	prop_data.prop_name = final_prop_name
+	prop_data.prop = prop
+	prop_data.toggle = toggle
+	prop_data.prop_path = load_path
+	
+	PROPS[final_prop_name] = prop_data
+	AppManager.cm.current_model_config.instanced_props[final_prop_name] = prop_data.get_as_dict()
 
 	popup.queue_free()
 
-func _on_prop_toggled(prop_name: String) -> void:
-	if AppManager.cm.current_model_config.instanced_props[prop_name]:
-		current_prop_data = AppManager.cm.current_model_config.instanced_props[prop_name]
-		prop_to_move = AppManager.cm.current_model_config.instanced_props[prop_name].props
+func _on_prop_toggled(prop_name: String, is_visible: bool) -> void:
+	if PROPS.has(prop_name):
+		current_prop_data = PROPS[prop_name]
+		prop_to_move = current_prop_data.prop
 
 func _on_move_prop(value: bool) -> void:
 	should_move_prop = value
@@ -546,9 +564,9 @@ func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 			result = ToggleElement.instance()
 		XmlConstants.DOUBLE_TOGGLE:
 			result = DoubleToggleElement.instance()
-		XmlConstants.PROP_TOGGLE: # TODO remove maybe?
+		XmlConstants.PROP_TOGGLE:
 			result = PropToggleElement.instance()
-			result.prop_name = data["prop_name"]
+			result.prop_name = data["name"]
 		XmlConstants.INPUT:
 			result = InputElement.instance()
 			if data.has(XmlConstants.TYPE):
@@ -613,6 +631,8 @@ func create_prop(prop_path: String, parent_transform: Transform = Transform(),
 	prop_parent.prop_path = prop_path
 	prop_parent.transform = parent_transform
 	prop.transform = child_transform
+
+	prop_parent.set_script(load(PROP_SCRIPT_PATH))
 
 	# AppManager.main.model_display_screen.call_deferred("add_child", prop_parent)
 	# AppManager.main.model_display_screen.add_child(prop_parent)
