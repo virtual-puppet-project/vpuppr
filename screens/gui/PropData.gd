@@ -6,6 +6,7 @@ PropData
 Only used for custom props
 """
 
+var prop_name: String
 var prop: Node
 var toggle: BaseElement
 
@@ -35,6 +36,7 @@ var data: Dictionary = {}
 func get_as_dict() -> Dictionary:
 	var result: Dictionary = {}
 
+	result["prop_name"] = prop_name
 	result["prop_path"] = prop_path
 	result["parent_transform"] = JSONUtil.transform_to_dictionary(prop.transform)
 	result["child_transform"] = JSONUtil.transform_to_dictionary(prop.get_child(0).transform)
@@ -42,6 +44,11 @@ func get_as_dict() -> Dictionary:
 	return result
 
 func load_from_dict(dict: Dictionary) -> void:
+	if not dict.has("prop_name"):
+		AppManager.log_message("Invalid prop data: no prop_name", true)
+		return
+	prop_name = dict["prop_name"]
+
 	if not dict.has("prop_path"):
 		AppManager.log_message("Invalid prop data: no prop_path", true)
 		return

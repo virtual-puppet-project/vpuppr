@@ -91,9 +91,9 @@ func broadcast_custom_prop_toggle_created(value: BaseElement) -> void:
 
 # Props
 
-signal prop_toggled(prop_name)
-func broadcast_prop_toggled(prop_name: String) -> void:
-	emit_signal("prop_toggled", prop_name)
+signal prop_toggled(prop_name, value)
+func broadcast_prop_toggled(value: Array) -> void:
+	emit_signal("prop_toggled", value[0], value[1])
 
 signal move_prop(prop_name)
 func broadcast_move_prop(value: bool) -> void:

@@ -21,18 +21,21 @@ func _ready() -> void:
 func _on_custom_prop_toggle_created(value: BaseElement) -> void:
 	vbox.call_deferred("add_child", value)
 
-func _load_prop_information(prop_name: String) -> void:
-	if not AppManager.cm.current_model_config.instanced_props.has(prop_name):
+func _load_prop_information(prop_name: String, is_visible: bool) -> void:
+	if not parent.PROPS.has(prop_name):
 		return
 
-	var data: Dictionary = AppManager.cm.current_model_config.instanced_props[prop_name]
+	var data: Reference = parent.PROPS[prop_name]
 	for c in vbox.get_children():
 		c.queue_free()
+	
+	if not is_visible:
+		return
 
 	yield(get_tree(), "idle_frame")
 
 	var name_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.LABEL, {
-		"name": data["name"]
+		"name": data.prop_name
 	})
 	vbox.call_deferred("add_child", name_elem)
 
@@ -40,18 +43,21 @@ func _load_prop_information(prop_name: String) -> void:
 		"name": "Move",
 		"event": "move_prop"
 	})
+	move_elem.connect("event", parent, "_on_event")
 	vbox.call_deferred("add_child", move_elem)
 
 	var rotate_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.TOGGLE, {
 		"name": "Rotate",
 		"event": "rotate_prop"
 	})
+	rotate_elem.connect("event", parent, "_on_event")
 	vbox.call_deferred("add_child", rotate_elem)
 
 	var zoom_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.TOGGLE, {
 		"name": "Zoom",
 		"event": "zoom_prop"
 	})
+	zoom_elem.connect("event", parent, "_on_event")
 	vbox.call_deferred("add_child", zoom_elem)
 
 # Presets
@@ -100,7 +106,7 @@ func setup() -> void:
 				AppManager.sb.connect("custom_prop_toggle_created", self, "_on_custom_prop_toggle_created")
 			
 			for prop_name in AppManager.cm.current_model_config.instanced_props.keys():
-				var prop_data = PropData.new()
+				var prop_data: Reference = PropData.new()
 				prop_data.load_from_dict(
 					AppManager.cm.current_model_config.instanced_props[prop_name]
 				)
@@ -112,16 +118,17 @@ func setup() -> void:
 				)
 
 				prop_data.toggle = parent.generate_ui_element(
-					parent.XmlConstants.TOGGLE,
+					parent.XmlConstants.PROP_TOGGLE,
 					{
-						"name": prop_data.prop_path.get_file().trim_suffix(prop_data.prop_path.get_extension()),
+						"name": prop_data.prop_name,
 						"event": "prop_toggled"
 					}
 				)
 				
+				prop_data.toggle.connect("event", parent, "_on_event")
+				
 				AppManager.main.model_display_screen.call_deferred("add_child", prop_data.prop)
 				vbox.call_deferred("add_child", prop_data.toggle)
-
-				parent.instanced_props[prop_name] = prop_data
+				parent.PROPS[prop_name] = prop_data
 		_:
 			AppManager.log_message("Unhandled data bind: %s" % data_bind, true)
