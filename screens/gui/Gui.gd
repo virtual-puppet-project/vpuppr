@@ -318,20 +318,20 @@ func _unhandled_input(event: InputEvent) -> void:
 			model.rotate_y(event.relative.x * mouse_move_strength)
 
 		if should_move_prop:
-			prop_to_move.get_child(0).translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
+			prop_to_move.translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
 		if should_rotate_prop:
-			prop_to_move.rotate_x(event.relative.y * mouse_move_strength)
-			prop_to_move.rotate_y(event.relative.x * mouse_move_strength)
+			prop_to_move.get_child(0).rotate_x(event.relative.y * mouse_move_strength)
+			prop_to_move.get_child(0).rotate_y(event.relative.x * mouse_move_strength)
 	elif event.is_action("scroll_up"):
 		if should_zoom_model:
 			model_parent.translate(Vector3(0.0, 0.0, scroll_strength))
 		if should_zoom_prop:
-			prop_to_move.get_child(0).translate(Vector3(0.0, 0.0, scroll_strength))
+			prop_to_move.translate(Vector3(0.0, 0.0, scroll_strength))
 	elif event.is_action("scroll_down"):
 		if should_zoom_model:
 			model_parent.translate(Vector3(0.0, 0.0, -scroll_strength))
 		if should_zoom_prop:
-			prop_to_move.get_child(0).translate(Vector3(0.0, 0.0, -scroll_strength))
+			prop_to_move.translate(Vector3(0.0, 0.0, -scroll_strength))
 
 ###############################################################################
 # Connections                                                                 #
@@ -487,6 +487,7 @@ func _on_add_custom_prop() -> void:
 		"event": "prop_toggled"
 	})
 	toggle.connect("event", self, "_on_event")
+	AppManager.sb.connect("prop_toggled", toggle, "_on_prop_toggled")
 	AppManager.sb.broadcast_custom_prop_toggle_created(toggle)
 	
 	var prop_data = PropData.new()
@@ -501,6 +502,10 @@ func _on_add_custom_prop() -> void:
 	popup.queue_free()
 
 func _on_prop_toggled(prop_name: String, is_visible: bool) -> void:
+	if not is_visible:
+		should_move_prop = false
+		should_rotate_prop = false
+		should_zoom_prop = false
 	if PROPS.has(prop_name):
 		current_prop_data = PROPS[prop_name]
 		prop_to_move = current_prop_data.prop

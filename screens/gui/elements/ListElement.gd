@@ -126,6 +126,7 @@ func setup() -> void:
 				)
 				
 				prop_data.toggle.connect("event", parent, "_on_event")
+				AppManager.sb.connect("prop_toggled", prop_data.toggle, "_on_prop_toggled")
 				
 				AppManager.main.model_display_screen.call_deferred("add_child", prop_data.prop)
 				vbox.call_deferred("add_child", prop_data.toggle)
