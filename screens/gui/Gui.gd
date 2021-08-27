@@ -23,6 +23,7 @@ const XmlConstants: Dictionary = {
 	"INPUT": "input",
 	"BUTTON": "button",
 	"PRESET": "preset",
+	"COLOR_PICKER": "color_picker",
 
 	# Attribute names
 	"NAME": "name",
@@ -63,6 +64,7 @@ const ToggleElement: Resource = preload("res://screens/gui/elements/ToggleElemen
 const DoubleToggleElement: Resource = preload("res://screens/gui/elements/DoubleToggleElement.tscn")
 const PropToggleElement: Resource = preload("res://screens/gui/elements/PropToggleElement.tscn")
 const ViewButton: Resource = preload("res://screens/gui/elements/ViewButton.tscn")
+const ColorPickerElement: Resource = preload("res://screens/gui/elements/ColorPickerElement.tscn")
 
 const BaseProp: Resource = preload("res://entities/BaseProp.gd")
 
@@ -143,6 +145,8 @@ func _ready() -> void:
 	AppManager.sb.connect("gaze_strength", self, "_on_gaze_strength")
 
 	# Features callbacks
+	AppManager.sb.connect("main_light", self, "_on_main_light")
+	AppManager.sb.connect("environment", self, "_on_environment")
 
 	AppManager.sb.connect("add_custom_prop", self, "_on_add_custom_prop")
 
@@ -230,7 +234,6 @@ func _ready() -> void:
 							base_view.set_script(script)
 					_:
 						var element: Control = generate_ui_element(data.node_name, data.data)
-						element.connect("event", self, "_on_event")
 						match current_view:
 							XmlConstants.LEFT:
 								left.vbox.call_deferred("add_child", element)
@@ -452,6 +455,20 @@ func _on_gaze_strength(value: float) -> void:
 
 # Features
 
+# Almost the same logic as prop toggled
+func _on_main_light(is_visible: bool) -> void:
+	if not is_visible:
+		should_move_prop = false
+		should_rotate_prop = false
+		should_zoom_prop = false
+
+# Almost the same logic as prop toggled
+func _on_environment(is_visible: bool) -> void:
+	if not is_visible:
+		should_move_prop = false
+		should_rotate_prop = false
+		should_zoom_prop = false
+
 func _on_add_custom_prop() -> void:
 	var popup: FileDialog = FilePopup.instance()
 	add_child(popup)
@@ -486,8 +503,6 @@ func _on_add_custom_prop() -> void:
 		"name": final_prop_name,
 		"event": "prop_toggled"
 	})
-	toggle.connect("event", self, "_on_event")
-	AppManager.sb.connect("prop_toggled", toggle, "_on_prop_toggled")
 	AppManager.sb.broadcast_custom_prop_toggle_created(toggle)
 	
 	var prop_data = PropData.new()
@@ -567,17 +582,28 @@ func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 						AppManager.log_message("Unhandled list type %s" % data[XmlConstants.TYPE])
 		XmlConstants.TOGGLE:
 			result = ToggleElement.instance()
+			result.connect("event", self, "_on_event")
 		XmlConstants.DOUBLE_TOGGLE:
 			result = DoubleToggleElement.instance()
+			result.connect("event", self, "_on_event")
+			AppManager.sb.connect("bone_toggled", result, "_on_bone_toggled")
 		XmlConstants.PROP_TOGGLE:
 			result = PropToggleElement.instance()
 			result.prop_name = data["name"]
+
+			result.connect("event", self, "_on_event")
+			AppManager.sb.connect("prop_toggled", result, "_on_prop_toggled")
 		XmlConstants.INPUT:
 			result = InputElement.instance()
 			if data.has(XmlConstants.TYPE):
 				result.data_type = data[XmlConstants.TYPE]
+			result.connect("event", self, "_on_event")
 		XmlConstants.BUTTON:
 			result = ButtonElement.instance()
+			result.connect("event", self, "_on_event")
+		XmlConstants.COLOR_PICKER:
+			result = ColorPicker.instance()
+			result.connect("event", self, "_on_event")
 		_:
 			AppManager.log_message("Unhandled tag_name: %s" % tag_name)
 			return result

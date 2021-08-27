@@ -22,10 +22,6 @@ func _on_custom_prop_toggle_created(value: BaseElement) -> void:
 	vbox.call_deferred("add_child", value)
 
 func _load_prop_information(prop_name: String, is_visible: bool) -> void:
-	if not parent.PROPS.has(prop_name):
-		return
-
-	var data: Reference = parent.PROPS[prop_name]
 	for c in vbox.get_children():
 		c.queue_free()
 	
@@ -34,8 +30,103 @@ func _load_prop_information(prop_name: String, is_visible: bool) -> void:
 
 	yield(get_tree(), "idle_frame")
 
+	if parent.PROPS.has(prop_name):
+		var data: Reference = parent.PROPS[prop_name]
+
+		# var name_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.LABEL, {
+		# 	"name": data.prop_name
+		# })
+		# vbox.call_deferred("add_child", name_elem)
+
+		# var move_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.TOGGLE, {
+		# 	"name": "Move",
+		# 	"event": "move_prop"
+		# })
+		# vbox.call_deferred("add_child", move_elem)
+
+		# var rotate_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.TOGGLE, {
+		# 	"name": "Rotate",
+		# 	"event": "rotate_prop"
+		# })
+		# vbox.call_deferred("add_child", rotate_elem)
+
+		# var zoom_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.TOGGLE, {
+		# 	"name": "Zoom",
+		# 	"event": "zoom_prop"
+		# })
+		# vbox.call_deferred("add_child", zoom_elem)
+		_generate_prop_manipulation_elements(data.prop_name)
+	elif prop_name == "Main Light":
+		# var name_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.LABEL, {
+		# 	"name": prop_name
+		# })
+		# vbox.call_deferred("add_child", name_elem)
+
+		# var move_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.TOGGLE, {
+		# 	"name": "Move",
+		# 	"event": "move_prop"
+		# })
+		# vbox.call_deferred("add_child", move_elem)
+
+		# var rotate_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.TOGGLE, {
+		# 	"name": "Rotate",
+		# 	"event": "rotate_prop"
+		# })
+		# vbox.call_deferred("add_child", rotate_elem)
+
+		# var zoom_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.TOGGLE, {
+		# 	"name": "Zoom",
+		# 	"event": "zoom_prop"
+		# })
+		# vbox.call_deferred("add_child", zoom_elem)
+		_generate_prop_manipulation_elements(prop_name)
+
+		# for key in AppManager.cm.current_model_config.main_light.keys():
+		# 	var builtin_type = typeof(AppManager.cm.current_model_config.main_light[key])
+		# 	var xml_type: String
+		# 	var data_type: String = ""
+		# 	match builtin_type:
+		# 		TYPE_REAL:
+		# 			xml_type = parent.XmlConstants.INPUT
+		# 			data_type = "float"
+		# 		TYPE_COLOR:
+		# 			xml_type = parent.XmlConstants.COLOR_PICKER
+		# 		TYPE_BOOL:
+		# 			xml_type = parent.XmlConstants.TOGGLE
+		# 		TYPE_STRING:
+		# 			xml_type = parent.XmlConstants.INPUT
+		# 			data_type = "string"
+		# 		_:
+		# 			AppManager.log_mesasge("Unhandled type: %d" % builtin_type, true)
+
+		# 	var elem: BaseElement = parent.generate_ui_element(xml_type, {
+		# 		"name": key,
+		# 		"event": key,
+		# 		"type": data_type
+		# 	})
+
+		# 	vbox.call_deferred("add_child", elem)
+
+		# 	yield(elem, "ready")
+
+		# 	elem.set_value(AppManager.cm.current_model_config.main_light[key])
+
+		yield(_generate_builtin_prop_elements("main_light"), "completed")
+	elif prop_name == "Environment":
+		_generate_prop_manipulation_elements(prop_name)
+		yield(_generate_builtin_prop_elements("world_environment"), "completed")
+	else:
+		AppManager.log_message("Unhandled prop_name: %s" % prop_name, true)
+
+# Presets
+
+###############################################################################
+# Private functions                                                           #
+###############################################################################
+
+func _generate_prop_manipulation_elements(prop_name: String) -> void:
 	var name_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.LABEL, {
-		"name": data.prop_name
+		"name": prop_name
 	})
 	vbox.call_deferred("add_child", name_elem)
 
@@ -43,28 +134,50 @@ func _load_prop_information(prop_name: String, is_visible: bool) -> void:
 		"name": "Move",
 		"event": "move_prop"
 	})
-	move_elem.connect("event", parent, "_on_event")
 	vbox.call_deferred("add_child", move_elem)
 
 	var rotate_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.TOGGLE, {
 		"name": "Rotate",
 		"event": "rotate_prop"
 	})
-	rotate_elem.connect("event", parent, "_on_event")
 	vbox.call_deferred("add_child", rotate_elem)
 
 	var zoom_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.TOGGLE, {
 		"name": "Zoom",
 		"event": "zoom_prop"
 	})
-	zoom_elem.connect("event", parent, "_on_event")
 	vbox.call_deferred("add_child", zoom_elem)
 
-# Presets
+func _generate_builtin_prop_elements(builtin_name: String) -> void:
+	for key in AppManager.cm.current_model_config.get(builtin_name).keys():
+		var builtin_type = typeof(AppManager.cm.current_model_config.get("builtin_name")[key])
+		var xml_type: String
+		var data_type: String = ""
+		match builtin_type:
+			TYPE_REAL:
+				xml_type = parent.XmlConstants.INPUT
+				data_type = "float"
+			TYPE_COLOR:
+				xml_type = parent.XmlConstants.COLOR_PICKER
+			TYPE_BOOL:
+				xml_type = parent.XmlConstants.TOGGLE
+			TYPE_STRING:
+				xml_type = parent.XmlConstants.INPUT
+				data_type = "string"
+			_:
+				AppManager.log_mesasge("Unhandled type: %d" % builtin_type, true)
 
-###############################################################################
-# Private functions                                                           #
-###############################################################################
+		var elem: BaseElement = parent.generate_ui_element(xml_type, {
+			"name": key,
+			"event": key,
+			"type": data_type
+		})
+
+		vbox.call_deferred("add_child", elem)
+
+		yield(elem, "ready")
+
+		elem.set_value(AppManager.cm.current_model_config.get("builtin_name")[key])
 
 ###############################################################################
 # Public functions                                                            #
@@ -96,9 +209,6 @@ func setup() -> void:
 					elem.toggle1_value = true
 
 				elem.toggle2_label = parent.DoubleToggleConstants.POSE
-
-				elem.connect("event", parent, "_on_event")
-				AppManager.sb.connect("bone_toggled", elem, "_on_bone_toggled")
 				
 				vbox.call_deferred("add_child", elem)
 		"instanced_props":
@@ -125,7 +235,6 @@ func setup() -> void:
 					}
 				)
 				
-				prop_data.toggle.connect("event", parent, "_on_event")
 				AppManager.sb.connect("prop_toggled", prop_data.toggle, "_on_prop_toggled")
 				
 				AppManager.main.model_display_screen.call_deferred("add_child", prop_data.prop)

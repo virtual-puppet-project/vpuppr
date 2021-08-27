@@ -81,6 +81,16 @@ func broadcast_gaze_strength(value: bool) -> void:
 
 # Features gui
 
+# Uses the same signal functionality as prop_toggled
+signal main_light(value)
+func broadcast_main_light(value: Array) -> void:
+	emit_signal("main_light", value[1])
+
+# Uses the same signal functionality as prop_toggled
+signal environment(value)
+func broadcast_environment(value: Array) -> void:
+	emit_signal("environment", value[1])
+
 signal add_custom_prop()
 func broadcast_add_custom_prop() -> void:
 	emit_signal("add_custom_prop")
@@ -106,6 +116,10 @@ func broadcast_rotate_prop(value: bool) -> void:
 signal zoom_prop(prop_name)
 func broadcast_zoom_prop(value: bool) -> void:
 	emit_signal("zoom_prop", value)
+
+signal light_color(color)
+func broacast_light_color(value: Color) -> void:
+	emit_signal("light_color", value)
 
 # File select popup
 
