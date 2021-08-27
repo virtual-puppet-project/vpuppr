@@ -89,15 +89,27 @@ class ConfigData:
 	###
 	# Feature
 	###
-	var main_light_light_color := Color.white
-	var main_light_energy: float = 0.7
-	var main_light_light_indirect_energy: float = 1.0
-	var main_light_light_specular: float = 0.0
-	var main_light_shadow_enabled: float = true
+	var main_light: Dictionary = {
+		"light_color": Color.white,
+		"energy": 0.7,
+		"light_indirect_energy": 1.0,
+		"light_specular": 0.0,
+		"shadow_enabled": true
+	}
+	# var main_light_light_color := Color.white
+	# var main_light_energy: float = 0.7
+	# var main_light_light_indirect_energy: float = 1.0
+	# var main_light_light_specular: float = 0.0
+	# var main_light_shadow_enabled: float = true
 
-	var world_environment_ambient_light_color := Color.black
-	var world_environment_ambient_light_energy: float = 0.5
-	var world_environment_ambient_light_sky_contribution: float = 1.0
+	var world_environment: Dictionary = {
+		"ambient_light_color": Color.black,
+		"ambient_light_energy": 0.5,
+		"ambient_light_sky_contribution": 1.0
+	}
+	# var world_environment_ambient_light_color := Color.black
+	# var world_environment_ambient_light_energy: float = 0.5
+	# var world_environment_ambient_light_sky_contribution: float = 1.0
 
 	var instanced_props: Dictionary = {} # String, Dictionary (PropData)
 
@@ -120,11 +132,20 @@ class ConfigData:
 					TYPE_TRANSFORM:
 						i_value = JSONUtil.transform_to_dictionary(i_value)
 					TYPE_DICTIONARY:
-						if i_value.size() > 0:
-							# Handle dictionaries of transforms
-							if typeof(i_value[i_value.keys()[0]]) == TYPE_TRANSFORM:
-								for key in i_value.keys():
+						for key in i_value.keys():
+							match typeof(i_value[key]):
+								TYPE_TRANSFORM:
 									i_value[key] = JSONUtil.transform_to_dictionary(i_value[key])
+								TYPE_COLOR:
+									i_value[key] = JSONUtil.color_to_dictionary(i_value[key])
+								_:
+									# Do nothing
+									pass
+						# if i_value.size() > 0:
+						# 	# Handle dictionaries of transforms
+						# 	if typeof(i_value[i_value.keys()[0]]) == TYPE_TRANSFORM:
+						# 		for key in i_value.keys():
+						# 			i_value[key] = JSONUtil.transform_to_dictionary(i_value[key])
 					_:
 						# Do nothing
 						pass
