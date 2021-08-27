@@ -26,6 +26,14 @@ func _exit_tree() -> void:
 func _on_toggled(button_state: bool) -> void:
 	emit_signal("event", [event_name, prop_name, button_state])
 
+func _on_prop_toggled(p_prop_name: String, is_visible: bool) -> void:
+	if not is_visible:
+		return
+	if p_prop_name != prop_name:
+		toggle.disconnect("toggled", self, "_on_toggled")
+		toggle.pressed = false
+		toggle.connect("toggled", self, "_on_toggled")
+
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
