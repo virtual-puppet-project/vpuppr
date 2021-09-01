@@ -1,6 +1,7 @@
 extends BaseElement
 
 const PropData: Resource = preload("res://screens/gui/PropData.gd")
+const PresetData: Resource = preload("res://screens/gui/PresetData.gd")
 
 onready var label: Label = $VBoxContainer/Label
 onready var vbox: VBoxContainer = $VBoxContainer
@@ -42,6 +43,15 @@ func _load_prop_information(prop_name: String, is_visible: bool) -> void:
 		AppManager.log_message("Unhandled prop_name: %s" % prop_name, true)
 
 # Presets
+
+func _load_preset_information(preset_name: String, is_visible: bool) -> void:
+	for c in vbox.get_children():
+		c.queue_free()
+
+	if not is_visible:
+		return
+
+	yield(get_tree(), "idle_frame")
 
 ###############################################################################
 # Private functions                                                           #
@@ -168,5 +178,26 @@ func setup() -> void:
 				AppManager.main.model_display_screen.call_deferred("add_child", prop_data.prop)
 				vbox.call_deferred("add_child", prop_data.toggle)
 				parent.PROPS[prop_name] = prop_data
+		"config_data":
+			for preset_name in AppManager.cm.metadata_config.config_data.keys():
+				var config = AppManager.cm.load_config(AppManager.cm.metadata_config.data[preset_name])
+
+				var preset_data: Reference = PresetData.instance()
+
+				preset_data.config_name = config.config_name
+				preset_data.description = config.description
+				preset_data.hotkey = config.hotkey
+				preset_data.notes = config.notes
+				preset_data.is_default_for_model = config.is_default_for_model
+
+				var preset_toggle = parent.generate_ui_element(
+					parent.XmlConstants.PRESET_TOGGLE,
+					{
+						"name": preset_data.config_name,
+						"event": "preset_toggled"
+					}
+				)
+
+				# TODO finish adding toggles
 		_:
 			AppManager.log_message("Unhandled data bind: %s" % data_bind, true)

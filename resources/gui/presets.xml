@@ -1,7 +1,6 @@
 <view name="Presets">
     <left>
-
-        <list name="Saved Presets"/>
+        <list name="Saved Presets" data="config_data"/>
     </left>
     <right>
         <list name="Preset Info" type="preset_receiver"/>

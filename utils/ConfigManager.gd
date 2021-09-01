@@ -264,7 +264,25 @@ func setup() -> void:
 
 	has_loaded_metadata = true
 
-func load_config(model_path: String) -> void:
+func load_config(model_path: String) -> ConfigData:
+	var model_name: String = model_path.get_file()
+	var full_path: String = CONFIG_FORMAT % [metadata_path, model_name]
+
+	AppManager.log_message("Begin loading config for %s" % full_path)
+
+	var config = ConfigData.new()
+
+	var dir := Directory.new()
+	if not dir.file_exists(full_path):
+		AppManager.log_message("%s does not exist" % full_path)
+		config.config_name = model_name
+		config.model_name = model_name
+		config.model_path = model_path
+
+	return config
+
+# TODO this is very similar to load_config
+func load_config_and_set_as_current(model_path: String) -> void:
 	var model_name: String = model_path.get_file()
 	var full_path: String = CONFIG_FORMAT % [metadata_path, model_name]
 
