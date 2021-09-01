@@ -3,7 +3,7 @@ extends Reference
 """
 PropData
 
-Only used for custom props
+Only used for custom props. Used for passing around information
 """
 
 var prop_name: String
@@ -14,8 +14,6 @@ var prop_path: String
 
 var parent_transform: Transform
 var child_transform: Transform
-
-var data: Dictionary = {}
 
 ###############################################################################
 # Builtin functions                                                           #

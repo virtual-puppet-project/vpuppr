@@ -18,14 +18,18 @@ const XmlConstants: Dictionary = {
 	"LABEL": "label",
 	"LIST": "list",
 	"TOGGLE": "toggle",
-	"DOUBLE_TOGGLE": "double_toggle",
-	"PROP_TOGGLE": "prop_toggle",
 	"INPUT": "input",
-	"PROP_INPUT": "prop_input",
 	"BUTTON": "button",
 	"PRESET": "preset",
 	"COLOR_PICKER": "color_picker",
+
+	"DOUBLE_TOGGLE": "double_toggle",
+	
+	"PROP_INPUT": "prop_input",
+	"PROP_TOGGLE": "prop_toggle",
 	"PROP_COLOR_PICKER": "prop_color_picker",
+	
+	"PRESET_TOGGLE": "preset_toggle",
 
 	# Attribute names
 	"NAME": "name",
@@ -70,6 +74,8 @@ const ColorPickerElement: Resource = preload("res://screens/gui/elements/ColorPi
 const PropInputElement: Resource = preload("res://screens/gui/elements/PropInputElement.tscn")
 const PropToggleElement: Resource = preload("res://screens/gui/elements/PropToggleElement.tscn")
 const PropColorPickerElement: Resource = preload("res://screens/gui/elements/PropColorPickerElement.tscn")
+
+const PresetToggleElement: Resource = preload("res://screens/gui/elements/PresetToggleElement.tscn")
 
 const BaseProp: Resource = preload("res://entities/BaseProp.gd")
 
@@ -577,6 +583,8 @@ func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 				match data[XmlConstants.TYPE]:
 					ListTypes.PROP_RECEIVER:
 						AppManager.sb.connect("prop_toggled", result, "_load_prop_information")
+					ListTypes.PRESET_RECEIVER:
+						AppManager.sb.connect("preset_toggled", result, "_load_preset_information")
 					_:
 						AppManager.log_message("Unhandled list type %s" % data[XmlConstants.TYPE])
 		XmlConstants.TOGGLE:
@@ -612,6 +620,9 @@ func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 		XmlConstants.PROP_COLOR_PICKER:
 			result = PropColorPickerElement.instance()
 			result.prop_name = data["name"]
+			result.connect("event", self, "_on_event")
+		XmlConstants.PRESET_TOGGLE:
+			result = PresetToggleElement.instance()
 			result.connect("event", self, "_on_event")
 		_:
 			AppManager.log_message("Unhandled tag_name: %s" % tag_name)

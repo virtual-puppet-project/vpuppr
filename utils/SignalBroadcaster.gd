@@ -115,6 +115,12 @@ signal world_environment(prop_name, value)
 func broadcast_world_environment(value: Array) -> void:
 	emit_signal("world_environment", value[0], value[1])
 
+# Presets
+
+signal preset_toggled(preset_name, value)
+func broadcast_preset_toggled(value: Array) -> void:
+	emit_signal("preset_toggled", value[0], value[1])
+
 # File select popup
 
 signal file_to_load_changed(file_path)
@@ -123,7 +129,7 @@ func set_file_to_load(file_path: String) -> void:
 	# Grab the full model path to allow setting model as default
 	AppManager.current_model_path = file_path
 
-	AppManager.cm.load_config(file_path)
+	AppManager.cm.load_config_and_set_as_current(file_path)
 
 	emit_signal("file_to_load_changed", file_path)
 
