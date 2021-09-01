@@ -16,8 +16,14 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
 margin_left = 10.0
 margin_top = 10.0
 margin_right = 450.0
 margin_bottom = 870.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
+margin_right = 440.0
+margin_bottom = 860.0
+size_flags_horizontal = 3
+size_flags_vertical = 3

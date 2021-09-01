@@ -21,9 +21,11 @@ const XmlConstants: Dictionary = {
 	"DOUBLE_TOGGLE": "double_toggle",
 	"PROP_TOGGLE": "prop_toggle",
 	"INPUT": "input",
+	"PROP_INPUT": "prop_input",
 	"BUTTON": "button",
 	"PRESET": "preset",
 	"COLOR_PICKER": "color_picker",
+	"PROP_COLOR_PICKER": "prop_color_picker",
 
 	# Attribute names
 	"NAME": "name",
@@ -62,9 +64,12 @@ const LabelElement: Resource = preload("res://screens/gui/elements/LabelElement.
 const ListElement: Resource = preload("res://screens/gui/elements/ListElement.tscn")
 const ToggleElement: Resource = preload("res://screens/gui/elements/ToggleElement.tscn")
 const DoubleToggleElement: Resource = preload("res://screens/gui/elements/DoubleToggleElement.tscn")
-const PropToggleElement: Resource = preload("res://screens/gui/elements/PropToggleElement.tscn")
 const ViewButton: Resource = preload("res://screens/gui/elements/ViewButton.tscn")
 const ColorPickerElement: Resource = preload("res://screens/gui/elements/ColorPickerElement.tscn")
+
+const PropInputElement: Resource = preload("res://screens/gui/elements/PropInputElement.tscn")
+const PropToggleElement: Resource = preload("res://screens/gui/elements/PropToggleElement.tscn")
+const PropColorPickerElement: Resource = preload("res://screens/gui/elements/PropColorPickerElement.tscn")
 
 const BaseProp: Resource = preload("res://entities/BaseProp.gd")
 
@@ -146,7 +151,7 @@ func _ready() -> void:
 
 	# Features callbacks
 	AppManager.sb.connect("main_light", self, "_on_main_light")
-	AppManager.sb.connect("environment", self, "_on_environment")
+	AppManager.sb.connect("world_environment", self, "_on_environment")
 
 	AppManager.sb.connect("add_custom_prop", self, "_on_add_custom_prop")
 
@@ -455,19 +460,13 @@ func _on_gaze_strength(value: float) -> void:
 
 # Features
 
-# Almost the same logic as prop toggled
-func _on_main_light(is_visible: bool) -> void:
-	if not is_visible:
-		should_move_prop = false
-		should_rotate_prop = false
-		should_zoom_prop = false
+func _on_main_light(prop_name: String, value) -> void:
+	AppManager.main.main_light.get_child(0).set(prop_name, value)
+	AppManager.cm.current_model_config.main_light[prop_name] = value
 
-# Almost the same logic as prop toggled
-func _on_environment(is_visible: bool) -> void:
-	if not is_visible:
-		should_move_prop = false
-		should_rotate_prop = false
-		should_zoom_prop = false
+func _on_environment(prop_name: String, value) -> void:
+	AppManager.main.world_environment.environment.set(prop_name, value)
+	AppManager.cm.current_model_config.world_environment[prop_name] = value
 
 func _on_add_custom_prop() -> void:
 	var popup: FileDialog = FilePopup.instance()
@@ -517,7 +516,7 @@ func _on_add_custom_prop() -> void:
 	popup.queue_free()
 
 func _on_prop_toggled(prop_name: String, is_visible: bool) -> void:
-	if not is_visible:
+	if (not is_visible or prop_name == "Main Light" or prop_name == "World Environment"):
 		should_move_prop = false
 		should_rotate_prop = false
 		should_zoom_prop = false
@@ -598,11 +597,21 @@ func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 			if data.has(XmlConstants.TYPE):
 				result.data_type = data[XmlConstants.TYPE]
 			result.connect("event", self, "_on_event")
+		XmlConstants.PROP_INPUT:
+			result = PropInputElement.instance()
+			result.prop_name = data["name"]
+			if data.has(XmlConstants.TYPE):
+				result.data_type = data[XmlConstants.TYPE]
+			result.connect("event", self, "_on_event")
 		XmlConstants.BUTTON:
 			result = ButtonElement.instance()
 			result.connect("event", self, "_on_event")
 		XmlConstants.COLOR_PICKER:
-			result = ColorPicker.instance()
+			result = ColorPickerElement.instance()
+			result.connect("event", self, "_on_event")
+		XmlConstants.PROP_COLOR_PICKER:
+			result = PropColorPickerElement.instance()
+			result.prop_name = data["name"]
 			result.connect("event", self, "_on_event")
 		_:
 			AppManager.log_message("Unhandled tag_name: %s" % tag_name)

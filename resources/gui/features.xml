@@ -1,8 +1,8 @@
 <view name="Features">
     <left>
         <label name="Built-in Props"/>
-        <prop_toggle name="Main Light" event="main_light"/>
-        <prop_toggle name="Environment" event="environment"/>
+        <prop_toggle name="Main Light" event="prop_toggled"/>
+        <prop_toggle name="Environment" event="prop_toggled"/>
 
         <button name="Add Custom Prop" event="add_custom_prop"/>
         <list name="Custom Props" data="instanced_props"/>

@@ -32,88 +32,11 @@ func _load_prop_information(prop_name: String, is_visible: bool) -> void:
 
 	if parent.PROPS.has(prop_name):
 		var data: Reference = parent.PROPS[prop_name]
-
-		# var name_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.LABEL, {
-		# 	"name": data.prop_name
-		# })
-		# vbox.call_deferred("add_child", name_elem)
-
-		# var move_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.TOGGLE, {
-		# 	"name": "Move",
-		# 	"event": "move_prop"
-		# })
-		# vbox.call_deferred("add_child", move_elem)
-
-		# var rotate_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.TOGGLE, {
-		# 	"name": "Rotate",
-		# 	"event": "rotate_prop"
-		# })
-		# vbox.call_deferred("add_child", rotate_elem)
-
-		# var zoom_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.TOGGLE, {
-		# 	"name": "Zoom",
-		# 	"event": "zoom_prop"
-		# })
-		# vbox.call_deferred("add_child", zoom_elem)
 		_generate_prop_manipulation_elements(data.prop_name)
 	elif prop_name == "Main Light":
-		# var name_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.LABEL, {
-		# 	"name": prop_name
-		# })
-		# vbox.call_deferred("add_child", name_elem)
-
-		# var move_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.TOGGLE, {
-		# 	"name": "Move",
-		# 	"event": "move_prop"
-		# })
-		# vbox.call_deferred("add_child", move_elem)
-
-		# var rotate_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.TOGGLE, {
-		# 	"name": "Rotate",
-		# 	"event": "rotate_prop"
-		# })
-		# vbox.call_deferred("add_child", rotate_elem)
-
-		# var zoom_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.TOGGLE, {
-		# 	"name": "Zoom",
-		# 	"event": "zoom_prop"
-		# })
-		# vbox.call_deferred("add_child", zoom_elem)
-		_generate_prop_manipulation_elements(prop_name)
-
-		# for key in AppManager.cm.current_model_config.main_light.keys():
-		# 	var builtin_type = typeof(AppManager.cm.current_model_config.main_light[key])
-		# 	var xml_type: String
-		# 	var data_type: String = ""
-		# 	match builtin_type:
-		# 		TYPE_REAL:
-		# 			xml_type = parent.XmlConstants.INPUT
-		# 			data_type = "float"
-		# 		TYPE_COLOR:
-		# 			xml_type = parent.XmlConstants.COLOR_PICKER
-		# 		TYPE_BOOL:
-		# 			xml_type = parent.XmlConstants.TOGGLE
-		# 		TYPE_STRING:
-		# 			xml_type = parent.XmlConstants.INPUT
-		# 			data_type = "string"
-		# 		_:
-		# 			AppManager.log_mesasge("Unhandled type: %d" % builtin_type, true)
-
-		# 	var elem: BaseElement = parent.generate_ui_element(xml_type, {
-		# 		"name": key,
-		# 		"event": key,
-		# 		"type": data_type
-		# 	})
-
-		# 	vbox.call_deferred("add_child", elem)
-
-		# 	yield(elem, "ready")
-
-		# 	elem.set_value(AppManager.cm.current_model_config.main_light[key])
-
+		# _generate_prop_manipulation_elements(prop_name)
 		yield(_generate_builtin_prop_elements("main_light"), "completed")
 	elif prop_name == "Environment":
-		_generate_prop_manipulation_elements(prop_name)
 		yield(_generate_builtin_prop_elements("world_environment"), "completed")
 	else:
 		AppManager.log_message("Unhandled prop_name: %s" % prop_name, true)
@@ -150,26 +73,26 @@ func _generate_prop_manipulation_elements(prop_name: String) -> void:
 
 func _generate_builtin_prop_elements(builtin_name: String) -> void:
 	for key in AppManager.cm.current_model_config.get(builtin_name).keys():
-		var builtin_type = typeof(AppManager.cm.current_model_config.get("builtin_name")[key])
+		var builtin_type = typeof(AppManager.cm.current_model_config.get(builtin_name)[key])
 		var xml_type: String
 		var data_type: String = ""
 		match builtin_type:
 			TYPE_REAL:
-				xml_type = parent.XmlConstants.INPUT
+				xml_type = parent.XmlConstants.PROP_INPUT
 				data_type = "float"
 			TYPE_COLOR:
-				xml_type = parent.XmlConstants.COLOR_PICKER
+				xml_type = parent.XmlConstants.PROP_COLOR_PICKER
 			TYPE_BOOL:
-				xml_type = parent.XmlConstants.TOGGLE
+				xml_type = parent.XmlConstants.PROP_TOGGLE
 			TYPE_STRING:
-				xml_type = parent.XmlConstants.INPUT
+				xml_type = parent.XmlConstants.PROP_INPUT
 				data_type = "string"
 			_:
 				AppManager.log_mesasge("Unhandled type: %d" % builtin_type, true)
 
 		var elem: BaseElement = parent.generate_ui_element(xml_type, {
 			"name": key,
-			"event": key,
+			"event": builtin_name,
 			"type": data_type
 		})
 
@@ -177,7 +100,12 @@ func _generate_builtin_prop_elements(builtin_name: String) -> void:
 
 		yield(elem, "ready")
 
-		elem.set_value(AppManager.cm.current_model_config.get("builtin_name")[key])
+		# TODO temporary fix?
+		if xml_type == parent.XmlConstants.PROP_TOGGLE:
+			elem.toggle.disconnect("toggled", elem, "_on_toggled")
+		elem.set_value(AppManager.cm.current_model_config.get(builtin_name)[key])
+		if xml_type == parent.XmlConstants.PROP_TOGGLE:
+			elem.toggle.connect("toggled", elem, "_on_toggled")
 
 ###############################################################################
 # Public functions                                                            #

@@ -1,6 +1,6 @@
 extends VBoxContainer
 
-onready var vbox: VBoxContainer = $ContentContainer/VBoxContainer
+onready var vbox: VBoxContainer = $ContentContainer/ScrollContainer/VBoxContainer
 
 ###############################################################################
 # Builtin functions                                                           #
