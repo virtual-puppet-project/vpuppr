@@ -1,0 +1,27 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://screens/gui/elements/BaseElement.tscn" type="PackedScene" id=1]
+[ext_resource path="res://screens/gui/elements/InputButtonElement.gd" type="Script" id=2]
+
+[node name="PresetInputButton" instance=ExtResource( 1 )]
+script = ExtResource( 2 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." index="0"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 1593.0
+margin_bottom = 893.0
+
+[node name="LineEdit" type="LineEdit" parent="HBoxContainer" index="0"]
+margin_right = 1541.0
+margin_bottom = 886.0
+size_flags_horizontal = 3
+
+[node name="Button" type="Button" parent="HBoxContainer" index="1"]
+margin_left = 1545.0
+margin_right = 1586.0
+margin_bottom = 886.0
+text = "Save"
+__meta__ = {
+"_edit_use_anchors_": false
+}

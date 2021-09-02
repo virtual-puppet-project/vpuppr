@@ -1,34 +1,22 @@
 extends BaseElement
 
-onready var label: Label = $HBoxContainer/VBoxContainer/PresetName
-onready var last_modified_label: Label = $HBoxContainer/VBoxContainer/LastModifiedDate
-
-onready var toggle: CheckButton = $HBoxContainer/CheckButton
-
-var prop_name: String
-var toggle_value: bool = false
+onready var line_edit: LineEdit = $HBoxContainer/LineEdit
+onready var button: Button = $HBoxContainer/Button
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
 func _ready() -> void:
-	label.text = label_text
-	toggle.pressed = toggle_value
-
-	toggle.parent = self
-	toggle.event_name = event_name
-	toggle.item_name = prop_name
+	line_edit.placeholder_text = label_text
+	button.connect("pressed", self, "_on_button_pressed")
 
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
 
-func _on_preset_toggled(p_prop_name: String, is_visible: bool) -> void:
-	if not is_visible:
-		return
-	if p_prop_name != prop_name:
-		toggle.pressed = false
+func _on_button_pressed() -> void:
+	emit_signal("event", [event_name, line_edit.text])
 
 ###############################################################################
 # Private functions                                                           #
@@ -39,7 +27,7 @@ func _on_preset_toggled(p_prop_name: String, is_visible: bool) -> void:
 ###############################################################################
 
 func get_value():
-	return toggle.pressed
+	return line_edit.pressed
 
 func set_value(value) -> void:
-	toggle.pressed = value
+	line_edit.pressed = value
