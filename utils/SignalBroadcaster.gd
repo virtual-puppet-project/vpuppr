@@ -117,6 +117,14 @@ func broadcast_world_environment(value: Array) -> void:
 
 # Presets
 
+signal new_preset(preset_name)
+func broadcast_new_preset(value: String) -> void:
+	emit_signal("new_preset", value)
+
+signal preset_toggle_created(value)
+func broadcast_preset_toggle_created(value: BaseElement) -> void:
+	emit_signal("preset_toggle_created", value)
+
 signal preset_toggled(preset_name, value)
 func broadcast_preset_toggled(value: Array) -> void:
 	emit_signal("preset_toggled", value[0], value[1])

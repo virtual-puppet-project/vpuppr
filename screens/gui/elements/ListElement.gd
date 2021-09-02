@@ -44,6 +44,9 @@ func _load_prop_information(prop_name: String, is_visible: bool) -> void:
 
 # Presets
 
+func _on_preset_toggle_created(value: BaseElement) -> void:
+	vbox.call_deferred("add_child", value)
+
 func _load_preset_information(preset_name: String, is_visible: bool) -> void:
 	for c in vbox.get_children():
 		c.queue_free()
@@ -110,12 +113,7 @@ func _generate_builtin_prop_elements(builtin_name: String) -> void:
 
 		yield(elem, "ready")
 
-		# TODO temporary fix?
-		if xml_type == parent.XmlConstants.PROP_TOGGLE:
-			elem.toggle.disconnect("toggled", elem, "_on_toggled")
 		elem.set_value(AppManager.cm.current_model_config.get(builtin_name)[key])
-		if xml_type == parent.XmlConstants.PROP_TOGGLE:
-			elem.toggle.connect("toggled", elem, "_on_toggled")
 
 ###############################################################################
 # Public functions                                                            #
@@ -179,10 +177,12 @@ func setup() -> void:
 				vbox.call_deferred("add_child", prop_data.toggle)
 				parent.PROPS[prop_name] = prop_data
 		"config_data":
+			if not AppManager.sb.is_connected("preset_toggle_created", self, "_on_preset_toggle_created"):
+				AppManager.sb.connect("preset_toggle_created", self, "_on_preset_toggle_created")
 			for preset_name in AppManager.cm.metadata_config.config_data.keys():
-				var config = AppManager.cm.load_config(AppManager.cm.metadata_config.data[preset_name])
+				var config = AppManager.cm.load_config(AppManager.cm.metadata_config.config_data[preset_name])
 
-				var preset_data: Reference = PresetData.instance()
+				var preset_data: Reference = PresetData.new()
 
 				preset_data.config_name = config.config_name
 				preset_data.description = config.description
@@ -198,6 +198,8 @@ func setup() -> void:
 					}
 				)
 
-				# TODO finish adding toggles
+				AppManager.sb.connect("preset_toggled", preset_toggle, "_on_preset_toggled")
+
+				vbox.call_deferred("add_child", preset_toggle)
 		_:
 			AppManager.log_message("Unhandled data bind: %s" % data_bind, true)

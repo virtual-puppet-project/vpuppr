@@ -4,6 +4,8 @@ signal setup_completed
 
 const PropData: Resource = preload("res://screens/gui/PropData.gd")
 
+const PresetData: Resource = preload("res://screens/gui/PresetData.gd")
+
 const DEFAULT_METADATA: String = "metadata.xml"
 
 const XmlConstants: Dictionary = {
@@ -22,6 +24,7 @@ const XmlConstants: Dictionary = {
 	"BUTTON": "button",
 	"PRESET": "preset",
 	"COLOR_PICKER": "color_picker",
+	"INPUT_BUTTON": "input_button",
 
 	"DOUBLE_TOGGLE": "double_toggle",
 	
@@ -70,6 +73,7 @@ const ToggleElement: Resource = preload("res://screens/gui/elements/ToggleElemen
 const DoubleToggleElement: Resource = preload("res://screens/gui/elements/DoubleToggleElement.tscn")
 const ViewButton: Resource = preload("res://screens/gui/elements/ViewButton.tscn")
 const ColorPickerElement: Resource = preload("res://screens/gui/elements/ColorPickerElement.tscn")
+const InputButtonElement: Resource = preload("res://screens/gui/elements/InputButtonElement.tscn")
 
 const PropInputElement: Resource = preload("res://screens/gui/elements/PropInputElement.tscn")
 const PropToggleElement: Resource = preload("res://screens/gui/elements/PropToggleElement.tscn")
@@ -83,6 +87,7 @@ const GUI_GROUP: String = "Gui"
 const GUI_VIEWS: Dictionary = {} # String: BaseView
 const PROPS: Dictionary = {} # String: PropData
 const PROP_SCRIPT_PATH := "res://entities/BaseProp.gd"
+const PRESET_DATA: Dictionary = {}
 
 onready var button_bar: Control = $ButtonBar
 onready var button_bar_hbox: HBoxContainer = $ButtonBar/HBoxContainer
@@ -138,7 +143,7 @@ func _ready() -> void:
 
 	AppManager.sb.connect("bone_toggled", self, "_on_bone_toggled")
 
-	# Tracking
+	# Tracking callbacks
 
 	AppManager.sb.connect("translation_damp", self, "_on_translation_damp")
 	AppManager.sb.connect("rotation_damp", self, "_on_rotation_damp")
@@ -156,6 +161,7 @@ func _ready() -> void:
 	AppManager.sb.connect("gaze_strength", self, "_on_gaze_strength")
 
 	# Features callbacks
+
 	AppManager.sb.connect("main_light", self, "_on_main_light")
 	AppManager.sb.connect("world_environment", self, "_on_environment")
 
@@ -166,6 +172,11 @@ func _ready() -> void:
 	AppManager.sb.connect("move_prop", self, "_on_move_prop")
 	AppManager.sb.connect("rotate_prop", self, "_on_rotate_prop")
 	AppManager.sb.connect("zoom_prop", self, "_on_zoom_prop")
+
+	# Preset callbacks
+
+	AppManager.sb.connect("new_preset", self, "_on_new_preset")
+	AppManager.sb.connect("preset_toggled", self, "_on_preset_toggled")
 
 	if not OS.is_debug_build():
 		base_path = "%s/%s" % [OS.get_executable_path().get_base_dir(), "resources/gui"]
@@ -539,6 +550,34 @@ func _on_rotate_prop(value: bool) -> void:
 func _on_zoom_prop(value: bool) -> void:
 	should_zoom_prop = value
 
+# Presets
+
+func _on_new_preset(preset_name: String) -> void:
+	# TODO add name validation if there is a naming conflict
+	var toggle: BaseElement = generate_ui_element(XmlConstants.PRESET_TOGGLE, {
+		"name": preset_name,
+		"event": "preset_toggled"
+	})
+	AppManager.sb.broadcast_preset_toggle_created(toggle)
+
+	var preset_data: Reference = PresetData.new()
+	preset_data.config_name = preset_name
+	preset_data.description = ""
+	preset_data.hotkey = ""
+	preset_data.notes = ""
+	preset_data.is_default_for_model = false
+
+	PRESET_DATA[preset_name] = preset_data
+
+	AppManager.cm.current_model_config.config_name = preset_name
+
+	AppManager.cm.save_config()
+
+func _on_preset_toggled(preset_name: String, is_visible: bool) -> void:
+	if not is_visible:
+		pass
+	pass
+
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
@@ -623,6 +662,9 @@ func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 			result.connect("event", self, "_on_event")
 		XmlConstants.PRESET_TOGGLE:
 			result = PresetToggleElement.instance()
+			result.connect("event", self, "_on_event")
+		XmlConstants.INPUT_BUTTON:
+			result = InputButtonElement.instance()
 			result.connect("event", self, "_on_event")
 		_:
 			AppManager.log_message("Unhandled tag_name: %s" % tag_name)
