@@ -85,9 +85,9 @@ const BaseProp: Resource = preload("res://entities/BaseProp.gd")
 
 const GUI_GROUP: String = "Gui"
 const GUI_VIEWS: Dictionary = {} # String: BaseView
+
 const PROPS: Dictionary = {} # String: PropData
 const PROP_SCRIPT_PATH := "res://entities/BaseProp.gd"
-const PRESET_DATA: Dictionary = {}
 
 onready var button_bar: Control = $ButtonBar
 onready var button_bar_hbox: HBoxContainer = $ButtonBar/HBoxContainer
@@ -122,6 +122,9 @@ var prop_to_move: Spatial
 var should_move_prop := false
 var should_rotate_prop := false
 var should_zoom_prop := false
+
+# Presets
+var current_edited_preset: Reference
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -177,6 +180,12 @@ func _ready() -> void:
 
 	AppManager.sb.connect("new_preset", self, "_on_new_preset")
 	AppManager.sb.connect("preset_toggled", self, "_on_preset_toggled")
+
+	AppManager.sb.connect("config_name", self, "_on_config_name")
+	AppManager.sb.connect("description", self, "_on_description")
+	AppManager.sb.connect("hotkey", self, "_on_hotkey")
+	AppManager.sb.connect("notes", self, "_on_notes")
+	AppManager.sb.connect("is_default_for_model", self, "_on_is_default_for_model")
 
 	if not OS.is_debug_build():
 		base_path = "%s/%s" % [OS.get_executable_path().get_base_dir(), "resources/gui"]
@@ -558,6 +567,7 @@ func _on_new_preset(preset_name: String) -> void:
 		"name": preset_name,
 		"event": "preset_toggled"
 	})
+	toggle.preset_name = preset_name
 	AppManager.sb.broadcast_preset_toggle_created(toggle)
 
 	var preset_data: Reference = PresetData.new()
@@ -567,8 +577,6 @@ func _on_new_preset(preset_name: String) -> void:
 	preset_data.notes = ""
 	preset_data.is_default_for_model = false
 
-	PRESET_DATA[preset_name] = preset_data
-
 	AppManager.cm.current_model_config.config_name = preset_name
 
 	AppManager.cm.save_config()
@@ -576,7 +584,27 @@ func _on_new_preset(preset_name: String) -> void:
 func _on_preset_toggled(preset_name: String, is_visible: bool) -> void:
 	if not is_visible:
 		pass
-	pass
+	current_edited_preset = AppManager.cm.load_config(preset_name)
+
+func _on_config_name(config_name: String) -> void:
+	current_edited_preset.config_name = config_name
+	AppManager.cm.save_config(current_edited_preset)
+
+func _on_description(description: String) -> void:
+	current_edited_preset.description = description
+	AppManager.cm.save_config(current_edited_preset)
+
+func _on_hotkey(hotkey: String) -> void:
+	current_edited_preset.hotkey = hotkey
+	AppManager.cm.save_config(current_edited_preset)
+
+func _on_notes(notes: String) -> void:
+	current_edited_preset.notes = notes
+	AppManager.cm.save_config(current_edited_preset)
+
+func _on_is_default_for_model(value: bool) -> void:
+	current_edited_preset.is_default_for_model = value
+	AppManager.cm.save_config(current_edited_preset)
 
 ###############################################################################
 # Private functions                                                           #

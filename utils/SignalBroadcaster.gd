@@ -129,6 +129,27 @@ signal preset_toggled(preset_name, value)
 func broadcast_preset_toggled(value: Array) -> void:
 	emit_signal("preset_toggled", value[0], value[1])
 
+signal config_name(value)
+func broadcast_config_name(value: String) -> void:
+	emit_signal("config_name", value)
+
+# TODO might be worth it to prepend all config signals with 'config'
+signal description(value)
+func broadcast_description(value: String) -> void:
+	emit_signal("description", value)
+
+signal hotkey(value)
+func broadcast_hotkey(value: String) -> void:
+	emit_signal("hotkey", value)
+
+signal notes(value)
+func broadcast_notes(value: String) -> void:
+	emit_signal("notes", value)
+
+signal is_default_for_model(value)
+func broadcast_is_default_for_model(value: bool) -> void:
+	emit_signal("is_default_for_model", value)
+
 # File select popup
 
 signal file_to_load_changed(file_path)

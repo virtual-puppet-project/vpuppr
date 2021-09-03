@@ -23,8 +23,7 @@ func _on_custom_prop_toggle_created(value: BaseElement) -> void:
 	vbox.call_deferred("add_child", value)
 
 func _load_prop_information(prop_name: String, is_visible: bool) -> void:
-	for c in vbox.get_children():
-		c.queue_free()
+	_clear_details()
 	
 	if not is_visible:
 		return
@@ -48,17 +47,35 @@ func _on_preset_toggle_created(value: BaseElement) -> void:
 	vbox.call_deferred("add_child", value)
 
 func _load_preset_information(preset_name: String, is_visible: bool) -> void:
-	for c in vbox.get_children():
-		c.queue_free()
+	_clear_details()
 
 	if not is_visible:
 		return
 
 	yield(get_tree(), "idle_frame")
 
+	if AppManager.cm.metadata_config.config_data.has(preset_name):
+		parent.current_edited_preset = AppManager.cm.load_config(
+			AppManager.cm.metadata_config.config_data[preset_name]
+		)
+		yield(_generate_preset_elements(), "completed")
+	else:
+		AppManager.log_message("Unhandled preset_name: %s" % preset_name, true)
+
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
+
+func _clear_details() -> void:
+	var is_first: bool = true
+
+	for c in vbox.get_children():
+		if is_first:
+			is_first = false
+			continue
+		c.queue_free()
+
+# Features
 
 func _generate_prop_manipulation_elements(prop_name: String) -> void:
 	var name_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.LABEL, {
@@ -115,6 +132,58 @@ func _generate_builtin_prop_elements(builtin_name: String) -> void:
 
 		elem.set_value(AppManager.cm.current_model_config.get(builtin_name)[key])
 
+# Presets
+
+func _generate_preset_elements() -> void:
+	var config_name_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.INPUT, {
+		"name": "Config name",
+		"data": "config_name",
+		"type": "string",
+		"event": "config_name"
+	})
+	vbox.call_deferred("add_child", config_name_elem)
+	yield(config_name_elem, "ready")
+	config_name_elem.set_value(parent.current_edited_preset.config_name)
+
+	var description_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.INPUT, {
+		"name": "Description",
+		"data": "description",
+		"type": "string",
+		"event": "description"
+	})
+	vbox.call_deferred("add_child", description_elem)
+	yield(description_elem, "ready")
+	description_elem.set_value(parent.current_edited_preset.description)
+
+	var hotkey_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.INPUT, {
+		"name": "Hotkey",
+		"data": "hotkey",
+		"type": "string",
+		"event": "hotkey"
+	})
+	vbox.call_deferred("add_child", hotkey_elem)
+	yield(hotkey_elem, "ready")
+	hotkey_elem.set_value(parent.current_edited_preset.hotkey)
+
+	var notes_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.INPUT, {
+		"name": "Notes",
+		"data": "notes",
+		"type": "string",
+		"event": "notes"
+	})
+	vbox.call_deferred("add_child", notes_elem)
+	yield(notes_elem, "ready")
+	notes_elem.set_value(parent.current_edited_preset.notes)
+
+	var is_default_for_model_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.TOGGLE, {
+		"name": "Is default for model",
+		"data": "is_default_for_model",
+		"event": "is_default_for_model"
+	})
+	vbox.call_deferred("add_child", is_default_for_model_elem)
+	yield(is_default_for_model_elem, "ready")
+	is_default_for_model_elem.set_value(parent.current_edited_preset.is_default_for_model)
+
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
@@ -170,6 +239,8 @@ func setup() -> void:
 						"event": "prop_toggled"
 					}
 				)
+
+				prop_data.toggle.prop_name = prop_data.prop_name
 				
 				AppManager.sb.connect("prop_toggled", prop_data.toggle, "_on_prop_toggled")
 				
@@ -182,21 +253,15 @@ func setup() -> void:
 			for preset_name in AppManager.cm.metadata_config.config_data.keys():
 				var config = AppManager.cm.load_config(AppManager.cm.metadata_config.config_data[preset_name])
 
-				var preset_data: Reference = PresetData.new()
-
-				preset_data.config_name = config.config_name
-				preset_data.description = config.description
-				preset_data.hotkey = config.hotkey
-				preset_data.notes = config.notes
-				preset_data.is_default_for_model = config.is_default_for_model
-
 				var preset_toggle = parent.generate_ui_element(
 					parent.XmlConstants.PRESET_TOGGLE,
 					{
-						"name": preset_data.config_name,
+						"name": config.config_name,
 						"event": "preset_toggled"
 					}
 				)
+
+				preset_toggle.preset_name = preset_name
 
 				AppManager.sb.connect("preset_toggled", preset_toggle, "_on_preset_toggled")
 
