@@ -265,7 +265,7 @@ func setup() -> void:
 	has_loaded_metadata = true
 
 func load_config(model_path: String) -> ConfigData:
-	var model_name: String = model_path.get_file()
+	var model_name: String = model_path.get_file().get_basename()
 	var full_path: String = CONFIG_FORMAT % [metadata_path, model_name]
 
 	AppManager.log_message("Begin loading config for %s" % full_path)
@@ -278,6 +278,14 @@ func load_config(model_path: String) -> ConfigData:
 		config.config_name = model_name
 		config.model_name = model_name
 		config.model_path = model_path
+		return config
+
+	var config_file := File.new()
+	if config_file.open(full_path, File.READ) != OK:
+		AppManager.log_message("Unable to open file at path: %s" % full_path)
+		return config
+	config.load_from_json(config_file.get_as_text())
+	config_file.close()
 
 	return config
 
@@ -298,19 +306,24 @@ func load_config_and_set_as_current(model_path: String) -> void:
 		current_model_config.model_path = model_path
 		return
 
-	# var config_file := File.new()
-	# config_file.open(full_path, File.READ)
-	# current_model_config.load_from_json(config_file.get_as_text())
-	current_model_config.load_from_dict(get_config_as_dict(full_path))
-	# config_file.close()
+	var config_file := File.new()
+	config_file.open(full_path, File.READ)
+	current_model_config.load_from_json(config_file.get_as_text())
+	# current_model_config.load_from_dict(get_config_as_dict(full_path))
+	config_file.close()
 
 	AppManager.log_message("Finished loading config")
 
-func save_config() -> void:
+func save_config(p_config: ConfigData = null) -> void:
 	AppManager.log_message("Saving config")
-	var config_name = current_model_config.config_name
-	var model_name = current_model_config.model_name
-	var is_default = current_model_config.is_default_for_model
+
+	var config = p_config
+	if not config:
+		config = current_model_config
+
+	var config_name = config.config_name
+	var model_name = config.model_name
+	var is_default = config.is_default_for_model
 
 	var config_path := CONFIG_FORMAT % [metadata_path, config_name]
 
@@ -320,12 +333,12 @@ func save_config() -> void:
 		if is_default:
 			metadata_config.model_defaults[model_name] = config_name
 	else:
-		current_model_config.is_default_for_model = true
+		config.is_default_for_model = true
 		metadata_config.model_defaults[model_name] = config_name
 	
 	var config_file := File.new()
 	config_file.open(config_path, File.WRITE)
-	config_file.store_string(to_json(current_model_config.get_as_dict()))
+	config_file.store_string(to_json(config.get_as_dict()))
 	config_file.close()
 
 	var metadata_file := File.new()

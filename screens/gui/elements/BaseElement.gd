@@ -3,8 +3,11 @@ extends PanelContainer
 
 signal event(args)
 
+# The display name for the element
 var label_text: String
+# The corresponding signal in the SignalBroadcaster
 var event_name: String
+# The config data
 var data_bind: String
 
 var parent

@@ -5,7 +5,7 @@ onready var last_modified_label: Label = $HBoxContainer/VBoxContainer/LastModifi
 
 onready var toggle: CheckButton = $HBoxContainer/CheckButton
 
-var prop_name: String
+var preset_name: String
 var toggle_value: bool = false
 
 ###############################################################################
@@ -18,16 +18,16 @@ func _ready() -> void:
 
 	toggle.parent = self
 	toggle.event_name = event_name
-	toggle.item_name = prop_name
+	toggle.item_name = preset_name
 
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
 
-func _on_preset_toggled(p_prop_name: String, is_visible: bool) -> void:
+func _on_preset_toggled(p_preset_name: String, is_visible: bool) -> void:
 	if not is_visible:
 		return
-	if p_prop_name != prop_name:
+	if p_preset_name != preset_name:
 		toggle.pressed = false
 
 ###############################################################################
