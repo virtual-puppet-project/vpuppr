@@ -127,6 +127,7 @@ class ConfigData:
 					TYPE_TRANSFORM:
 						i_value = JSONUtil.transform_to_dictionary(i_value)
 					TYPE_DICTIONARY:
+						# Dicts are guaranteed to be only 1 dict nested deep
 						i_value = i_value.duplicate(true)
 						for key in i_value.keys():
 							var i_data_point := DataPoint.new()
@@ -174,6 +175,7 @@ class ConfigData:
 				TYPE_TRANSFORM:
 					data_value = JSONUtil.dictionary_to_transform(data_value)
 				TYPE_DICTIONARY:
+					# Dicts are guaranteed to be only 1 dict nested deep
 					data_value = data_value.duplicate()
 					for key_i in data_value.keys():
 						var i_data_value = data_value[key_i][DataPoint.VALUE_KEY]

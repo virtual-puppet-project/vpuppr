@@ -16,9 +16,6 @@ func _ready() -> void:
 	label.text = label_text
 	toggle.pressed = toggle_value
 
-#	toggle.parent = self
-#	toggle.event_name = event_name
-#	toggle.item_name = preset_name
 	toggle.connect("toggled", self, "_on_toggled")
 
 ###############################################################################

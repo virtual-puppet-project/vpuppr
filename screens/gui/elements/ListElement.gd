@@ -34,7 +34,6 @@ func _load_prop_information(prop_name: String, is_visible: bool) -> void:
 		var data: Reference = parent.PROPS[prop_name]
 		_generate_prop_manipulation_elements(data.prop_name)
 	elif prop_name == "Main Light":
-		# _generate_prop_manipulation_elements(prop_name)
 		yield(_generate_builtin_prop_elements("main_light"), "completed")
 	elif prop_name == "Environment":
 		yield(_generate_builtin_prop_elements("world_environment"), "completed")

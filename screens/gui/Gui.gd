@@ -179,7 +179,7 @@ func _ready() -> void:
 	# Preset callbacks
 
 	AppManager.sb.connect("new_preset", self, "_on_new_preset")
-	AppManager.sb.connect("preset_toggled", self, "_on_preset_toggled")
+#	AppManager.sb.connect("preset_toggled", self, "_on_preset_toggled")
 
 	AppManager.sb.connect("config_name", self, "_on_config_name")
 	AppManager.sb.connect("description", self, "_on_description")
@@ -590,10 +590,10 @@ func _on_new_preset(preset_name: String) -> void:
 
 	AppManager.cm.save_config()
 
-func _on_preset_toggled(preset_name: String, is_visible: bool) -> void:
-	if not is_visible:
-		pass
-	current_edited_preset = AppManager.cm.load_config(preset_name)
+#func _on_preset_toggled(preset_name: String, is_visible: bool) -> void:
+#	if not is_visible:
+#		return
+#	current_edited_preset = AppManager.cm.load_config(preset_name)
 
 func _on_config_name(config_name: String) -> void:
 	current_edited_preset.config_name = config_name
