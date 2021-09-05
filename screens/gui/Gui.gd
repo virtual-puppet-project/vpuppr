@@ -442,6 +442,8 @@ func _on_bone_toggled(bone_name: String, toggle_type: String, toggle_value: bool
 			else:
 				AppManager.cm.current_model_config.mapped_bones.erase(bone_name)
 			model.scan_mapped_bones()
+
+			AppManager.save_config()
 		DoubleToggleConstants.POSE:
 			if toggle_value:
 				should_modify_bone = true
@@ -490,9 +492,13 @@ func _on_main_light(prop_name: String, value) -> void:
 	AppManager.main.main_light.get_child(0).set(prop_name, value)
 	AppManager.cm.current_model_config.main_light[prop_name] = value
 
+	AppManager.save_config()
+
 func _on_environment(prop_name: String, value) -> void:
 	AppManager.main.world_environment.environment.set(prop_name, value)
 	AppManager.cm.current_model_config.world_environment[prop_name] = value
+
+	AppManager.save_config()
 
 func _on_add_custom_prop() -> void:
 	var popup: FileDialog = FilePopup.instance()
@@ -540,6 +546,8 @@ func _on_add_custom_prop() -> void:
 	AppManager.cm.current_model_config.instanced_props[final_prop_name] = prop_data.get_as_dict()
 
 	popup.queue_free()
+
+	AppManager.save_config()
 
 func _on_prop_toggled(prop_name: String, is_visible: bool) -> void:
 	if (not is_visible or prop_name == "Main Light" or prop_name == "World Environment"):
@@ -589,23 +597,28 @@ func _on_preset_toggled(preset_name: String, is_visible: bool) -> void:
 
 func _on_config_name(config_name: String) -> void:
 	current_edited_preset.config_name = config_name
-	AppManager.cm.save_config(current_edited_preset)
+	# AppManager.cm.save_config(current_edited_preset)
+	AppManager.save_config(current_edited_preset)
 
 func _on_description(description: String) -> void:
 	current_edited_preset.description = description
-	AppManager.cm.save_config(current_edited_preset)
+	# AppManager.cm.save_config(current_edited_preset)
+	AppManager.save_config(current_edited_preset)
 
 func _on_hotkey(hotkey: String) -> void:
 	current_edited_preset.hotkey = hotkey
-	AppManager.cm.save_config(current_edited_preset)
+	# AppManager.cm.save_config(current_edited_preset)
+	AppManager.save_config(current_edited_preset)
 
 func _on_notes(notes: String) -> void:
 	current_edited_preset.notes = notes
-	AppManager.cm.save_config(current_edited_preset)
+	# AppManager.cm.save_config(current_edited_preset)
+	AppManager.save_config(current_edited_preset)
 
 func _on_is_default_for_model(value: bool) -> void:
 	current_edited_preset.is_default_for_model = value
-	AppManager.cm.save_config(current_edited_preset)
+	# AppManager.cm.save_config(current_edited_preset)
+	AppManager.save_config(current_edited_preset)
 
 ###############################################################################
 # Private functions                                                           #

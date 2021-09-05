@@ -34,4 +34,4 @@ func get_value():
 	return toggle.pressed
 
 func set_value(value) -> void:
-	toggle.pressed = value
+	toggle.set_pressed_no_signal(value)

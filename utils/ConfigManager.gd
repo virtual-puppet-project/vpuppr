@@ -10,6 +10,9 @@ var metadata_config := Metadata.new()
 
 var has_loaded_metadata := false
 
+const DEBOUNCE_TIME: float = 0.5
+var should_save := false
+
 class Metadata:
 	var default_model_to_load_path: String = ""
 	var default_search_path: String = "/"
@@ -124,6 +127,7 @@ class ConfigData:
 					TYPE_TRANSFORM:
 						i_value = JSONUtil.transform_to_dictionary(i_value)
 					TYPE_DICTIONARY:
+						i_value = i_value.duplicate(true)
 						for key in i_value.keys():
 							match typeof(i_value[key]):
 								TYPE_TRANSFORM:
@@ -133,11 +137,6 @@ class ConfigData:
 								_:
 									# Do nothing
 									pass
-						# if i_value.size() > 0:
-						# 	# Handle dictionaries of transforms
-						# 	if typeof(i_value[i_value.keys()[0]]) == TYPE_TRANSFORM:
-						# 		for key in i_value.keys():
-						# 			i_value[key] = JSONUtil.transform_to_dictionary(i_value[key])
 					_:
 						# Do nothing
 						pass
@@ -243,40 +242,6 @@ func _load_metadata() -> bool:
 	AppManager.log_message("Finished loading metadata")
 
 	return true
-
-func _save_config(p_config: ConfigData = null) -> void:
-	AppManager.log_message("Saving config")
-
-	var config = p_config
-	if not config:
-		config = current_model_config
-
-	var config_name = config.config_name
-	var model_name = config.model_name
-	var is_default = config.is_default_for_model
-
-	var config_path := CONFIG_FORMAT % [metadata_path, config_name]
-
-	metadata_config.config_data[config_name] = config_path
-
-	if metadata_config.model_defaults.has(model_name):
-		if is_default:
-			metadata_config.model_defaults[model_name] = config_name
-	else:
-		config.is_default_for_model = true
-		metadata_config.model_defaults[model_name] = config_name
-	
-	var config_file := File.new()
-	config_file.open(config_path, File.WRITE)
-	config_file.store_string(to_json(config.get_as_dict()))
-	config_file.close()
-
-	var metadata_file := File.new()
-	metadata_file.open("%s/%s" % [metadata_path, METADATA_NAME], File.WRITE)
-	metadata_file.store_string(metadata_config.get_as_json())
-	metadata_file.close()
-
-	AppManager.log_message("Finished saving config")
 
 ###############################################################################
 # Public functions                                                            #

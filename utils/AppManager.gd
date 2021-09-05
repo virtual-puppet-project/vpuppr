@@ -55,6 +55,10 @@ var vrm_mappings: VRMMappings
 var default_load_path: String = "/"
 var should_track_eye: float = 1.0
 
+# Debounce
+const DEBOUNCE_TIME: float = 0.5
+var should_save := false
+
 var main: MainScreen
 
 ###############################################################################
@@ -96,30 +100,30 @@ func _on_tree_exiting() -> void:
 func save_facetracker_offsets() -> void:
 	emit_signal("face_tracker_offsets_set")
 
-func apply_properties() -> void:
-	emit_signal("properties_applied")
+# func apply_properties() -> void:
+# 	emit_signal("properties_applied")
 
-func reset_properties() -> void:
-	emit_signal("properties_reset")
+# func reset_properties() -> void:
+# 	emit_signal("properties_reset")
 
 # TODO pose/feature/preset view all use this
 # If a prop and a preset both share the same name, then they will both be toggled on
-func gui_toggle_set(toggle_name: String, view_name: String) -> void:
-	emit_signal("gui_toggle_set", toggle_name, view_name)
+# func gui_toggle_set(toggle_name: String, view_name: String) -> void:
+# 	emit_signal("gui_toggle_set", toggle_name, view_name)
 
-func set_file_to_load(file_path: String) -> void:
-	current_model_name = file_path.get_file()
-	# Grab the full model path to allow setting model as default
-	current_model_path = file_path
+# func set_file_to_load(file_path: String) -> void:
+# 	current_model_name = file_path.get_file()
+# 	# Grab the full model path to allow setting model as default
+# 	current_model_path = file_path
 
-	cm.load_config(file_path)
+# 	cm.load_config(file_path)
 
-	emit_signal("file_to_load_changed", file_path)
+# 	emit_signal("file_to_load_changed", file_path)
 
-func set_model_default() -> void:
-	cm.metadata_config.default_model_to_load_path = current_model_path
-	cm.save_config()
-	emit_signal("default_model_set")
+# func set_model_default() -> void:
+# 	cm.metadata_config.default_model_to_load_path = current_model_path
+# 	cm.save_config()
+# 	emit_signal("default_model_set")
 
 func is_current_model_default() -> bool:
 	var result: bool = false
@@ -127,11 +131,18 @@ func is_current_model_default() -> bool:
 		result = true
 	return result
 
-func model_is_loaded() -> void:
-	emit_signal("model_loaded")
+# func model_is_loaded() -> void:
+# 	emit_signal("model_loaded")
 
-func change_preset(preset: String) -> void:
-	emit_signal(preset)
+# func change_preset(preset: String) -> void:
+# 	emit_signal(preset)
+
+func save_config(p_config: Reference = null) -> void:
+	if not should_save:
+		should_save = true
+		yield(get_tree().create_timer(DEBOUNCE_TIME), "timeout")
+		cm.save_config(p_config)
+		should_save = false
 
 func log_message(message: String, is_error: bool = false) -> void:
 	if is_error:
