@@ -244,6 +244,40 @@ func _load_metadata() -> bool:
 
 	return true
 
+func _save_config(p_config: ConfigData = null) -> void:
+	AppManager.log_message("Saving config")
+
+	var config = p_config
+	if not config:
+		config = current_model_config
+
+	var config_name = config.config_name
+	var model_name = config.model_name
+	var is_default = config.is_default_for_model
+
+	var config_path := CONFIG_FORMAT % [metadata_path, config_name]
+
+	metadata_config.config_data[config_name] = config_path
+
+	if metadata_config.model_defaults.has(model_name):
+		if is_default:
+			metadata_config.model_defaults[model_name] = config_name
+	else:
+		config.is_default_for_model = true
+		metadata_config.model_defaults[model_name] = config_name
+	
+	var config_file := File.new()
+	config_file.open(config_path, File.WRITE)
+	config_file.store_string(to_json(config.get_as_dict()))
+	config_file.close()
+
+	var metadata_file := File.new()
+	metadata_file.open("%s/%s" % [metadata_path, METADATA_NAME], File.WRITE)
+	metadata_file.store_string(metadata_config.get_as_json())
+	metadata_file.close()
+
+	AppManager.log_message("Finished saving config")
+
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
@@ -291,7 +325,9 @@ func load_config(model_path: String) -> ConfigData:
 
 # TODO this is very similar to load_config
 func load_config_and_set_as_current(model_path: String) -> void:
-	var model_name: String = model_path.get_file()
+	var model_name: String = model_path.get_file().get_basename()
+	if metadata_config.model_defaults.has(model_name):
+		model_name = metadata_config.model_defaults[model_name]
 	var full_path: String = CONFIG_FORMAT % [metadata_path, model_name]
 
 	AppManager.log_message("Begin loading config for %s" % full_path)
@@ -309,7 +345,6 @@ func load_config_and_set_as_current(model_path: String) -> void:
 	var config_file := File.new()
 	config_file.open(full_path, File.READ)
 	current_model_config.load_from_json(config_file.get_as_text())
-	# current_model_config.load_from_dict(get_config_as_dict(full_path))
 	config_file.close()
 
 	AppManager.log_message("Finished loading config")

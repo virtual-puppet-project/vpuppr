@@ -568,6 +568,7 @@ func _on_new_preset(preset_name: String) -> void:
 		"event": "preset_toggled"
 	})
 	toggle.preset_name = preset_name
+	AppManager.sb.connect("preset_toggled", toggle, "_on_preset_toggled")
 	AppManager.sb.broadcast_preset_toggle_created(toggle)
 
 	var preset_data: Reference = PresetData.new()
