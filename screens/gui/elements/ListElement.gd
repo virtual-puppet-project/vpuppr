@@ -118,7 +118,7 @@ func _generate_builtin_prop_elements(builtin_name: String) -> void:
 				xml_type = parent.XmlConstants.PROP_INPUT
 				data_type = "string"
 			_:
-				AppManager.log_mesasge("Unhandled type: %d" % builtin_type, true)
+				AppManager.log_message("Unhandled type: %d" % builtin_type, true)
 
 		var elem: BaseElement = parent.generate_ui_element(xml_type, {
 			"name": key,
