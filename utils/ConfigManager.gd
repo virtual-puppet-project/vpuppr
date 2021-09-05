@@ -129,14 +129,16 @@ class ConfigData:
 					TYPE_DICTIONARY:
 						i_value = i_value.duplicate(true)
 						for key in i_value.keys():
-							match typeof(i_value[key]):
+							var i_data_point := DataPoint.new()
+							i_data_point.data_type = typeof(i_value[key])
+							match i_data_point.data_type:
 								TYPE_TRANSFORM:
-									i_value[key] = JSONUtil.transform_to_dictionary(i_value[key])
+									i_data_point.data_value = JSONUtil.transform_to_dictionary(i_value[key])
 								TYPE_COLOR:
-									i_value[key] = JSONUtil.color_to_dictionary(i_value[key])
+									i_data_point.data_value = JSONUtil.color_to_dictionary(i_value[key])
 								_:
-									# Do nothing
-									pass
+									i_data_point.data_value = i_value[key]
+							i_value[key] = i_data_point.get_as_dict()
 					_:
 						# Do nothing
 						pass
@@ -171,6 +173,16 @@ class ConfigData:
 					data_value = JSONUtil.dictionary_to_color(data_value)
 				TYPE_TRANSFORM:
 					data_value = JSONUtil.dictionary_to_transform(data_value)
+				TYPE_DICTIONARY:
+					data_value = data_value.duplicate()
+					for key_i in data_value.keys():
+						var i_data_value = data_value[key_i][DataPoint.VALUE_KEY]
+						match int(data_value[key_i][DataPoint.TYPE_KEY]):
+							TYPE_COLOR:
+								i_data_value = JSONUtil.dictionary_to_color(i_data_value)
+							TYPE_TRANSFORM:
+								i_data_value = JSONUtil.dictionary_to_transform(i_data_value)
+						data_value[key_i] = i_data_value
 				_:
 					pass
 			
