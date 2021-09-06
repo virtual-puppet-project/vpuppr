@@ -166,10 +166,6 @@ func broadcast_delete_preset() -> void:
 
 signal file_to_load_changed(file_path)
 func set_file_to_load(file_path: String) -> void:
-	AppManager.current_model_name = file_path.get_file()
-	# Grab the full model path to allow setting model as default
-	AppManager.current_model_path = file_path
-
 	AppManager.cm.load_config_and_set_as_current(file_path)
 
 	emit_signal("file_to_load_changed", file_path)

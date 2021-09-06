@@ -581,15 +581,8 @@ func _on_new_preset(preset_name: String) -> void:
 	AppManager.sb.connect("preset_toggled", toggle, "_on_preset_toggled")
 	AppManager.sb.broadcast_preset_toggle_created(toggle)
 
-	var preset_data: Reference = PresetData.new()
-	preset_data.config_name = preset_name
-	preset_data.description = ""
-	preset_data.hotkey = ""
-	preset_data.notes = ""
-	preset_data.is_default_for_model = false
-
 	AppManager.cm.current_model_config.config_name = preset_name
-	AppManager.cm.metadata_config.config_data[preset_name] = AppManager.cm.current_model_config
+	AppManager.cm.metadata_config.config_data[preset_name] = AppManager.cm.current_model_config.duplicate()
 
 func _on_preset_toggled(preset_name: String, is_visible: bool) -> void:
 	if is_visible:

@@ -198,6 +198,16 @@ class ConfigData:
 		for key in json_dict.keys():
 			set(key, json_dict[key])
 
+	func duplicate() -> ConfigData:
+		var cd = ConfigData.new()
+		for i in get_property_list():
+			if not i.name in ["Reference", "script", "Script Variables"]:
+				var i_value = get(i.name)
+
+				cd.set(i.name, i_value)
+
+		return cd
+
 class DataPoint:
 	"""
 	Each field in the saved json must follow this format
@@ -257,6 +267,14 @@ func _load_metadata() -> bool:
 
 	return true
 
+func _normalize_default_configs(p_config_name: String, p_model_name: String) -> void:
+	for config_name in metadata_config.config_data.keys():
+		var path: String = metadata_config.config_data[config_name]
+		var data: ConfigData = load_config(path)
+		if (data.model_name == p_model_name and data.config_name != p_config_name):
+			data.is_default_for_model = false
+			save_config(data)
+
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
@@ -305,9 +323,10 @@ func load_config(model_path: String) -> ConfigData:
 # TODO this is very similar to load_config
 func load_config_and_set_as_current(model_path: String) -> void:
 	var model_name: String = model_path.get_file().get_basename()
+	var config_name: String = ""
 	if metadata_config.model_defaults.has(model_name):
-		model_name = metadata_config.model_defaults[model_name]
-	var full_path: String = CONFIG_FORMAT % [metadata_path, model_name]
+		config_name = metadata_config.model_defaults[model_name]
+	var full_path: String = CONFIG_FORMAT % [metadata_path, config_name]
 
 	AppManager.log_message("Begin loading config for %s" % full_path)
 
@@ -346,6 +365,7 @@ func save_config(p_config: ConfigData = null) -> void:
 	if metadata_config.model_defaults.has(model_name):
 		if is_default:
 			metadata_config.model_defaults[model_name] = config_name
+			_normalize_default_configs(config_name, model_name)
 	else:
 		config.is_default_for_model = true
 		metadata_config.model_defaults[model_name] = config_name
