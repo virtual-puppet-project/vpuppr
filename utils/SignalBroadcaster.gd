@@ -115,6 +115,10 @@ signal world_environment(prop_name, value)
 func broadcast_world_environment(value: Array) -> void:
 	emit_signal("world_environment", value[0], value[1])
 
+signal delete_prop()
+func broadcast_delete_prop() -> void:
+	emit_signal("delete_prop")
+
 # Presets
 
 signal new_preset(preset_name)
@@ -149,6 +153,14 @@ func broadcast_notes(value: String) -> void:
 signal is_default_for_model(value)
 func broadcast_is_default_for_model(value: bool) -> void:
 	emit_signal("is_default_for_model", value)
+
+signal load_preset()
+func broadcast_load_preset() -> void:
+	emit_signal("load_preset")
+
+signal delete_preset()
+func broadcast_delete_preset() -> void:
+	emit_signal("delete_preset")
 
 # File select popup
 

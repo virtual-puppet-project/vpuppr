@@ -30,8 +30,8 @@ func _load_prop_information(prop_name: String, is_visible: bool) -> void:
 
 	yield(get_tree(), "idle_frame")
 
-	if parent.PROPS.has(prop_name):
-		var data: Reference = parent.PROPS[prop_name]
+	if parent.props.has(prop_name):
+		var data: Reference = parent.props[prop_name]
 		_generate_prop_manipulation_elements(data.prop_name)
 	elif prop_name == "Main Light":
 		yield(_generate_builtin_prop_elements("main_light"), "completed")
@@ -54,9 +54,6 @@ func _load_preset_information(preset_name: String, is_visible: bool) -> void:
 	yield(get_tree(), "idle_frame")
 
 	if AppManager.cm.metadata_config.config_data.has(preset_name):
-		parent.current_edited_preset = AppManager.cm.load_config(
-			AppManager.cm.metadata_config.config_data[preset_name]
-		)
 		yield(_generate_preset_elements(), "completed")
 	else:
 		AppManager.log_message("Unhandled preset_name: %s" % preset_name, true)
@@ -99,6 +96,12 @@ func _generate_prop_manipulation_elements(prop_name: String) -> void:
 		"event": "zoom_prop"
 	})
 	vbox.call_deferred("add_child", zoom_elem)
+
+	var delete_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.BUTTON, {
+		"name": "Delete Prop",
+		"event": "delete_prop"
+	})
+	vbox.call_deferred("add_child", delete_elem)
 
 func _generate_builtin_prop_elements(builtin_name: String) -> void:
 	for key in AppManager.cm.current_model_config.get(builtin_name).keys():
@@ -182,6 +185,18 @@ func _generate_preset_elements() -> void:
 	vbox.call_deferred("add_child", is_default_for_model_elem)
 	yield(is_default_for_model_elem, "ready")
 	is_default_for_model_elem.set_value(parent.current_edited_preset.is_default_for_model)
+	
+	var load_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.BUTTON, {
+		"name": "Load Preset",
+		"event": "load_preset"
+	})
+	vbox.call_deferred("add_child", load_elem)
+
+	var delete_elem: BaseElement = parent.generate_ui_element(parent.XmlConstants.BUTTON, {
+		"name": "Delete Preset",
+		"event": "delete_preset"
+	})
+	vbox.call_deferred("add_child", delete_elem)
 
 ###############################################################################
 # Public functions                                                            #
@@ -241,11 +256,9 @@ func setup() -> void:
 
 				prop_data.toggle.prop_name = prop_data.prop_name
 				
-				AppManager.sb.connect("prop_toggled", prop_data.toggle, "_on_prop_toggled")
-				
-				AppManager.main.model_display_screen.call_deferred("add_child", prop_data.prop)
+				AppManager.main.model_display_screen.props.call_deferred("add_child", prop_data.prop)
 				vbox.call_deferred("add_child", prop_data.toggle)
-				parent.PROPS[prop_name] = prop_data
+				parent.props[prop_name] = prop_data
 		"config_data":
 			if not AppManager.sb.is_connected("preset_toggle_created", self, "_on_preset_toggle_created"):
 				AppManager.sb.connect("preset_toggle_created", self, "_on_preset_toggle_created")

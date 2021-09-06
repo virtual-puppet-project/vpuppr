@@ -54,8 +54,9 @@ var default_load_path: String = "/"
 var should_track_eye: float = 1.0
 
 # Debounce
-const DEBOUNCE_TIME: float = 0.5
+const DEBOUNCE_TIME: float = 1.0
 var should_save := false
+var should_save_debounced := false
 
 var main: MainScreen
 
