@@ -338,6 +338,18 @@ func load_config_and_set_as_current(model_path: String) -> void:
 		current_model_config.config_name = model_name
 		current_model_config.model_name = model_name
 		current_model_config.model_path = model_path
+		AppManager.sb.broadcast_new_preset(model_name)
+		# var toggle: BaseElement = AppManager.main.gui.generate_ui_element(
+		# 	AppManager.main.gui.XmlConstants.PRESET_TOGGLE,
+		# 	{
+		# 		"name": model_name,
+		# 		"event": "preset_toggled"
+		# 	})
+		# toggle.preset_name = model_name
+		# AppManager.sb.connect("preset_toggled", toggle, "_on_preset_toggled")
+
+		# AppManager.main.gui.presets[model_name] = toggle
+		# AppManager.sb.broadcast_preset_toggle_created(toggle)
 		return
 
 	var config_file := File.new()

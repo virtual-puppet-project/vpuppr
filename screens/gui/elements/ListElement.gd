@@ -17,6 +17,9 @@ func _ready() -> void:
 # Connections                                                                 #
 ###############################################################################
 
+func _cleanup() -> void:
+	_clear_details()
+
 # Features
 
 func _on_custom_prop_toggle_created(value: BaseElement) -> void:
@@ -275,6 +278,7 @@ func setup() -> void:
 
 				preset_toggle.preset_name = preset_name
 
+				parent.presets[preset_name] = preset_toggle
 				AppManager.sb.connect("preset_toggled", preset_toggle, "_on_preset_toggled")
 
 				vbox.call_deferred("add_child", preset_toggle)
