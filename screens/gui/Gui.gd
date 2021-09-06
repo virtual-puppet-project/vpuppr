@@ -124,6 +124,7 @@ var should_rotate_prop := false
 var should_zoom_prop := false
 
 # Presets
+var presets: Dictionary = {} # String: PresetToggleElement
 var current_edited_preset: Reference
 
 ###############################################################################
@@ -460,35 +461,34 @@ func _on_bone_toggled(bone_name: String, toggle_type: String, toggle_value: bool
 # Tracking
 
 func _on_translation_damp(value: float) -> void:
-	# TODO 
-	pass
+	AppManager.cm.current_model_config.translation_damp = value
 
 func _on_rotation_damp(value: float) -> void:
-	pass
+	AppManager.cm.current_model_config.rotation_damp = value
 
 func _on_additional_bone_damp(value: float) -> void:
-	pass
+	AppManager.cm.current_model_config.additional_bone_damp = value
 
 func _on_head_bone(value: String) -> void:
-	pass
+	AppManager.cm.current_model_config.head_bone = value
 
 func _on_apply_translation(value: bool) -> void:
-	pass
+	AppManager.cm.current_model_config.apply_translation = value
 
 func _on_apply_rotation(value: bool) -> void:
-	pass
+	AppManager.cm.current_model_config.apply_rotation = value
 
 func _on_interpolate_model(value: bool) -> void:
-	pass
+	AppManager.cm.current_model_config.interpolate_model = value
 
 func _on_interpolation_rate(value: float) -> void:
-	pass
+	AppManager.cm.current_model_config.interpolation_rate = value
 
 func _on_should_track_eye(value: float) -> void:
-	pass
+	AppManager.cm.current_model_config.should_track_eye = value
 
 func _on_gaze_strength(value: float) -> void:
-	pass
+	AppManager.cm.current_model_config.gaze_strength = value
 
 # Features
 
@@ -566,8 +566,20 @@ func _on_zoom_prop(value: bool) -> void:
 	should_zoom_prop = value
 
 func _on_delete_prop() -> void:
-	# TODO stub
-	pass
+	var prop_name = current_prop_data.prop_name
+
+	current_prop_data.prop.queue_free()
+	current_prop_data.toggle.queue_free()
+	props.erase(prop_name)
+
+	prop_to_move = null
+	current_prop_data = null
+
+	should_move_prop = false
+	should_rotate_prop = false
+	should_zoom_prop = false
+
+	AppManager.cm.current_model_config.instanced_props.erase(prop_name)
 
 # Presets
 
@@ -579,15 +591,21 @@ func _on_new_preset(preset_name: String) -> void:
 	})
 	toggle.preset_name = preset_name
 	AppManager.sb.connect("preset_toggled", toggle, "_on_preset_toggled")
+
+	presets[preset_name] = toggle
 	AppManager.sb.broadcast_preset_toggle_created(toggle)
 
-	AppManager.cm.current_model_config.config_name = preset_name
-	AppManager.cm.metadata_config.config_data[preset_name] = AppManager.cm.current_model_config.duplicate()
+	var cd = AppManager.cm.current_model_config.duplicate()
+	cd.config_name = preset_name
+	cd.is_default_for_model = false
+	AppManager.cm.metadata_config.config_data[preset_name] = cd.model_path
 
 func _on_preset_toggled(preset_name: String, is_visible: bool) -> void:
 	if is_visible:
 		current_edited_preset = AppManager.cm.load_config(preset_name)
 
+# TODO this will break deleting presets
+# Maybe use ids to track presets
 func _on_config_name(config_name: String) -> void:
 	current_edited_preset.config_name = config_name
 
@@ -608,7 +626,27 @@ func _on_load_preset() -> void:
 	pass
 
 func _on_delete_preset() -> void:
-	# TODO stub
+	var preset_name: String = current_edited_preset.config_name
+	var is_default: bool = current_edited_preset.is_default_for_model
+
+	# Update metadata
+	AppManager.cm.metadata_config.config_data.erase(preset_name)
+	if is_default:
+		AppManager.cm.metadata_config.model_defaults.erase(current_edited_preset.model_name)
+	
+	# Generate a new config if we just deleted the one in use
+	if AppManager.cm.current_model_config == current_edited_preset:
+		var cd = AppManager.cm.ConfigData.new()
+		cd.config_name = AppManager.cm.current_model_config.config_name
+		cd.model_name = AppManager.cm.current_model_config.model_name
+		cd.model_path = AppManager.cm.current_model_config.model_path
+		AppManager.cm.current_model_config = cd.duplicate()
+		current_edited_preset = AppManager.cm.current_model_config
+
+	presets[preset_name].queue_free()
+	presets.erase(preset_name)
+	
+	current_edited_preset = null
 	print("hello")
 	pass
 
@@ -656,8 +694,10 @@ func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 				match data[XmlConstants.TYPE]:
 					ListTypes.PROP_RECEIVER:
 						AppManager.sb.connect("prop_toggled", result, "_load_prop_information")
+						AppManager.sb.connect("delete_prop", result, "_cleanup")
 					ListTypes.PRESET_RECEIVER:
 						AppManager.sb.connect("preset_toggled", result, "_load_preset_information")
+						AppManager.sb.connect("delete_preset", result, "_cleanup")
 					_:
 						AppManager.log_message("Unhandled list type %s" % data[XmlConstants.TYPE])
 		XmlConstants.TOGGLE:
