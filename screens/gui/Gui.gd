@@ -86,7 +86,6 @@ const BaseProp: Resource = preload("res://entities/BaseProp.gd")
 const GUI_GROUP: String = "Gui"
 const GUI_VIEWS: Dictionary = {} # String: BaseView
 
-const PROPS: Dictionary = {} # String: PropData
 const PROP_SCRIPT_PATH := "res://entities/BaseProp.gd"
 
 onready var button_bar: Control = $ButtonBar
@@ -117,6 +116,7 @@ var current_view: String = ""
 var should_hide := false
 
 # Props
+var props: Dictionary = {} # String: PropData
 var current_prop_data: Reference = PropData.new()
 var prop_to_move: Spatial
 var should_move_prop := false
@@ -175,17 +175,20 @@ func _ready() -> void:
 	AppManager.sb.connect("move_prop", self, "_on_move_prop")
 	AppManager.sb.connect("rotate_prop", self, "_on_rotate_prop")
 	AppManager.sb.connect("zoom_prop", self, "_on_zoom_prop")
+	AppManager.sb.connect("delete_prop", self, "_on_delete_prop")
 
 	# Preset callbacks
 
 	AppManager.sb.connect("new_preset", self, "_on_new_preset")
-#	AppManager.sb.connect("preset_toggled", self, "_on_preset_toggled")
+	AppManager.sb.connect("preset_toggled", self, "_on_preset_toggled")
 
 	AppManager.sb.connect("config_name", self, "_on_config_name")
 	AppManager.sb.connect("description", self, "_on_description")
 	AppManager.sb.connect("hotkey", self, "_on_hotkey")
 	AppManager.sb.connect("notes", self, "_on_notes")
 	AppManager.sb.connect("is_default_for_model", self, "_on_is_default_for_model")
+	AppManager.sb.connect("load_preset", self, "_on_load_preset")
+	AppManager.sb.connect("delete_preset", self, "_on_delete_preset")
 
 	if not OS.is_debug_build():
 		base_path = "%s/%s" % [OS.get_executable_path().get_base_dir(), "resources/gui"]
@@ -214,7 +217,7 @@ func _ready() -> void:
 		call_deferred("add_child", base_view)
 		yield(base_view, "ready")
 
-		var current_view: String
+		var c_view: String
 		var left
 		var right
 		var floating
@@ -233,7 +236,7 @@ func _ready() -> void:
 						left = LeftContainer.instance()
 						base_view.call_deferred("add_child", left)
 						yield(left, "ready")
-						current_view = XmlConstants.LEFT
+						c_view = XmlConstants.LEFT
 					XmlConstants.RIGHT:
 						if right:
 							AppManager.log_message("Invalid data for %s" % xml_file, true)
@@ -241,7 +244,7 @@ func _ready() -> void:
 						right = RightContainer.instance()
 						base_view.call_deferred("add_child", right)
 						yield(right, "ready")
-						current_view = XmlConstants.RIGHT
+						c_view = XmlConstants.RIGHT
 					XmlConstants.FLOATING:
 						if floating:
 							AppManager.log_message("Invalid data for %s" % xml_file, true)
@@ -249,7 +252,7 @@ func _ready() -> void:
 						floating = FloatingContainer.instance()
 						base_view.call_deferred("add_child", floating)
 						yield(floating, "ready")
-						current_view = XmlConstants.FLOATING
+						c_view = XmlConstants.FLOATING
 					XmlConstants.VIEW:
 						base_view.name = data.data["name"]
 						
@@ -265,7 +268,7 @@ func _ready() -> void:
 							base_view.set_script(script)
 					_:
 						var element: Control = generate_ui_element(data.node_name, data.data)
-						match current_view:
+						match c_view:
 							XmlConstants.LEFT:
 								left.vbox.call_deferred("add_child", element)
 							XmlConstants.RIGHT:
@@ -300,8 +303,6 @@ func _ready() -> void:
 		_toggle_view(key)
 
 func _unhandled_input(event: InputEvent) -> void:
-	# Long if/else chain because unhandled input processes only 1 input at a time
-
 	if event.is_action_pressed("toggle_gui"):
 		should_hide = not should_hide
 		if should_hide:
@@ -309,13 +310,14 @@ func _unhandled_input(event: InputEvent) -> void:
 				c.visible = false
 		else:
 			button_bar.visible = true
-			# bottom_container.visible = true
 			_toggle_view(current_view)
 
 	if event.is_action_pressed("left_click"):
 		is_left_clicking = true
 	elif event.is_action_released("left_click"):
 		is_left_clicking = false
+
+		AppManager.save_config()
 
 	# Bone posing
 	if should_modify_bone:
@@ -342,7 +344,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			model.skeleton.set_bone_pose(
 					model.skeleton.find_bone(bone_to_modify), transform)
 	
-	# TODO there is a better way of structuring this
 	# Model and prop movement
 	if (is_left_clicking and event is InputEventMouseMotion):
 		if should_move_model:
@@ -385,6 +386,11 @@ func _on_event(event_value) -> void:
 			AppManager.sb.call("broadcast_%s" % event_value)
 		_:
 			AppManager.log_message("Unhandled gui event" % str(event_value), true)
+	
+	if not current_edited_preset:
+		AppManager.save_config()
+	else:
+		AppManager.save_config(current_edited_preset)
 
 func _on_model_loaded(p_model: BasicModel) -> void:
 	model = p_model
@@ -442,8 +448,6 @@ func _on_bone_toggled(bone_name: String, toggle_type: String, toggle_value: bool
 			else:
 				AppManager.cm.current_model_config.mapped_bones.erase(bone_name)
 			model.scan_mapped_bones()
-
-			AppManager.save_config()
 		DoubleToggleConstants.POSE:
 			if toggle_value:
 				should_modify_bone = true
@@ -492,13 +496,9 @@ func _on_main_light(prop_name: String, value) -> void:
 	AppManager.main.main_light.get_child(0).set(prop_name, value)
 	AppManager.cm.current_model_config.main_light[prop_name] = value
 
-	AppManager.save_config()
-
 func _on_environment(prop_name: String, value) -> void:
 	AppManager.main.world_environment.environment.set(prop_name, value)
 	AppManager.cm.current_model_config.world_environment[prop_name] = value
-
-	AppManager.save_config()
 
 func _on_add_custom_prop() -> void:
 	var popup: FileDialog = FilePopup.instance()
@@ -519,7 +519,7 @@ func _on_add_custom_prop() -> void:
 	# Set distinct prop name so we don't accidentally override existing props
 	var final_prop_name := prop_name
 	var counter: int = 0
-	while PROPS.has(final_prop_name):
+	while props.has(final_prop_name):
 		final_prop_name = "%s%d" % [prop_name, counter]
 		counter += 1
 
@@ -528,7 +528,7 @@ func _on_add_custom_prop() -> void:
 		AppManager.log_message("Invalid prop", true)
 		return
 
-	get_parent().call_deferred("add_child", prop)
+	AppManager.main.model_display_screen.props.call_deferred("add_child", prop)
 
 	var toggle: BaseElement = generate_ui_element(XmlConstants.PROP_TOGGLE, {
 		"name": final_prop_name,
@@ -540,22 +540,20 @@ func _on_add_custom_prop() -> void:
 	prop_data.prop_name = final_prop_name
 	prop_data.prop = prop
 	prop_data.toggle = toggle
-	prop_data.prop_path = load_path
+	prop_data.prop_path = prop.prop_path
 	
-	PROPS[final_prop_name] = prop_data
+	props[final_prop_name] = prop_data
 	AppManager.cm.current_model_config.instanced_props[final_prop_name] = prop_data.get_as_dict()
 
 	popup.queue_free()
-
-	AppManager.save_config()
 
 func _on_prop_toggled(prop_name: String, is_visible: bool) -> void:
 	if (not is_visible or prop_name == "Main Light" or prop_name == "World Environment"):
 		should_move_prop = false
 		should_rotate_prop = false
 		should_zoom_prop = false
-	if PROPS.has(prop_name):
-		current_prop_data = PROPS[prop_name]
+	if props.has(prop_name):
+		current_prop_data = props[prop_name]
 		prop_to_move = current_prop_data.prop
 
 func _on_move_prop(value: bool) -> void:
@@ -566,6 +564,10 @@ func _on_rotate_prop(value: bool) -> void:
 
 func _on_zoom_prop(value: bool) -> void:
 	should_zoom_prop = value
+
+func _on_delete_prop() -> void:
+	# TODO stub
+	pass
 
 # Presets
 
@@ -587,38 +589,35 @@ func _on_new_preset(preset_name: String) -> void:
 	preset_data.is_default_for_model = false
 
 	AppManager.cm.current_model_config.config_name = preset_name
+	AppManager.cm.metadata_config.config_data[preset_name] = AppManager.cm.current_model_config
 
-	AppManager.cm.save_config()
-
-#func _on_preset_toggled(preset_name: String, is_visible: bool) -> void:
-#	if not is_visible:
-#		return
-#	current_edited_preset = AppManager.cm.load_config(preset_name)
+func _on_preset_toggled(preset_name: String, is_visible: bool) -> void:
+	if is_visible:
+		current_edited_preset = AppManager.cm.load_config(preset_name)
 
 func _on_config_name(config_name: String) -> void:
 	current_edited_preset.config_name = config_name
-	# AppManager.cm.save_config(current_edited_preset)
-	AppManager.save_config(current_edited_preset)
 
 func _on_description(description: String) -> void:
 	current_edited_preset.description = description
-	# AppManager.cm.save_config(current_edited_preset)
-	AppManager.save_config(current_edited_preset)
 
 func _on_hotkey(hotkey: String) -> void:
 	current_edited_preset.hotkey = hotkey
-	# AppManager.cm.save_config(current_edited_preset)
-	AppManager.save_config(current_edited_preset)
 
 func _on_notes(notes: String) -> void:
 	current_edited_preset.notes = notes
-	# AppManager.cm.save_config(current_edited_preset)
-	AppManager.save_config(current_edited_preset)
 
 func _on_is_default_for_model(value: bool) -> void:
 	current_edited_preset.is_default_for_model = value
-	# AppManager.cm.save_config(current_edited_preset)
-	AppManager.save_config(current_edited_preset)
+
+func _on_load_preset() -> void:
+	# TODO stub
+	pass
+
+func _on_delete_preset() -> void:
+	# TODO stub
+	print("hello")
+	pass
 
 ###############################################################################
 # Private functions                                                           #

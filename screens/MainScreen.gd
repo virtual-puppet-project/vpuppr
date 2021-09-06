@@ -9,7 +9,9 @@ var current_model_path: String = ""
 
 onready var main_light: Spatial = $MainLight
 onready var world_environment: WorldEnvironment = $WorldEnvironment
+
 var model_display_screen: Spatial
+onready var gui: CanvasLayer = $GuiHandler
 
 ###############################################################################
 # Builtin functions                                                           #

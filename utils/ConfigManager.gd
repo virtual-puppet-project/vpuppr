@@ -349,6 +349,10 @@ func save_config(p_config: ConfigData = null) -> void:
 	else:
 		config.is_default_for_model = true
 		metadata_config.model_defaults[model_name] = config_name
+
+	for prop_key in AppManager.main.gui.props.keys(): # PropData
+		var prop_data = AppManager.main.gui.props[prop_key]
+		config.instanced_props[prop_data.prop_name] = prop_data.get_as_dict()
 	
 	var config_file := File.new()
 	config_file.open(config_path, File.WRITE)
