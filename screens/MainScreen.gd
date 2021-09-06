@@ -5,7 +5,7 @@ const DEV_UI: Resource = preload("res://utils/gui/DevUI.tscn")
 
 const MODEL_SCREEN: Resource = preload("res://screens/ModelDisplayScreen.tscn")
 
-var current_model_path: String = ""
+# var current_model_path: String = ""
 
 onready var main_light: Spatial = $MainLight
 onready var world_environment: WorldEnvironment = $WorldEnvironment
@@ -25,11 +25,7 @@ func _ready() -> void:
 	
 	yield($GuiHandler, "setup_completed")
 	
-	# AppManager.connect("file_to_load_changed", self, "_on_file_to_load_changed")
 	AppManager.sb.connect("file_to_load_changed", self, "_on_file_to_load_changed")
-
-	# TODO remove this
-	# AppManager.set_file_to_load(AppManager.get_default_model_path())
 
 	# TODO accommodate config manager changes, this is gross
 	while not AppManager.cm.has_loaded_metadata:
@@ -47,25 +43,31 @@ func _input(event: InputEvent) -> void:
 ###############################################################################
 
 func _on_file_to_load_changed(file_path: String) -> void:
-	current_model_path = file_path
-	_clean_load_model_display_screen()
+	var file_name: String = file_path.get_file().get_basename()
+	# Try to load in a default if one exists
+	if AppManager.cm.metadata_config.model_defaults.has(file_name):
+		file_name = AppManager.cm.metadata_config.model_defaults[file_name]
+	AppManager.cm.load_config_and_set_as_current(file_name)
+	
+	_clean_load_model_display_screen(file_path)
 
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
 
-func _clean_load_model_display_screen() -> void:
+func _clean_load_model_display_screen(path: String) -> void:
 	if model_display_screen:
 		# Prevent null pointers by pausing execution AND THEN freeing resources
 		model_display_screen.pause_mode = PAUSE_MODE_STOP # TODO i dont think this does anything
 		yield(get_tree(), "idle_frame")
 		model_display_screen.free()
 	model_display_screen = MODEL_SCREEN.instance()
-	model_display_screen.model_resource_path = current_model_path
+	model_display_screen.model_resource_path = path
 	add_child(model_display_screen)
 
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
 
-
+func load_file(file_path: String) -> void:
+	_clean_load_model_display_screen(file_path)

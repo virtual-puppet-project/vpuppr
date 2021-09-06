@@ -38,10 +38,12 @@ func set_value(_value) -> void:
 func setup() -> void:
 	if data_bind:
 		var data = AppManager.cm.current_model_config.get(data_bind)
-		if data:
+		if data != null:
 			set_value(data)
+			if data_bind == "should_track_eye":
+				print("%s : %s" % [event_name, data])
 			return
 		data = AppManager.cm.metadata_config.get(data_bind)
-		if data:
+		if data != null:
 			set_value(data)
 			return

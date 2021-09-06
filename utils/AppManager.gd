@@ -54,9 +54,10 @@ var default_load_path: String = "/"
 var should_track_eye: float = 1.0
 
 # Debounce
-const DEBOUNCE_TIME: float = 1.0
+const DEBOUNCE_TIME: float = 5.0
+var debounce_counter: float = 0.0
 var should_save := false
-var should_save_debounced := false
+var config_to_save: Reference
 
 var main: MainScreen
 
@@ -77,6 +78,15 @@ func _ready() -> void:
 		# goth.run_bdd_tests()
 
 	cm.setup()
+
+func _process(delta: float) -> void:
+	if should_save:
+		debounce_counter += delta
+		if debounce_counter > DEBOUNCE_TIME:
+			debounce_counter = 0.0
+			should_save = false
+			cm.save_config(config_to_save)
+	
 
 ###############################################################################
 # Connections                                                                 #
@@ -106,11 +116,23 @@ func is_current_model_default() -> bool:
 	return result
 
 func save_config(p_config: Reference = null) -> void:
-	if not should_save:
-		should_save = true
-		yield(get_tree().create_timer(DEBOUNCE_TIME), "timeout")
-		cm.save_config(p_config)
-		should_save = false
+	"""
+	Start saving config based off a debounce time
+	
+	If p_config is null, will save the current config in use
+	"""
+	should_save = true
+	config_to_save = p_config
+
+func save_config_instant(p_config: Reference = null) -> void:
+	"""
+	Immediately save config and stop debouncing if in progress
+	
+	If p_config is null, will save the current config in use
+	"""
+	should_save = false
+	debounce_counter = 0.0
+	cm.save_config(p_config)
 
 func log_message(message: String, is_error: bool = false) -> void:
 	if is_error:
