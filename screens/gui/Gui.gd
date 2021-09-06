@@ -599,10 +599,12 @@ func _on_new_preset(preset_name: String) -> void:
 	cd.config_name = preset_name
 	cd.is_default_for_model = false
 	AppManager.cm.metadata_config.config_data[preset_name] = cd.model_path
+	AppManager.cm.save_config(cd)
 
 func _on_preset_toggled(preset_name: String, is_visible: bool) -> void:
+	AppManager.save_config_instant(current_edited_preset)
 	if is_visible:
-		current_edited_preset = AppManager.cm.load_config(preset_name)
+		current_edited_preset = AppManager.cm.load_config_for_preset(preset_name)
 
 # TODO this will break deleting presets
 # Maybe use ids to track presets
@@ -620,10 +622,19 @@ func _on_notes(notes: String) -> void:
 
 func _on_is_default_for_model(value: bool) -> void:
 	current_edited_preset.is_default_for_model = value
+	current_edited_preset.is_default_dirty = true
 
 func _on_load_preset() -> void:
-	# TODO stub
-	pass
+	AppManager.save_config_instant()
+	var cmc = AppManager.cm.current_model_config
+	if cmc.config_name == current_edited_preset.config_name:
+		return # Do nothing if we try to load the current config
+	
+	AppManager.cm.current_model_config = current_edited_preset.duplicate()
+	if cmc.model_name != current_edited_preset.model_name:
+		AppManager.main.load_file(AppManager.cm.current_model_config.model_path)
+	
+	_setup_gui_nodes()
 
 func _on_delete_preset() -> void:
 	var preset_name: String = current_edited_preset.config_name
@@ -647,8 +658,6 @@ func _on_delete_preset() -> void:
 	presets.erase(preset_name)
 	
 	current_edited_preset = null
-	print("hello")
-	pass
 
 ###############################################################################
 # Private functions                                                           #
@@ -668,6 +677,7 @@ func _toggle_view(view_name: String) -> void:
 		GUI_VIEWS[view_name].visible = not GUI_VIEWS[view_name].visible
 
 func _setup_gui_nodes() -> void:
+	print_debug(AppManager.cm.current_model_config.config_name)
 	for node in get_tree().get_nodes_in_group(GUI_GROUP):
 		node.setup()
 

@@ -166,7 +166,7 @@ func broadcast_delete_preset() -> void:
 
 signal file_to_load_changed(file_path)
 func set_file_to_load(file_path: String) -> void:
-	AppManager.cm.load_config_and_set_as_current(file_path)
+	# AppManager.cm.load_config_and_set_as_current(file_path)
 
 	emit_signal("file_to_load_changed", file_path)
 

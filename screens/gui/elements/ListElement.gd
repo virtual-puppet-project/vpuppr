@@ -213,6 +213,7 @@ func set_value(_value) -> void:
 
 # Override base setup() function
 func setup() -> void:
+	_clear_details()
 	if not data_bind:
 		return
 	match data_bind:
@@ -266,7 +267,7 @@ func setup() -> void:
 			if not AppManager.sb.is_connected("preset_toggle_created", self, "_on_preset_toggle_created"):
 				AppManager.sb.connect("preset_toggle_created", self, "_on_preset_toggle_created")
 			for preset_name in AppManager.cm.metadata_config.config_data.keys():
-				var config = AppManager.cm.load_config(AppManager.cm.metadata_config.config_data[preset_name])
+				var config = AppManager.cm.load_config_for_preset(AppManager.cm.metadata_config.config_data[preset_name])
 
 				var preset_toggle = parent.generate_ui_element(
 					parent.XmlConstants.PRESET_TOGGLE,

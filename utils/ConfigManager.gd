@@ -60,6 +60,7 @@ class ConfigData:
 	var hotkey: String = ""
 	var notes: String = ""
 	var is_default_for_model := false
+	var is_default_dirty := false
 
 	var model_name: String = "changeme"
 	var model_path: String = "changeme"
@@ -116,7 +117,7 @@ class ConfigData:
 		var result: Dictionary = {}
 
 		for i in get_property_list():
-			if not i.name in ["Reference", "script", "Script Variables"]:
+			if not i.name in ["Reference", "script", "Script Variables", "is_default_dirty"]:
 				var data_point := DataPoint.new()
 				var i_value = get(i.name)
 
@@ -270,7 +271,7 @@ func _load_metadata() -> bool:
 func _normalize_default_configs(p_config_name: String, p_model_name: String) -> void:
 	for config_name in metadata_config.config_data.keys():
 		var path: String = metadata_config.config_data[config_name]
-		var data: ConfigData = load_config(path)
+		var data: ConfigData = load_config_for_preset(path)
 		if (data.model_name == p_model_name and data.config_name != p_config_name):
 			data.is_default_for_model = false
 			save_config(data)
@@ -295,7 +296,7 @@ func setup() -> void:
 
 	has_loaded_metadata = true
 
-func load_config(model_path: String) -> ConfigData:
+func load_config_for_model_path(model_path: String) -> ConfigData:
 	var model_name: String = model_path.get_file().get_basename()
 	var full_path: String = CONFIG_FORMAT % [metadata_path, model_name]
 
@@ -314,13 +315,41 @@ func load_config(model_path: String) -> ConfigData:
 	var config_file := File.new()
 	if config_file.open(full_path, File.READ) != OK:
 		AppManager.log_message("Unable to open file at path: %s" % full_path)
+		config.config_name = model_name
+		config.model_name = model_name
+		config.model_path = model_path
 		return config
 	config.load_from_json(config_file.get_as_text())
 	config_file.close()
 
 	return config
 
-# TODO this is very similar to load_config
+func load_config_for_preset(preset_name: String) -> ConfigData:
+	var full_path: String = preset_name
+	if not full_path.is_abs_path():
+		full_path = CONFIG_FORMAT % [metadata_path, preset_name]
+	var config := ConfigData.new()
+	
+	var dir := Directory.new()
+	if not dir.file_exists(full_path):
+		AppManager.log_message("%s does not exist" % full_path, true)
+		config.config_name = "invalid"
+		config.model_name = "invalid"
+		config.model_path = "invalid"
+		return config
+	
+	var config_file := File.new()
+	if config_file.open(full_path, File.READ) != OK:
+		AppManager.log_message("Unable to open file at path: %s" % full_path, true)
+		config.config_name = "invalid"
+		config.model_name = "invalid"
+		config.model_path = "invalid"
+		return config
+	config.load_from_json(config_file.get_as_text())
+	config_file.close()
+	
+	return config
+
 func load_config_and_set_as_current(model_path: String) -> void:
 	var model_name: String = model_path.get_file().get_basename()
 	var config_name: String = ""
@@ -338,18 +367,8 @@ func load_config_and_set_as_current(model_path: String) -> void:
 		current_model_config.config_name = model_name
 		current_model_config.model_name = model_name
 		current_model_config.model_path = model_path
+		save_config(current_model_config)
 		AppManager.sb.broadcast_new_preset(model_name)
-		# var toggle: BaseElement = AppManager.main.gui.generate_ui_element(
-		# 	AppManager.main.gui.XmlConstants.PRESET_TOGGLE,
-		# 	{
-		# 		"name": model_name,
-		# 		"event": "preset_toggled"
-		# 	})
-		# toggle.preset_name = model_name
-		# AppManager.sb.connect("preset_toggled", toggle, "_on_preset_toggled")
-
-		# AppManager.main.gui.presets[model_name] = toggle
-		# AppManager.sb.broadcast_preset_toggle_created(toggle)
 		return
 
 	var config_file := File.new()
@@ -362,22 +381,27 @@ func load_config_and_set_as_current(model_path: String) -> void:
 func save_config(p_config: ConfigData = null) -> void:
 	AppManager.log_message("Saving config")
 
-	var config = p_config
-	if not config:
-		config = current_model_config
+	var config: ConfigData
+	if p_config:
+		config = p_config.duplicate()
+	else:
+		config = current_model_config.duplicate()
 
 	var config_name = config.config_name
 	var model_name = config.model_name
 	var is_default = config.is_default_for_model
+	var is_default_dirty = config.is_default_dirty
 
 	var config_path := CONFIG_FORMAT % [metadata_path, config_name]
 
 	metadata_config.config_data[config_name] = config_path
 
 	if metadata_config.model_defaults.has(model_name):
-		if is_default:
-			metadata_config.model_defaults[model_name] = config_name
-			_normalize_default_configs(config_name, model_name)
+		if is_default_dirty:
+			config.is_default_dirty = false
+			if is_default:
+				metadata_config.model_defaults[model_name] = config_name
+				_normalize_default_configs(config_name, model_name)
 	else:
 		config.is_default_for_model = true
 		metadata_config.model_defaults[model_name] = config_name
