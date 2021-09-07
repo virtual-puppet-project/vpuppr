@@ -9,6 +9,8 @@ var label_text: String
 var event_name: String
 # The config data
 var data_bind: String
+# If the actual element should be editable
+var is_disabled := false
 
 var parent
 
@@ -37,12 +39,15 @@ func set_value(_value) -> void:
 
 func setup() -> void:
 	if data_bind:
+		# ConfigData
 		var data = AppManager.cm.current_model_config.get(data_bind)
 		if data != null:
 			set_value(data)
 			if data_bind == "should_track_eye":
 				print("%s : %s" % [event_name, data])
 			return
+		
+		# Metadata
 		data = AppManager.cm.metadata_config.get(data_bind)
 		if data != null:
 			set_value(data)

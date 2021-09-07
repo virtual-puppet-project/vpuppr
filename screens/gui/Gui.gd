@@ -40,6 +40,7 @@ const XmlConstants: Dictionary = {
 	"EVENT": "event",
 	"VALUE": "value",
 	"TYPE": "type",
+	"DISABLED": "disabled",
 
 	"SCRIPT": "script"
 }
@@ -632,6 +633,10 @@ func _on_load_preset() -> void:
 	
 	AppManager.cm.current_model_config = current_edited_preset.duplicate()
 	if cmc.model_name != current_edited_preset.model_name:
+		for prop_data in props:
+			prop_data.prop.queue_free()
+			prop_data.toggle.queue_free()
+		props.clear()
 		AppManager.main.load_file(AppManager.cm.current_model_config.model_path)
 	
 	_setup_gui_nodes()
@@ -763,6 +768,16 @@ func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 
 	if data.has(XmlConstants.EVENT):
 		result.event_name = data[XmlConstants.EVENT]
+
+	if data.has(XmlConstants.DISABLED):
+		match data[XmlConstants.DISABLED].to_lower():
+			"true":
+				result.is_disabled = true
+			"false":
+				result.is_disabled = false
+			_:
+				# Ignore invalid syntax
+				pass
 
 	result.parent = self
 

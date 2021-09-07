@@ -90,6 +90,8 @@ class ConfigData:
 	var should_track_eye: bool = true
 	var gaze_strength: float = 0.5
 
+	var tracker_fps: int = 12
+
 	###
 	# Feature
 	###

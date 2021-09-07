@@ -8,6 +8,8 @@ onready var button: Button = $Button
 
 func _ready() -> void:
 	button.text = label_text
+
+	button.disabled = is_disabled
 	
 	button.connect("pressed", self, "_on_pressed")
 

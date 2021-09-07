@@ -79,6 +79,14 @@ signal gaze_strength(value)
 func broadcast_gaze_strength(value: bool) -> void:
 	emit_signal("gaze_strength", value)
 
+signal tracker_fps(value)
+func broadcast_tracker_fps(value: int) -> void:
+	emit_signal("tracker_fps", value)
+
+signal start_tracker()
+func broadcast_start_tracker() -> void:
+	emit_signal("start_tracker")
+
 # Features gui
 
 signal add_custom_prop()
