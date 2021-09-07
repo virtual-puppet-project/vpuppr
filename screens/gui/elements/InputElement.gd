@@ -17,6 +17,8 @@ var should_emit := false
 func _ready() -> void:
 	label.text = label_text
 	
+	line_edit.editable = not is_disabled
+	
 	line_edit.connect("text_entered", self, "_on_text_entered")
 	line_edit.connect("text_changed", self, "_on_text_changed")
 

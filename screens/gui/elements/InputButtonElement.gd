@@ -9,6 +9,10 @@ onready var button: Button = $HBoxContainer/Button
 
 func _ready() -> void:
 	line_edit.placeholder_text = label_text
+	
+	line_edit.editable = not is_disabled
+	button.disabled = is_disabled
+	
 	button.connect("pressed", self, "_on_button_pressed")
 
 ###############################################################################

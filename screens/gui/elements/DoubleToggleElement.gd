@@ -21,6 +21,9 @@ func _ready() -> void:
 	toggle1.pressed = toggle1_value
 	toggle2.pressed = toggle2_value
 	
+	toggle1.disabled = is_disabled
+	toggle2.disabled = is_disabled
+	
 	toggle1.connect("toggled", self, "_on_toggled1")
 	toggle2.connect("toggled", self, "_on_toggled2")
 

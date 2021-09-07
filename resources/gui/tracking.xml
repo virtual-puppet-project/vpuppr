@@ -19,6 +19,10 @@
         <input name="Gaze Strength" data="gaze_strength" event="gaze_strength" type="float"/>
     </left>
     <right>
-
+        <label name="Tracking Options"/>
+        <label name="Camera select (not yet implemented)"/>
+        <button name="probz won't be a button lmao" disabled="true"/>
+        <input name="Tracker FPS" data="tracker_fps" event="tracker_fps" type="integer"/>
+        <button name="Start Tracker" event="start_tracker"/>
     </right>
 </view>
