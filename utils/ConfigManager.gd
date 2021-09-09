@@ -387,6 +387,9 @@ func save_config(p_config: ConfigData = null) -> void:
 	if p_config:
 		config = p_config.duplicate()
 	else:
+		# TODO this is gross
+		current_model_config.model_transform = AppManager.main.model_display_screen.model.transform
+		current_model_config.model_parent_transform = AppManager.main.model_display_screen.model_parent.transform
 		config = current_model_config.duplicate()
 
 	var config_name = config.config_name

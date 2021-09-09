@@ -683,7 +683,6 @@ func _toggle_view(view_name: String) -> void:
 		GUI_VIEWS[view_name].visible = not GUI_VIEWS[view_name].visible
 
 func _setup_gui_nodes() -> void:
-	print_debug(AppManager.cm.current_model_config.config_name)
 	for node in get_tree().get_nodes_in_group(GUI_GROUP):
 		node.setup()
 

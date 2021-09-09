@@ -56,8 +56,6 @@ func setup() -> void:
 		var data = AppManager.cm.current_model_config.get(data_bind)
 		if data != null:
 			set_value(data)
-			if data_bind == "should_track_eye":
-				print("%s : %s" % [event_name, data])
 			return
 		
 		# Metadata
