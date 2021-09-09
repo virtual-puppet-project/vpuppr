@@ -1,5 +1,9 @@
 extends Reference
 
+signal update_label_text(element_name, value)
+func broadcast_update_label_text(element_name: String, value: String) -> void:
+	emit_signal("update_label_text", element_name, value)
+
 # Model gui
 
 signal move_model(value)
@@ -76,7 +80,7 @@ func broadcast_should_track_eye(value: bool) -> void:
 	emit_signal("should_track_eye", value)
 
 signal gaze_strength(value)
-func broadcast_gaze_strength(value: bool) -> void:
+func broadcast_gaze_strength(value: float) -> void:
 	emit_signal("gaze_strength", value)
 
 signal tracker_fps(value)
@@ -186,27 +190,27 @@ func model_is_loaded(model: BasicModel) -> void:
 
 # Legacy gui
 
-signal properties_applied()
-func apply_properties() -> void:
-	emit_signal("properties_applied")
+# signal properties_applied()
+# func apply_properties() -> void:
+# 	emit_signal("properties_applied")
 
-signal properties_reset()
-func reset_properties() -> void:
-	emit_signal("properties_reset")
+# signal properties_reset()
+# func reset_properties() -> void:
+# 	emit_signal("properties_reset")
 
-signal gui_toggle_set(toggle_name, view_name)
-# TODO pose/feature/preset view all use this
-# If a prop and a preset both share the same name, then they will both be toggled on
-func gui_toggle_set(toggle_name: String, view_name: String) -> void:
-	emit_signal("gui_toggle_set", toggle_name, view_name)
+# signal gui_toggle_set(toggle_name, view_name)
+# # TODO pose/feature/preset view all use this
+# # If a prop and a preset both share the same name, then they will both be toggled on
+# func gui_toggle_set(toggle_name: String, view_name: String) -> void:
+# 	emit_signal("gui_toggle_set", toggle_name, view_name)
 
 signal face_tracker_offsets_set()
 func save_facetracker_offsets() -> void:
 	emit_signal("face_tracker_offsets_set")
 
-signal preset_changed(preset) # TODO might not need this
-func change_preset(preset: String) -> void:
-	emit_signal(preset)
+# signal preset_changed(preset) # TODO might not need this
+# func change_preset(preset: String) -> void:
+# 	emit_signal(preset)
 
 signal default_model_set()
 func set_model_as_default() -> void:

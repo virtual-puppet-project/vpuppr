@@ -41,6 +41,7 @@ const XmlConstants: Dictionary = {
 	"VALUE": "value",
 	"TYPE": "type",
 	"DISABLED": "disabled",
+	"LABEL_UPDATABLE": "label_updatable",
 
 	"SCRIPT": "script"
 }
@@ -759,25 +760,37 @@ func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 			AppManager.log_message("Unhandled tag_name: %s" % tag_name)
 			return result
 
-	result.name = node_name
-	result.label_text = display_name
 	if data.has(XmlConstants.DATA):
 		result.data_bind = data[XmlConstants.DATA]
-
-	result.add_to_group(GUI_GROUP)
 
 	if data.has(XmlConstants.EVENT):
 		result.event_name = data[XmlConstants.EVENT]
 
 	if data.has(XmlConstants.DISABLED):
 		match data[XmlConstants.DISABLED].to_lower():
-			"true":
+			"true", "yes":
 				result.is_disabled = true
-			"false":
+			"false", "no":
 				result.is_disabled = false
 			_:
 				# Ignore invalid syntax
 				pass
+
+	if data.has(XmlConstants.LABEL_UPDATABLE):
+		match data[XmlConstants.LABEL_UPDATABLE].to_lower():
+			"true", "yes":
+				AppManager.sb.connect("update_label_text", result, "_on_label_updated")
+			"false", "no":
+				pass
+			_:
+				# Ignore invalid syntax
+				pass
+		pass
+
+	result.name = node_name
+	result.label_text = display_name
+
+	result.add_to_group(GUI_GROUP)
 
 	result.parent = self
 

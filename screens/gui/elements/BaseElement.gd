@@ -22,6 +22,19 @@ var parent
 # Connections                                                                 #
 ###############################################################################
 
+func _on_label_updated(label_name: String, value: String) -> void:
+	if label_name != label_text:
+		return
+
+	var elem: Control = get("label")
+	if elem:
+		elem.text = value
+		return
+	
+	elem = get("button")
+	if elem:
+		elem.text = value
+
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################

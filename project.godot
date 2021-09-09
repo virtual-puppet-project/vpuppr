@@ -79,11 +79,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://screens/ModelDisplayScreen.gd"
 }, {
-"base": "Node",
-"class": "OpenSeeGD",
-"language": "GDScript",
-"path": "res://utils/OpenSeeGD.gd"
-}, {
 "base": "Reference",
 "class": "TranslationManager",
 "language": "GDScript",
@@ -119,7 +114,6 @@ _global_script_class_icons={
 "JSONUtil": "",
 "MainScreen": "",
 "ModelDisplayScreen": "",
-"OpenSeeGD": "",
 "TranslationManager": "",
 "VRMMappings": "",
 "VRMModel": "",

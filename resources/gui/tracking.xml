@@ -12,7 +12,7 @@
 
         <label name="Interpolation Options"/>
         <toggle name="Interpolate Model" data="interpolate_model" event="interpolate_model"/>
-        <toggle name="Interpolation Rate" data="interpolation_rate" event="interpolation_rate"/>
+        <input name="Interpolation Rate" data="interpolation_rate" event="interpolation_rate" type="float"/>
 
         <label name="Misc."/>
         <toggle name="Should Track Eye" data="should_track_eye" event="should_track_eye"/>
@@ -23,6 +23,6 @@
         <label name="Camera select (not yet implemented)"/>
         <button name="probz won't be a button lmao" disabled="true"/>
         <input name="Tracker FPS" data="tracker_fps" event="tracker_fps" type="integer"/>
-        <button name="Start Tracker" event="start_tracker"/>
+        <button name="Start Tracker" event="start_tracker" label_updatable="true"/>
     </right>
 </view>
