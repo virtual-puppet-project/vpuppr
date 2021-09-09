@@ -26,4 +26,4 @@ emission_operator = 0
 emission_on_uv2 = false
 emission_texture = SubResource( 2 )
 uv1_scale = Vector3( 3, 3, 3 )
-uv1_offset = Vector3( 0.131, 0.01, 0 )
+uv1_offset = Vector3( -0.373, -0.294, 0 )

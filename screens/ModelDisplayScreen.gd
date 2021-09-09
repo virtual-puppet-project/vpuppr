@@ -23,7 +23,7 @@ var model_initial_transform: Transform
 var model_parent_initial_transform: Transform
 
 # OpenSee
-var open_see_data: OpenSeeGD.OpenSeeData
+var open_see_data
 export var face_id: int = 0
 export var min_confidence: float = 0.2
 export var show_gaze: bool = true
@@ -51,11 +51,13 @@ export var apply_translation: bool = false
 var translation_adjustment: Vector3 = Vector3.ONE
 export var apply_rotation: bool = true
 var rotation_adjustment: Vector3 = Vector3.ONE
-export var interpolate_model: bool = true
+export var interpolate_model: bool = true # TODO may or may not be working correctly?
+var last_interpolation_rate: float # Used for toggling interpolate model on/off
 var interpolation_rate: float = 0.1 setget _set_interpolation_rate
 var interpolation_data: InterpolationData = InterpolationData.new()
+var should_track_eye: bool = true
 
-export var tracking_start_delay: float = 2.0
+export var tracking_start_delay: float = 3.0
 
 ###
 # Input
@@ -72,6 +74,10 @@ export var mouse_move_strength: float = 0.002
 ###############################################################################
 
 func _ready() -> void:
+	for i in ["apply_translation", "apply_rotation", "interpolate_model", "interpolation_rate", "should_track_eye"]:
+		AppManager.sb.connect(i, self, "_on_%s" % i)
+		set(i, AppManager.cm.current_model_config.get(i))
+
 	if model_resource_path:
 		match model_resource_path.get_extension():
 			"glb":
@@ -116,19 +122,15 @@ func _ready() -> void:
 		# TODO i dont think this is used for tscn?
 		script_to_use = GENERIC_MODEL_SCRIPT_PATH
 
-	model_initial_transform = model.transform
-	model_parent_initial_transform = model_parent.transform
 	model_parent.call_deferred("add_child", model)
 	
 	# Wait until the model is loaded else we get IK errors
-	yield(model_parent, "ready")
+	yield(model, "ready")
 
-	var offset_timer: Timer = Timer.new()
-	offset_timer.name = "OffsetTimer"
-	offset_timer.connect("timeout", self, "_on_offset_timer_timeout")
-	offset_timer.wait_time = tracking_start_delay
-	offset_timer.autostart = true
-	self.call_deferred("add_child", offset_timer)
+	model_initial_transform = AppManager.cm.current_model_config.model_transform
+	model_parent_initial_transform = AppManager.cm.current_model_config.model_parent_transform
+	model.transform = model_initial_transform
+	model_parent.transform = model_parent_initial_transform
 
 func _physics_process(_delta: float) -> void:
 	if not stored_offsets:
@@ -150,9 +152,9 @@ func _physics_process(_delta: float) -> void:
 			stored_offsets.translation_offset - open_see_data.translation,
 			stored_offsets.euler_offset - corrected_euler,
 			(stored_offsets.left_eye_gaze_offset - open_see_data.left_gaze.get_euler()) *
-					AppManager.should_track_eye,
+					float(should_track_eye),
 			(stored_offsets.right_eye_gaze_offset - open_see_data.right_gaze.get_euler()) *
-					AppManager.should_track_eye
+					float(should_track_eye)
 		)
 
 	if apply_translation:
@@ -218,6 +220,27 @@ func _on_offset_timer_timeout() -> void:
 	open_see_data = OpenSeeGd.get_open_see_data(face_id)
 	_save_offsets()
 
+func _on_apply_translation(value: bool) -> void:
+	apply_translation = value
+
+func _on_apply_rotation(value: bool) -> void:
+	apply_rotation = value
+
+func _on_interpolate_model(value: bool) -> void:
+	interpolate_model = value
+	if value:
+		_set_interpolation_rate(last_interpolation_rate)
+	else:
+		last_interpolation_rate = interpolation_rate
+		_set_interpolation_rate(1.0)
+
+func _on_interpolation_rate(value: float) -> void:
+	last_interpolation_rate = value
+	_set_interpolation_rate(value)
+
+func _on_should_track_eye(value: bool) -> void:
+	should_track_eye = value
+
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
@@ -277,14 +300,9 @@ func load_external_model(file_path: String) -> Spatial:
 	
 	match file_path.get_extension():
 		"glb":
-			#var gltf_loader: DynamicGLTFLoader = DynamicGLTFLoader.new()
-			#loaded_model = gltf_loader.import_scene(file_path, 1, 1)
-#			var gstate: GLTFState = GLTFState.new()
 			var gltf := PackedSceneGLTF.new()
-#			loaded_model = gltf.import_gltf_scene(file_path, 0, 1000.0, gstate)
 			loaded_model = gltf.import_gltf_scene(file_path)
 		"vrm":
-			# var import_vrm: ImportVRM = ImportVRM.new()
 			var vrm_loader = VrmLoader.new()
 			loaded_model = vrm_loader.import_scene(file_path, 1, 1000)
 			vrm_meta = loaded_model.vrm_meta
@@ -298,3 +316,12 @@ func load_external_model(file_path: String) -> Spatial:
 	AppManager.log_message("External file loaded successfully.")
 	
 	return loaded_model
+
+func tracking_started() -> void:
+	if not open_see_data:
+		var offset_timer: Timer = Timer.new()
+		offset_timer.name = "OffsetTimer"
+		offset_timer.connect("timeout", self, "_on_offset_timer_timeout")
+		offset_timer.wait_time = tracking_start_delay
+		offset_timer.autostart = true
+		self.call_deferred("add_child", offset_timer)

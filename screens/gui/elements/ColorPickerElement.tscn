@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://screens/gui/elements/BaseElement.tscn" type="PackedScene" id=1]
+[ext_resource path="res://screens/gui/elements/ColorPickerElement.gd" type="Script" id=2]
+
+[node name="ColorPickerElement" instance=ExtResource( 1 )]
+script = ExtResource( 2 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." index="0"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 1593.0
+margin_bottom = 893.0
+
+[node name="Label" type="Label" parent="HBoxContainer" index="0"]
+margin_top = 436.0
+margin_bottom = 450.0
+
+[node name="ColorPicker" type="ColorPicker" parent="HBoxContainer" index="1"]
+margin_left = 4.0
+margin_right = 1586.0
+margin_bottom = 886.0
+size_flags_horizontal = 3
+size_flags_vertical = 3

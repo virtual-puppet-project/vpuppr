@@ -61,16 +61,16 @@ func interpolate(interpolation_data_type: int, damp_modifier: float) -> Vector3:
 	var result: Vector3
 	match interpolation_data_type:
 		InterpolationDataType.TRANSLATION:
-			result = lerp(last_translation, target_translation * damp_modifier, rate)
+			result = lerp(last_translation, target_translation * damp_modifier, AppManager.cm.current_model_config.interpolation_rate)
 			last_translation = result
 		InterpolationDataType.ROTATION:
-			result = lerp(last_rotation, target_rotation * damp_modifier, rate)
+			result = lerp(last_rotation, target_rotation * damp_modifier, AppManager.cm.current_model_config.interpolation_rate)
 			last_rotation = result
 		InterpolationDataType.LEFT_EYE_ROTATION:
-			result = lerp(last_left_eye_rotation, target_left_eye_rotation * damp_modifier, rate)
+			result = lerp(last_left_eye_rotation, target_left_eye_rotation * damp_modifier, AppManager.cm.current_model_config.interpolation_rate)
 			last_left_eye_rotation = result
 		InterpolationDataType.RIGHT_EYE_ROTATION:
-			result = lerp(last_right_eye_rotation, target_right_eye_rotation * damp_modifier, rate)
+			result = lerp(last_right_eye_rotation, target_right_eye_rotation * damp_modifier, AppManager.cm.current_model_config.interpolation_rate)
 			last_right_eye_rotation = result
 
 	return result

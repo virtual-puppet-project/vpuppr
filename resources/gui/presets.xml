@@ -1,0 +1,9 @@
+<view name="Presets">
+    <left>
+        <input_button name="New preset name" event="new_preset"/>
+        <list name="Saved Presets" data="config_data"/>
+    </left>
+    <right>
+        <list name="Preset Info" type="preset_receiver"/>
+    </right>
+</view>

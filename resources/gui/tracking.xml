@@ -1,0 +1,28 @@
+<view name="Tracking">
+    <left>
+        <label name="Damps"/>
+        <input name="Translation Damp" data="translation_damp" event="translation_damp" type="float"/>
+        <input name="Rotation Damp" data="rotation_damp" event="rotation_damp" type="float"/>
+        <input name="Additional Bone Damp" data="additional_bone_damp" event="additional_bone_damp" type="float"/>
+
+        <label name="Model Manipulation"/>
+        <input name="Head Bone" data="head_bone" event="head_bone" type="string"/>
+        <toggle name="Apply Translation" data="apply_translation" event="apply_translation"/>
+        <toggle name="Apply Rotation" data="apply_rotation" event="apply_rotation"/>
+
+        <label name="Interpolation Options"/>
+        <toggle name="Interpolate Model" data="interpolate_model" event="interpolate_model"/>
+        <input name="Interpolation Rate" data="interpolation_rate" event="interpolation_rate" type="float"/>
+
+        <label name="Misc."/>
+        <toggle name="Should Track Eye" data="should_track_eye" event="should_track_eye"/>
+        <input name="Gaze Strength" data="gaze_strength" event="gaze_strength" type="float"/>
+    </left>
+    <right>
+        <label name="Tracking Options"/>
+        <label name="Camera select (not yet implemented)"/>
+        <button name="probz won't be a button lmao" disabled="true"/>
+        <input name="Tracker FPS" data="tracker_fps" event="tracker_fps" type="integer"/>
+        <button name="Start Tracker" event="start_tracker" label_updatable="true"/>
+    </right>
+</view>
