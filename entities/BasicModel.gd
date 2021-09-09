@@ -32,6 +32,7 @@ var has_custom_update: bool = false
 func _ready() -> void:
 	for i in ["head_bone", "translation_damp", "rotation_damp", "additional_bone_damp", "gaze_strength"]:
 		AppManager.sb.connect(i, self, "_on_%s" % i)
+		set(i, AppManager.cm.current_model_config.get(i))
 
 	for i in range(skeleton.get_bone_count()):
 		initial_bone_poses[i] = skeleton.get_bone_pose(i)

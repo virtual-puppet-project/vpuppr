@@ -299,6 +299,8 @@ func _on_start_tracker() -> void:
 
 			start_receiver()
 
+			AppManager.main.model_display_screen.tracking_started()
+
 			AppManager.log_message("Face tracker started.")
 	else:
 		AppManager.log_message("Stopping face tracker.")
