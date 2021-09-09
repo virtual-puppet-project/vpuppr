@@ -1,0 +1,41 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://screens/gui/elements/DoubleToggleElement.gd" type="Script" id=1]
+
+[node name="DoubleToggleElement" type="PanelContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 1593.0
+margin_bottom = 893.0
+
+[node name="Label" type="Label" parent="HBoxContainer"]
+margin_top = 436.0
+margin_right = 1426.0
+margin_bottom = 450.0
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer"]
+margin_left = 1430.0
+margin_right = 1586.0
+margin_bottom = 886.0
+
+[node name="CheckButton1" type="CheckButton" parent="HBoxContainer/HBoxContainer"]
+margin_right = 76.0
+margin_bottom = 886.0
+focus_mode = 0
+size_flags_horizontal = 10
+
+[node name="CheckButton2" type="CheckButton" parent="HBoxContainer/HBoxContainer"]
+margin_left = 80.0
+margin_right = 156.0
+margin_bottom = 886.0
+focus_mode = 0
+size_flags_horizontal = 10

@@ -30,16 +30,33 @@ var has_custom_update: bool = false
 ###############################################################################
 
 func _ready() -> void:
+	for i in ["head_bone", "translation_damp", "rotation_damp", "additional_bone_damp", "gaze_strength"]:
+		AppManager.sb.connect(i, self, "_on_%s" % i)
+		set(i, AppManager.cm.current_model_config.get(i))
+
 	for i in range(skeleton.get_bone_count()):
 		initial_bone_poses[i] = skeleton.get_bone_pose(i)
 
-	scan_mapped_bones()
-
-	AppManager.model_is_loaded()
+	AppManager.sb.model_is_loaded(self)
 
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
+
+func _on_head_bone(value: String) -> void:
+	head_bone = value
+
+func _on_translation_damp(value: float) -> void:
+	translation_damp = value
+
+func _on_rotation_damp(value: float) -> void:
+	rotation_damp = value
+
+func _on_additional_bone_damp(value: float) -> void:
+	additional_bone_damp = value
+
+func _on_gaze_strength(value: float) -> void:
+	gaze_strength = value
 
 ###############################################################################
 # Private functions                                                           #
@@ -52,7 +69,7 @@ func _modify_blend_shape(mesh_instance: MeshInstance, blend_shape: String, value
 # Public functions                                                            #
 ###############################################################################
 
-func custom_update(_open_see_data: OpenSeeGD.OpenSeeData, _interpolation_data: InterpolationData) -> void:
+func custom_update(_open_see_data: OpenSeeGd.OpenSeeData, _interpolation_data: InterpolationData) -> void:
 	push_error("Model custom update not implemented")
 
 func get_mapped_bones() -> Dictionary: # String: bool

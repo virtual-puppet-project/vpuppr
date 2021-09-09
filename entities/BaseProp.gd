@@ -24,6 +24,6 @@ var offset: Transform
 func save() -> Dictionary:
 	return {
 		"prop_path": prop_path,
-		"parent_prop_transform": JSONUtil.transform_to_dictionary(self.transform),
-		"child_prop_transform": JSONUtil.transform_to_dictionary(get_child(0).transform)
+		"parent_transform": JSONUtil.transform_to_dictionary(self.transform),
+		"child_transform": JSONUtil.transform_to_dictionary(get_child(0).transform)
 	}

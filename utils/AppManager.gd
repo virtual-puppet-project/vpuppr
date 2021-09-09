@@ -1,13 +1,11 @@
 extends Node
 
-signal file_to_load_changed(file_path)
 #warning-ignore:unused_signal
 signal model_loaded() # Used by model scripts to indicate when they are ready
 #warning-ignore:unused_signal
 signal properties_applied()
 #warning-ignore:unused_signal
 signal properties_reset()
-signal gui_toggle_set(toggle_name, view_name)
 #warning-ignore:unused_signal
 signal face_tracker_offsets_set()
 #warning-ignore:unused_signal
@@ -28,12 +26,14 @@ const DEFAULT_SAVE_FILE: Dictionary = {
 	"models": {} # String: Dictionary
 }
 
-onready var tm: TranslationManager = TranslationManager.new()
+# TODO currently unused
+# onready var tm: TranslationManager = TranslationManager.new()
 onready var cm: Reference = load("res://utils/ConfigManager.gd").new()
+onready var sb: Reference = load("res://utils/SignalBroadcaster.gd").new()
 
 # Face tracker
-var is_face_tracker_running: bool
-var face_tracker_pid: int
+# var is_face_tracker_running: bool
+# var face_tracker_pid: int
 
 # TODO disable OpenSeeGD during debug i guess
 var is_face_tracking_disabled: bool = false
@@ -51,7 +51,15 @@ var vrm_mappings: VRMMappings
 
 # AppSettings
 var default_load_path: String = "/"
-var should_track_eye: float = 1.0
+# var should_track_eye: float = 1.0
+
+# Debounce
+const DEBOUNCE_TIME: float = 5.0
+var debounce_counter: float = 0.0
+var should_save := false
+var config_to_save: Reference
+
+var main: MainScreen
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -71,13 +79,23 @@ func _ready() -> void:
 
 	cm.setup()
 
+func _process(delta: float) -> void:
+	if should_save:
+		debounce_counter += delta
+		if debounce_counter > DEBOUNCE_TIME:
+			debounce_counter = 0.0
+			should_save = false
+			cm.save_config(config_to_save)
+	
+
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
 
 func _on_tree_exiting() -> void:
-	if is_face_tracker_running:
-		OS.kill(face_tracker_pid)
+	if OpenSeeGd.is_listening:
+		OpenSeeGd.stop_receiver()
+		# OS.kill(face_tracker_pid)
 	
 	log_message("Exiting. おやすみ。")
 
@@ -92,43 +110,30 @@ func _on_tree_exiting() -> void:
 func save_facetracker_offsets() -> void:
 	emit_signal("face_tracker_offsets_set")
 
-func apply_properties() -> void:
-	emit_signal("properties_applied")
-
-func reset_properties() -> void:
-	emit_signal("properties_reset")
-
-# TODO pose/feature/preset view all use this
-# If a prop and a preset both share the same name, then they will both be toggled on
-func gui_toggle_set(toggle_name: String, view_name: String) -> void:
-	emit_signal("gui_toggle_set", toggle_name, view_name)
-
-func set_file_to_load(file_path: String) -> void:
-	current_model_name = file_path.get_file()
-	# Grab the full model path to allow setting model as default
-	current_model_path = file_path
-
-	cm.load_config(file_path)
-
-	emit_signal("file_to_load_changed", file_path)
-
-# TODO update this to use cm
-func set_model_default() -> void:
-	cm.metadata_config.default_model_to_load_path = current_model_path
-	cm.save_config()
-	emit_signal("default_model_set")
-
 func is_current_model_default() -> bool:
 	var result: bool = false
 	if current_model_path == cm.metadata_config.default_model_to_load_path:
 		result = true
 	return result
 
-func model_is_loaded() -> void:
-	emit_signal("model_loaded")
+func save_config(p_config: Reference = null) -> void:
+	"""
+	Start saving config based off a debounce time
+	
+	If p_config is null, will save the current config in use
+	"""
+	should_save = true
+	config_to_save = p_config
 
-func change_preset(preset: String) -> void:
-	emit_signal(preset)
+func save_config_instant(p_config: Reference = null) -> void:
+	"""
+	Immediately save config and stop debouncing if in progress
+	
+	If p_config is null, will save the current config in use
+	"""
+	should_save = false
+	debounce_counter = 0.0
+	cm.save_config(p_config)
 
 func log_message(message: String, is_error: bool = false) -> void:
 	if is_error:

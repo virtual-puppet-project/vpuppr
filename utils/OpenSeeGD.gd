@@ -1,4 +1,3 @@
-class_name OpenSeeGD
 extends Node
 
 const NUMBER_OF_POINTS: int = 68
@@ -12,8 +11,6 @@ export var listen_port: int = 11573
 # Tracking data
 # var received_packets: int = 0
 var tracking_data: Array = [] # OpenSeeData
-
-var listening: bool = false
 
 var max_fit_3d_error: float = 100.0
 
@@ -187,12 +184,20 @@ class OpenSeeData:
 		features.mouth_open = read_float(spb, opi)
 		features.mouth_wide = read_float(spb, opi)
 
+const RUN_FACE_TRACKER_TEXT: String = "Run tracker"
+const STOP_FACE_TRACKER_TEXT: String = "Stop tracker"
+
 var open_see_data_map: Dictionary # int: OpenSeeData
 # TODO this might be unity specific?
 # var socket
-var buffer: PoolByteArray
+# var buffer: PoolByteArray
 var receive_thread: Thread = null
 var stop_reception: bool = false
+
+var is_listening := false
+
+var face_tracker_fps: String = "12"
+var face_tracker_pid: int
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -201,13 +206,15 @@ var stop_reception: bool = false
 func _ready() -> void:
 	if not open_see_data_map:
 		self.open_see_data_map = {}
-	self.buffer = PoolByteArray()
+	# self.buffer = PoolByteArray()
 	
 	# start_receiver()
 
-func _process(_delta: float) -> void:
-	if(receive_thread and not receive_thread.is_active()):
-		self._ready()
+	AppManager.sb.connect("start_tracker", self, "_on_start_tracker")
+
+#func _process(_delta: float) -> void:
+#	if(receive_thread and not receive_thread.is_active()):
+#		self._ready()
 
 func _exit_tree() -> void:
 	stop_receiver()
@@ -216,12 +223,104 @@ func _exit_tree() -> void:
 # Connections                                                                 #
 ###############################################################################
 
+func _on_start_tracker() -> void:
+	if not is_listening:
+		AppManager.log_message("Starting face tracker.")
+
+		is_listening = true
+		stop_reception = false
+
+		# var face_tracker_fps: String = $Control/MarginContainer/VBoxContainer/MiddleColorRect/HBoxContainer/InputLabel/HBoxContainer/FaceTrackerFPS.text
+		var face_tracker_options: PoolStringArray = [
+			"-c",
+			"0",
+			"-F",
+			face_tracker_fps,
+			"-D",
+			"-1",
+			"-v",
+			"0",
+			"-s",
+			"1",
+			"-P",
+			"1",
+			"--discard-after",
+			"0",
+			"--scan-every",
+			"0",
+			"--no-3d-adapt",
+			"1",
+			"--max-feature-updates",
+			"900"
+		]
+		if face_tracker_fps.is_valid_float():
+			if float(face_tracker_fps) > 144:
+				AppManager.log_message("Face tracker fps is greater than 144. This is a bad idea.")
+				AppManager.log_message("Declining to start face tracker.")
+				return
+			var pid: int = -1
+			match OS.get_name().to_lower():
+				"windows":
+					pid = OS.execute(OS.get_executable_path().get_base_dir() + "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe",
+							face_tracker_options, false, [], true)
+				"osx", "x11":
+					var modified_options := PoolStringArray(["./OpenSeeFace/facetracker.py"])
+					modified_options.append_array(face_tracker_options)
+
+					var python_alias: String = ""
+					
+					var shell_output: Array = []
+
+					OS.execute("command -v python3", [], true, shell_output)
+					if not shell_output.empty():
+						python_alias = "python3"
+					else:
+						OS.execute("command -v python", [], true, shell_output)
+						if not shell_output.empty():
+							python_alias = "python"
+					
+					if python_alias.empty():
+						AppManager.log_message("Unable to find python executable")
+						return
+					
+					pid = OS.execute("%s %s/facetracker.py" % [python_alias, OS.get_executable_path().get_base_dir()], face_tracker_options,
+							false, [], true)
+				_:
+					AppManager.log_message("Unhandled os type %s" % OS.get_name(), true)
+					return
+			
+			if pid <= 0:
+				is_listening = false
+				stop_reception = true
+				AppManager.log_message("Failed to start tracker", true)
+				return
+			face_tracker_pid = pid
+			AppManager.sb.broadcast_update_label_text("Start Tracker", STOP_FACE_TRACKER_TEXT)
+
+			start_receiver()
+
+			AppManager.main.model_display_screen.tracking_started()
+
+			AppManager.log_message("Face tracker started.")
+	else:
+		AppManager.log_message("Stopping face tracker.")
+
+		is_listening = false
+		stop_reception = true
+		
+		stop_receiver()
+		
+		OS.kill(face_tracker_pid)
+		AppManager.sb.broadcast_update_label_text("Start Tracker", RUN_FACE_TRACKER_TEXT)
+
+		AppManager.log_message("Face tracker stopped.")
+	pass
+
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
 
 func _perform_reception() -> void:
-	self.listening = true
 	while not stop_reception:
 		#warning-ignore:return_value_discarded
 		server.poll()
@@ -241,8 +340,7 @@ func _perform_reception() -> void:
 				new_data.read_from_packet(packet, offset)
 				open_see_data_map[new_data.id] = new_data
 				offset += PACKET_FRAME_SIZE
-			# TODO maybe doesn't need to be cleared?
-			tracking_data = []
+			
 			tracking_data = open_see_data_map.values().duplicate(true)
 
 ###############################################################################
@@ -252,11 +350,11 @@ func _perform_reception() -> void:
 func start_receiver() -> void:
 	if not AppManager.is_face_tracking_disabled:
 		AppManager.log_message("Listening for data at %s:%s" % [listen_address, str(listen_port)])
-		#warning-ignore:return_value_discarded
+
 		server.listen(listen_port, listen_address)
 
 		receive_thread = Thread.new()
-		#warning-ignore:return_value_discarded
+		
 		receive_thread.start(self, "_perform_reception")
 	else:
 		AppManager.log_message("Face tracking is disabled. This should only happen in debug builds.")
@@ -264,15 +362,9 @@ func start_receiver() -> void:
 
 func stop_receiver() -> void:
 	if (receive_thread and receive_thread.is_active()):
-		self.stop_reception = true
 		receive_thread.wait_to_finish()
 	if server.is_listening():
 		server.stop()
-
-func is_server_listening() -> bool:
-	if server.is_listening():
-		return true
-	return false
 
 func get_open_see_data(face_id: int) -> OpenSeeData:
 	if not open_see_data_map:

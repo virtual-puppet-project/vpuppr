@@ -1,0 +1,15 @@
+<view name="Model" script="Model.gd">
+    <left>
+        <list name="Mapped bones" data="mapped_bones"/>
+    </left>
+    <right>
+        <button name="Load model" event="load_model"/>
+        <button name="Set model as default" event="set_model_as_default"/>
+        <label name="Model controls"/>
+        <toggle name="Move model" event="move_model"/>
+        <toggle name="Rotate model" event="rotate_model"/>
+        <toggle name="Zoom model" event="zoom_model"/>
+        <button name="Reset model transform" event="reset_model_transform"/>
+        <button name="Reset model pose" event="reset_model_pose"/>
+    </right>
+</view>
