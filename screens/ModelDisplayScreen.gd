@@ -23,7 +23,7 @@ var model_initial_transform: Transform
 var model_parent_initial_transform: Transform
 
 # OpenSee
-var open_see_data: OpenSeeGD.OpenSeeData
+var open_see_data
 export var face_id: int = 0
 export var min_confidence: float = 0.2
 export var show_gaze: bool = true
@@ -54,6 +54,7 @@ var rotation_adjustment: Vector3 = Vector3.ONE
 export var interpolate_model: bool = true
 var interpolation_rate: float = 0.1 setget _set_interpolation_rate
 var interpolation_data: InterpolationData = InterpolationData.new()
+var should_track_eye: bool = true
 
 export var tracking_start_delay: float = 2.0
 
@@ -72,6 +73,9 @@ export var mouse_move_strength: float = 0.002
 ###############################################################################
 
 func _ready() -> void:
+	for i in ["apply_translation", "apply_rotation", "interpolate_model", "interpolation_rate", "should_track_eye"]:
+		AppManager.sb.connect(i, self, "_on_%s" % i)
+
 	if model_resource_path:
 		match model_resource_path.get_extension():
 			"glb":
@@ -150,9 +154,9 @@ func _physics_process(_delta: float) -> void:
 			stored_offsets.translation_offset - open_see_data.translation,
 			stored_offsets.euler_offset - corrected_euler,
 			(stored_offsets.left_eye_gaze_offset - open_see_data.left_gaze.get_euler()) *
-					AppManager.should_track_eye,
+					float(should_track_eye),
 			(stored_offsets.right_eye_gaze_offset - open_see_data.right_gaze.get_euler()) *
-					AppManager.should_track_eye
+					float(should_track_eye)
 		)
 
 	if apply_translation:
@@ -217,6 +221,21 @@ func _on_offset_timer_timeout() -> void:
 
 	open_see_data = OpenSeeGd.get_open_see_data(face_id)
 	_save_offsets()
+
+func _on_apply_translation(value: bool) -> void:
+	apply_translation = value
+
+func _on_apply_rotation(value: bool) -> void:
+	apply_rotation = value
+
+func _on_interpolate_model(value: bool) -> void:
+	interpolate_model = value
+
+func _on_interpolation_rate(value: float) -> void:
+	_set_interpolation_rate(value)
+
+func _on_should_track_eye(value: bool) -> void:
+	should_track_eye = value
 
 ###############################################################################
 # Private functions                                                           #

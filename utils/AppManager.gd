@@ -32,8 +32,8 @@ onready var cm: Reference = load("res://utils/ConfigManager.gd").new()
 onready var sb: Reference = load("res://utils/SignalBroadcaster.gd").new()
 
 # Face tracker
-var is_face_tracker_running: bool
-var face_tracker_pid: int
+# var is_face_tracker_running: bool
+# var face_tracker_pid: int
 
 # TODO disable OpenSeeGD during debug i guess
 var is_face_tracking_disabled: bool = false
@@ -51,7 +51,7 @@ var vrm_mappings: VRMMappings
 
 # AppSettings
 var default_load_path: String = "/"
-var should_track_eye: float = 1.0
+# var should_track_eye: float = 1.0
 
 # Debounce
 const DEBOUNCE_TIME: float = 5.0
@@ -93,8 +93,9 @@ func _process(delta: float) -> void:
 ###############################################################################
 
 func _on_tree_exiting() -> void:
-	if is_face_tracker_running:
-		OS.kill(face_tracker_pid)
+	if OpenSeeGd.is_listening:
+		OpenSeeGd.stop_receiver()
+		# OS.kill(face_tracker_pid)
 	
 	log_message("Exiting. おやすみ。")
 
