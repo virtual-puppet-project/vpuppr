@@ -193,6 +193,10 @@ func _ready() -> void:
 	AppManager.sb.connect("load_preset", self, "_on_load_preset")
 	AppManager.sb.connect("delete_preset", self, "_on_delete_preset")
 
+	# App settings
+	
+	AppManager.sb.connect("default_search_path", self, "_on_default_search_path")
+
 	if not OS.is_debug_build():
 		base_path = "%s/%s" % [OS.get_executable_path().get_base_dir(), "resources/gui"]
 	else:
@@ -664,6 +668,9 @@ func _on_delete_preset() -> void:
 	presets.erase(preset_name)
 	
 	current_edited_preset = null
+
+func _on_default_search_path(value: String) -> void:
+	AppManager.cm.metadata_config.default_search_path = value
 
 ###############################################################################
 # Private functions                                                           #
