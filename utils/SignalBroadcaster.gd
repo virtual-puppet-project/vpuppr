@@ -174,6 +174,12 @@ signal delete_preset()
 func broadcast_delete_preset() -> void:
 	emit_signal("delete_preset")
 
+# App settings
+
+signal default_search_path(value)
+func broadcast_default_search_path(value: String) -> void:
+	emit_signal("default_search_path", value)
+
 # File select popup
 
 signal file_to_load_changed(file_path)
@@ -190,27 +196,9 @@ func model_is_loaded(model: BasicModel) -> void:
 
 # Legacy gui
 
-# signal properties_applied()
-# func apply_properties() -> void:
-# 	emit_signal("properties_applied")
-
-# signal properties_reset()
-# func reset_properties() -> void:
-# 	emit_signal("properties_reset")
-
-# signal gui_toggle_set(toggle_name, view_name)
-# # TODO pose/feature/preset view all use this
-# # If a prop and a preset both share the same name, then they will both be toggled on
-# func gui_toggle_set(toggle_name: String, view_name: String) -> void:
-# 	emit_signal("gui_toggle_set", toggle_name, view_name)
-
 signal face_tracker_offsets_set()
 func save_facetracker_offsets() -> void:
 	emit_signal("face_tracker_offsets_set")
-
-# signal preset_changed(preset) # TODO might not need this
-# func change_preset(preset: String) -> void:
-# 	emit_signal(preset)
 
 signal default_model_set()
 func set_model_as_default() -> void:
