@@ -283,6 +283,15 @@ func _normalize_default_configs(p_config_name: String, p_model_name: String) -> 
 
 func setup() -> void:
 	if not _load_metadata():
+		var output: Array = []
+		match OS.get_name().to_lower():
+			"windows":
+				OS.execute("echo", ["%HOMEDRIVE%%HOMEPATH%"], true, output)
+			"osx", "x11":
+				OS.execute("echo", ["$HOME"], true, output)
+		if output.size() == 1:
+			metadata_config.default_search_path = output[0].strip_edges()
+
 		var file_path = "%s/%s" % [metadata_path, METADATA_NAME]
 
 		var metadata_file := File.new()
@@ -297,33 +306,33 @@ func setup() -> void:
 
 	has_loaded_metadata = true
 
-func load_config_for_model_path(model_path: String) -> ConfigData:
-	var model_name: String = model_path.get_file().get_basename()
-	var full_path: String = CONFIG_FORMAT % [metadata_path, model_name]
+# func load_config_for_model_path(model_path: String) -> ConfigData:
+# 	var model_name: String = model_path.get_file().get_basename()
+# 	var full_path: String = CONFIG_FORMAT % [metadata_path, model_name]
 
-	AppManager.log_message("Begin loading config for %s" % full_path)
+# 	AppManager.log_message("Begin loading config for %s" % full_path)
 
-	var config = ConfigData.new()
+# 	var config = ConfigData.new()
 
-	var dir := Directory.new()
-	if not dir.file_exists(full_path):
-		AppManager.log_message("%s does not exist" % full_path)
-		config.config_name = model_name
-		config.model_name = model_name
-		config.model_path = model_path
-		return config
+# 	var dir := Directory.new()
+# 	if not dir.file_exists(full_path):
+# 		AppManager.log_message("%s does not exist" % full_path)
+# 		config.config_name = model_name
+# 		config.model_name = model_name
+# 		config.model_path = model_path
+# 		return config
 
-	var config_file := File.new()
-	if config_file.open(full_path, File.READ) != OK:
-		AppManager.log_message("Unable to open file at path: %s" % full_path)
-		config.config_name = model_name
-		config.model_name = model_name
-		config.model_path = model_path
-		return config
-	config.load_from_json(config_file.get_as_text())
-	config_file.close()
+# 	var config_file := File.new()
+# 	if config_file.open(full_path, File.READ) != OK:
+# 		AppManager.log_message("Unable to open file at path: %s" % full_path)
+# 		config.config_name = model_name
+# 		config.model_name = model_name
+# 		config.model_path = model_path
+# 		return config
+# 	config.load_from_json(config_file.get_as_text())
+# 	config_file.close()
 
-	return config
+# 	return config
 
 func load_config_for_preset(preset_name: String) -> ConfigData:
 	var full_path: String = preset_name
@@ -368,6 +377,7 @@ func load_config_and_set_as_current(model_path: String) -> void:
 		current_model_config.config_name = model_name
 		current_model_config.model_name = model_name
 		current_model_config.model_path = model_path
+		current_model_config.is_default_for_model = true # We can assume there are no defaults
 		save_config(current_model_config)
 		AppManager.sb.broadcast_new_preset(model_name)
 		return

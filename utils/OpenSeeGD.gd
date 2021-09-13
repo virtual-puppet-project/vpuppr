@@ -271,11 +271,11 @@ func _on_start_tracker() -> void:
 					
 					var shell_output: Array = []
 
-					OS.execute("command -v python3", [], true, shell_output)
+					OS.execute("command", ["-v", "python3"], true, shell_output)
 					if not shell_output.empty():
 						python_alias = "python3"
 					else:
-						OS.execute("command -v python", [], true, shell_output)
+						OS.execute("command", ["-v", "python"], true, shell_output)
 						if not shell_output.empty():
 							python_alias = "python"
 					
@@ -283,7 +283,7 @@ func _on_start_tracker() -> void:
 						AppManager.log_message("Unable to find python executable")
 						return
 					
-					pid = OS.execute("%s %s/facetracker.py" % [python_alias, OS.get_executable_path().get_base_dir()], face_tracker_options,
+					pid = OS.execute("%s" % [python_alias], face_tracker_options,
 							false, [], true)
 				_:
 					AppManager.log_message("Unhandled os type %s" % OS.get_name(), true)
