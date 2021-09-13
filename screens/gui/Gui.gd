@@ -653,9 +653,9 @@ func _on_delete_preset() -> void:
 	var is_default: bool = current_edited_preset.is_default_for_model
 
 	# Delete the config file
-	var config_path: String = AppManager.cm.metadata_config.config_data.get(preset_name)
+	var config_path = AppManager.cm.metadata_config.config_data.get(preset_name)
 	if not config_path:
-		AppManager.log_message("Unable to delete preset, metadata does not contain preset: %s" % preset_name)
+		AppManager.log_message("Unable to delete preset, metadata does not contain preset: %s" % preset_name, true)
 		return
 	var dir := Directory.new()
 	if not dir.file_exists(config_path):
