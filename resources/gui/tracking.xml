@@ -6,7 +6,7 @@
         <input name="Additional Bone Damp" data="additional_bone_damp" event="additional_bone_damp" type="float"/>
 
         <label name="Model Manipulation"/>
-        <input name="Head Bone" data="head_bone" event="head_bone" type="string"/>
+        <input name="Head Bone" data="head_bone" event="head_bone" type="string" listen_for_self="true"/>
         <toggle name="Apply Translation" data="apply_translation" event="apply_translation"/>
         <toggle name="Apply Rotation" data="apply_rotation" event="apply_rotation"/>
 

@@ -12,11 +12,16 @@ var data_bind: String
 # If the actual element should be editable
 var is_disabled := false
 
+var is_ready := false
+
 var parent
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
+
+func _ready() -> void:
+	is_ready = true
 
 ###############################################################################
 # Connections                                                                 #
@@ -34,6 +39,9 @@ func _on_label_updated(label_name: String, value: String) -> void:
 	elem = get("button")
 	if elem:
 		elem.text = value
+
+func _on_value_updated(value) -> void:
+	set_value(value)
 
 ###############################################################################
 # Private functions                                                           #

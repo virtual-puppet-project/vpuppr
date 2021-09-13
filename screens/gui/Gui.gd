@@ -42,6 +42,7 @@ const XmlConstants: Dictionary = {
 	"TYPE": "type",
 	"DISABLED": "disabled",
 	"LABEL_UPDATABLE": "label_updatable",
+	"LISTEN_FOR_SELF": "listen_for_self",
 
 	"SCRIPT": "script"
 }
@@ -651,6 +652,17 @@ func _on_delete_preset() -> void:
 	var preset_name: String = current_edited_preset.config_name
 	var is_default: bool = current_edited_preset.is_default_for_model
 
+	# Delete the config file
+	var config_path: String = AppManager.cm.metadata_config.config_data.get(preset_name)
+	if not config_path:
+		AppManager.log_message("Unable to delete preset, metadata does not contain preset: %s" % preset_name)
+		return
+	var dir := Directory.new()
+	if not dir.file_exists(config_path):
+		AppManager.log_message("Unable to delete preset, file not found: %s" % preset_name)
+		return
+	dir.remove(config_path)
+
 	# Update metadata
 	AppManager.cm.metadata_config.config_data.erase(preset_name)
 	if is_default:
@@ -663,12 +675,13 @@ func _on_delete_preset() -> void:
 		cd.model_name = AppManager.cm.current_model_config.model_name
 		cd.model_path = AppManager.cm.current_model_config.model_path
 		AppManager.cm.current_model_config = cd.duplicate()
-		current_edited_preset = AppManager.cm.current_model_config
 
 	presets[preset_name].queue_free()
 	presets.erase(preset_name)
 	
 	current_edited_preset = null
+
+# App settings
 
 func _on_default_search_path(value: String) -> void:
 	AppManager.cm.metadata_config.default_search_path = value
@@ -725,47 +738,41 @@ func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 						AppManager.log_message("Unhandled list type %s" % data[XmlConstants.TYPE])
 		XmlConstants.TOGGLE:
 			result = ToggleElement.instance()
-			result.connect("event", self, "_on_event")
 		XmlConstants.DOUBLE_TOGGLE:
 			result = DoubleToggleElement.instance()
-			result.connect("event", self, "_on_event")
 			AppManager.sb.connect("bone_toggled", result, "_on_bone_toggled")
+			AppManager.sb.connect("head_bone", result, "_on_head_bone")
 		XmlConstants.PROP_TOGGLE:
 			result = PropToggleElement.instance()
 			result.prop_name = data["name"]
 
-			result.connect("event", self, "_on_event")
 			AppManager.sb.connect("prop_toggled", result, "_on_prop_toggled")
 		XmlConstants.INPUT:
 			result = InputElement.instance()
 			if data.has(XmlConstants.TYPE):
 				result.data_type = data[XmlConstants.TYPE]
-			result.connect("event", self, "_on_event")
 		XmlConstants.PROP_INPUT:
 			result = PropInputElement.instance()
 			result.prop_name = data["name"]
 			if data.has(XmlConstants.TYPE):
 				result.data_type = data[XmlConstants.TYPE]
-			result.connect("event", self, "_on_event")
 		XmlConstants.BUTTON:
 			result = ButtonElement.instance()
-			result.connect("event", self, "_on_event")
 		XmlConstants.COLOR_PICKER:
 			result = ColorPickerElement.instance()
-			result.connect("event", self, "_on_event")
 		XmlConstants.PROP_COLOR_PICKER:
 			result = PropColorPickerElement.instance()
 			result.prop_name = data["name"]
-			result.connect("event", self, "_on_event")
 		XmlConstants.PRESET_TOGGLE:
 			result = PresetToggleElement.instance()
-			result.connect("event", self, "_on_event")
 		XmlConstants.INPUT_BUTTON:
 			result = InputButtonElement.instance()
-			result.connect("event", self, "_on_event")
 		_:
 			AppManager.log_message("Unhandled tag_name: %s" % tag_name)
 			return result
+
+	if not tag_name in [XmlConstants.LABEL, XmlConstants.LIST]:
+		result.connect("event", self, "_on_event")
 
 	if data.has(XmlConstants.DATA):
 		result.data_bind = data[XmlConstants.DATA]
@@ -792,7 +799,16 @@ func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 			_:
 				# Ignore invalid syntax
 				pass
-		pass
+
+	if data.has(XmlConstants.LISTEN_FOR_SELF):
+		match data[XmlConstants.LISTEN_FOR_SELF].to_lower():
+			"true", "yes":
+				AppManager.sb.connect(result.event_name, result, "_on_value_updated")
+			"false", "no":
+				pass
+			_:
+				# Ignore invalid syntax
+				pass
 
 	result.name = node_name
 	result.label_text = display_name

@@ -175,6 +175,8 @@ func _ready() -> void:
 		head_bone = vrm_meta.humanoid_bone_mapping["head"]
 		head_bone_id = skeleton.find_bone(head_bone)
 
+		AppManager.sb.broadcast_head_bone(head_bone)
+
 	if vrm_meta.humanoid_bone_mapping.has("leftEye"):
 		left_eye_id = skeleton.find_bone(vrm_meta.humanoid_bone_mapping["leftEye"])
 	if vrm_meta.humanoid_bone_mapping.has("rightEye"):
