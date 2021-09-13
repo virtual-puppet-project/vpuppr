@@ -54,11 +54,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/goth/GOTHGui.gd"
 }, {
-"base": "MeshInstance",
-"class": "IKCube",
-"language": "GDScript",
-"path": "res://entities/IKCube.gd"
-}, {
 "base": "Reference",
 "class": "InterpolationData",
 "language": "GDScript",
@@ -109,7 +104,6 @@ _global_script_class_icons={
 "BasicPhysicsAttachment": "",
 "GOTH": "",
 "GOTHGui": "",
-"IKCube": "",
 "InterpolationData": "",
 "JSONUtil": "",
 "MainScreen": "",
