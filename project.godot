@@ -124,6 +124,7 @@ config/icon="res://assets/icon.png"
 
 AppManager="*res://utils/AppManager.gd"
 OpenSeeGd="*res://utils/OpenSeeGD.gd"
+iFacialGD="*res://utils/iFacialGD.gd"
 
 [debug]
 
