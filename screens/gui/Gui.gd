@@ -608,6 +608,8 @@ func _on_new_preset(preset_name: String) -> void:
 	AppManager.cm.metadata_config.config_data[preset_name] = cd.model_path
 	AppManager.cm.save_config(cd)
 
+	AppManager.cm.current_model_config = cd
+
 func _on_preset_toggled(preset_name: String, is_visible: bool) -> void:
 	AppManager.save_config_instant(current_edited_preset)
 	if is_visible:

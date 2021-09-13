@@ -306,34 +306,6 @@ func setup() -> void:
 
 	has_loaded_metadata = true
 
-# func load_config_for_model_path(model_path: String) -> ConfigData:
-# 	var model_name: String = model_path.get_file().get_basename()
-# 	var full_path: String = CONFIG_FORMAT % [metadata_path, model_name]
-
-# 	AppManager.log_message("Begin loading config for %s" % full_path)
-
-# 	var config = ConfigData.new()
-
-# 	var dir := Directory.new()
-# 	if not dir.file_exists(full_path):
-# 		AppManager.log_message("%s does not exist" % full_path)
-# 		config.config_name = model_name
-# 		config.model_name = model_name
-# 		config.model_path = model_path
-# 		return config
-
-# 	var config_file := File.new()
-# 	if config_file.open(full_path, File.READ) != OK:
-# 		AppManager.log_message("Unable to open file at path: %s" % full_path)
-# 		config.config_name = model_name
-# 		config.model_name = model_name
-# 		config.model_path = model_path
-# 		return config
-# 	config.load_from_json(config_file.get_as_text())
-# 	config_file.close()
-
-# 	return config
-
 func load_config_for_preset(preset_name: String) -> ConfigData:
 	var full_path: String = preset_name
 	if not full_path.is_abs_path():
