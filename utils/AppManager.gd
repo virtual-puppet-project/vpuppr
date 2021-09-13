@@ -31,10 +31,6 @@ const DEFAULT_SAVE_FILE: Dictionary = {
 onready var cm: Reference = load("res://utils/ConfigManager.gd").new()
 onready var sb: Reference = load("res://utils/SignalBroadcaster.gd").new()
 
-# Face tracker
-# var is_face_tracker_running: bool
-# var face_tracker_pid: int
-
 # TODO disable OpenSeeGD during debug i guess
 var is_face_tracking_disabled: bool = false
 
@@ -86,7 +82,6 @@ func _process(delta: float) -> void:
 			debounce_counter = 0.0
 			should_save = false
 			cm.save_config(config_to_save)
-	
 
 ###############################################################################
 # Connections                                                                 #
@@ -95,7 +90,6 @@ func _process(delta: float) -> void:
 func _on_tree_exiting() -> void:
 	if OpenSeeGd.is_listening:
 		OpenSeeGd.stop_receiver()
-		# OS.kill(face_tracker_pid)
 	
 	log_message("Exiting. おやすみ。")
 

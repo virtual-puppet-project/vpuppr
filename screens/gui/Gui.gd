@@ -635,16 +635,17 @@ func _on_load_preset() -> void:
 	var cmc = AppManager.cm.current_model_config
 	if cmc.config_name == current_edited_preset.config_name:
 		return # Do nothing if we try to load the current config
+
+	for prop_name in props:
+		props[prop_name].prop.queue_free()
+		props[prop_name].toggle.queue_free()
+	props.clear()
 	
 	AppManager.cm.current_model_config = current_edited_preset.duplicate()
 	if cmc.model_name != current_edited_preset.model_name:
-		for prop_data in props:
-			prop_data.prop.queue_free()
-			prop_data.toggle.queue_free()
-		props.clear()
 		AppManager.main.load_file(AppManager.cm.current_model_config.model_path)
-	
-	_setup_gui_nodes()
+	else:
+		_setup_gui_nodes()
 
 func _on_delete_preset() -> void:
 	var preset_name: String = current_edited_preset.config_name
@@ -844,8 +845,5 @@ func create_prop(prop_path: String, parent_transform: Transform = Transform(),
 	prop.transform = child_transform
 
 	prop_parent.set_script(load(PROP_SCRIPT_PATH))
-
-	# AppManager.main.model_display_screen.call_deferred("add_child", prop_parent)
-	# AppManager.main.model_display_screen.add_child(prop_parent)
 
 	return prop_parent
