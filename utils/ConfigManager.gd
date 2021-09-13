@@ -18,7 +18,6 @@ class Metadata:
 	var default_search_path: String = "/"
 	var should_use_portable_config_files: bool = false
 	
-	# TODO load in all config data at the start?
 	# Config name to config path
 	var config_data: Dictionary = {} # String: String
 

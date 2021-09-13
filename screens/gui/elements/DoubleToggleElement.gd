@@ -46,6 +46,17 @@ func _on_bone_toggled(bone_name: String, _toggle_type: String, toggle_value: boo
 		toggle2.pressed = false
 		toggle2.connect("toggled", self, "_on_toggled2")
 
+func _on_head_bone(head_bone_name: String) -> void:
+	if not is_ready:
+		yield(self, "ready")
+	
+	if head_bone_name == label_text:
+		toggle1.disabled = true
+		toggle2.disabled = true
+	else:
+		toggle1.disabled = false
+		toggle2.disabled = false
+
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################

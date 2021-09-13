@@ -55,16 +55,13 @@ func _emit_event(text: String) -> void:
 				result = text
 			"float":
 				if not text.is_valid_float():
-					# AppManager.log_message("%s is not valid float" % text, true)
 					return
 				result = float(text)
 			"integer", "int":
 				if not text.is_valid_integer():
-					# AppManager.log_message("%s is not valid integer" % text, true)
 					return
 				result = int(text)
 			_:
-				# AppManager.log_message("Unhandled data type: %s" % data_type, true)
 				return
 	emit_signal("event", [event_name, result])
 

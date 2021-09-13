@@ -218,6 +218,7 @@ func setup() -> void:
 		return
 	match data_bind:
 		"mapped_bones":
+			var head_bone_name: String = AppManager.cm.current_model_config.head_bone
 			for bone_i in parent.model.skeleton.get_bone_count():
 				var bone_name: String = parent.model.skeleton.get_bone_name(bone_i)
 				var elem: BaseElement = parent.generate_ui_element(
@@ -230,6 +231,9 @@ func setup() -> void:
 				elem.toggle1_label = parent.DoubleToggleConstants.TRACK
 				if bone_name in AppManager.cm.current_model_config.mapped_bones:
 					elem.toggle1_value = true
+
+				if bone_name == head_bone_name:
+					elem.is_disabled = true
 
 				elem.toggle2_label = parent.DoubleToggleConstants.POSE
 				
