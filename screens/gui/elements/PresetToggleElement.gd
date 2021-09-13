@@ -28,6 +28,8 @@ func _on_toggled(button_pressed: bool) -> void:
 func _on_preset_toggled(p_preset_name: String, is_visible: bool) -> void:
 	if not is_visible:
 		return
+	if not is_ready:
+		yield(self, "ready")
 	if p_preset_name != preset_name:
 		toggle.pressed = false
 
