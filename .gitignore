@@ -25,3 +25,5 @@ assets/local/
 entities/robo/
 entities/future-tank/
 entities/local/
+osf-gd.x86_64
+godot.x11.opt.64

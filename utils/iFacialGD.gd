@@ -1,79 +1,136 @@
-# server.gd
 extends Node
 
 var server := UDPServer.new()
 var peers = []
-var tracking_data = {}
+var tracking_data = {
+	mouthSmile_R = 0,
+	eyeLookOut_L = 0,
+	mouthUpperUp_L = 0,
+	eyeWide_R = 0,
+	mouthClose = 0,
+	mouthPucker = 0,
+	mouthRollLower = 0,
+	eyeBlink_R = 0,
+	eyeLookDown_L = 0,
+	cheekSquint_R = 0,
+	eyeBlink_L = 0,
+	tongueOut = 0,
+	jawRight = 0,
+	eyeLookIn_R = 0,
+	cheekSquint_L = 0,
+	mouthDimple_L = 0,
+	mouthPress_L = 0,
+	eyeSquint_L = 0,
+	mouthRight = 0,
+	mouthShrugLower = 0,
+	eyeLookUp_R = 0,
+	eyeLookOut_R = 0,
+	mouthPress_R = 0,
+	cheekPuff = 0,
+	jawForward = 0,
+	mouthLowerDown_L = 0,
+	mouthFrown_L = 0,
+	mouthShrugUpper = 0,
+	browOuterUp_L = 0,
+	browInnerUp = 0,
+	mouthDimple_R = 0,
+	browDown_R = 0,
+	mouthUpperUp_R = 0,
+	mouthRollUpper = 0,
+	mouthFunnel = 0,
+	mouthStretch_R = 0,
+	mouthFrown_R = 0,
+	eyeLookDown_R = 0,
+	jawOpen = 0,
+	jawLeft = 0,
+	browDown_L = 0,
+	mouthSmile_L = 0,
+	noseSneer_R = 0,
+	mouthLowerDown_R = 0,
+	noseSneer_L = 0,
+	eyeWide_L = 0,
+	mouthStretch_L = 0,
+	browOuterUp_R = 0,
+	eyeLookIn_L = 0,
+	eyeSquint_R = 0,
+	eyeLookUp_L = 0,
+	mouthLeft = 0,
+	head = [0,0,0],
+	rightEye = [0,0,0],
+	leftEye = [0,0,0],
+}
 var tracking = true
+var listen_port = 49983
 func _ready():
-	server.listen(49983)
+	server.listen(listen_port)
 	
 class iFacial:
 	#var features = tracking_data
 	class features:
-		var mouthSmile_R: float  
-		var eyeLookOut_L: float
-		var mouthUpperUp_L: float
-		var eyeWide_R: float
-		var mouthClose: float
-		var mouthPucker: float
-		var mouthRollLower: float
-		var eyeBlink_R: float
-		var eyeLookDown_L: float
-		var cheekSquint_R: float
-		var eyeBlink_L: float
-		var tongueOut: float
-		var jawRight: float
-		var eyeLookIn_R: float
-		var cheekSquint_L: float
-		var mouthDimple_L: float
-		var mouthPress_L: float
-		var eyeSquint_L: float
-		var mouthRight: float
-		var mouthShrugLower: float
-		var eyeLookUp_R: float
-		var eyeLookOut_R: float
-		var mouthPress_R: float
-		var cheekPuff: float
-		var jawForward: float
-		var mouthLowerDown_L: float
-		var mouthFrown_L: float
-		var mouthShrugUpper: float
-		var browOuterUp_L: float
-		var browInnerUp: float
-		var mouthDimple_R: float
-		var browDown_R: float
-		var mouthUpperUp_R: float
-		var mouthRollUpper: float
-		var mouthFunnel: float
-		var mouthStretch_R: float
-		var mouthFrown_R: float
-		var eyeLookDown_R: float
-		var jawOpen: float
-		var jawLeft: float
-		var browDown_L: float
-		var mouthSmile_L: float
-		var noseSneer_R: float
-		var mouthLowerDown_R: float
-		var noseSneer_L: float
-		var eyeWide_L: float
-		var mouthStretch_L: float
-		var browOuterUp_R: float 
-		var eyeLookIn_L: float
-		var eyeSquint_R: float
-		var eyeLookUp_L: float
+		var data = {}
+		var mouthSmile_R  
+		var eyeLookOut_L
+		var mouthUpperUp_L
+		var eyeWide_R
+		var mouthClose
+		var mouthPucker
+		var mouthRollLower
+		var eyeBlink_R
+		var eyeLookDown_L
+		var cheekSquint_R
+		var eyeBlink_L
+		var tongueOut
+		var jawRight
+		var eyeLookIn_R
+		var cheekSquint_L
+		var mouthDimple_L
+		var mouthPress_L
+		var eyeSquint_L
+		var mouthRight
+		var mouthShrugLower
+		var eyeLookUp_R
+		var eyeLookOut_R
+		var mouthPress_R
+		var cheekPuff
+		var jawForward
+		var mouthLowerDown_L
+		var mouthFrown_L
+		var mouthShrugUpper
+		var browOuterUp_L
+		var browInnerUp
+		var mouthDimple_R
+		var browDown_R
+		var mouthUpperUp_R
+		var mouthRollUpper
+		var mouthFunnel
+		var mouthStretch_R
+		var mouthFrown_R
+		var eyeLookDown_R
+		var jawOpen
+		var jawLeft
+		var browDown_L
+		var mouthSmile_L
+		var noseSneer_R
+		var mouthLowerDown_R
+		var noseSneer_L
+		var eyeWide_L
+		var mouthStretch_L
+		var browOuterUp_R 
+		var eyeLookIn_L
+		var eyeSquint_R
+		var eyeLookUp_L
 		var mouthLeft: int
 		var head: Array
 		var rightEye: Array
 		var leftEye: Array
 
-func _process(delta):
+func _process(_delta):
 	server.poll() # Important!
-	while server.is_connection_available():
+	if(server.is_connection_available() && tracking == true):
 		var peer : PacketPeerUDP = server.take_connection()
 		var pkt = peer.get_packet()
-		print("Accepted peer: %s:%s" % [peer.get_packet_ip(), peer.get_packet_port()])
-		#print("Received data: %s" % [pkt.get_string_from_utf8()])
+		#print("Accepted peer: %s:%s" % [peer.get_packet_ip(), peer.get_packet_port()])
+		print("Received data: %s" % [pkt.get_string_from_utf8()])
 		
 		var rawData = pkt.get_string_from_utf8()
 		
@@ -95,17 +152,15 @@ func _process(delta):
 						print(val_0)
 						print(key + ": " + value)
 						tracking_data[key] = val_0
-				tracking_data[key] = value # Add "Blue" as a key and assign 150 as its value.
-				#print(tracking_data)
-				
+						tracking_data[key] = val_0
+				print(tracking_data)
+				return
+			return
 		
-		print(tracking_data)
+		
 		# Reply so it knows we received the message.
 		peer.put_packet(pkt)
 		# Keep a reference so we can keep contacting the remote peer.
 		peers.append(peer)
 		
 
-	for i in range(0, peers.size()):
-		#print(tracking_data)
-		pass # Do something with the connected peers.
