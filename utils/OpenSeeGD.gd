@@ -8,6 +8,8 @@ var server: UDPServer = UDPServer.new()
 export var listen_address: String = "127.0.0.1"
 export var listen_port: int = 11573
 
+var connection: PacketPeerUDP
+
 # Tracking data
 # var received_packets: int = 0
 var tracking_data: Array = [] # OpenSeeData
@@ -261,7 +263,7 @@ func _on_start_tracker() -> void:
 			var pid: int = -1
 			match OS.get_name().to_lower():
 				"windows":
-					pid = OS.execute(OS.get_executable_path().get_base_dir() + "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe",
+					pid = OS.execute("%s%s" % [OS.get_executable_path().get_base_dir(), "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe"],
 							face_tracker_options, false, [], true)
 				"osx", "x11":
 					var modified_options := PoolStringArray(["./OpenSeeFace/facetracker.py"])
@@ -324,16 +326,11 @@ func _perform_reception() -> void:
 	while not stop_reception:
 		#warning-ignore:return_value_discarded
 		server.poll()
-		if server.is_connection_available():
-			var peer: PacketPeerUDP = server.take_connection()
-			var packet := peer.get_packet()
-			# print("Accepted peer: %s:%s" % [peer.get_packet_ip(), peer.get_packet_port()])
-			# print("Received data: %s" % [packet.get_string_from_utf8()])
-			# print(packet.get_string_from_ascii())
+		if connection != null:
+			var packet := connection.get_packet()
 			if(packet.size() < 1 or packet.size() % PACKET_FRAME_SIZE != 0):
 				print_debug("packet size too small, continuing")
 				continue
-			# self.received_packets += 1
 			var offset: int = 0
 			while offset < packet.size():
 				var new_data: OpenSeeData = OpenSeeData.new()
@@ -342,6 +339,8 @@ func _perform_reception() -> void:
 				offset += PACKET_FRAME_SIZE
 			
 			tracking_data = open_see_data_map.values().duplicate(true)
+		elif server.is_connection_available():
+			connection = server.take_connection()
 
 ###############################################################################
 # Public functions                                                            #
