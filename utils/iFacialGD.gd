@@ -63,66 +63,6 @@ var tracking = true
 var listen_port = 49983
 func _ready():
 	server.listen(listen_port)
-	
-class iFacial:
-	#var features = tracking_data
-	class features:
-		var data = {}
-		var mouthSmile_R  
-		var eyeLookOut_L
-		var mouthUpperUp_L
-		var eyeWide_R
-		var mouthClose
-		var mouthPucker
-		var mouthRollLower
-		var eyeBlink_R
-		var eyeLookDown_L
-		var cheekSquint_R
-		var eyeBlink_L
-		var tongueOut
-		var jawRight
-		var eyeLookIn_R
-		var cheekSquint_L
-		var mouthDimple_L
-		var mouthPress_L
-		var eyeSquint_L
-		var mouthRight
-		var mouthShrugLower
-		var eyeLookUp_R
-		var eyeLookOut_R
-		var mouthPress_R
-		var cheekPuff
-		var jawForward
-		var mouthLowerDown_L
-		var mouthFrown_L
-		var mouthShrugUpper
-		var browOuterUp_L
-		var browInnerUp
-		var mouthDimple_R
-		var browDown_R
-		var mouthUpperUp_R
-		var mouthRollUpper
-		var mouthFunnel
-		var mouthStretch_R
-		var mouthFrown_R
-		var eyeLookDown_R
-		var jawOpen
-		var jawLeft
-		var browDown_L
-		var mouthSmile_L
-		var noseSneer_R
-		var mouthLowerDown_R
-		var noseSneer_L
-		var eyeWide_L
-		var mouthStretch_L
-		var browOuterUp_R 
-		var eyeLookIn_L
-		var eyeSquint_R
-		var eyeLookUp_L
-		var mouthLeft: int
-		var head: Array
-		var rightEye: Array
-		var leftEye: Array
 
 func _process(_delta):
 	server.poll() # Important!
@@ -130,7 +70,7 @@ func _process(_delta):
 		var peer : PacketPeerUDP = server.take_connection()
 		var pkt = peer.get_packet()
 		#print("Accepted peer: %s:%s" % [peer.get_packet_ip(), peer.get_packet_port()])
-		print("Received data: %s" % [pkt.get_string_from_utf8()])
+		#print("Received data: %s" % [pkt.get_string_from_utf8()])
 		
 		var rawData = pkt.get_string_from_utf8()
 		
@@ -151,8 +91,8 @@ func _process(_delta):
 						var val_0: Array = multipart_data[0]
 						print(val_0)
 						print(key + ": " + value)
-						tracking_data[key] = val_0
-						tracking_data[key] = val_0
+						tracking_data[key] = value
+				tracking_data[key] = value
 				print(tracking_data)
 				return
 			return
