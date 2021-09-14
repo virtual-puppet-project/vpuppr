@@ -47,6 +47,7 @@ A Discord server [is available here](https://discord.gg/6mcdWWBkrr) if you need 
 - [x] make rigged, non-vrm models lean based on translation
 - [x] load vrm models 
 - [x] map data to a vrm model
+- [ ] external tracking support via iFacialMocap
 - [ ] support Live2D-style sprites
 - [ ] make the raw OpenSeeFace visualization loadable
 - [ ] create relay server so you can pull in other people's tracking data alongside your own (display 2+ models at once)
