@@ -22,7 +22,10 @@
         <label name="Tracking Options"/>
         <label name="Camera select (not yet implemented)"/>
         <button name="probz won't be a button lmao" disabled="true"/>
+        <label name="Tracker Type"/>
         <input name="Tracker FPS" data="tracker_fps" event="tracker_fps" type="integer"/>
         <button name="Start Tracker" event="start_tracker" label_updatable="true"/>
+        <button name="Start External Tracker" event="start_external_tracker" label_updatable="true"/>
+        <input name="Network Tracker IP" data="tracker_ip" event="tracker_ip" type="integer"/>
     </right>
 </view>
