@@ -2,7 +2,7 @@ class_name ModelDisplayScreen
 extends Spatial
 
 const OPEN_SEE: Resource = preload("res://utils/OpenSeeGD.tscn")
-
+const IFACIAL: Resource = preload("res://utils/iFacialGD.tscn")
 const DEFAULT_GENERIC_MODEL: Resource = preload("res://entities/basic-models/Duck.tscn")
 const GENERIC_MODEL_SCRIPT_PATH: String = "res://entities/BasicModel.gd"
 const VRM_MODEL_SCRIPT_PATH: String = "res://entities/vrm/VRMModel.gd"
@@ -27,6 +27,9 @@ var open_see_data
 export var face_id: int = 0
 export var min_confidence: float = 0.2
 export var show_gaze: bool = true
+
+#iFM
+onready var ifm = iFacialGD.ifm
 
 # OpenSeeData last updated time
 var updated: float = 0.0
@@ -97,7 +100,7 @@ func _ready() -> void:
 				rotation_adjustment = Vector3(1, -1, -1)
 				
 				# Grab vrm mappings
-				# model.vrm_mappings = AppManager.vrm_mappings
+				model.vrm_mappings = AppManager.vrm_mappings
 				# AppManager.vrm_mappings.dirty = false
 			"tscn":
 				AppManager.log_message("Loading TSCN file.")
@@ -137,25 +140,49 @@ func _physics_process(_delta: float) -> void:
 		return
 	
 	self.open_see_data = OpenSeeGd.get_open_see_data(face_id)
-
-	if(not open_see_data or open_see_data.fit_3d_error > OpenSeeGd.max_fit_3d_error):
-		return
 	
-	# Don't return early if we are interpolating
-	if open_see_data.time > updated:
-		updated = open_see_data.time
-		var corrected_euler: Vector3 = open_see_data.raw_euler
+	self.ifm = iFacialGD.get_if_data()
+	#print(ifm.head)
+	#rotation_degrees = Vector3(ifm.head[0],ifm.head[1],ifm.head[2])
+	
+	
+	if (iFacialGD.server.is_listening()):
+		head_rotation = Vector3(ifm.head[0],ifm.head[1],ifm.head[2])
+
+		var rotation_adjustment = Vector3(ifm.head[0],ifm.head[1],ifm.head[2])
+		#print('h')
+		var corrected_euler: Vector3 = head_rotation.normalized()
 		if corrected_euler.x < 0.0:
 			corrected_euler.x = 360 + corrected_euler.x
 		interpolation_data.update_values(
 			updated,
-			stored_offsets.translation_offset - open_see_data.translation,
+			stored_offsets.translation_offset,
 			stored_offsets.euler_offset - corrected_euler,
-			(stored_offsets.left_eye_gaze_offset - open_see_data.left_gaze.get_euler()) *
+			(stored_offsets.left_eye_gaze_offset) *
 					float(should_track_eye),
-			(stored_offsets.right_eye_gaze_offset - open_see_data.right_gaze.get_euler()) *
+			(stored_offsets.right_eye_gaze_offset) *
 					float(should_track_eye)
 		)
+	#print(head_rotation)
+	elif(not open_see_data or open_see_data.fit_3d_error > OpenSeeGd.max_fit_3d_error):
+		return
+	else:
+	# Don't return early if we are interpolating
+		if open_see_data.time > updated:
+			updated = open_see_data.time
+			var corrected_euler: Vector3 = open_see_data.raw_euler
+			if corrected_euler.x < 0.0:
+				corrected_euler.x = 360 + corrected_euler.x
+			interpolation_data.update_values(
+				updated,
+				stored_offsets.translation_offset - open_see_data.translation,
+				stored_offsets.euler_offset - corrected_euler,
+				(stored_offsets.left_eye_gaze_offset - open_see_data.left_gaze.get_euler()) *
+						float(should_track_eye),
+				(stored_offsets.right_eye_gaze_offset - open_see_data.right_gaze.get_euler()) *
+						float(should_track_eye)
+		)
+		
 
 	if apply_translation:
 		head_translation = interpolation_data.interpolate(InterpolationData.InterpolationDataType.TRANSLATION, model.translation_damp)
@@ -165,6 +192,7 @@ func _physics_process(_delta: float) -> void:
 
 	if model.has_custom_update:
 		model.custom_update(open_see_data, interpolation_data)
+		model.custom_update(ifm, interpolation_data)
 
 	model.move_head(
 		head_translation * translation_adjustment,
@@ -251,23 +279,28 @@ static func _to_godot_quat(v: Quat) -> Quat:
 
 func _save_offsets() -> void:
 	if not open_see_data:
-		AppManager.log_message("No face tracking data found.")
-		return
-	stored_offsets.translation_offset = open_see_data.translation
-	stored_offsets.rotation_offset = open_see_data.rotation
-	stored_offsets.quat_offset = _to_godot_quat(open_see_data.raw_quaternion)
-	var corrected_euler: Vector3 = open_see_data.raw_euler
-	if corrected_euler.x < 0.0:
-		corrected_euler.x = 360 + corrected_euler.x
-	stored_offsets.euler_offset = corrected_euler
-	stored_offsets.left_eye_gaze_offset = open_see_data.left_gaze.get_euler()
-	stored_offsets.right_eye_gaze_offset = open_see_data.right_gaze.get_euler()
-	AppManager.log_message("New offsets saved.")
+		#print(ifm.leftEye)  
+		var corrected_euler: Vector3 = Vector3.ZERO
+		if corrected_euler.x < 0.0:
+			corrected_euler.x = 360 + corrected_euler.x
+		AppManager.log_message("New offsets saved.")
+	else:
+		stored_offsets.translation_offset = open_see_data.translation
+		stored_offsets.rotation_offset = open_see_data.rotation
+		stored_offsets.quat_offset = _to_godot_quat(open_see_data.raw_quaternion)
+		var corrected_euler: Vector3 = open_see_data.raw_euler
+		if corrected_euler.x < 0.0:
+			corrected_euler.x = 360 + corrected_euler.x
+		stored_offsets.euler_offset = corrected_euler
+		stored_offsets.left_eye_gaze_offset = open_see_data.left_gaze.get_euler()
+		stored_offsets.right_eye_gaze_offset = open_see_data.right_gaze.get_euler()
+		AppManager.log_message("New offsets saved.")
 
 static func _find_bone_chain(skeleton: Skeleton, root_bone: int, tip_bone: int) -> Array:
 	var result: Array = []
 
 	result.append(tip_bone)
+	
 
 	# Work our way up from the tip bone since each bone only has 1 bone parent but
 	# potentially more than 1 bone child

@@ -5,10 +5,10 @@ const VIS_CYLINDER: Resource = preload("res://entities/VisualizationCylinder.tsc
 const VIS_RECTANGLE: Resource = preload("res://entities/VisualizationRectangle.tscn")
 
 const OPEN_SEE: Resource = preload("res://utils/OpenSeeGD.tscn")
-
+const IFACIAL: Resource = preload("res://utils/iFacialGD.tscn")
 const DEV_UI: Resource = preload("res://utils/gui/DevUI.tscn")
 
-var open_see: OpenSeeGD = null
+#var open_see: OpenSeeGD = null
 
 export var face_id: int = 0
 

@@ -133,7 +133,7 @@ func move_head(translation: Vector3, rotation: Vector3) -> void:
 		additional_transform = additional_transform.rotated(Vector3.BACK, rotation.z * additional_bone_damp)
 
 		for bone in additional_bones_to_pose_names:
-			skeleton.set_bone_pose(additional_bone_ids[bone], additional_transform)
+			pass #skeleton.set_bone_pose(additional_bone_ids[bone], additional_transform)
 
 func is_head_bone_id_set() -> bool:
 	return head_bone_id and head_bone_id > -1

@@ -90,6 +90,18 @@ func broadcast_tracker_fps(value: int) -> void:
 signal start_tracker()
 func broadcast_start_tracker() -> void:
 	emit_signal("start_tracker")
+signal start_external_tracker()
+
+func broadcast_start_external_tracker() -> void:
+	emit_signal("start_external_tracker")
+	
+signal tracker_type(value)
+func broadcast_tracker_type(value: int) -> void:
+	emit_signal("tracker_type", value)
+	
+signal tracker_ip(value)
+func broadcast_tracker_ip(value: int) -> void:
+	emit_signal("tracker_ip", value)
 
 # Features gui
 
