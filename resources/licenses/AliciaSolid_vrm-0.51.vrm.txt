@@ -1,0 +1,4 @@
+Alicia Solid copyright (C) DWANGO Co., Ltd.
+This model is included as the official reference model for the VRM specification. See https://vrm.dev/
+Permissions and license information are available here:
+https://3d.nicovideo.jp/alicia/rule.html

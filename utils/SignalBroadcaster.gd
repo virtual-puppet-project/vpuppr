@@ -184,6 +184,10 @@ signal default_search_path(value)
 func broadcast_default_search_path(value: String) -> void:
 	emit_signal("default_search_path", value)
 
+signal view_licenses()
+func broadcast_view_licenses() -> void:
+	emit_signal("view_licenses")
+
 # File select popup
 
 signal file_to_load_changed(file_path)
