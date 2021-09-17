@@ -154,7 +154,10 @@ func _physics_process(_delta: float) -> void:
 			(stored_offsets.left_eye_gaze_offset - open_see_data.left_gaze.get_euler()) *
 					float(should_track_eye),
 			(stored_offsets.right_eye_gaze_offset - open_see_data.right_gaze.get_euler()) *
-					float(should_track_eye)
+					float(should_track_eye),
+			open_see_data.left_eye_open,
+			open_see_data.right_eye_open,
+			open_see_data.features_mouth_open
 		)
 
 	if apply_translation:
