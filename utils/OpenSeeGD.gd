@@ -232,7 +232,6 @@ func _on_start_tracker() -> void:
 		is_listening = true
 		stop_reception = false
 
-		# var face_tracker_fps: String = $Control/MarginContainer/VBoxContainer/MiddleColorRect/HBoxContainer/InputLabel/HBoxContainer/FaceTrackerFPS.text
 		var face_tracker_options: PoolStringArray = [
 			"-c",
 			"0",

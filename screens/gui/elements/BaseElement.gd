@@ -1,6 +1,7 @@
 class_name BaseElement
 extends PanelContainer
 
+# warning-ignore:unused_signal
 signal event(args)
 
 # The display name for the element

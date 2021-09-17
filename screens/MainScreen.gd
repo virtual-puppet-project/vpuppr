@@ -43,10 +43,6 @@ func _input(event: InputEvent) -> void:
 ###############################################################################
 
 func _on_file_to_load_changed(file_path: String) -> void:
-#	var file_name: String = file_path.get_file().get_basename()
-	# Try to load in a default if one exists
-#	if AppManager.cm.metadata_config.model_defaults.has(file_name):
-#		file_name = AppManager.cm.metadata_config.model_defaults[file_name]
 	AppManager.cm.load_config_and_set_as_current(file_path)
 	
 	_clean_load_model_display_screen(file_path)

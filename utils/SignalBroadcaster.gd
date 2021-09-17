@@ -174,6 +174,10 @@ signal delete_preset()
 func broadcast_delete_preset() -> void:
 	emit_signal("delete_preset")
 
+signal preset_loaded()
+func broadcast_preset_loaded() -> void:
+	emit_signal("preset_loaded")
+
 # App settings
 
 signal default_search_path(value)
@@ -191,7 +195,7 @@ func set_file_to_load(file_path: String) -> void:
 # Model
 
 signal model_loaded(model) # Used by model scripts to indicate when they are ready
-func model_is_loaded(model: BasicModel) -> void:
+func broadcast_model_loaded(model: BasicModel) -> void:
 	emit_signal("model_loaded", model)
 
 # Legacy gui
@@ -199,9 +203,3 @@ func model_is_loaded(model: BasicModel) -> void:
 signal face_tracker_offsets_set()
 func save_facetracker_offsets() -> void:
 	emit_signal("face_tracker_offsets_set")
-
-signal default_model_set()
-func set_model_as_default() -> void:
-	AppManager.cm.metadata_config.default_model_to_load_path = AppManager.current_model_path
-	AppManager.cm.save_config()
-	emit_signal("default_model_set")
