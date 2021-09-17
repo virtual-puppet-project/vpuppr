@@ -8,7 +8,7 @@ const OPEN_SEE: Resource = preload("res://utils/OpenSeeGD.tscn")
 
 const DEV_UI: Resource = preload("res://utils/gui/DevUI.tscn")
 
-var open_see: OpenSeeGD = null
+var open_see = null
 
 export var face_id: int = 0
 
@@ -39,7 +39,7 @@ export var line_material: Material
 
 export var receive_shadows: bool = false
 
-var open_see_data: OpenSeeGD.OpenSeeData
+var open_see_data: OpenSeeGd.OpenSeeData
 var game_objects: Array
 var line_renderers: Array # TODO probably don't need this
 var center_ball

@@ -650,6 +650,11 @@ func _on_load_preset() -> void:
 	else:
 		_setup_gui_nodes()
 
+	AppManager.sb.broadcast_preset_loaded()
+
+	model.transform = AppManager.cm.current_model_config.model_transform
+	model_parent.transform = AppManager.cm.current_model_config.model_parent_transform
+
 func _on_delete_preset() -> void:
 	var preset_name: String = current_edited_preset.config_name
 	var is_default: bool = current_edited_preset.is_default_for_model
