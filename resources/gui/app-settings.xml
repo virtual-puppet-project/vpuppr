@@ -3,6 +3,6 @@
         <input name="Default Search Path" data="default_search_path" event="default_search_path" type="string"/>
     </left>
     <right>
-        <button name="Licenses" event="licenses"/>
+        <button name="View Licenses" event="view_licenses"/>
     </right>
 </view>

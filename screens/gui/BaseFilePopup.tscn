@@ -5,6 +5,7 @@
 [node name="BaseFilePopup" type="FileDialog"]
 margin_right = 315.0
 margin_bottom = 130.0
+rect_min_size = Vector2( 300, 105 )
 window_title = "Open a File"
 resizable = true
 mode = 0

@@ -67,6 +67,8 @@ const FloatingContainer: Resource = preload("res://screens/gui/FloatingContainer
 
 const FilePopup: Resource = preload("res://screens/gui/BaseFilePopup.tscn")
 
+const LicensesPopup: PackedScene = preload("res://screens/gui/LicensesPopup.tscn")
+
 # Elements
 const ButtonElement: Resource = preload("res://screens/gui/elements/ButtonElement.tscn")
 const InputElement: Resource = preload("res://screens/gui/elements/InputElement.tscn")
@@ -197,6 +199,7 @@ func _ready() -> void:
 	# App settings
 	
 	AppManager.sb.connect("default_search_path", self, "_on_default_search_path")
+	AppManager.sb.connect("view_licenses", self, "_on_view_licenses")
 
 	if not OS.is_debug_build():
 		base_path = "%s/%s" % [OS.get_executable_path().get_base_dir(), "resources/gui"]
@@ -692,6 +695,10 @@ func _on_delete_preset() -> void:
 
 func _on_default_search_path(value: String) -> void:
 	AppManager.cm.metadata_config.default_search_path = value
+
+func _on_view_licenses() -> void:
+	var popup: Popup = LicensesPopup.instance()
+	add_child(popup)
 
 ###############################################################################
 # Private functions                                                           #
