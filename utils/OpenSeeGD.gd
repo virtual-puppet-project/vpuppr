@@ -329,7 +329,6 @@ func _perform_reception() -> void:
 		if connection != null:
 			var packet := connection.get_packet()
 			if(packet.size() < 1 or packet.size() % PACKET_FRAME_SIZE != 0):
-				#print_debug("packet size too small, continuing")
 				continue
 			var offset: int = 0
 			while offset < packet.size():
