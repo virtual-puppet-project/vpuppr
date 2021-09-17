@@ -329,7 +329,7 @@ func _perform_reception() -> void:
 		if connection != null:
 			var packet := connection.get_packet()
 			if(packet.size() < 1 or packet.size() % PACKET_FRAME_SIZE != 0):
-				print_debug("packet size too small, continuing")
+				#print_debug("packet size too small, continuing")
 				continue
 			var offset: int = 0
 			while offset < packet.size():
@@ -368,6 +368,6 @@ func stop_receiver() -> void:
 func get_open_see_data(face_id: int) -> OpenSeeData:
 	if not open_see_data_map:
 		return null
-	if not open_see_data_map.has(face_id):
+	elif not open_see_data_map.has(face_id):
 		return null
 	return open_see_data_map[face_id]

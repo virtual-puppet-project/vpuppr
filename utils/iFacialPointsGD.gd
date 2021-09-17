@@ -3,12 +3,12 @@ extends Spatial
 const VIS_SPHERE: Resource = preload("res://entities/VisualizationSphere.tscn")
 const VIS_CYLINDER: Resource = preload("res://entities/VisualizationCylinder.tscn")
 const VIS_RECTANGLE: Resource = preload("res://entities/VisualizationRectangle.tscn")
-const OPEN_SEE: Resource = preload("res://utils/OpenSeeGD.tscn")
 
+const IFACIAL: Resource = preload("res://utils/iFacialGD.tscn")
 const DEV_UI: Resource = preload("res://utils/gui/DevUI.tscn")
 
-var open_see: OpenSeeGd = null
-
+var i_facial: iFacialGD = null
+var if_data #: iFacialGD.iFacial
 export var face_id: int = 0
 
 export var only_30_points: bool = false
@@ -38,7 +38,7 @@ export var line_material: Material
 
 export var receive_shadows: bool = false
 
-var open_see_data: OpenSeeGd.OpenSeeData
+#var if_data
 var game_objects: Array
 var line_renderers: Array # TODO probably don't need this
 var center_ball
@@ -86,8 +86,8 @@ var point_30_lines: PoolIntArray = [
 
 # TODO move magic numbers to top of file
 func _ready() -> void:
-	self.open_see = OPEN_SEE.instance()
-	self.call_deferred("add_child", open_see)
+	self.i_facial = IFACIAL.instance()
+	self.call_deferred("add_child", i_facial)
 
 	game_objects.resize(70)
 	line_renderers.resize(68)
@@ -146,15 +146,15 @@ func _ready() -> void:
 	self.add_child(dev_ui)
 
 func _process(_delta: float) -> void:
-	if not open_see:
+	if not i_facial:
 		return
 
-	self.open_see_data = open_see.get_open_see_data(face_id)
-	if(not open_see_data or (show_3d_points and open_see_data.fit_3d_error > open_see.max_fit_3d_error)):
+	self.if_data = i_facial.get_if_data()
+	if(not if_data or (show_3d_points and if_data.fit_3d_error > i_facial.max_fit_3d_error)):
 		return
 	
-	if open_see_data.time > updated:
-		updated = open_see_data.time
+	if if_data.time > updated:
+		updated = if_data.time
 	else:
 		return
 
@@ -163,63 +163,63 @@ func _process(_delta: float) -> void:
 	if self.show_3d_points:
 		center_ball.visible = false
 		for i in range(self.total):
-			if(open_see_data.got_3d_points and (i >= 68 or open_see_data.confidence[i] > min_confidence)):
-				var pt: Vector3 = open_see_data.points_3d[i]
+			if(if_data.got_3d_points and (i >= 68 or if_data.confidence[i] > min_confidence)):
+				var pt: Vector3 = if_data.points_3d[i]
 				pt.x = -pt.x
 				game_objects[i].transform.origin = pt
 				if i < 68:
 					var red_color_data: Vector3 = Vector3(Color.red.r, Color.red.g, Color.red.b)
 					var green_color_data: Vector3 = Vector3(Color.green.r, Color.green.g, Color.green.b)
-					var lerped_color: Vector3 = lerp(red_color_data, green_color_data, open_see_data.confidence[i])
+					var lerped_color: Vector3 = lerp(red_color_data, green_color_data, if_data.confidence[i])
 					var color: Color = Color(lerped_color.x, lerped_color.y, lerped_color.z)
 					game_objects[i].color = color
 				# else:
 				# 	if i == 68:
-				# 		# game_objects[i].transform = game_objects[i].transform.looking_at(open_see_data.right_gaze, Vector3.UP)
-				# 		# game_objects[i].transform.basis = Basis(game_objects[i].transform.basis.slerp(open_see_data.right_gaze, 0.1))
+				# 		# game_objects[i].transform = game_objects[i].transform.looking_at(if_data.right_gaze, Vector3.UP)
+				# 		# game_objects[i].transform.basis = Basis(game_objects[i].transform.basis.slerp(if_data.right_gaze, 0.1))
 				# 		var quat_a: Quat = Quat(game_objects[i].transform.basis)
-				# 		var quat_b: Quat = open_see_data.right_gaze
+				# 		var quat_b: Quat = if_data.right_gaze
 				# 		game_objects[i].transform = Transform(quat_a.slerp(quat_b, .01))
 				# 	else:
-				# 		# game_objects[i].transform = game_objects[i].transform.looking_at(open_see_data.left_gaze, Vector3.UP)
-				# 		# game_objects[i].transform.basis = Basis(game_objects[i].transform.basis.slerp(open_see_data.left_gaze, 0.1))
+				# 		# game_objects[i].transform = game_objects[i].transform.looking_at(if_data.left_gaze, Vector3.UP)
+				# 		# game_objects[i].transform.basis = Basis(game_objects[i].transform.basis.slerp(if_data.left_gaze, 0.1))
 				# 		var quat_a: Quat = Quat(game_objects[i].transform.basis)
-				# 		var quat_b: Quat = open_see_data.left_gaze
+				# 		var quat_b: Quat = if_data.left_gaze
 				# 		game_objects[i].transform = Transform(quat_a.slerp(quat_b, .01))
 			else:
 				game_objects[i].color = Color.cyan
 		if apply_translation:
-			self.current_translation = open_see_data.translation
+			self.current_translation = if_data.translation
 			var v: Vector3
 			if stored_offsets.translation_offset:
-				v = stored_offsets.translation_offset - open_see_data.translation
+				v = stored_offsets.translation_offset - if_data.translation
 			else:
-				v = open_see_data.translation
+				v = if_data.translation
 			# v.x = -v.x
 			# v.y = -v.y
 			# v.z = -v.z
 			self.transform.origin = v
 		if apply_rotation:
-			self.current_quat = open_see_data.raw_quaternion
-			self.current_rotation = open_see_data.rotation
-			# var rotation: Vector3
-			# if stored_offsets.rotation_offset:
-			# 	rotation = stored_offsets.rotation_offset - open_see_data.rotation
-			# else:
-			# 	rotation = open_see_data.rotation
-			# self.transform.basis = Basis(rotation.normalized())
+			self.current_quat = if_data.raw_quaternion
+			self.current_rotation = if_data.rotation
+			var rotation: Vector3
+			if stored_offsets.rotation_offset:
+				rotation = stored_offsets.rotation_offset - if_data.rotation
+			else:
+				rotation = if_data.rotation
+			self.transform.basis = Basis(rotation.normalized())
 			var offset: Quat = Quat(Vector3(0.0, 0.0, -90.0))
 			# var offset: Quat = Quat(Vector3(0.0, 0.0, 0.0))
-			# var converted_quat: Quat = Quat(-open_see_data.raw_quaternion.y, -open_see_data.raw_quaternion.x, open_see_data.raw_quaternion.z, open_see_data.raw_quaternion.w) * offset
-			var converted_quat: Quat = _to_godot_quat(open_see_data.raw_quaternion) * offset
+			# var converted_quat: Quat = Quat(-if_data.raw_quaternion.y, -if_data.raw_quaternion.x, if_data.raw_quaternion.z, if_data.raw_quaternion.w) * offset
+			var converted_quat: Quat = _to_godot_quat(if_data.raw_quaternion) * offset
 
 			if stored_offsets.quat_offset:
-				converted_quat = stored_offsets.quat_offset + Quat(-open_see_data.raw_quaternion.y, -open_see_data.raw_quaternion.x, open_see_data.raw_quaternion.z, open_see_data.raw_quaternion.w)
-				converted_quat = stored_offsets.quat_offset - _to_godot_quat(open_see_data.raw_quaternion)
+				converted_quat = stored_offsets.quat_offset + Quat(-if_data.raw_quaternion.y, -if_data.raw_quaternion.x, if_data.raw_quaternion.z, if_data.raw_quaternion.w)
+				converted_quat = stored_offsets.quat_offset - _to_godot_quat(if_data.raw_quaternion)
 
 			self.transform.basis = Basis(converted_quat.normalized())
 			
-			# self.rotate_z(deg2rad(-22.5))
+			self.rotate_z(deg2rad(-22.5))
 	else:
 		# center_ball.visible = false
 		var center: Vector3 = Vector3.ZERO
@@ -246,7 +246,7 @@ func _process(_delta: float) -> void:
 					a = 53
 			var red_color_data: Vector3 = Vector3(Color.red.r, Color.red.g, Color.red.b)
 			var green_color_data: Vector3 = Vector3(Color.green.r, Color.green.g, Color.green.b)
-			var confidence_lerp: float = lerp(open_see_data.confidence[a], open_see_data.confidence[b], 0.5)
+			var confidence_lerp: float = lerp(if_data.confidence[a], if_data.confidence[b], 0.5)
 			var lerped_color: Vector3 = lerp(red_color_data, green_color_data, confidence_lerp)
 			var color: Color = Color(lerped_color.x, lerped_color.y, lerped_color.z)
 			# TODO finish this later?
@@ -267,12 +267,12 @@ func _to_godot_quat(v: Quat) -> Quat:
 	return Quat(v.x, -v.y, v.z, v.w)
 
 func _save_offsets() -> void:
-	stored_offsets.translation_offset = open_see_data.translation
-	stored_offsets.rotation_offset = open_see_data.rotation
+	stored_offsets.translation_offset = if_data.translation
+	stored_offsets.rotation_offset = if_data.rotation
 	var offset: Quat = Quat(Vector3(0.0, 0.0, -90.0))
 	# var offset: Quat = Quat(Vector3(0.0, 0.0, 0.0))
-	# stored_offsets.quat_offset = Quat(-open_see_data.raw_quaternion.y, -open_see_data.raw_quaternion.x, open_see_data.raw_quaternion.z, open_see_data.raw_quaternion.w) * offset
-	stored_offsets.quat_offset = _to_godot_quat(open_see_data.raw_quaternion) * offset
+	# stored_offsets.quat_offset = Quat(-if_data.raw_quaternion.y, -if_data.raw_quaternion.x, if_data.raw_quaternion.z, if_data.raw_quaternion.w) * offset
+	stored_offsets.quat_offset = _to_godot_quat(if_data.raw_quaternion) * offset
 
 ###############################################################################
 # Public functions                                                            #

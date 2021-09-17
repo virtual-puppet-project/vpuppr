@@ -69,8 +69,9 @@ func _modify_blend_shape(mesh_instance: MeshInstance, blend_shape: String, value
 # Public functions                                                            #
 ###############################################################################
 
-func custom_update(_open_see_data: OpenSeeGd.OpenSeeData, _interpolation_data: InterpolationData) -> void:
-	push_error("Model custom update not implemented")
+func custom_update(_data, _interpolation_data: InterpolationData) -> void:
+	#push_error("Model custom update not implemented")
+	pass
 
 func get_mapped_bones() -> Dictionary: # String: bool
 	"""

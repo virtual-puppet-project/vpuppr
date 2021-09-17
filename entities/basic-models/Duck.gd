@@ -43,12 +43,12 @@ func _unhandled_input(_event: InputEvent) -> void:
 # Public functions                                                            #
 ###############################################################################
 
-func custom_update(open_see_data: OpenSeeGd.OpenSeeData, _interpolation_data: InterpolationData) -> void:
+func custom_update(data, _interpolation_data: InterpolationData) -> void:
 	if not is_blinking:
-		#if(open_see_data.left_eye_open < blink_threshold and open_see_data.right_eye_open < blink_threshold):
+		if(data.left_eye_open < blink_threshold and data.right_eye_open < blink_threshold):
 			blink()
 	elif is_blinking:
-		#if(open_see_data.left_eye_open > blink_threshold and open_see_data.right_eye_open > blink_threshold):
+		if(data.left_eye_open > blink_threshold and data.right_eye_open > blink_threshold):
 			unblink()
 
 func blink() -> void:

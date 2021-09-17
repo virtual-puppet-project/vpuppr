@@ -90,6 +90,8 @@ func _process(delta: float) -> void:
 func _on_tree_exiting() -> void:
 	if OpenSeeGd.is_listening:
 		OpenSeeGd.stop_receiver()
+	if iFacialGD.is_listening:
+		iFacialGD.stop_receiver()
 	
 	log_message("Exiting. おやすみ。")
 

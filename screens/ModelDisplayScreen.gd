@@ -29,7 +29,10 @@ export var min_confidence: float = 0.2
 export var show_gaze: bool = true
 
 #iFM
-onready var ifm = iFacialGD.ifm
+var ifm
+var if_data
+var if_features = iFacialGD.ifm.features
+var if_data_map = {}
 
 # OpenSeeData last updated time
 var updated: float = 0.0
@@ -97,7 +100,7 @@ func _ready() -> void:
 				model.transform = model.transform.rotated(Vector3.UP, PI)
 				AppManager.cm.current_model_config.model_transform = model.transform
 				translation_adjustment = Vector3(-1, -1, -1)
-				rotation_adjustment = Vector3(1, -1, -1)
+				rotation_adjustment = Vector3(1, 1, 1)
 				
 				# Grab vrm mappings
 				model.vrm_mappings = AppManager.vrm_mappings
@@ -138,61 +141,61 @@ func _ready() -> void:
 func _physics_process(_delta: float) -> void:
 	if not stored_offsets:
 		return
-	
 	self.open_see_data = OpenSeeGd.get_open_see_data(face_id)
 	
-	self.ifm = iFacialGD.get_if_data()
-	#print(ifm.head)
+	self.if_data = iFacialGD.get_if_data()
+	
 	#rotation_degrees = Vector3(ifm.head[0],ifm.head[1],ifm.head[2])
 	
+	if (iFacialGD.is_listening):
+		if_data_map.head_data = Vector3(if_features.head[0],if_features.head[1],if_features.head[2])
+		if_data_map.head_transform = Vector3(if_features.head[3],if_features.head[4],if_features.head[5])
+		
+		var corrected_euler: Vector3 = if_data_map.head_data
+		#if corrected_euler.x < 0.0:
+		#	corrected_euler.x = 360 + corrected_euler.x
+		
+		interpolation_data.update_values(
+			updated,
+			stored_offsets.translation_offset - if_data.translation,
+			stored_offsets.euler_offset - corrected_euler,
+			(stored_offsets.left_eye_gaze_offset - Vector3(if_features.leftEye[0],if_features.leftEye[1],if_features.leftEye[2])) *
+					float(should_track_eye),
+			(stored_offsets.right_eye_gaze_offset - Vector3(if_features.rightEye[0],if_features.rightEye[1],if_features.rightEye[2])) *
+					float(should_track_eye)
+	)
+		if_data = iFacialGD.ifm
 	
-	if (iFacialGD.server.is_listening()):
-		head_rotation = Vector3(ifm.head[0],ifm.head[1],ifm.head[2])
-
-		var rotation_adjustment = Vector3(ifm.head[0],ifm.head[1],ifm.head[2])
-		#print('h')
-		var corrected_euler: Vector3 = head_rotation.normalized()
+	elif(not open_see_data or open_see_data.fit_3d_error > OpenSeeGd.max_fit_3d_error):
+		return
+	elif open_see_data.time > updated:
+	# Don't return early if we are interpolating
+		updated = open_see_data.time
+		var corrected_euler: Vector3 = open_see_data.raw_euler
 		if corrected_euler.x < 0.0:
 			corrected_euler.x = 360 + corrected_euler.x
 		interpolation_data.update_values(
 			updated,
-			stored_offsets.translation_offset,
+			stored_offsets.translation_offset - open_see_data.translation,
 			stored_offsets.euler_offset - corrected_euler,
-			(stored_offsets.left_eye_gaze_offset) *
+			(stored_offsets.left_eye_gaze_offset - open_see_data.left_gaze.get_euler()) *
 					float(should_track_eye),
-			(stored_offsets.right_eye_gaze_offset) *
+			(stored_offsets.right_eye_gaze_offset - open_see_data.right_gaze.get_euler()) *
 					float(should_track_eye)
-		)
-	#print(head_rotation)
-	elif(not open_see_data or open_see_data.fit_3d_error > OpenSeeGd.max_fit_3d_error):
-		return
-	else:
-	# Don't return early if we are interpolating
-		if open_see_data.time > updated:
-			updated = open_see_data.time
-			var corrected_euler: Vector3 = open_see_data.raw_euler
-			if corrected_euler.x < 0.0:
-				corrected_euler.x = 360 + corrected_euler.x
-			interpolation_data.update_values(
-				updated,
-				stored_offsets.translation_offset - open_see_data.translation,
-				stored_offsets.euler_offset - corrected_euler,
-				(stored_offsets.left_eye_gaze_offset - open_see_data.left_gaze.get_euler()) *
-						float(should_track_eye),
-				(stored_offsets.right_eye_gaze_offset - open_see_data.right_gaze.get_euler()) *
-						float(should_track_eye)
-		)
+	)
 		
 
 	if apply_translation:
-		head_translation = interpolation_data.interpolate(InterpolationData.InterpolationDataType.TRANSLATION, model.translation_damp)
+		head_rotation = interpolation_data.interpolate(InterpolationData.InterpolationDataType.ROTATION, model.rotation_damp)
 
 	if apply_rotation:
 		head_rotation = interpolation_data.interpolate(InterpolationData.InterpolationDataType.ROTATION, model.rotation_damp)
 
 	if model.has_custom_update:
-		model.custom_update(open_see_data, interpolation_data)
-		model.custom_update(ifm, interpolation_data)
+		if(open_see_data):
+			model.custom_update(open_see_data, interpolation_data)
+		elif(if_data):
+			model.custom_update(if_data, interpolation_data)
 
 	model.move_head(
 		head_translation * translation_adjustment,
@@ -244,9 +247,13 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _on_offset_timer_timeout() -> void:
 	get_node("OffsetTimer").queue_free()
-
-	open_see_data = OpenSeeGd.get_open_see_data(face_id)
-	_save_offsets()
+	
+	if open_see_data:
+		open_see_data = OpenSeeGd.get_open_see_data(face_id)
+		_save_offsets()
+	elif if_data:
+		#if_data = iFacialGD.get_if_data()
+		_save_offsets()
 
 func _on_apply_translation(value: bool) -> void:
 	apply_translation = value
@@ -278,13 +285,16 @@ static func _to_godot_quat(v: Quat) -> Quat:
 	return Quat(v.x, -v.y, v.z, v.w)
 
 func _save_offsets() -> void:
-	if not open_see_data:
-		#print(ifm.leftEye)  
-		var corrected_euler: Vector3 = Vector3.ZERO
-		if corrected_euler.x < 0.0:
-			corrected_euler.x = 360 + corrected_euler.x
+	if if_data: #new correction algorithm since iFM already outputs raw euler data
+		stored_offsets.translation_offset = if_data.translation
+		stored_offsets.rotation_offset = if_data.rotation
+		stored_offsets.quat_offset = _to_godot_quat(if_data.raw_quaternion)
+		stored_offsets.euler_offset = if_data_map.head_data
+		stored_offsets.left_eye_gaze_offset = Vector3(if_features.leftEye[0],if_features.leftEye[1],if_features.leftEye[2])
+		stored_offsets.right_eye_gaze_offset = Vector3(if_features.rightEye[0],if_features.rightEye[1],if_features.rightEye[2])
 		AppManager.log_message("New offsets saved.")
-	else:
+		
+	elif open_see_data:
 		stored_offsets.translation_offset = open_see_data.translation
 		stored_offsets.rotation_offset = open_see_data.rotation
 		stored_offsets.quat_offset = _to_godot_quat(open_see_data.raw_quaternion)
