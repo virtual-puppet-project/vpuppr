@@ -262,10 +262,14 @@ func _on_start_tracker() -> void:
 			var pid: int = -1
 			match OS.get_name().to_lower():
 				"windows":
-					pid = OS.execute("%s%s" % [OS.get_executable_path().get_base_dir(), "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe"],
+					var exe_path: String = "%s%s" % [OS.get_executable_path().get_base_dir(), "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe"]
+					if OS.is_debug_build():
+						exe_path = "%s%s" % [ProjectSettings.globalize_path("res://export"), "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe"]
+						print(exe_path)
+					pid = OS.execute(exe_path,
 							face_tracker_options, false, [], true)
 				"osx", "x11":
-					var modified_options := PoolStringArray(["./OpenSeeFace/facetracker.py"])
+					var modified_options := PoolStringArray(["./OpenSeeFaceFolder/OpenSeeFace/facetracker.py"])
 					modified_options.append_array(face_tracker_options)
 
 					var python_alias: String = ""
