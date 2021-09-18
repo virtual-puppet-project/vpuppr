@@ -157,7 +157,7 @@ func _physics_process(_delta: float) -> void:
 					float(should_track_eye),
 			open_see_data.left_eye_open,
 			open_see_data.right_eye_open,
-			open_see_data.features_mouth_open
+			open_see_data.features.mouth_open
 		)
 
 	if apply_translation:
