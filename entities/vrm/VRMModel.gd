@@ -262,10 +262,6 @@ func custom_update(data, interpolation_data) -> void:
 		var average_eye_x_rotation: float = (left_eye_rotation.y + right_eye_rotation.y) / 2
 		left_eye_rotation.y = average_eye_x_rotation
 		right_eye_rotation.y = average_eye_x_rotation
-		
-#		var average_eye_x_rotation: float = (left_eye_rotation.y + right_eye_rotation.y) / 2
-#		left_eye_rotation.y = average_eye_x_rotation
-#		right_eye_rotation.y = average_eye_x_rotation
 
 		# Left eye gaze
 		left_eye_rotation.x = clamp(left_eye_rotation.x, left_eye.down.x, left_eye.up.x)
