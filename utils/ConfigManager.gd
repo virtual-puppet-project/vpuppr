@@ -58,7 +58,7 @@ class ConfigData:
 	var description: String = "changeme"
 	var hotkey: String = ""
 	var notes: String = ""
-	var is_default_for_model := false
+	var is_default_for_model := false setget _set_is_default_for_model
 	var is_default_dirty := false
 
 	var model_name: String = "changeme"
@@ -109,6 +109,11 @@ class ConfigData:
 	}
 
 	var instanced_props: Dictionary = {} # String, Dictionary (PropData)
+
+	func _set_is_default_for_model(value: bool) -> void:
+		if is_default_for_model != value:
+			is_default_for_model = value
+			is_default_dirty = true
 
 	func get_as_dict() -> Dictionary:
 		"""
