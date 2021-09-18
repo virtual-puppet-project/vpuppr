@@ -7,7 +7,7 @@ var stored_offsets: ModelDisplayScreen.StoredOffsets
 
 var vrm_meta: Dictionary
 
-var vrm_mappings: VRMMappings
+var vrm_mappings: VRMMappings # TODO probably unused?
 var left_eye_id: int
 var right_eye_id: int
 
@@ -22,7 +22,7 @@ var blinking
 var eye_movement
 
 # Blinking
-var blink_threshold: float = 0.3
+var blink_threshold: float = 0.2
 var eco_mode_is_blinking: bool = false
 
 class EyeClamps:
@@ -237,13 +237,15 @@ func custom_update(data, interpolation_data) -> void:
 	if not eco_mode:
 		# Left eye blinking
 		if data.left_eye_open >= blink_threshold:
-			_modify_blend_shape(blink_r.morphs[0].mesh, blink_r.morphs[0].morph, blink_r.morphs[0].values[1] - data.left_eye_open)
+			# _modify_blend_shape(blink_r.morphs[0].mesh, blink_r.morphs[0].morph, blink_r.morphs[0].values[1] - data.left_eye_open)
+			_modify_blend_shape(blink_r.morphs[0].mesh, blink_r.morphs[0].morph, blink_r.morphs[0].values[1] - interpolation_data.interpolate(InterpolationData.InterpolationDataType.LEFT_EYE_BLINK, 1.0))
 		else:
 			_modify_blend_shape(blink_r.morphs[0].mesh, blink_r.morphs[0].morph, blink_r.morphs[0].values[1])
 
 		# Right eye blinking
 		if data.right_eye_open >= blink_threshold:
-			_modify_blend_shape(blink_l.morphs[0].mesh, blink_l.morphs[0].morph, blink_l.morphs[0].values[1] - data.right_eye_open)
+			# _modify_blend_shape(blink_l.morphs[0].mesh, blink_l.morphs[0].morph, blink_l.morphs[0].values[1] - data.right_eye_open)
+			_modify_blend_shape(blink_l.morphs[0].mesh, blink_l.morphs[0].morph, blink_l.morphs[0].values[1] - interpolation_data.interpolate(InterpolationData.InterpolationDataType.RIGHT_EYE_BLINK, 1.0))
 		else:
 			_modify_blend_shape(blink_l.morphs[0].mesh, blink_l.morphs[0].morph, blink_l.morphs[0].values[1])
 
@@ -255,6 +257,11 @@ func custom_update(data, interpolation_data) -> void:
 		var average_eye_y_rotation: float = (left_eye_rotation.x + right_eye_rotation.x) / 2
 		left_eye_rotation.x = average_eye_y_rotation
 		right_eye_rotation.x = average_eye_y_rotation
+
+		# TODO make this toggable from the ui
+		var average_eye_x_rotation: float = (left_eye_rotation.y + right_eye_rotation.y) / 2
+		left_eye_rotation.y = average_eye_x_rotation
+		right_eye_rotation.y = average_eye_x_rotation
 		
 #		var average_eye_x_rotation: float = (left_eye_rotation.y + right_eye_rotation.y) / 2
 #		left_eye_rotation.y = average_eye_x_rotation
@@ -290,7 +297,7 @@ func custom_update(data, interpolation_data) -> void:
 		
 		# Mouth tracking
 		_modify_blend_shape(a.morphs[0].mesh, a.morphs[0].morph,
-				min(max(a.morphs[0].values[0], data.features.mouth_open * 2.0),
+				min(max(a.morphs[0].values[0], interpolation_data.interpolate(InterpolationData.InterpolationDataType.MOUTH_MOVEMENT, 2.0)),
 				a.morphs[0].values[1]))
 	else:
 		# TODO implement eco mode, should be more efficient than standard mode
