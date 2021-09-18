@@ -614,8 +614,8 @@ func _on_new_preset(preset_name: String) -> void:
 	AppManager.cm.current_model_config = cd
 
 func _on_preset_toggled(preset_name: String, is_visible: bool) -> void:
-	AppManager.save_config_instant(current_edited_preset)
 	if is_visible:
+		AppManager.save_config_instant(current_edited_preset)
 		current_edited_preset = AppManager.cm.load_config_for_preset(preset_name)
 
 # TODO this will break deleting presets
@@ -634,7 +634,6 @@ func _on_notes(notes: String) -> void:
 
 func _on_is_default_for_model(value: bool) -> void:
 	current_edited_preset.is_default_for_model = value
-	current_edited_preset.is_default_dirty = true
 
 func _on_load_preset() -> void:
 	AppManager.save_config_instant()
