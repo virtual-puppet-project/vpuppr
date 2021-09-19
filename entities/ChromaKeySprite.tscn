@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=2]
-
-[ext_resource path="res://assets/ChromaKeyGreen.png" type="Texture" id=1]
-
-[node name="ChromaKeySprite" type="Sprite3D"]
-texture = ExtResource( 1 )
