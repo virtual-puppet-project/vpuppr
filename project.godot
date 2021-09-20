@@ -118,7 +118,7 @@ _global_script_class_icons={
 
 config/name="OpenSeeFace GD"
 run/main_scene="res://screens/MainScreen.tscn"
-config/icon="res://assets/icon.png"
+config/icon="res://assets/osfgd_icon.png"
 
 [autoload]
 
