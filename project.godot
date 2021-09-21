@@ -79,6 +79,16 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://screens/ModelDisplayScreen.gd"
 }, {
+"base": "Node",
+"class": "TrackingBackend",
+"language": "GDScript",
+"path": "res://utils/TrackingBackend.gd"
+}, {
+"base": "Reference",
+"class": "TrackingData",
+"language": "GDScript",
+"path": "res://utils/TrackingData.gd"
+}, {
 "base": "Reference",
 "class": "SignalBroadcaster",
 "language": "GDScript",
@@ -120,6 +130,8 @@ _global_script_class_icons={
 "MainScreen": "",
 "ModelDisplayScreen": "",
 "SignalBroadcaster": "",
+"TrackingBackend": "",
+"TrackingData": "",
 "TranslationManager": "",
 "VRMMappings": "",
 "VRMModel": "",
@@ -128,14 +140,13 @@ _global_script_class_icons={
 
 [application]
 
-config/name="OpenSeeFace GD"
+config/name="Virtual Streamer Software"
 run/main_scene="res://screens/MainScreen.tscn"
 config/icon="res://assets/osfgd_icon.png"
 
 [autoload]
 
 AppManager="*res://utils/AppManager.gd"
-OpenSeeGd="*res://utils/OpenSeeGD.gd"
 
 [debug]
 

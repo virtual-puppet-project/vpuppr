@@ -37,6 +37,11 @@ func get_translation() -> Vector3:
 	AppManager.log_message("Not yet implemented", true)
 	return Vector3.ZERO
 
+# TODO maybe unused?
+func get_raw_quaternion() -> Quat:
+	AppManager.log_message("Not yet implemented", true)
+	return Quat.IDENTITY
+
 # Eye data
 
 func get_left_eye_open_amount() -> float:
