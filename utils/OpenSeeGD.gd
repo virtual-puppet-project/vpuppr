@@ -1,4 +1,4 @@
-extends Node
+extends TrackingBackend
 
 const NUMBER_OF_POINTS: int = 68
 const PACKET_FRAME_SIZE: int = 8 + 4 + 2 * 4 + 2 * 4 + 1 + 4 + 3 * 4 + 3 * 4 + 4 * 4 + 4 * 68 + 4 * 2 * 68 + 4 * 3 * 70 + 4 * 14
@@ -16,7 +16,7 @@ var tracking_data: Array = [] # OpenSeeData
 
 var max_fit_3d_error: float = 100.0
 
-class OpenSeeData:
+class OpenSeeData extends TrackingData:
 	# The time this tracking data was captured at
 	var time: float
 	# ID of the tracked face
@@ -185,6 +185,50 @@ class OpenSeeData:
 		features.mouth_corner_in_out_right = read_float(spb, opi)
 		features.mouth_open = read_float(spb, opi)
 		features.mouth_wide = read_float(spb, opi)
+	
+	# Tracking metadata
+
+	func get_updated_time() -> float:
+		return time
+
+	func get_fit_error() -> float:
+		return fit_3d_error
+
+	# General tracking data
+
+	func get_rotation() -> Vector3:
+		return raw_euler
+
+	func get_translation() -> Vector3:
+		return translation
+
+	# TODO maybe unused?
+	func get_raw_quaternion() -> Quat:
+		return raw_quaternion
+
+	# Eye data
+
+	func get_left_eye_open_amount() -> float:
+		return left_eye_open
+
+	func get_left_eye_gaze() -> Vector3:
+		return left_gaze.get_euler()
+
+	func get_right_eye_open_amount() -> float:
+		return right_eye_open
+
+	func get_right_eye_gaze() -> Vector3:
+		return right_gaze.get_euler()
+
+	# Mouth data
+
+	func get_mouth_open_amount() -> float:
+		return features.mouth_open
+
+	# Additional backend-specific data
+
+	func get_additional_info() -> Reference:
+		return features
 
 const RUN_FACE_TRACKER_TEXT: String = "Run tracker"
 const STOP_FACE_TRACKER_TEXT: String = "Stop tracker"
@@ -346,6 +390,9 @@ func _perform_reception(_x) -> void:
 # Public functions                                                            #
 ###############################################################################
 
+func is_listening() -> bool:
+	return is_listening
+
 func start_receiver() -> void:
 	AppManager.log_message("Listening for data at %s:%s" % [listen_address, str(listen_port)])
 
@@ -367,3 +414,9 @@ func get_open_see_data(face_id: int) -> OpenSeeData:
 	if not open_see_data_map.has(face_id):
 		return null
 	return open_see_data_map[face_id]
+
+func get_max_fit_error() -> float:
+	return max_fit_3d_error
+
+func get_data() -> TrackingData:
+	return get_open_see_data(0)
