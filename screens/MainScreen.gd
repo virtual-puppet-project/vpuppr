@@ -34,6 +34,8 @@ func _ready() -> void:
 	# Request model to load information
 	AppManager.sb.set_file_to_load(AppManager.cm.metadata_config.default_model_to_load_path)
 
+	AppManager.cm.metadata_config.apply_rendering_changes(get_viewport())
+
 func _input(event: InputEvent) -> void:
 	if(event.is_action_pressed("ui_cancel") and OS.is_debug_build()):
 		get_tree().quit()

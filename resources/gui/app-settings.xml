@@ -1,6 +1,11 @@
 <view name="App Settings">
     <left>
         <input name="Default Search Path" data="default_search_path" event="default_search_path" type="string"/>
+        <label name="Antialiasing"/>
+        <toggle name="Use Transparent Background" data="use_transparent_background" event="use_transparent_background"/>
+        <toggle name="Use FXAA" data="use_fxaa" event="use_fxaa"/>
+        <!-- TODO update to use a dropdown -->
+        <toggle name="MSAA Amount" data="msaa_value" event="msaa_value"/>
     </left>
     <right>
         <button name="View Licenses" event="view_licenses"/>
