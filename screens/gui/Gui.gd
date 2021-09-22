@@ -146,6 +146,7 @@ func _ready() -> void:
 	AppManager.sb.connect("zoom_model", self, "_on_zoom_model")
 
 	AppManager.sb.connect("load_model", self, "_on_load_model")
+	AppManager.sb.connect("set_model_as_default", self, "_on_set_model_as_default")
 	
 	AppManager.sb.connect("reset_model_transform", self, "_on_reset_model_transform")
 	AppManager.sb.connect("reset_model_pose", self, "_on_reset_model_pose")
@@ -425,6 +426,9 @@ func _on_rotate_model(value: bool) -> void:
 
 func _on_zoom_model(value: bool) -> void:
 	should_zoom_model = value
+
+func _on_set_model_as_default() -> void:
+	AppManager.cm.metadata_config.default_model_to_load_path = AppManager.cm.current_model_config.model_path
 
 func _on_load_model() -> void:
 	var popup: FileDialog = FilePopup.instance()
