@@ -17,6 +17,11 @@ class Metadata:
 	var default_model_to_load_path: String = ""
 	var default_search_path: String = "/"
 	var should_use_portable_config_files: bool = false
+
+	# Antialiasing
+	var use_transparent_background: bool = true # Cannot use with fxaa
+	var use_fxaa: bool = false
+	var msaa_value: bool = false # TODO change this to be specific values 
 	
 	# Config name to config path
 	var config_data: Dictionary = {} # String: String
@@ -36,6 +41,9 @@ class Metadata:
 		should_use_portable_config_files = json_data["should_use_portable_config_files"]
 		config_data = json_data["config_data"]
 		model_defaults = json_data["model_defaults"]
+		use_transparent_background = json_data["use_transparent_background"]
+		use_fxaa = json_data["use_fxaa"]
+		msaa_value = json_data["msaa_value"]
 
 		return true
 	
@@ -45,8 +53,19 @@ class Metadata:
 			"default_search_path": default_search_path,
 			"should_use_portable_config_files": should_use_portable_config_files,
 			"config_data": config_data,
-			"model_defaults": model_defaults
+			"model_defaults": model_defaults,
+			"use_transparent_background": use_transparent_background,
+			"use_fxaa": use_fxaa,
+			"msaa_value": msaa_value
 		})
+	
+	func apply_rendering_changes(viewport: Viewport) -> void:
+		viewport.transparent_bg = use_transparent_background
+		viewport.fxaa = use_fxaa
+		if msaa_value: # TODO change this to be specific values
+			viewport.msaa = Viewport.MSAA_4X
+		else:
+			viewport.msaa = Viewport.MSAA_DISABLED
 
 var current_model_config: ConfigData
 

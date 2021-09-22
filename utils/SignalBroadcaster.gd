@@ -188,6 +188,18 @@ signal view_licenses()
 func broadcast_view_licenses() -> void:
 	emit_signal("view_licenses")
 
+signal use_transparent_background(value)
+func broadcast_use_transparent_background(value: bool) -> void:
+	emit_signal("use_transparent_background", value)
+
+signal use_fxaa(value)
+func broadcast_use_fxaa(value: bool) -> void:
+	emit_signal("use_fxaa", value)
+
+signal msaa_value(value)
+func broadcast_msaa_value(value: bool) -> void:
+	emit_signal("msaa_value", value)
+
 # File select popup
 
 signal file_to_load_changed(file_path)

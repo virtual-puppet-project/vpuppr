@@ -201,6 +201,9 @@ func _ready() -> void:
 	
 	AppManager.sb.connect("default_search_path", self, "_on_default_search_path")
 	AppManager.sb.connect("view_licenses", self, "_on_view_licenses")
+	AppManager.sb.connect("use_transparent_background", self, "_on_use_transparent_background")
+	AppManager.sb.connect("use_fxaa", self, "_on_use_fxaa")
+	AppManager.sb.connect("msaa_value", self, "_on_msaa_value")
 
 	if not OS.is_debug_build():
 		base_path = "%s/%s" % [OS.get_executable_path().get_base_dir(), "resources/gui"]
@@ -702,6 +705,28 @@ func _on_default_search_path(value: String) -> void:
 func _on_view_licenses() -> void:
 	var popup: Popup = LicensesPopup.instance()
 	add_child(popup)
+
+func _on_use_transparent_background(value: bool) -> void:
+	ProjectSettings.set_setting("display/window/per_pixel_transparency/allowed", value)
+	ProjectSettings.set_setting("display/window/per_pixel_transparency/enabled", value)
+	get_viewport().transparent_bg = value
+	AppManager.cm.metadata_config.use_transparent_background = value
+
+func _on_use_fxaa(value: bool) -> void:
+	ProjectSettings.set_setting("rendering/quality/filters/use_fxaa", value)
+	get_viewport().fxaa = value
+	AppManager.cm.metadata_config.use_fxaa = value
+
+func _on_msaa_value(value: bool) -> void:
+	# TODO needs to take in a list
+	if value:
+		ProjectSettings.set_setting("rendering/quality/filters/msaa", Viewport.MSAA_4X)
+		get_viewport().msaa = Viewport.MSAA_4X
+	else:
+		ProjectSettings.set_setting("rendering/quality/filters/msaa", Viewport.MSAA_DISABLED)
+		get_viewport().msaa = Viewport.MSAA_DISABLED
+	
+	AppManager.cm.metadata_config.msaa_value = value
 
 ###############################################################################
 # Private functions                                                           #
