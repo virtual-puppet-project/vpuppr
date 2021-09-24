@@ -211,6 +211,12 @@ func _ready() -> void:
 		base_path = "res://resources/gui"
 	
 	var xml_files_to_parse: Array = []
+	
+	# Null check or else we segfault
+	var dir := Directory.new()
+	if not dir.dir_exists(base_path):
+		AppManager.log_message("%s does not exist. Please check your installation." % base_path, true)
+		return
 
 	var metadata_parser = GuiFileParser.new()
 	AppManager.log_message("Loading metadata: %s" % DEFAULT_METADATA)

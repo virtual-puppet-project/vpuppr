@@ -168,6 +168,26 @@ func _ready() -> void:
 					"eye_R":
 						right_eye.right = rot.get_euler()
 
+	# Some models don't have blendshapes for looking up/down/left/right
+	# So let their eyes rotate 360 degrees
+	if left_eye.down.x == 0:
+		left_eye.down.x = -360.0
+	if left_eye.up.x == 0:
+		left_eye.up.x = 360.0
+	if left_eye.right.y == 0:
+		left_eye.right.y = -360.0
+	if left_eye.left.y == 0:
+		left_eye.left.y = 360.0
+
+	if right_eye.down.x == 0:
+		right_eye.down.x = -360.0
+	if right_eye.up.x == 0:
+		right_eye.up.x = 360.0
+	if right_eye.right.y == 0:
+		right_eye.right.y = -360.0
+	if right_eye.left.y == 0:
+		right_eye.left.y = 360.0
+
 	anim_player.queue_free()
 
 	# Map bones
@@ -237,14 +257,12 @@ func custom_update(data, interpolation_data) -> void:
 	if not eco_mode:
 		# Left eye blinking
 		if data.left_eye_open >= blink_threshold:
-			# _modify_blend_shape(blink_r.morphs[0].mesh, blink_r.morphs[0].morph, blink_r.morphs[0].values[1] - data.left_eye_open)
 			_modify_blend_shape(blink_r.morphs[0].mesh, blink_r.morphs[0].morph, blink_r.morphs[0].values[1] - interpolation_data.interpolate(InterpolationData.InterpolationDataType.LEFT_EYE_BLINK, 1.0))
 		else:
 			_modify_blend_shape(blink_r.morphs[0].mesh, blink_r.morphs[0].morph, blink_r.morphs[0].values[1])
 
 		# Right eye blinking
 		if data.right_eye_open >= blink_threshold:
-			# _modify_blend_shape(blink_l.morphs[0].mesh, blink_l.morphs[0].morph, blink_l.morphs[0].values[1] - data.right_eye_open)
 			_modify_blend_shape(blink_l.morphs[0].mesh, blink_l.morphs[0].morph, blink_l.morphs[0].values[1] - interpolation_data.interpolate(InterpolationData.InterpolationDataType.RIGHT_EYE_BLINK, 1.0))
 		else:
 			_modify_blend_shape(blink_l.morphs[0].mesh, blink_l.morphs[0].morph, blink_l.morphs[0].values[1])
