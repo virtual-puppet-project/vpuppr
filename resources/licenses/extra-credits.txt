@@ -1,3 +1,5 @@
 Application Icon
 clodimus#0126 on Discord
 
+iFacialMocap Support for VSS
+Cappy Ishihara (@CappyIshihara on Twitter)
