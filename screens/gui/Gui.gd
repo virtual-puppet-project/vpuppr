@@ -25,6 +25,7 @@ const XmlConstants: Dictionary = {
 	"PRESET": "preset",
 	"COLOR_PICKER": "color_picker",
 	"INPUT_BUTTON": "input_button",
+	"DROP_DOWN": "drop_down",
 
 	"DOUBLE_TOGGLE": "double_toggle",
 	
@@ -79,6 +80,7 @@ const DoubleToggleElement: Resource = preload("res://screens/gui/elements/Double
 const ViewButton: Resource = preload("res://screens/gui/elements/ViewButton.tscn")
 const ColorPickerElement: Resource = preload("res://screens/gui/elements/ColorPickerElement.tscn")
 const InputButtonElement: Resource = preload("res://screens/gui/elements/InputButtonElement.tscn")
+const DropDownElement: Resource = preload("res://screens/gui/elements/DropDownElement.tscn")
 
 const PropInputElement: Resource = preload("res://screens/gui/elements/PropInputElement.tscn")
 const PropToggleElement: Resource = preload("res://screens/gui/elements/PropToggleElement.tscn")
@@ -235,13 +237,12 @@ func _ready() -> void:
 	# Process and generate guis per file
 	for xml_file in xml_files_to_parse:
 		var base_view: Control = BaseView.instance()
-		call_deferred("add_child", base_view)
-		yield(base_view, "ready")
+		add_child(base_view)
 
 		var c_view: String
-		var left
-		var right
-		var floating
+		var left = null
+		var right = null
+		var floating = null
 
 		var gui_parser = GuiFileParser.new()
 		AppManager.log_message("Loading gui file: %s" % xml_file)
@@ -255,24 +256,21 @@ func _ready() -> void:
 							AppManager.log_message("Invalid data for %s" % xml_file, true)
 							return
 						left = LeftContainer.instance()
-						base_view.call_deferred("add_child", left)
-						yield(left, "ready")
+						base_view.add_child(left)
 						c_view = XmlConstants.LEFT
 					XmlConstants.RIGHT:
 						if right:
 							AppManager.log_message("Invalid data for %s" % xml_file, true)
 							return
 						right = RightContainer.instance()
-						base_view.call_deferred("add_child", right)
-						yield(right, "ready")
+						base_view.add_child(right)
 						c_view = XmlConstants.RIGHT
 					XmlConstants.FLOATING:
 						if floating:
 							AppManager.log_message("Invalid data for %s" % xml_file, true)
 							return
 						floating = FloatingContainer.instance()
-						base_view.call_deferred("add_child", floating)
-						yield(floating, "ready")
+						base_view.add_child(floating)
 						c_view = XmlConstants.FLOATING
 					XmlConstants.VIEW:
 						base_view.name = data.data["name"]
@@ -282,20 +280,23 @@ func _ready() -> void:
 							if file.open("%s/%s" % [base_path, data.data["script"]], File.READ) != OK:
 								AppManager.log_message("Failed to open script", true)
 
-							var script: Script = base_view.get_script()
+							var script: Script = base_view.get_script().duplicate()
 							script.source_code = file.get_as_text()
 							base_view.set_script(null)
 							script.reload()
 							base_view.set_script(script)
+							
+							base_view.call("setup")
 					_:
-						var element: Control = generate_ui_element(data.node_name, data.data)
+						var element: BaseElement = generate_ui_element(data.node_name, data.data)
+						element.containing_view = base_view
 						match c_view:
 							XmlConstants.LEFT:
-								left.vbox.call_deferred("add_child", element)
+								left.vbox.add_child(element)
 							XmlConstants.RIGHT:
-								right.vbox.call_deferred("add_child", element)
+								right.vbox.add_child(element)
 							XmlConstants.FLOATING:
-								floating.vbox.call_deferred("add_child", element)
+								floating.vbox.add_child(element)
 
 			if data.is_complete:
 				break
@@ -311,8 +312,8 @@ func _ready() -> void:
 
 		yield(get_tree(), "idle_frame")
 
-		if base_view.has_method("setup"):
-			base_view.setup()
+		# if base_view.has_method("setup"):
+		# 	base_view.setup()
 
 	emit_signal("setup_completed")
 
@@ -798,6 +799,8 @@ func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 			result = PresetToggleElement.instance()
 		XmlConstants.INPUT_BUTTON:
 			result = InputButtonElement.instance()
+		XmlConstants.DROP_DOWN:
+			result = DropDownElement.instance()
 		_:
 			AppManager.log_message("Unhandled tag_name: %s" % tag_name)
 			return result

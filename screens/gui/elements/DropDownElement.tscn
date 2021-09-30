@@ -1,0 +1,27 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://screens/gui/elements/BaseElement.tscn" type="PackedScene" id=1]
+[ext_resource path="res://screens/gui/elements/DropDownElement.gd" type="Script" id=2]
+
+[node name="DropDownElement" instance=ExtResource( 1 )]
+script = ExtResource( 2 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." index="0"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 1593.0
+margin_bottom = 893.0
+
+[node name="PanelContainer" type="PanelContainer" parent="VBoxContainer" index="0"]
+margin_right = 1586.0
+margin_bottom = 886.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MenuButton" type="MenuButton" parent="VBoxContainer/PanelContainer" index="0"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 1579.0
+margin_bottom = 879.0
+size_flags_horizontal = 3
+size_flags_vertical = 3

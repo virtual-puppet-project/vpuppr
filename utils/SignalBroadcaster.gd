@@ -83,6 +83,11 @@ signal gaze_strength(value)
 func broadcast_gaze_strength(value: float) -> void:
 	emit_signal("gaze_strength", value)
 
+signal camera_select(value)
+func broadcast_camera_select(value: String) -> void:
+	print(value)
+	emit_signal("camera_select", value)
+
 signal tracker_fps(value)
 func broadcast_tracker_fps(value: int) -> void:
 	emit_signal("tracker_fps", value)

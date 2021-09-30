@@ -16,6 +16,7 @@ var is_disabled := false
 var is_ready := false
 
 var parent
+var containing_view: Control
 
 ###############################################################################
 # Builtin functions                                                           #
