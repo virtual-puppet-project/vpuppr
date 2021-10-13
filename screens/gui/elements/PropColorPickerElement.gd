@@ -19,7 +19,7 @@ func _ready() -> void:
 ###############################################################################
 
 func _on_color_changed(color: Color) -> void:
-	emit_signal("event", [event_name, prop_name, color])
+	_handle_event([event_name, prop_name, color])
 
 ###############################################################################
 # Private functions                                                           #

@@ -23,7 +23,7 @@ func _ready() -> void:
 ###############################################################################
 
 func _on_toggled(button_pressed: bool) -> void:
-	emit_signal("event", [event_name, preset_name, button_pressed])
+	_handle_event([event_name, preset_name, button_pressed])
 
 func _on_preset_toggled(p_preset_name: String, is_visible: bool) -> void:
 	if not is_visible:
