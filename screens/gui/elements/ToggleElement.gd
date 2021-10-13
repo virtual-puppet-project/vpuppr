@@ -20,7 +20,6 @@ func _ready() -> void:
 ###############################################################################
 
 func _on_toggled(button_state: bool) -> void:
-	# emit_signal("event", [event_name, button_state])
 	_handle_event([event_name, button_state])
 
 ###############################################################################

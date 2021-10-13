@@ -138,8 +138,6 @@ var current_edited_preset: Reference
 
 func _ready() -> void:
 	AppManager.sb.connect("model_loaded", self, "_on_model_loaded")
-
-	# AppManager.sb.subscribe(self, "model_loaded")
 	
 	# Model callbacks
 
@@ -154,18 +152,6 @@ func _ready() -> void:
 	AppManager.sb.connect("reset_model_pose", self, "_on_reset_model_pose")
 
 	AppManager.sb.connect("bone_toggled", self, "_on_bone_toggled")
-
-	# AppManager.sb.subscribe(self, "move_model")
-	# AppManager.sb.subscribe(self, "rotate_model")
-	# AppManager.sb.subscribe(self, "zoom_model")
-
-	# AppManager.sb.subscribe(self, "load_model")
-	# AppManager.sb.subscribe(self, "set_model_as_default")
-
-	# AppManager.sb.subscribe(self, "reset_model_transform")
-	# AppManager.sb.subscribe(self, "reset_model_pose")
-
-	# AppManager.sb.subscribe(self, "bone_toggled")
 
 	# Tracking callbacks
 
@@ -184,21 +170,6 @@ func _ready() -> void:
 	AppManager.sb.connect("should_track_eye", self, "_on_should_track_eye")
 	AppManager.sb.connect("gaze_strength", self, "_on_gaze_strength")
 
-	# AppManager.sb.subscribe(self, "translation_damp")
-	# AppManager.sb.subscribe(self, "rotation_damp")
-	# AppManager.sb.subscribe(self, "additional_bone_damp")
-
-	# AppManager.sb.subscribe(self, "head_bone")
-
-	# AppManager.sb.subscribe(self, "apply_translation")
-	# AppManager.sb.subscribe(self, "apply_rotation")
-
-	# AppManager.sb.subscribe(self, "interpolate_model")
-	# AppManager.sb.subscribe(self, "interpolation_rate")
-
-	# AppManager.sb.subscribe(self, "should_track_eye")
-	# AppManager.sb.subscribe(self, "gaze_strength")
-
 	# Features callbacks
 
 	AppManager.sb.connect("main_light", self, "_on_main_light")
@@ -213,18 +184,6 @@ func _ready() -> void:
 	AppManager.sb.connect("zoom_prop", self, "_on_zoom_prop")
 	AppManager.sb.connect("delete_prop", self, "_on_delete_prop")
 
-	# AppManager.sb.subscribe(self, "main_light")
-	# AppManager.sb.subscribe(self, "world_environment")
-
-	# AppManager.sb.subscribe(self, "add_custom_prop")
-
-	# AppManager.sb.subscribe(self, "prop_toggled")
-
-	# AppManager.sb.subscribe(self, "move_prop")
-	# AppManager.sb.subscribe(self, "rotate_prop")
-	# AppManager.sb.subscribe(self, "zoom_prop")
-	# AppManager.sb.subscribe(self, "delete_prop")
-
 	# Preset callbacks
 
 	AppManager.sb.connect("new_preset", self, "_on_new_preset")
@@ -238,17 +197,6 @@ func _ready() -> void:
 	AppManager.sb.connect("load_preset", self, "_on_load_preset")
 	AppManager.sb.connect("delete_preset", self, "_on_delete_preset")
 
-	# AppManager.sb.subscribe(self, "new_preset")
-	# AppManager.sb.subscribe(self, "preset_toggled")
-
-	# AppManager.sb.subscribe(self, "config_name")
-	# AppManager.sb.subscribe(self, "description")
-	# AppManager.sb.subscribe(self, "hotkey")
-	# AppManager.sb.subscribe(self, "notes")
-	# AppManager.sb.subscribe(self, "is_default_for_model")
-	# AppManager.sb.subscribe(self, "load_preset")
-	# AppManager.sb.subscribe(self, "delete_preset")
-
 	# App settings
 	
 	AppManager.sb.connect("default_search_path", self, "_on_default_search_path")
@@ -256,12 +204,6 @@ func _ready() -> void:
 	AppManager.sb.connect("use_transparent_background", self, "_on_use_transparent_background")
 	AppManager.sb.connect("use_fxaa", self, "_on_use_fxaa")
 	AppManager.sb.connect("msaa_value", self, "_on_msaa_value")
-
-	# AppManager.sb.subscribe(self, "default_search_path")
-	# AppManager.sb.subscribe(self, "view_licenses")
-	# AppManager.sb.subscribe(self, "use_transparent_background")
-	# AppManager.sb.subscribe(self, "use_fxaa")
-	# AppManager.sb.subscribe(self, "msaa_value")
 
 	if not OS.is_debug_build():
 		base_path = "%s/%s" % [OS.get_executable_path().get_base_dir(), "resources/gui"]
@@ -453,23 +395,6 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _on_view_button_pressed(view_name: String) -> void:
 	_switch_view_to(view_name)
-
-# func _on_event(event_value) -> void:
-# 	match typeof(event_value):
-# 		TYPE_ARRAY: # input and toggle
-# 			if event_value.size() > 2:
-# 				AppManager.sb.call("broadcast_%s" % event_value[0], event_value.slice(1, event_value.size() - 1))
-# 			else:
-# 				AppManager.sb.call("broadcast_%s" % event_value[0], event_value[1])
-# 		TYPE_STRING:
-# 			AppManager.sb.call("broadcast_%s" % event_value)
-# 		_:
-# 			AppManager.log_message("Unhandled gui event" % str(event_value), true)
-	
-# 	if not current_edited_preset:
-# 		AppManager.save_config()
-# 	else:
-# 		AppManager.save_config(current_edited_preset)
 
 func _on_model_loaded(p_model: BasicModel) -> void:
 	model = p_model
@@ -817,12 +742,6 @@ func _setup_gui_nodes() -> void:
 # Public functions                                                            #
 ###############################################################################
 
-# func event_published(event_key: String, payload) -> void:
-# 	match event_key:
-# 		_:
-# 			pass
-# 	pass
-
 func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 	var result: BaseElement
 
@@ -883,9 +802,6 @@ func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 			AppManager.log_message("Unhandled tag_name: %s" % tag_name)
 			return result
 
-	# if not tag_name in [XmlConstants.LABEL, XmlConstants.LIST]:
-	# 	result.connect("event", self, "_on_event")
-
 	if data.has(XmlConstants.DATA):
 		result.data_bind = data[XmlConstants.DATA]
 
@@ -906,7 +822,6 @@ func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 		match data[XmlConstants.LABEL_UPDATABLE].to_lower():
 			"true", "yes":
 				AppManager.sb.connect("update_label_text", result, "_on_label_updated")
-				# AppManager.sb.subscribe("update_label_text", result)
 			"false", "no":
 				pass
 			_:

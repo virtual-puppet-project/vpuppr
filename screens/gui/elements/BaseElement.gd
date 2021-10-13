@@ -89,20 +89,3 @@ func setup() -> void:
 		if data != null:
 			set_value(data)
 			return
-
-# func event_published(event_key: String, payload) -> void:
-# 	match event_key:
-# 		"update_label_text":
-# 			if payload[0] != label_text:
-# 				return
-		
-# 			var elem: Control = get("label")
-# 			if elem:
-# 				elem.text = payload[1]
-# 				return
-			
-# 			elem = get("button")
-# 			if elem:
-# 				elem.text = payload[1]
-# 		"value_updated":
-# 			set_value(payload)
