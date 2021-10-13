@@ -1,48 +1,5 @@
 extends Reference
 
-# Based off of https://github.com/DevKnightlie/godot-pub-sub
-# Stripped down to fit the needs of this project
-
-# const SUBSCRIPTIONS: Dictionary = {}
-
-# const ALL_EVENTS: Array = []
-
-# func subscribe(listener: Object, event_key: String) -> void:
-# 	if not listener.has_method("event_published"):
-# 		AppManager.log_message("Unable to subscribe listener %s to event %s" % [str(listener), event_key], true)
-# 		return
-
-# 	if event_key.empty():
-# 		ALL_EVENTS.append(listener)
-
-# 	if not SUBSCRIPTIONS.has(event_key):
-# 		SUBSCRIPTIONS[event_key] = []
-
-# 	if not SUBSCRIPTIONS[event_key].has(listener):
-# 		SUBSCRIPTIONS[event_key].append(listener)
-
-# func unsubscribe(listener: Object, event_key: String = "") -> void:
-# 	if event_key.empty():
-# 		for array in SUBSCRIPTIONS.values():
-# 			if array.has(listener):
-# 				array.erase(listener)
-# 	else:
-# 		if SUBSCRIPTIONS[event_key].has(listener):
-# 			SUBSCRIPTIONS[event_key].erase(listener)
-
-# func publish(event_key: String, payload) -> void:
-# 	if not SUBSCRIPTIONS.has(event_key):
-# 		AppManager.log_message("Event key does not exist: %s" % event_key, true)
-# 		return
-
-# 	var listeners: Array = SUBSCRIPTIONS[event_key]
-# 	for listener in listeners:
-# 		listener.event_published(event_key, payload)
-# 		if listener.is_queued_for_deletion():
-# 			SUBSCRIPTIONS[event_key].erase(listener)
-# 			if ALL_EVENTS.has(listener):
-# 				ALL_EVENTS.erase(listener)
-
 signal update_label_text(element_name, value)
 func broadcast_update_label_text(element_name: String, value: String) -> void:
 	emit_signal("update_label_text", element_name, value)

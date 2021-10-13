@@ -32,21 +32,15 @@ func _ready() -> void:
 ###############################################################################
 
 func _on_toggled1(button_state: bool) -> void:
-	# emit_signal("event", [event_name, label.text, toggle1.text.to_lower(), button_state])
 	_handle_event([event_name, label.text, toggle1.text.to_lower(), button_state])
 
 func _on_toggled2(button_state: bool) -> void:
-	# emit_signal("event", [event_name, label.text, toggle2.text.to_lower(), button_state])
 	_handle_event([event_name, label.text, toggle2.text.to_lower(), button_state])
 
 func _on_bone_toggled(bone_name: String, _toggle_type: String, toggle_value: bool) -> void:
 	if not toggle_value:
 		return
 	if bone_name != label.text:
-		# TODO HACK, timing issue when untoggling other toggles
-		# toggle2.disconnect("toggled", self, "_on_toggled2")
-		# toggle2.pressed = false
-		# toggle2.connect("toggled", self, "_on_toggled2")
 		toggle2.set_pressed_no_signal(false)
 
 func _on_head_bone(head_bone_name: String) -> void:
