@@ -18,7 +18,9 @@ func _ready() -> void:
 ###############################################################################
 
 func _on_pressed() -> void:
-	emit_signal("event", event_name)
+	# emit_signal("event", event_name)
+	# AppManager.sb.publish(event_name)
+	_handle_event(event_name)
 
 ###############################################################################
 # Private functions                                                           #
