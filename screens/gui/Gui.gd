@@ -396,23 +396,6 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_view_button_pressed(view_name: String) -> void:
 	_switch_view_to(view_name)
 
-func _on_event(event_value) -> void:
-	match typeof(event_value):
-		TYPE_ARRAY: # input and toggle
-			if event_value.size() > 2:
-				AppManager.sb.call("broadcast_%s" % event_value[0], event_value.slice(1, event_value.size() - 1))
-			else:
-				AppManager.sb.call("broadcast_%s" % event_value[0], event_value[1])
-		TYPE_STRING:
-			AppManager.sb.call("broadcast_%s" % event_value)
-		_:
-			AppManager.log_message("Unhandled gui event" % str(event_value), true)
-	
-	if not current_edited_preset:
-		AppManager.save_config()
-	else:
-		AppManager.save_config(current_edited_preset)
-
 func _on_model_loaded(p_model: BasicModel) -> void:
 	model = p_model
 	initial_model_transform = model.transform
@@ -818,9 +801,6 @@ func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 		_:
 			AppManager.log_message("Unhandled tag_name: %s" % tag_name)
 			return result
-
-	if not tag_name in [XmlConstants.LABEL, XmlConstants.LIST]:
-		result.connect("event", self, "_on_event")
 
 	if data.has(XmlConstants.DATA):
 		result.data_bind = data[XmlConstants.DATA]

@@ -38,7 +38,7 @@ func _on_text_entered(text: String) -> void:
 			_:
 				AppManager.log_message("Unhandled data type: %s" % data_type, true)
 				return
-	emit_signal("event", [event_name, prop_name, result])
+	_handle_event([event_name, prop_name, result])
 
 ###############################################################################
 # Private functions                                                           #
