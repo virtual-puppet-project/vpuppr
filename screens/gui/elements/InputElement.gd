@@ -36,7 +36,8 @@ func _process(delta: float) -> void:
 ###############################################################################
 
 func _on_text_entered(text: String) -> void:
-	_emit_event(text)
+	# _emit_event(text)
+	_handle_event(text)
 
 func _on_text_changed(_text: String) -> void:
 	should_emit = true
@@ -63,7 +64,8 @@ func _emit_event(text: String) -> void:
 				result = int(text)
 			_:
 				return
-	emit_signal("event", [event_name, result])
+	# emit_signal("event", [event_name, result])
+	_handle_event([event_name, result])
 
 ###############################################################################
 # Public functions                                                            #

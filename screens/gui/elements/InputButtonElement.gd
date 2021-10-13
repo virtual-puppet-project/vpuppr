@@ -20,7 +20,8 @@ func _ready() -> void:
 ###############################################################################
 
 func _on_button_pressed() -> void:
-	emit_signal("event", [event_name, line_edit.text])
+	# emit_signal("event", [event_name, line_edit.text])
+	_handle_event([event_name, line_edit.text])
 
 ###############################################################################
 # Private functions                                                           #

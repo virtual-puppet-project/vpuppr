@@ -48,6 +48,23 @@ func _on_value_updated(value) -> void:
 # Private functions                                                           #
 ###############################################################################
 
+func _handle_event(event_value) -> void:
+	match typeof(event_value):
+		TYPE_ARRAY: # input and toggle
+			if event_value.size() > 2:
+				AppManager.sb.call("broadcast_%s" % event_value[0], event_value.slice(1, event_value.size() - 1))
+			else:
+				AppManager.sb.call("broadcast_%s" % event_value[0], event_value[1])
+		TYPE_STRING:
+			AppManager.sb.call("broadcast_%s" % event_value)
+		_:
+			AppManager.log_message("Unhandled gui event" % str(event_value), true)
+	
+	if not parent.current_edited_preset:
+		AppManager.save_config()
+	else:
+		AppManager.save_config(parent.current_edited_preset)
+
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
@@ -72,3 +89,20 @@ func setup() -> void:
 		if data != null:
 			set_value(data)
 			return
+
+# func event_published(event_key: String, payload) -> void:
+# 	match event_key:
+# 		"update_label_text":
+# 			if payload[0] != label_text:
+# 				return
+		
+# 			var elem: Control = get("label")
+# 			if elem:
+# 				elem.text = payload[1]
+# 				return
+			
+# 			elem = get("button")
+# 			if elem:
+# 				elem.text = payload[1]
+# 		"value_updated":
+# 			set_value(payload)

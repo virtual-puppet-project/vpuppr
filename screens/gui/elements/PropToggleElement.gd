@@ -21,7 +21,8 @@ func _ready() -> void:
 ###############################################################################
 
 func _on_toggled(button_pressed: bool) -> void:
-	emit_signal("event", [event_name, prop_name, button_pressed])
+	# emit_signal("event", [event_name, prop_name, button_pressed])
+	_handle_event([event_name, prop_name, button_pressed])
 
 func _on_prop_toggled(p_prop_name: String, is_visible: bool) -> void:
 	if not is_visible:
