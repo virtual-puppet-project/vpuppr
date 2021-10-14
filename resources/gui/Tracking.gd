@@ -3,7 +3,9 @@ extends Control
 func setup() -> void:
     pass
 
-func setup_cameras() -> Array:
+func setup_cameras(element: Control) -> void:
+    var popup_menu = element.menu_button.get_popup()
+
     var result: Array = []
 
     var output: Array = []
@@ -23,5 +25,5 @@ func setup_cameras() -> Array:
     else:
         result.append("Default camera")
 
-    return result
-    # return []
+    for option in result:
+        popup_menu.add_item(option)

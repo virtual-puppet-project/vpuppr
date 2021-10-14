@@ -28,12 +28,15 @@ var setup_data: Array
 func _ready() -> void:
 	is_ready = true
 
-	if (not setup_function.empty() and containing_view.has_method(setup_function)):
-		setup_data = containing_view.call(setup_function)
+	connect("ready", self, "_on_post_ready")
 
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
+
+func _on_post_ready() -> void:
+	if (not setup_function.empty() and containing_view.has_method(setup_function)):
+		containing_view.call(setup_function, self)
 
 func _on_label_updated(label_name: String, value: String) -> void:
 	if label_name != label_text:
