@@ -29,6 +29,8 @@ class Metadata:
 	# Model file name to config name
 	var model_defaults: Dictionary = {} # String: String
 
+	var camera_index: int = 0
+
 	func load_from_json(json_string: String) -> bool:
 		var json_data = parse_json(json_string)
 
@@ -36,28 +38,36 @@ class Metadata:
 			AppManager.log_message("Invalid metadata loaded, using default metadata values", true)
 			return false
 		
-		default_model_to_load_path = json_data["default_model_to_load_path"]
-		default_search_path = json_data["default_search_path"]
-		should_use_portable_config_files = json_data["should_use_portable_config_files"]
-		config_data = json_data["config_data"]
-		model_defaults = json_data["model_defaults"]
-		use_transparent_background = json_data["use_transparent_background"]
-		use_fxaa = json_data["use_fxaa"]
-		msaa_value = json_data["msaa_value"]
+		for key in (json_data as Dictionary).keys():
+			# Prevent segfaulting in release versions
+			if not get(key):
+				continue
+
+			var data = json_data[key]
+
+			set(key, data)
 
 		return true
 	
 	func get_as_json() -> String:
-		return to_json({
-			"default_model_to_load_path": default_model_to_load_path,
-			"default_search_path": default_search_path,
-			"should_use_portable_config_files": should_use_portable_config_files,
-			"config_data": config_data,
-			"model_defaults": model_defaults,
-			"use_transparent_background": use_transparent_background,
-			"use_fxaa": use_fxaa,
-			"msaa_value": msaa_value
-		})
+		var result: Dictionary = {}
+		for i in get_property_list():
+			if i.name in ["Reference", "script", "Script Variables"]:
+				continue
+			result[i.name] = get(i.name)
+
+		return to_json(result)
+
+		# return to_json({
+		# 	"default_model_to_load_path": default_model_to_load_path,
+		# 	"default_search_path": default_search_path,
+		# 	"should_use_portable_config_files": should_use_portable_config_files,
+		# 	"config_data": config_data,
+		# 	"model_defaults": model_defaults,
+		# 	"use_transparent_background": use_transparent_background,
+		# 	"use_fxaa": use_fxaa,
+		# 	"msaa_value": msaa_value
+		# })
 	
 	func apply_rendering_changes(viewport: Viewport) -> void:
 		viewport.transparent_bg = use_transparent_background
@@ -187,6 +197,10 @@ class ConfigData:
 			return
 		
 		for key in (json_result as Dictionary).keys():
+			# Prevent segfaulting in release versions
+			if not get(key):
+				continue
+
 			var data = json_result[key]
 
 			if typeof(data) != TYPE_DICTIONARY:
@@ -222,6 +236,8 @@ class ConfigData:
 		dict to a value
 		"""
 		for key in json_dict.keys():
+			if not get(key):
+				continue
 			set(key, json_dict[key])
 
 	func duplicate() -> ConfigData:
@@ -262,9 +278,14 @@ func _init() -> void:
 	else:
 		metadata_path = "res://export"
 
+	AppManager.sb.connect("camera_select", self, "_on_camera_select")
+
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
+
+func _on_camera_select(camera_index: String) -> void:
+	metadata_config.camera_index = camera_index.to_int()
 
 ###############################################################################
 # Private functions                                                           #

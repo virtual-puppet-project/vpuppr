@@ -20,7 +20,7 @@ func _ready() -> void:
 ###############################################################################
 
 func _on_index_pressed(idx: int) -> void:
-	emit_signal("event", [event_name, popup_menu.get_item_text(idx)[0]])
+	_handle_event([event_name, popup_menu.get_item_text(idx)[0]])
 
 ###############################################################################
 # Private functions                                                           #
