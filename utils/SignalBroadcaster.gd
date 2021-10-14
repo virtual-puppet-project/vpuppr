@@ -205,6 +205,10 @@ signal msaa_value(value)
 func broadcast_msaa_value(value: bool) -> void:
 	emit_signal("msaa_value", value)
 
+signal reconstruct_views()
+func broadcast_reconstruct_views() -> void:
+	emit_signal("reconstruct_views")
+
 # File select popup
 
 signal file_to_load_changed(file_path)

@@ -9,5 +9,6 @@
     </left>
     <right>
         <button name="View Licenses" event="view_licenses"/>
+        <button name="Reconstruct Views" event="reconstruct_views"/>
     </right>
 </view>
