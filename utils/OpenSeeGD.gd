@@ -237,8 +237,6 @@ func _on_start_tracker() -> void:
 			"0",
 			"-F",
 			face_tracker_fps,
-			"-D",
-			"-1",
 			"-v",
 			"0",
 			"-s",
@@ -262,6 +260,7 @@ func _on_start_tracker() -> void:
 			var pid: int = -1
 			match OS.get_name().to_lower():
 				"windows":
+					face_tracker_options.append_array(["-D", "-1"])
 					var exe_path: String = "%s%s" % [OS.get_executable_path().get_base_dir(), "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe"]
 					if OS.is_debug_build():
 						exe_path = "%s%s" % [ProjectSettings.globalize_path("res://export"), "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe"]
@@ -288,7 +287,7 @@ func _on_start_tracker() -> void:
 						AppManager.log_message("Unable to find python executable")
 						return
 					
-					pid = OS.execute("%s" % [python_alias], face_tracker_options,
+					pid = OS.execute("%s" % [python_alias], modified_options,
 							false, [], true)
 				_:
 					AppManager.log_message("Unhandled os type %s" % OS.get_name(), true)
