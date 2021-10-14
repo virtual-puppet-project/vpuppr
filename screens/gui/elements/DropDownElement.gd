@@ -14,16 +14,6 @@ func _ready() -> void:
 	popup_menu = menu_button.get_popup()
 
 	popup_menu.connect("index_pressed", self, "_on_index_pressed")
-	
-	# match data_bind:
-	# 	"camera_select":
-	# 		for option in containing_view.camera_options:
-	# 			popup_menu.add_item(option)
-	# 	_:
-	# 		pass
-	if setup_data:
-		for option in setup_data:
-			popup_menu.add_item(option)
 
 ###############################################################################
 # Connections                                                                 #
