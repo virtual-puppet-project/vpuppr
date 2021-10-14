@@ -29,7 +29,9 @@ class Metadata:
 	# Model file name to config name
 	var model_defaults: Dictionary = {} # String: String
 
-	var camera_index: int = 0
+	# Not stored as an int since we can guarantee that this value
+	# will always come as a String
+	var camera_index: String = "0"
 
 	func load_from_json(json_string: String) -> bool:
 		var json_data = parse_json(json_string)
@@ -39,10 +41,6 @@ class Metadata:
 			return false
 		
 		for key in (json_data as Dictionary).keys():
-			# Prevent segfaulting in release versions
-			if not get(key):
-				continue
-
 			var data = json_data[key]
 
 			set(key, data)
@@ -57,17 +55,6 @@ class Metadata:
 			result[i.name] = get(i.name)
 
 		return to_json(result)
-
-		# return to_json({
-		# 	"default_model_to_load_path": default_model_to_load_path,
-		# 	"default_search_path": default_search_path,
-		# 	"should_use_portable_config_files": should_use_portable_config_files,
-		# 	"config_data": config_data,
-		# 	"model_defaults": model_defaults,
-		# 	"use_transparent_background": use_transparent_background,
-		# 	"use_fxaa": use_fxaa,
-		# 	"msaa_value": msaa_value
-		# })
 	
 	func apply_rendering_changes(viewport: Viewport) -> void:
 		viewport.transparent_bg = use_transparent_background
@@ -197,10 +184,6 @@ class ConfigData:
 			return
 		
 		for key in (json_result as Dictionary).keys():
-			# Prevent segfaulting in release versions
-			if not get(key):
-				continue
-
 			var data = json_result[key]
 
 			if typeof(data) != TYPE_DICTIONARY:
@@ -236,8 +219,6 @@ class ConfigData:
 		dict to a value
 		"""
 		for key in json_dict.keys():
-			if not get(key):
-				continue
 			set(key, json_dict[key])
 
 	func duplicate() -> ConfigData:
@@ -285,7 +266,7 @@ func _init() -> void:
 ###############################################################################
 
 func _on_camera_select(camera_index: String) -> void:
-	metadata_config.camera_index = camera_index.to_int()
+	metadata_config.camera_index = camera_index
 
 ###############################################################################
 # Private functions                                                           #
@@ -379,7 +360,7 @@ func load_config_for_preset(preset_name: String) -> ConfigData:
 
 func load_config_and_set_as_current(model_path: String) -> void:
 	var model_name: String = model_path.get_file().get_basename()
-	var config_name: String = ""
+	var config_name: String = model_name
 	if metadata_config.model_defaults.has(model_name):
 		config_name = metadata_config.model_defaults[model_name]
 	var full_path: String = CONFIG_FORMAT % [metadata_path, config_name]

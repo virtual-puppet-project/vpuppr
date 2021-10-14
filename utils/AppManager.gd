@@ -28,8 +28,8 @@ const DEFAULT_SAVE_FILE: Dictionary = {
 
 # TODO currently unused
 # onready var tm: TranslationManager = TranslationManager.new()
-onready var cm: Reference = load("res://utils/ConfigManager.gd").new()
 onready var sb: Reference = load("res://utils/SignalBroadcaster.gd").new()
+onready var cm: Reference = load("res://utils/ConfigManager.gd").new()
 
 # TODO disable OpenSeeGD during debug i guess
 var is_face_tracking_disabled: bool = false
