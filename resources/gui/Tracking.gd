@@ -1,8 +1,11 @@
 extends Control
 
-var camera_options: Array = []
-
 func setup() -> void:
+    pass
+
+func setup_cameras() -> Array:
+    var result: Array = []
+
     var output: Array = []
     match OS.get_name().to_lower():
         "windows":
@@ -14,10 +17,11 @@ func setup() -> void:
             pass
 
     if not output.empty():
-        camera_options.append_array((output[0] as String).split("\n"))
-        camera_options.pop_back() # First output is 'Available cameras'
-        camera_options.pop_front() # Last output is an empty string
+        result.append_array((output[0] as String).split("\n"))
+        result.pop_back() # First output is 'Available cameras'
+        result.pop_front() # Last output is an empty string
     else:
-        camera_options.append("Default camera")
+        result.append("Default camera")
 
-# func 
+    return result
+    # return []

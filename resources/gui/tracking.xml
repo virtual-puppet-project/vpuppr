@@ -20,7 +20,7 @@
     </left>
     <right>
         <label name="Tracking Options"/>
-        <drop_down name="Camera select" data="camera_select" event="camera_select"/>
+        <drop_down name="Camera Select" data="camera_select" event="camera_select" setup="setup_cameras"/>
         <input name="Tracker FPS" data="tracker_fps" event="tracker_fps" type="integer"/>
         <button name="Start Tracker" event="start_tracker" label_updatable="true"/>
     </right>

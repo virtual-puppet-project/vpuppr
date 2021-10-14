@@ -18,12 +18,18 @@ var is_ready := false
 var parent
 var containing_view: Control
 
+var setup_function: String = ""
+var setup_data: Array
+
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
 func _ready() -> void:
 	is_ready = true
+
+	if (not setup_function.empty() and containing_view.has_method(setup_function)):
+		setup_data = containing_view.call(setup_function)
 
 ###############################################################################
 # Connections                                                                 #
