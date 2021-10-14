@@ -198,7 +198,6 @@ var stop_reception: bool = false
 
 var is_listening := false
 
-var face_tracker_fps: String = "12"
 var face_tracker_pid: int
 
 ###############################################################################
@@ -232,11 +231,16 @@ func _on_start_tracker() -> void:
 		is_listening = true
 		stop_reception = false
 
+		if AppManager.cm.current_model_config.tracker_fps > 144:
+			AppManager.log_message("Face tracker fps is greater than 144. This is a bad idea.")
+			AppManager.log_message("Declining to start face tracker.")
+			return
+
 		var face_tracker_options: PoolStringArray = [
 			"-c",
 			"0",
 			"-F",
-			face_tracker_fps,
+			str(AppManager.cm.current_model_config.tracker_fps),
 			"-v",
 			"0",
 			"-s",
@@ -252,60 +256,55 @@ func _on_start_tracker() -> void:
 			"--max-feature-updates",
 			"900"
 		]
-		if face_tracker_fps.is_valid_float():
-			if float(face_tracker_fps) > 144:
-				AppManager.log_message("Face tracker fps is greater than 144. This is a bad idea.")
-				AppManager.log_message("Declining to start face tracker.")
-				return
-			var pid: int = -1
-			match OS.get_name().to_lower():
-				"windows":
-					face_tracker_options.append_array(["-D", "-1"])
-					var exe_path: String = "%s%s" % [OS.get_executable_path().get_base_dir(), "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe"]
-					if OS.is_debug_build():
-						exe_path = "%s%s" % [ProjectSettings.globalize_path("res://export"), "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe"]
-						print(exe_path)
-					pid = OS.execute(exe_path,
-							face_tracker_options, false, [], true)
-				"osx", "x11":
-					var modified_options := PoolStringArray(["./OpenSeeFaceFolder/OpenSeeFace/facetracker.py"])
-					modified_options.append_array(face_tracker_options)
+		var pid: int = -1
+		match OS.get_name().to_lower():
+			"windows":
+				face_tracker_options.append_array(["-D", "-1"])
+				var exe_path: String = "%s%s" % [OS.get_executable_path().get_base_dir(), "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe"]
+				if OS.is_debug_build():
+					exe_path = "%s%s" % [ProjectSettings.globalize_path("res://export"), "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe"]
+					print(exe_path)
+				pid = OS.execute(exe_path,
+						face_tracker_options, false, [], true)
+			"osx", "x11":
+				var modified_options := PoolStringArray(["./OpenSeeFaceFolder/OpenSeeFace/facetracker.py"])
+				modified_options.append_array(face_tracker_options)
 
-					var python_alias: String = ""
-					
-					var shell_output: Array = []
+				var python_alias: String = ""
+				
+				var shell_output: Array = []
 
-					OS.execute("command", ["-v", "python3"], true, shell_output)
+				OS.execute("command", ["-v", "python3"], true, shell_output)
+				if not shell_output.empty():
+					python_alias = "python3"
+				else:
+					OS.execute("command", ["-v", "python"], true, shell_output)
 					if not shell_output.empty():
-						python_alias = "python3"
-					else:
-						OS.execute("command", ["-v", "python"], true, shell_output)
-						if not shell_output.empty():
-							python_alias = "python"
-					
-					if python_alias.empty():
-						AppManager.log_message("Unable to find python executable")
-						return
-					
-					pid = OS.execute("%s" % [python_alias], modified_options,
-							false, [], true)
-				_:
-					AppManager.log_message("Unhandled os type %s" % OS.get_name(), true)
+						python_alias = "python"
+				
+				if python_alias.empty():
+					AppManager.log_message("Unable to find python executable")
 					return
-			
-			if pid <= 0:
-				is_listening = false
-				stop_reception = true
-				AppManager.log_message("Failed to start tracker", true)
+				
+				pid = OS.execute("%s" % [python_alias], modified_options,
+						false, [], true)
+			_:
+				AppManager.log_message("Unhandled os type %s" % OS.get_name(), true)
 				return
-			face_tracker_pid = pid
-			AppManager.sb.broadcast_update_label_text("Start Tracker", STOP_FACE_TRACKER_TEXT)
+		
+		if pid <= 0:
+			is_listening = false
+			stop_reception = true
+			AppManager.log_message("Failed to start tracker", true)
+			return
+		face_tracker_pid = pid
+		AppManager.sb.broadcast_update_label_text("Start Tracker", STOP_FACE_TRACKER_TEXT)
 
-			start_receiver()
+		start_receiver()
 
-			AppManager.main.model_display_screen.tracking_started()
+		AppManager.main.model_display_screen.tracking_started()
 
-			AppManager.log_message("Face tracker started.")
+		AppManager.log_message("Face tracker started.")
 	else:
 		AppManager.log_message("Stopping face tracker.")
 
