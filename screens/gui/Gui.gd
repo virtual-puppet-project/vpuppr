@@ -25,6 +25,7 @@ const XmlConstants: Dictionary = {
 	"PRESET": "preset",
 	"COLOR_PICKER": "color_picker",
 	"INPUT_BUTTON": "input_button",
+	"DROP_DOWN": "drop_down",
 
 	"DOUBLE_TOGGLE": "double_toggle",
 	
@@ -43,8 +44,9 @@ const XmlConstants: Dictionary = {
 	"DISABLED": "disabled",
 	"LABEL_UPDATABLE": "label_updatable",
 	"LISTEN_FOR_SELF": "listen_for_self",
+	"SETUP": "setup", # If defined, the script must have a function that matches the passed value for SETUP
 
-	"SCRIPT": "script"
+	"SCRIPT": "script" # If defined, the script must have a setup() -> void function defined
 }
 
 const DoubleToggleConstants: Dictionary = {
@@ -79,6 +81,7 @@ const DoubleToggleElement: Resource = preload("res://screens/gui/elements/Double
 const ViewButton: Resource = preload("res://screens/gui/elements/ViewButton.tscn")
 const ColorPickerElement: Resource = preload("res://screens/gui/elements/ColorPickerElement.tscn")
 const InputButtonElement: Resource = preload("res://screens/gui/elements/InputButtonElement.tscn")
+const DropDownElement: Resource = preload("res://screens/gui/elements/DropDownElement.tscn")
 
 const PropInputElement: Resource = preload("res://screens/gui/elements/PropInputElement.tscn")
 const PropToggleElement: Resource = preload("res://screens/gui/elements/PropToggleElement.tscn")
@@ -200,128 +203,131 @@ func _ready() -> void:
 	# App settings
 	
 	AppManager.sb.connect("default_search_path", self, "_on_default_search_path")
-	AppManager.sb.connect("view_licenses", self, "_on_view_licenses")
 	AppManager.sb.connect("use_transparent_background", self, "_on_use_transparent_background")
 	AppManager.sb.connect("use_fxaa", self, "_on_use_fxaa")
 	AppManager.sb.connect("msaa_value", self, "_on_msaa_value")
+
+	AppManager.sb.connect("view_licenses", self, "_on_view_licenses")
+	AppManager.sb.connect("reconstruct_views", self, "_on_reconstruct_views")
 
 	if not OS.is_debug_build():
 		base_path = "%s/%s" % [OS.get_executable_path().get_base_dir(), "resources/gui"]
 	else:
 		base_path = "res://resources/gui"
+
+	_construct_views_from_xml()
 	
-	var xml_files_to_parse: Array = []
+	# var xml_files_to_parse: Array = []
 	
-	# Null check or else we segfault
-	var dir := Directory.new()
-	if not dir.dir_exists(base_path):
-		AppManager.log_message("%s does not exist. Please check your installation." % base_path, true)
-		return
+	# # Null check or else we segfault
+	# var dir := Directory.new()
+	# if not dir.dir_exists(base_path):
+	# 	AppManager.log_message("%s does not exist. Please check your installation." % base_path, true)
+	# 	return
 
-	var metadata_parser = GuiFileParser.new()
-	AppManager.log_message("Loading metadata: %s" % DEFAULT_METADATA)
-	metadata_parser.open_resource("%s/%s" % [base_path, DEFAULT_METADATA])
-	while true:
-		var data = metadata_parser.read_node()
-		if not data.is_empty and data.node_name == XmlConstants.FILE:
-			if not data.data.has(XmlConstants.NAME):
-				AppManager.log_message("Invalid gui metadata", true)
-				return
-			xml_files_to_parse.append(data.data[XmlConstants.NAME])
+	# var metadata_parser = GuiFileParser.new()
+	# AppManager.log_message("Loading metadata: %s" % DEFAULT_METADATA)
+	# metadata_parser.open_resource("%s/%s" % [base_path, DEFAULT_METADATA])
+	# while true:
+	# 	var data = metadata_parser.read_node()
+	# 	if not data.is_empty and data.node_name == XmlConstants.FILE:
+	# 		if not data.data.has(XmlConstants.NAME):
+	# 			AppManager.log_message("Invalid gui metadata", true)
+	# 			return
+	# 		xml_files_to_parse.append(data.data[XmlConstants.NAME])
 
-		if data.is_complete:
-			break
+	# 	if data.is_complete:
+	# 		break
 	
-	# Process and generate guis per file
-	for xml_file in xml_files_to_parse:
-		var base_view: Control = BaseView.instance()
-		call_deferred("add_child", base_view)
-		yield(base_view, "ready")
+	# # Process and generate guis per file
+	# for xml_file in xml_files_to_parse:
+	# 	var base_view: Control = BaseView.instance()
+	# 	add_child(base_view)
 
-		var c_view: String
-		var left
-		var right
-		var floating
+	# 	var c_view: String
+	# 	var left = null
+	# 	var right = null
+	# 	var floating = null
 
-		var gui_parser = GuiFileParser.new()
-		AppManager.log_message("Loading gui file: %s" % xml_file)
-		gui_parser.open_resource("%s/%s" % [base_path, xml_file])
-		while true:
-			var data = gui_parser.read_node()
-			if not data.is_empty:
-				match data.node_name:
-					XmlConstants.LEFT:
-						if left:
-							AppManager.log_message("Invalid data for %s" % xml_file, true)
-							return
-						left = LeftContainer.instance()
-						base_view.call_deferred("add_child", left)
-						yield(left, "ready")
-						c_view = XmlConstants.LEFT
-					XmlConstants.RIGHT:
-						if right:
-							AppManager.log_message("Invalid data for %s" % xml_file, true)
-							return
-						right = RightContainer.instance()
-						base_view.call_deferred("add_child", right)
-						yield(right, "ready")
-						c_view = XmlConstants.RIGHT
-					XmlConstants.FLOATING:
-						if floating:
-							AppManager.log_message("Invalid data for %s" % xml_file, true)
-							return
-						floating = FloatingContainer.instance()
-						base_view.call_deferred("add_child", floating)
-						yield(floating, "ready")
-						c_view = XmlConstants.FLOATING
-					XmlConstants.VIEW:
-						base_view.name = data.data["name"]
+	# 	var gui_parser = GuiFileParser.new()
+	# 	AppManager.log_message("Loading gui file: %s" % xml_file)
+	# 	gui_parser.open_resource("%s/%s" % [base_path, xml_file])
+	# 	while true:
+	# 		var data = gui_parser.read_node()
+	# 		if not data.is_empty:
+	# 			match data.node_name:
+	# 				XmlConstants.LEFT:
+	# 					if left:
+	# 						AppManager.log_message("Invalid data for %s" % xml_file, true)
+	# 						return
+	# 					left = LeftContainer.instance()
+	# 					base_view.add_child(left)
+	# 					c_view = XmlConstants.LEFT
+	# 				XmlConstants.RIGHT:
+	# 					if right:
+	# 						AppManager.log_message("Invalid data for %s" % xml_file, true)
+	# 						return
+	# 					right = RightContainer.instance()
+	# 					base_view.add_child(right)
+	# 					c_view = XmlConstants.RIGHT
+	# 				XmlConstants.FLOATING:
+	# 					if floating:
+	# 						AppManager.log_message("Invalid data for %s" % xml_file, true)
+	# 						return
+	# 					floating = FloatingContainer.instance()
+	# 					base_view.add_child(floating)
+	# 					c_view = XmlConstants.FLOATING
+	# 				XmlConstants.VIEW:
+	# 					base_view.name = data.data["name"]
 						
-						if data.data.has("script"):
-							var file := File.new()
-							if file.open("%s/%s" % [base_path, data.data["script"]], File.READ) != OK:
-								AppManager.log_message("Failed to open script", true)
+	# 					if data.data.has("script"):
+	# 						var file := File.new()
+	# 						if file.open("%s/%s" % [base_path, data.data["script"]], File.READ) != OK:
+	# 							AppManager.log_message("Failed to open script", true)
 
-							var script: Script = base_view.get_script()
-							script.source_code = file.get_as_text()
-							base_view.set_script(null)
-							script.reload()
-							base_view.set_script(script)
-					_:
-						var element: Control = generate_ui_element(data.node_name, data.data)
-						match c_view:
-							XmlConstants.LEFT:
-								left.vbox.call_deferred("add_child", element)
-							XmlConstants.RIGHT:
-								right.vbox.call_deferred("add_child", element)
-							XmlConstants.FLOATING:
-								floating.vbox.call_deferred("add_child", element)
+	# 						var script: Script = base_view.get_script().duplicate()
+	# 						script.source_code = file.get_as_text()
+	# 						base_view.set_script(null)
+	# 						script.reload()
+	# 						base_view.set_script(script)
+							
+	# 						base_view.call("setup")
+	# 				_:
+	# 					var element: BaseElement = generate_ui_element(data.node_name, data.data)
+	# 					element.containing_view = base_view
+	# 					match c_view:
+	# 						XmlConstants.LEFT:
+	# 							left.vbox.add_child(element)
+	# 						XmlConstants.RIGHT:
+	# 							right.vbox.add_child(element)
+	# 						XmlConstants.FLOATING:
+	# 							floating.vbox.add_child(element)
 
-			if data.is_complete:
-				break
+	# 		if data.is_complete:
+	# 			break
 
-		# Create top bar buttons
-		var button := ViewButton.instance()
-		button.button_text = base_view.name
-		button.name = base_view.name
-		button.connect("view_selected", self, "_on_view_button_pressed")
-		button_bar_hbox.call_deferred("add_child", button)
+	# 	# Create top bar buttons
+	# 	var button := ViewButton.instance()
+	# 	button.button_text = base_view.name
+	# 	button.name = base_view.name
+	# 	button.connect("view_selected", self, "_on_view_button_pressed")
+	# 	button_bar_hbox.call_deferred("add_child", button)
 
-		GUI_VIEWS[base_view.name] = base_view
+	# 	GUI_VIEWS[base_view.name] = base_view
 
-		yield(get_tree(), "idle_frame")
+	# 	yield(get_tree(), "idle_frame")
 
-		if base_view.has_method("setup"):
-			base_view.setup()
+	# 	# if base_view.has_method("setup"):
+	# 	# 	base_view.setup()
 
-	emit_signal("setup_completed")
+	# emit_signal("setup_completed")
 
-	# Toggle initial views
-	current_view = button_bar_hbox.get_child(0).name
-	for key in GUI_VIEWS.keys():
-		if key == current_view:
-			continue
-		_toggle_view(key)
+	# # Toggle initial views
+	# current_view = button_bar_hbox.get_child(0).name
+	# for key in GUI_VIEWS.keys():
+	# 	if key == current_view:
+	# 		continue
+	# 	_toggle_view(key)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_gui"):
@@ -717,6 +723,13 @@ func _on_msaa_value(value: bool) -> void:
 	
 	AppManager.cm.metadata_config.msaa_value = value
 
+func _on_reconstruct_views() -> void:
+	_construct_views_from_xml()
+
+	yield(get_tree(), "idle_frame")
+
+	_setup_gui_nodes()
+
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
@@ -737,6 +750,130 @@ func _toggle_view(view_name: String) -> void:
 func _setup_gui_nodes() -> void:
 	for node in get_tree().get_nodes_in_group(GUI_GROUP):
 		node.setup()
+
+func _construct_views_from_xml() -> void:
+	# These must use queue_free or else we hard crash
+	for value in GUI_VIEWS.values():
+		value.queue_free()
+	for child in button_bar_hbox.get_children():
+		child.queue_free()
+	GUI_VIEWS.clear()
+
+	yield(get_tree(), "idle_frame")
+
+	var xml_files_to_parse: Array = []
+	
+	# Null check or else we segfault
+	var dir := Directory.new()
+	if not dir.dir_exists(base_path):
+		AppManager.log_message("%s does not exist. Please check your installation." % base_path, true)
+		return
+
+	var metadata_parser = GuiFileParser.new()
+	AppManager.log_message("Loading metadata: %s" % DEFAULT_METADATA)
+	metadata_parser.open_resource("%s/%s" % [base_path, DEFAULT_METADATA])
+	while true:
+		var data = metadata_parser.read_node()
+		if not data.is_empty and data.node_name == XmlConstants.FILE:
+			if not data.data.has(XmlConstants.NAME):
+				AppManager.log_message("Invalid gui metadata", true)
+				return
+			xml_files_to_parse.append(data.data[XmlConstants.NAME])
+
+		if data.is_complete:
+			break
+	
+	# Process and generate guis per file
+	for xml_file in xml_files_to_parse:
+		var base_view: Control = BaseView.instance()
+		add_child(base_view)
+
+		var c_view: String
+		var left = null
+		var right = null
+		var floating = null
+
+		var gui_parser = GuiFileParser.new()
+		AppManager.log_message("Loading gui file: %s" % xml_file)
+		gui_parser.open_resource("%s/%s" % [base_path, xml_file])
+		while true:
+			var data = gui_parser.read_node()
+			if not data.is_empty:
+				match data.node_name:
+					XmlConstants.LEFT:
+						if left:
+							AppManager.log_message("Invalid data for %s" % xml_file, true)
+							return
+						left = LeftContainer.instance()
+						base_view.add_child(left)
+						c_view = XmlConstants.LEFT
+					XmlConstants.RIGHT:
+						if right:
+							AppManager.log_message("Invalid data for %s" % xml_file, true)
+							return
+						right = RightContainer.instance()
+						base_view.add_child(right)
+						c_view = XmlConstants.RIGHT
+					XmlConstants.FLOATING:
+						if floating:
+							AppManager.log_message("Invalid data for %s" % xml_file, true)
+							return
+						floating = FloatingContainer.instance()
+						base_view.add_child(floating)
+						c_view = XmlConstants.FLOATING
+					XmlConstants.VIEW:
+						base_view.name = data.data["name"]
+						
+						if data.data.has("script"):
+							var file := File.new()
+							if file.open("%s/%s" % [base_path, data.data["script"]], File.READ) != OK:
+								AppManager.log_message("Failed to open script", true)
+
+							var script: Script = base_view.get_script().duplicate()
+							script.source_code = file.get_as_text()
+							base_view.set_script(null)
+							script.reload()
+							base_view.set_script(script)
+							
+							if base_view.has_method("setup"):
+								base_view.call("setup")
+					_:
+						var element: BaseElement = generate_ui_element(data.node_name, data.data)
+						element.containing_view = base_view
+						match c_view:
+							XmlConstants.LEFT:
+								left.vbox.add_child(element)
+							XmlConstants.RIGHT:
+								right.vbox.add_child(element)
+							XmlConstants.FLOATING:
+								floating.vbox.add_child(element)
+
+			if data.is_complete:
+				break
+
+		# Create top bar buttons
+		var button := ViewButton.instance()
+		button.button_text = base_view.name
+		button.name = base_view.name
+		button.connect("view_selected", self, "_on_view_button_pressed")
+		# button_bar_hbox.call_deferred("add_child", button)
+		button_bar_hbox.add_child(button)
+
+		GUI_VIEWS[base_view.name] = base_view
+
+		# yield(get_tree(), "idle_frame")
+
+		# if base_view.has_method("setup"):
+		# 	base_view.setup()
+
+	emit_signal("setup_completed")
+
+	# Toggle initial views
+	current_view = button_bar_hbox.get_child(0).name
+	for key in GUI_VIEWS.keys():
+		if key == current_view:
+			continue
+		_toggle_view(key)
 
 ###############################################################################
 # Public functions                                                            #
@@ -798,6 +935,8 @@ func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 			result = PresetToggleElement.instance()
 		XmlConstants.INPUT_BUTTON:
 			result = InputButtonElement.instance()
+		XmlConstants.DROP_DOWN:
+			result = DropDownElement.instance()
 		_:
 			AppManager.log_message("Unhandled tag_name: %s" % tag_name)
 			return result
@@ -837,6 +976,9 @@ func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 			_:
 				# Ignore invalid syntax
 				pass
+
+	if data.has(XmlConstants.SETUP):
+		result.setup_function = data[XmlConstants.SETUP]
 
 	result.name = node_name
 	result.label_text = display_name
