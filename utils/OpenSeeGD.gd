@@ -238,7 +238,7 @@ func _on_start_tracker() -> void:
 
 		var face_tracker_options: PoolStringArray = [
 			"-c",
-			"0",
+			AppManager.cm.metadata_config.camera_index,
 			"-F",
 			str(AppManager.cm.current_model_config.tracker_fps),
 			"-v",
