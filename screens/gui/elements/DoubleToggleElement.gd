@@ -27,6 +27,8 @@ func _ready() -> void:
 	toggle1.connect("toggled", self, "_on_toggled1")
 	toggle2.connect("toggled", self, "_on_toggled2")
 
+	AppManager.sb.connect("bone_toggled", self, "_on_bone_toggled")
+
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################

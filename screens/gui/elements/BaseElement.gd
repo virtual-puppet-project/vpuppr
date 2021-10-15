@@ -12,7 +12,8 @@ var event_name: String
 var data_bind: String
 # If the actual element should be editable
 var is_disabled := false
-
+# Some methods are called at initialization but this element might not be ready
+# Spin until this element is ready 
 var is_ready := false
 
 var parent
@@ -28,15 +29,9 @@ var setup_data: Array
 func _ready() -> void:
 	is_ready = true
 
-	connect("ready", self, "_on_post_ready")
-
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
-
-func _on_post_ready() -> void:
-	if (not setup_function.empty() and containing_view.has_method(setup_function)):
-		containing_view.call(setup_function, self)
 
 func _on_label_updated(label_name: String, value: String) -> void:
 	if label_name != label_text:
@@ -87,6 +82,9 @@ func set_value(_value) -> void:
 	AppManager.log_message("%s.set_value() not implemented" % self.name)
 
 func setup() -> void:
+	if (not setup_function.empty() and containing_view.has_method(setup_function)):
+		containing_view.call(setup_function, self)
+	
 	if data_bind:
 		# ConfigData
 		var data = AppManager.cm.current_model_config.get(data_bind)

@@ -1,9 +1,9 @@
-<view name="Presets">
+<view name="Presets" script="Presets.gd">
     <left>
         <input_button name="New preset name" event="new_preset"/>
-        <list name="Saved Presets" data="config_data"/>
+        <list name="Saved Presets" setup="setup_controller"/>
     </left>
     <right>
-        <list name="Preset Info" type="preset_receiver"/>
+        <list name="Preset Info" setup="setup_receiver"/>
     </right>
 </view>

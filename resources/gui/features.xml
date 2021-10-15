@@ -1,13 +1,13 @@
-<view name="Features">
+<view name="Features" script="Features.gd">
     <left>
         <label name="Built-in Props"/>
         <prop_toggle name="Main Light" event="prop_toggled"/>
         <prop_toggle name="Environment" event="prop_toggled"/>
 
         <button name="Add Custom Prop" event="add_custom_prop"/>
-        <list name="Custom Props" data="instanced_props"/>
+        <list name="Custom Props" setup="setup_controller"/>
     </left>
     <right>
-        <list name="Prop Details" type="prop_receiver"/>
+        <list name="Prop Details" setup="setup_receiver"/>
     </right>
 </view>
