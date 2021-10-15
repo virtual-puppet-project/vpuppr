@@ -182,7 +182,7 @@ func _ready() -> void:
 	AppManager.sb.connect("delete_preset", self, "_on_delete_preset")
 
 	# App settings
-	
+
 	AppManager.sb.connect("use_transparent_background", self, "_on_use_transparent_background")
 	AppManager.sb.connect("use_fxaa", self, "_on_use_fxaa")
 	AppManager.sb.connect("msaa_value", self, "_on_msaa_value")
@@ -305,7 +305,10 @@ func _on_load_model() -> void:
 	popup.current_dir = load_path
 	popup.current_path = load_path
 
+	# TODO this might be a memory leak if you open up many popups but don't select a model
 	yield(popup, "file_selected")
+
+	_cleanup_props()
 
 	AppManager.sb.set_file_to_load(popup.file)
 
@@ -470,10 +473,7 @@ func _on_load_preset() -> void:
 	if cmc.config_name == current_edited_preset.config_name:
 		return # Do nothing if we try to load the current config
 
-	for prop_name in props:
-		props[prop_name].prop.queue_free()
-		props[prop_name].toggle.queue_free()
-	props.clear()
+	_cleanup_props()
 	
 	AppManager.cm.current_model_config = current_edited_preset.duplicate()
 	if cmc.model_name != current_edited_preset.model_name:
@@ -574,6 +574,12 @@ func _toggle_view(view_name: String) -> void:
 func _setup_gui_nodes() -> void:
 	for node in get_tree().get_nodes_in_group(GUI_GROUP):
 		node.setup()
+
+func _cleanup_props() -> void:
+	for prop_name in props:
+		props[prop_name].prop.queue_free()
+		props[prop_name].toggle.queue_free()
+	props.clear()
 
 func _construct_views_from_xml() -> void:
 	# These must use queue_free or else we hard crash
@@ -680,15 +686,9 @@ func _construct_views_from_xml() -> void:
 		button.button_text = base_view.name
 		button.name = base_view.name
 		button.connect("view_selected", self, "_on_view_button_pressed")
-		# button_bar_hbox.call_deferred("add_child", button)
 		button_bar_hbox.add_child(button)
 
 		GUI_VIEWS[base_view.name] = base_view
-
-		# yield(get_tree(), "idle_frame")
-
-		# if base_view.has_method("setup"):
-		# 	base_view.setup()
 
 	emit_signal("setup_completed")
 
@@ -718,21 +718,10 @@ func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 			result = LabelElement.instance()
 		XmlConstants.LIST:
 			result = ListElement.instance()
-			if data.has(XmlConstants.TYPE):
-				match data[XmlConstants.TYPE]:
-					ListTypes.PROP_RECEIVER:
-						AppManager.sb.connect("prop_toggled", result, "_load_prop_information")
-						AppManager.sb.connect("delete_prop", result, "_cleanup")
-					ListTypes.PRESET_RECEIVER:
-						AppManager.sb.connect("preset_toggled", result, "_load_preset_information")
-						AppManager.sb.connect("delete_preset", result, "_cleanup")
-					_:
-						AppManager.log_message("Unhandled list type %s" % data[XmlConstants.TYPE])
 		XmlConstants.TOGGLE:
 			result = ToggleElement.instance()
 		XmlConstants.DOUBLE_TOGGLE:
 			result = DoubleToggleElement.instance()
-			AppManager.sb.connect("bone_toggled", result, "_on_bone_toggled")
 			AppManager.sb.connect("head_bone", result, "_on_head_bone")
 		XmlConstants.PROP_TOGGLE:
 			result = PropToggleElement.instance()

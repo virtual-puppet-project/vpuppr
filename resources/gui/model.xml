@@ -1,6 +1,6 @@
 <view name="Model" script="Model.gd">
     <left>
-        <list name="Mapped bones" data="mapped_bones"/>
+        <list name="Mapped bones" setup="setup_mapped_bones"/>
     </left>
     <right>
         <button name="Load model" event="load_model"/>
