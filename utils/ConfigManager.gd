@@ -259,14 +259,98 @@ func _init() -> void:
 	else:
 		metadata_path = "res://export"
 
+	# Model
+
+	AppManager.sb.connect("set_model_as_default", self, "_on_set_model_as_default")
+
+	# Tracking
+
+	AppManager.sb.connect("translation_damp", self, "_on_translation_damp")
+	AppManager.sb.connect("rotation_damp", self, "_on_rotation_damp")
+	AppManager.sb.connect("additional_bone_damp", self, "_on_additional_bone_damp")
+
+	AppManager.sb.connect("head_bone", self, "_on_head_bone")
+
+	AppManager.sb.connect("apply_translation", self, "_on_apply_translation")
+	AppManager.sb.connect("apply_rotation", self, "_on_apply_rotation")
+
+	AppManager.sb.connect("interpolate_model", self, "_on_interpolate_model")
+	AppManager.sb.connect("interpolation_rate", self, "_on_interpolation_rate")
+
+	AppManager.sb.connect("should_track_eye", self, "_on_should_track_eye")
+	AppManager.sb.connect("gaze_strength", self, "_on_gaze_strength")
+
 	AppManager.sb.connect("camera_select", self, "_on_camera_select")
+
+	# Features
+
+	AppManager.sb.connect("main_light", self, "_on_main_light")
+	AppManager.sb.connect("world_environment", self, "_on_environment")
+
+	# Presets
+
+	# App settings
+
+	AppManager.sb.connect("default_search_path", self, "_on_default_search_path")
 
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
 
+# Model
+
+func _on_set_model_as_default() -> void:
+	metadata_config.default_model_to_load_path = current_model_config.model_path
+
+# Tracking
+
+func _on_translation_damp(value: float) -> void:
+	current_model_config.translation_damp = value
+
+func _on_rotation_damp(value: float) -> void:
+	current_model_config.rotation_damp = value
+
+func _on_additional_bone_damp(value: float) -> void:
+	current_model_config.additional_bone_damp = value
+
+func _on_head_bone(value: String) -> void:
+	current_model_config.head_bone = value
+
+func _on_apply_translation(value: bool) -> void:
+	current_model_config.apply_translation = value
+
+func _on_apply_rotation(value: bool) -> void:
+	current_model_config.apply_rotation = value
+
+func _on_interpolate_model(value: bool) -> void:
+	current_model_config.interpolate_model = value
+
+func _on_interpolation_rate(value: float) -> void:
+	current_model_config.interpolation_rate = value
+
+func _on_should_track_eye(value: float) -> void:
+	current_model_config.should_track_eye = value
+
+func _on_gaze_strength(value: float) -> void:
+	current_model_config.gaze_strength = value
+
 func _on_camera_select(camera_index: String) -> void:
 	metadata_config.camera_index = camera_index
+
+# Features
+
+func _on_main_light(prop_name: String, value) -> void:
+	current_model_config.main_light[prop_name] = value
+
+func _on_environment(prop_name: String, value) -> void:
+	current_model_config.world_environment[prop_name] = value
+
+# Presets
+
+# App settings
+
+func _on_default_search_path(value: String) -> void:
+	metadata_config.default_search_path = value
 
 ###############################################################################
 # Private functions                                                           #

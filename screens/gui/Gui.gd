@@ -149,7 +149,6 @@ func _ready() -> void:
 	AppManager.sb.connect("zoom_model", self, "_on_zoom_model")
 
 	AppManager.sb.connect("load_model", self, "_on_load_model")
-	AppManager.sb.connect("set_model_as_default", self, "_on_set_model_as_default")
 	
 	AppManager.sb.connect("reset_model_transform", self, "_on_reset_model_transform")
 	AppManager.sb.connect("reset_model_pose", self, "_on_reset_model_pose")
@@ -158,25 +157,7 @@ func _ready() -> void:
 
 	# Tracking callbacks
 
-	AppManager.sb.connect("translation_damp", self, "_on_translation_damp")
-	AppManager.sb.connect("rotation_damp", self, "_on_rotation_damp")
-	AppManager.sb.connect("additional_bone_damp", self, "_on_additional_bone_damp")
-
-	AppManager.sb.connect("head_bone", self, "_on_head_bone")
-
-	AppManager.sb.connect("apply_translation", self, "_on_apply_translation")
-	AppManager.sb.connect("apply_rotation", self, "_on_apply_rotation")
-
-	AppManager.sb.connect("interpolate_model", self, "_on_interpolate_model")
-	AppManager.sb.connect("interpolation_rate", self, "_on_interpolation_rate")
-
-	AppManager.sb.connect("should_track_eye", self, "_on_should_track_eye")
-	AppManager.sb.connect("gaze_strength", self, "_on_gaze_strength")
-
 	# Features callbacks
-
-	AppManager.sb.connect("main_light", self, "_on_main_light")
-	AppManager.sb.connect("world_environment", self, "_on_environment")
 
 	AppManager.sb.connect("add_custom_prop", self, "_on_add_custom_prop")
 
@@ -202,7 +183,6 @@ func _ready() -> void:
 
 	# App settings
 	
-	AppManager.sb.connect("default_search_path", self, "_on_default_search_path")
 	AppManager.sb.connect("use_transparent_background", self, "_on_use_transparent_background")
 	AppManager.sb.connect("use_fxaa", self, "_on_use_fxaa")
 	AppManager.sb.connect("msaa_value", self, "_on_msaa_value")
@@ -216,118 +196,6 @@ func _ready() -> void:
 		base_path = "res://resources/gui"
 
 	_construct_views_from_xml()
-	
-	# var xml_files_to_parse: Array = []
-	
-	# # Null check or else we segfault
-	# var dir := Directory.new()
-	# if not dir.dir_exists(base_path):
-	# 	AppManager.log_message("%s does not exist. Please check your installation." % base_path, true)
-	# 	return
-
-	# var metadata_parser = GuiFileParser.new()
-	# AppManager.log_message("Loading metadata: %s" % DEFAULT_METADATA)
-	# metadata_parser.open_resource("%s/%s" % [base_path, DEFAULT_METADATA])
-	# while true:
-	# 	var data = metadata_parser.read_node()
-	# 	if not data.is_empty and data.node_name == XmlConstants.FILE:
-	# 		if not data.data.has(XmlConstants.NAME):
-	# 			AppManager.log_message("Invalid gui metadata", true)
-	# 			return
-	# 		xml_files_to_parse.append(data.data[XmlConstants.NAME])
-
-	# 	if data.is_complete:
-	# 		break
-	
-	# # Process and generate guis per file
-	# for xml_file in xml_files_to_parse:
-	# 	var base_view: Control = BaseView.instance()
-	# 	add_child(base_view)
-
-	# 	var c_view: String
-	# 	var left = null
-	# 	var right = null
-	# 	var floating = null
-
-	# 	var gui_parser = GuiFileParser.new()
-	# 	AppManager.log_message("Loading gui file: %s" % xml_file)
-	# 	gui_parser.open_resource("%s/%s" % [base_path, xml_file])
-	# 	while true:
-	# 		var data = gui_parser.read_node()
-	# 		if not data.is_empty:
-	# 			match data.node_name:
-	# 				XmlConstants.LEFT:
-	# 					if left:
-	# 						AppManager.log_message("Invalid data for %s" % xml_file, true)
-	# 						return
-	# 					left = LeftContainer.instance()
-	# 					base_view.add_child(left)
-	# 					c_view = XmlConstants.LEFT
-	# 				XmlConstants.RIGHT:
-	# 					if right:
-	# 						AppManager.log_message("Invalid data for %s" % xml_file, true)
-	# 						return
-	# 					right = RightContainer.instance()
-	# 					base_view.add_child(right)
-	# 					c_view = XmlConstants.RIGHT
-	# 				XmlConstants.FLOATING:
-	# 					if floating:
-	# 						AppManager.log_message("Invalid data for %s" % xml_file, true)
-	# 						return
-	# 					floating = FloatingContainer.instance()
-	# 					base_view.add_child(floating)
-	# 					c_view = XmlConstants.FLOATING
-	# 				XmlConstants.VIEW:
-	# 					base_view.name = data.data["name"]
-						
-	# 					if data.data.has("script"):
-	# 						var file := File.new()
-	# 						if file.open("%s/%s" % [base_path, data.data["script"]], File.READ) != OK:
-	# 							AppManager.log_message("Failed to open script", true)
-
-	# 						var script: Script = base_view.get_script().duplicate()
-	# 						script.source_code = file.get_as_text()
-	# 						base_view.set_script(null)
-	# 						script.reload()
-	# 						base_view.set_script(script)
-							
-	# 						base_view.call("setup")
-	# 				_:
-	# 					var element: BaseElement = generate_ui_element(data.node_name, data.data)
-	# 					element.containing_view = base_view
-	# 					match c_view:
-	# 						XmlConstants.LEFT:
-	# 							left.vbox.add_child(element)
-	# 						XmlConstants.RIGHT:
-	# 							right.vbox.add_child(element)
-	# 						XmlConstants.FLOATING:
-	# 							floating.vbox.add_child(element)
-
-	# 		if data.is_complete:
-	# 			break
-
-	# 	# Create top bar buttons
-	# 	var button := ViewButton.instance()
-	# 	button.button_text = base_view.name
-	# 	button.name = base_view.name
-	# 	button.connect("view_selected", self, "_on_view_button_pressed")
-	# 	button_bar_hbox.call_deferred("add_child", button)
-
-	# 	GUI_VIEWS[base_view.name] = base_view
-
-	# 	yield(get_tree(), "idle_frame")
-
-	# 	# if base_view.has_method("setup"):
-	# 	# 	base_view.setup()
-
-	# emit_signal("setup_completed")
-
-	# # Toggle initial views
-	# current_view = button_bar_hbox.get_child(0).name
-	# for key in GUI_VIEWS.keys():
-	# 	if key == current_view:
-	# 		continue
-	# 	_toggle_view(key)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_gui"):
@@ -425,9 +293,6 @@ func _on_rotate_model(value: bool) -> void:
 func _on_zoom_model(value: bool) -> void:
 	should_zoom_model = value
 
-func _on_set_model_as_default() -> void:
-	AppManager.cm.metadata_config.default_model_to_load_path = AppManager.cm.current_model_config.model_path
-
 func _on_load_model() -> void:
 	var popup: FileDialog = FilePopup.instance()
 	add_child(popup)
@@ -472,45 +337,7 @@ func _on_bone_toggled(bone_name: String, toggle_type: String, toggle_value: bool
 
 # Tracking
 
-func _on_translation_damp(value: float) -> void:
-	AppManager.cm.current_model_config.translation_damp = value
-
-func _on_rotation_damp(value: float) -> void:
-	AppManager.cm.current_model_config.rotation_damp = value
-
-func _on_additional_bone_damp(value: float) -> void:
-	AppManager.cm.current_model_config.additional_bone_damp = value
-
-func _on_head_bone(value: String) -> void:
-	AppManager.cm.current_model_config.head_bone = value
-
-func _on_apply_translation(value: bool) -> void:
-	AppManager.cm.current_model_config.apply_translation = value
-
-func _on_apply_rotation(value: bool) -> void:
-	AppManager.cm.current_model_config.apply_rotation = value
-
-func _on_interpolate_model(value: bool) -> void:
-	AppManager.cm.current_model_config.interpolate_model = value
-
-func _on_interpolation_rate(value: float) -> void:
-	AppManager.cm.current_model_config.interpolation_rate = value
-
-func _on_should_track_eye(value: float) -> void:
-	AppManager.cm.current_model_config.should_track_eye = value
-
-func _on_gaze_strength(value: float) -> void:
-	AppManager.cm.current_model_config.gaze_strength = value
-
 # Features
-
-func _on_main_light(prop_name: String, value) -> void:
-	AppManager.main.main_light.get_child(0).set(prop_name, value)
-	AppManager.cm.current_model_config.main_light[prop_name] = value
-
-func _on_environment(prop_name: String, value) -> void:
-	AppManager.main.world_environment.environment.set(prop_name, value)
-	AppManager.cm.current_model_config.world_environment[prop_name] = value
 
 func _on_add_custom_prop() -> void:
 	var popup: FileDialog = FilePopup.instance()
@@ -693,9 +520,6 @@ func _on_delete_preset() -> void:
 	current_edited_preset = null
 
 # App settings
-
-func _on_default_search_path(value: String) -> void:
-	AppManager.cm.metadata_config.default_search_path = value
 
 func _on_view_licenses() -> void:
 	var popup: Popup = LicensesPopup.instance()
