@@ -479,8 +479,17 @@ func save_config(p_config: ConfigData = null) -> void:
 		config = p_config.duplicate()
 	else:
 		# TODO this is gross
-		current_model_config.model_transform = AppManager.main.model_display_screen.model.transform
-		current_model_config.model_parent_transform = AppManager.main.model_display_screen.model_parent.transform
+		var model = AppManager.main.model_display_screen.model
+		var model_parent = AppManager.main.model_display_screen.model_parent
+		current_model_config.model_transform = model.transform
+		current_model_config.model_parent_transform = model_parent.transform
+
+		for bone_index in model.skeleton.get_bone_count() - 1:
+			var bone_transform: Transform = model.skeleton.get_bone_pose(bone_index)
+			var bone_name: String = model.skeleton.get_bone_name(bone_index)
+
+			current_model_config.bone_transforms[bone_name] = bone_transform
+
 		config = current_model_config.duplicate()
 
 	var config_name = config.config_name
