@@ -90,6 +90,8 @@ func _process(delta: float) -> void:
 func _on_tree_exiting() -> void:
 	if OpenSeeGd.is_listening:
 		OpenSeeGd.stop_receiver()
+
+	cm.save_config()
 	
 	log_message("Exiting. おやすみ。")
 
