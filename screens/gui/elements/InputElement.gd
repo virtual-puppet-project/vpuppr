@@ -36,7 +36,7 @@ func _process(delta: float) -> void:
 ###############################################################################
 
 func _on_text_entered(text: String) -> void:
-	_handle_event(text)
+	_emit_event(text)
 
 func _on_text_changed(_text: String) -> void:
 	should_emit = true

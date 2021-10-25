@@ -124,13 +124,22 @@ func _ready() -> void:
 
 	model_parent.call_deferred("add_child", model)
 	
-	# Wait until the model is loaded else we get IK errors
 	yield(model, "ready")
 
+	# Set model initial values from config
 	model_initial_transform = AppManager.cm.current_model_config.model_transform
 	model_parent_initial_transform = AppManager.cm.current_model_config.model_parent_transform
 	model.transform = model_initial_transform
 	model_parent.transform = model_parent_initial_transform
+
+	for bone_index in model.skeleton.get_bone_count():
+		var bone_name: String = model.skeleton.get_bone_name(bone_index)
+		# Courtesy null check
+		if not AppManager.cm.current_model_config.bone_transforms.has(bone_name):
+			continue
+		var bone_transform: Transform = AppManager.cm.current_model_config.bone_transforms[bone_name]
+
+		model.skeleton.set_bone_pose(bone_index, bone_transform)
 
 func _physics_process(_delta: float) -> void:
 	if not stored_offsets:
@@ -297,6 +306,11 @@ func _set_interpolation_rate(value: float) -> void:
 ###############################################################################
 
 func load_external_model(file_path: String) -> Spatial:
+	var dir := Directory.new()
+	if not dir.file_exists(file_path):
+		AppManager.log_message("File path not found: %s\nLoading demo model" % file_path, true)
+		file_path = AppManager.cm.DEMO_MODEL_PATH
+
 	AppManager.log_message("Starting external loader.")
 	var loaded_model: Spatial
 	var vrm_meta: Dictionary

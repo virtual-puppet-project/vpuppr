@@ -3,18 +3,18 @@ extends BasicModel
 
 var eco_mode: bool = false
 
-var stored_offsets: ModelDisplayScreen.StoredOffsets
+# var stored_offsets: ModelDisplayScreen.StoredOffsets
 
 var vrm_meta: Dictionary
 
-var vrm_mappings: VRMMappings # TODO probably unused?
+# var vrm_mappings: VRMMappings # TODO probably unused?
 var left_eye_id: int
 var right_eye_id: int
 
 var neck_bone_id: int
 var spine_bone_id: int
 
-var mapped_meshes: Dictionary
+# var mapped_meshes: Dictionary
 
 var facial_expressions
 var mouth_shapes
@@ -22,7 +22,7 @@ var blinking
 var eye_movement
 
 # Blinking
-var blink_threshold: float = 0.2
+var blink_threshold: float
 var eco_mode_is_blinking: bool = false
 
 class EyeClamps:
@@ -64,18 +64,28 @@ var o := ExpressionData.new()
 var sorrow := ExpressionData.new()
 var u := ExpressionData.new()
 
+# TODO stopgap
+var last_expression: ExpressionData
+
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
 func _ready() -> void:
 	has_custom_update = true
-	translation_damp = 0.1
-	rotation_damp = 0.01
-	additional_bone_damp = 0.6
+	# TODO this doesn't seem right, commented out for now
+	# translation_damp = 0.1
+	# rotation_damp = 0.01
+	# additional_bone_damp = 0.6
+
+	blink_threshold = AppManager.cm.current_model_config.blink_threshold
+	AppManager.sb.connect("blink_threshold", self, "_on_blink_threshold")
+
+	# TODO stopgap
+	AppManager.sb.connect("blend_shapes", self, "_on_blend_shapes")
 
 	# TODO this is gross
-	stored_offsets = get_parent().get_parent().stored_offsets
+	# stored_offsets = get_parent().get_parent().stored_offsets
 
 	# Map expressions
 	var anim_player: AnimationPlayer = find_node("anim")
@@ -230,6 +240,30 @@ func _ready() -> void:
 # Connections                                                                 #
 ###############################################################################
 
+func _on_blink_threshold(value: float) -> void:
+	blink_threshold = value
+
+# TODO go back to this after refactoring expression mapping
+func _on_blend_shapes(value: String) -> void:
+	var ed = get(value)
+	if not ed:
+		return
+
+	if last_expression:
+		for idx in last_expression.morphs.size():
+			_modify_blend_shape(last_expression.morphs[idx].mesh, last_expression.morphs[idx].morph,
+					last_expression.morphs[idx].values[0])
+
+	if ed == last_expression:
+		last_expression = null
+		return
+
+	for idx in ed.morphs.size():
+		_modify_blend_shape(ed.morphs[idx].mesh, ed.morphs[idx].morph,
+				ed.morphs[idx].values[1])
+
+	last_expression = ed
+
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
@@ -247,25 +281,30 @@ func scan_mapped_bones() -> void:
 		if bone_name.to_lower() == "root":
 			additional_bones_to_pose_names.erase(bone_name)
 
-func set_expression_weight(expression_name: String, expression_weight: float) -> void:
-	for mesh_name in vrm_mappings[expression_name].get_meshes():
-		for blend_name in vrm_mappings[expression_name].expression_data[mesh_name]:
-			_modify_blend_shape(mapped_meshes[mesh_name], blend_name, expression_weight)
+# func set_expression_weight(expression_name: String, expression_weight: float) -> void:
+# 	for mesh_name in vrm_mappings[expression_name].get_meshes():
+# 		for blend_name in vrm_mappings[expression_name].expression_data[mesh_name]:
+# 			_modify_blend_shape(mapped_meshes[mesh_name], blend_name, expression_weight)
 
 func custom_update(data, interpolation_data) -> void:
 	# NOTE: Eye mappings are intentionally reversed so that the model mirrors the data
 	if not eco_mode:
-		# Left eye blinking
-		if data.left_eye_open >= blink_threshold:
-			_modify_blend_shape(blink_r.morphs[0].mesh, blink_r.morphs[0].morph, blink_r.morphs[0].values[1] - interpolation_data.interpolate(InterpolationData.InterpolationDataType.LEFT_EYE_BLINK, 1.0))
-		else:
-			_modify_blend_shape(blink_r.morphs[0].mesh, blink_r.morphs[0].morph, blink_r.morphs[0].values[1])
+		if (last_expression != joy and last_expression != sorrow):
+			# Left eye blinking
+			if data.left_eye_open >= blink_threshold:
+				_modify_blend_shape(blink_r.morphs[0].mesh, blink_r.morphs[0].morph, blink_r.morphs[0].values[1] - interpolation_data.interpolate(InterpolationData.InterpolationDataType.LEFT_EYE_BLINK, 1.0))
+			else:
+				_modify_blend_shape(blink_r.morphs[0].mesh, blink_r.morphs[0].morph, blink_r.morphs[0].values[1])
 
-		# Right eye blinking
-		if data.right_eye_open >= blink_threshold:
-			_modify_blend_shape(blink_l.morphs[0].mesh, blink_l.morphs[0].morph, blink_l.morphs[0].values[1] - interpolation_data.interpolate(InterpolationData.InterpolationDataType.RIGHT_EYE_BLINK, 1.0))
+			# Right eye blinking
+			if data.right_eye_open >= blink_threshold:
+				_modify_blend_shape(blink_l.morphs[0].mesh, blink_l.morphs[0].morph, blink_l.morphs[0].values[1] - interpolation_data.interpolate(InterpolationData.InterpolationDataType.RIGHT_EYE_BLINK, 1.0))
+			else:
+				_modify_blend_shape(blink_l.morphs[0].mesh, blink_l.morphs[0].morph, blink_l.morphs[0].values[1])
 		else:
-			_modify_blend_shape(blink_l.morphs[0].mesh, blink_l.morphs[0].morph, blink_l.morphs[0].values[1])
+			# Unblink if the facial expression doesn't allow blinking
+			_modify_blend_shape(blink_r.morphs[0].mesh, blink_r.morphs[0].morph, blink_r.morphs[0].values[0])
+			_modify_blend_shape(blink_l.morphs[0].mesh, blink_l.morphs[0].morph, blink_l.morphs[0].values[0])
 
 		# TODO eyes show weird behaviour when blinking
 		# TODO make sure angle between eyes' x values are at least parallel
@@ -301,13 +340,6 @@ func custom_update(data, interpolation_data) -> void:
 		
 		skeleton.set_bone_pose(right_eye_id, left_eye_transform)
 		skeleton.set_bone_pose(left_eye_id, right_eye_transform)
-		
-		# TODO Debug only
-		if Input.is_key_pressed(KEY_0):
-			print(left_eye_rotation)
-		
-		if Input.is_key_pressed(KEY_1):
-			print(str(self.eye_tracking_damp))
 		
 		# Mouth tracking
 		_modify_blend_shape(a.morphs[0].mesh, a.morphs[0].morph,
