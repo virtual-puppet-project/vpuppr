@@ -71,6 +71,13 @@ func _clean_load_model_display_screen(path: String) -> void:
 	model_display_screen = MODEL_SCREEN.instance()
 	model_display_screen.model_resource_path = path
 	add_child(model_display_screen)
+	
+	# Set initial values from config
+	for key in AppManager.cm.current_model_config.main_light.keys():
+		main_light.get_child(0).set(key, AppManager.cm.current_model_config.main_light[key])
+	
+	for key in AppManager.cm.current_model_config.world_environment.keys():
+		world_environment.set(key, AppManager.cm.current_model_config.world_environment[key])
 
 ###############################################################################
 # Public functions                                                            #
