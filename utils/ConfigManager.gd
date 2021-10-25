@@ -1,3 +1,4 @@
+class_name ConfigManager
 extends Reference
 
 const DEMO_MODEL_PATH: String = "res://entities/basic-models/Duck.tscn"
@@ -104,6 +105,8 @@ class ConfigData:
 
 	var should_track_eye: bool = true
 	var gaze_strength: float = 0.5
+
+	var blink_threshold: float = 0.2
 
 	var tracker_fps: int = 12
 
@@ -334,6 +337,9 @@ func _on_should_track_eye(value: float) -> void:
 func _on_gaze_strength(value: float) -> void:
 	current_model_config.gaze_strength = value
 
+func _on_blink_threshold(value: float) -> void:
+	current_model_config.blink_threshold = value
+
 func _on_camera_select(camera_index: String) -> void:
 	metadata_config.camera_index = camera_index
 
@@ -361,13 +367,9 @@ func _load_metadata() -> bool:
 
 	var file_path = "%s/%s" % [metadata_path, METADATA_NAME]
 
-	var dir := Directory.new()
-	if not dir.file_exists(file_path):
-		AppManager.log_message("%s does not exist" % file_path)
-		return false
-
 	var metadata_file := File.new()
-	metadata_file.open(file_path, File.READ)
+	if metadata_file.open(file_path, File.READ) != OK:
+		return false
 
 	if not metadata_config.load_from_json(metadata_file.get_as_text()):
 		AppManager.log_message("Failed to load metadata file")
@@ -453,8 +455,19 @@ func load_config_and_set_as_current(model_path: String) -> void:
 
 	current_model_config = ConfigData.new()
 
-	var dir := Directory.new()
-	if not dir.file_exists(full_path):
+	# var dir := Directory.new()
+	# if not dir.file_exists(full_path):
+	# 	AppManager.log_message("%s does not exist" % full_path)
+	# 	current_model_config.config_name = model_name
+	# 	current_model_config.model_name = model_name
+	# 	current_model_config.model_path = model_path
+	# 	current_model_config.is_default_for_model = true # We can assume there are no defaults
+	# 	save_config(current_model_config)
+	# 	AppManager.sb.broadcast_new_preset(model_name)
+	# 	return
+
+	var config_file := File.new()
+	if not config_file.open(full_path, File.READ) == OK:
 		AppManager.log_message("%s does not exist" % full_path)
 		current_model_config.config_name = model_name
 		current_model_config.model_name = model_name
@@ -463,9 +476,6 @@ func load_config_and_set_as_current(model_path: String) -> void:
 		save_config(current_model_config)
 		AppManager.sb.broadcast_new_preset(model_name)
 		return
-
-	var config_file := File.new()
-	config_file.open(full_path, File.READ)
 	current_model_config.load_from_json(config_file.get_as_text())
 	config_file.close()
 

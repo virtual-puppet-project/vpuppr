@@ -17,11 +17,15 @@
         <label name="Misc."/>
         <toggle name="Should Track Eye" data="should_track_eye" event="should_track_eye"/>
         <input name="Gaze Strength" data="gaze_strength" event="gaze_strength" type="float"/>
+        <input name="Blink Threshold" data="blink_threshold" event="blink_threshold" type="float"/>
     </left>
     <right>
         <label name="Tracking Options"/>
         <drop_down name="Camera Select" data="camera_select" event="camera_select" setup="setup_cameras"/>
         <input name="Tracker FPS" data="tracker_fps" event="tracker_fps" type="integer"/>
         <button name="Start Tracker" event="start_tracker" label_updatable="true"/>
+        <!-- TODO this is bad, should refactor into a list -->
+        <label name="Blend Shapes"/>
+        <drop_down name="Blend Shapes" event="blend_shapes" setup="setup_blend_shapes"/>
     </right>
 </view>
