@@ -193,7 +193,7 @@ var open_see_data_map: Dictionary # int: OpenSeeData
 # TODO this might be unity specific?
 # var socket
 # var buffer: PoolByteArray
-var receive_thread: Thread = null
+var receive_thread: Thread = Thread.new()
 var stop_reception: bool = false
 
 var is_listening := false
@@ -323,7 +323,7 @@ func _on_start_tracker() -> void:
 # Private functions                                                           #
 ###############################################################################
 
-func _perform_reception() -> void:
+func _perform_reception(_x) -> void:
 	while not stop_reception:
 		#warning-ignore:return_value_discarded
 		server.poll()
@@ -347,22 +347,18 @@ func _perform_reception() -> void:
 ###############################################################################
 
 func start_receiver() -> void:
-	if not AppManager.is_face_tracking_disabled:
-		AppManager.log_message("Listening for data at %s:%s" % [listen_address, str(listen_port)])
+	AppManager.log_message("Listening for data at %s:%s" % [listen_address, str(listen_port)])
 
-		server.listen(listen_port, listen_address)
-
-		receive_thread = Thread.new()
-		
-		receive_thread.start(self, "_perform_reception")
-	else:
-		AppManager.log_message("Face tracking is disabled. This should only happen in debug builds.")
-		AppManager.log_message("Check AppManager.gd for more information.")
+	server.listen(listen_port, listen_address)
+	
+	receive_thread.start(self, "_perform_reception")
 
 func stop_receiver() -> void:
-	if (receive_thread and receive_thread.is_active()):
+	if receive_thread.is_active():
 		receive_thread.wait_to_finish()
 	if server.is_listening():
+		connection.close()
+		connection = null
 		server.stop()
 
 func get_open_see_data(face_id: int) -> OpenSeeData:
