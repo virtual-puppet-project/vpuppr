@@ -23,7 +23,7 @@ var model_initial_transform: Transform
 var model_parent_initial_transform: Transform
 
 # OpenSee
-var tracking_data: TrackingData
+var open_see_data
 export var face_id: int = 0
 export var min_confidence: float = 0.2
 export var show_gaze: bool = true
@@ -145,28 +145,28 @@ func _physics_process(_delta: float) -> void:
 	if not stored_offsets:
 		return
 	
-	tracking_data = AppManager.tracking_backend.get_data()
+	self.open_see_data = OpenSeeGd.get_open_see_data(face_id)
 
-	if(not tracking_data or tracking_data.get_fit_error() > AppManager.tracking_backend.get_max_fit_error()):
+	if(not open_see_data or open_see_data.fit_3d_error > OpenSeeGd.max_fit_3d_error):
 		return
 	
 	# Don't return early if we are interpolating
-	if tracking_data.get_updated_time() > updated:
-		updated = tracking_data.get_updated_time()
-		var corrected_euler: Vector3 = tracking_data.get_rotation()
+	if open_see_data.time > updated:
+		updated = open_see_data.time
+		var corrected_euler: Vector3 = open_see_data.raw_euler
 		if corrected_euler.x < 0.0:
 			corrected_euler.x = 360 + corrected_euler.x
 		interpolation_data.update_values(
 			updated,
-			stored_offsets.translation_offset - tracking_data.get_translation(),
+			stored_offsets.translation_offset - open_see_data.translation,
 			stored_offsets.euler_offset - corrected_euler,
-			(stored_offsets.left_eye_gaze_offset - tracking_data.get_left_eye_gaze()) *
+			(stored_offsets.left_eye_gaze_offset - open_see_data.left_gaze.get_euler()) *
 					float(should_track_eye),
-			(stored_offsets.right_eye_gaze_offset - tracking_data.get_right_eye_gaze()) *
+			(stored_offsets.right_eye_gaze_offset - open_see_data.right_gaze.get_euler()) *
 					float(should_track_eye),
-			tracking_data.get_left_eye_open_amount(),
-			tracking_data.get_right_eye_open_amount(),
-			tracking_data.get_mouth_open_amount()
+			open_see_data.left_eye_open,
+			open_see_data.right_eye_open,
+			open_see_data.features.mouth_open
 		)
 
 	if apply_translation:
@@ -176,7 +176,7 @@ func _physics_process(_delta: float) -> void:
 		head_rotation = interpolation_data.interpolate(InterpolationData.InterpolationDataType.ROTATION, model.rotation_damp)
 
 	if model.has_custom_update:
-		model.custom_update(tracking_data, interpolation_data)
+		model.custom_update(open_see_data, interpolation_data)
 
 	model.move_head(
 		head_translation * translation_adjustment,
@@ -229,7 +229,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_offset_timer_timeout() -> void:
 	get_node("OffsetTimer").queue_free()
 
-	tracking_data = AppManager.tracking_backend.get_data()
+	open_see_data = OpenSeeGd.get_open_see_data(face_id)
 	_save_offsets()
 
 func _on_apply_translation(value: bool) -> void:
@@ -262,18 +262,18 @@ static func _to_godot_quat(v: Quat) -> Quat:
 	return Quat(v.x, -v.y, v.z, v.w)
 
 func _save_offsets() -> void:
-	if not tracking_data:
+	if not open_see_data:
 		AppManager.log_message("No face tracking data found.")
 		return
-	stored_offsets.translation_offset = tracking_data.get_translation()
-	stored_offsets.rotation_offset = tracking_data.get_rotation() # TODO maybe unused?
-	stored_offsets.quat_offset = _to_godot_quat(tracking_data.raw_quaternion)
-	var corrected_euler: Vector3 = tracking_data.get_rotation()
+	stored_offsets.translation_offset = open_see_data.translation
+	stored_offsets.rotation_offset = open_see_data.rotation
+	stored_offsets.quat_offset = _to_godot_quat(open_see_data.raw_quaternion)
+	var corrected_euler: Vector3 = open_see_data.raw_euler
 	if corrected_euler.x < 0.0:
 		corrected_euler.x = 360 + corrected_euler.x
 	stored_offsets.euler_offset = corrected_euler
-	stored_offsets.left_eye_gaze_offset = tracking_data.get_left_eye_gaze()
-	stored_offsets.right_eye_gaze_offset = tracking_data.get_right_eye_gaze()
+	stored_offsets.left_eye_gaze_offset = open_see_data.left_gaze.get_euler()
+	stored_offsets.right_eye_gaze_offset = open_see_data.right_gaze.get_euler()
 	AppManager.log_message("New offsets saved.")
 
 static func _find_bone_chain(skeleton: Skeleton, root_bone: int, tip_bone: int) -> Array:
@@ -335,7 +335,7 @@ func load_external_model(file_path: String) -> Spatial:
 	return loaded_model
 
 func tracking_started() -> void:
-	if not tracking_data:
+	if not open_see_data:
 		var offset_timer: Timer = Timer.new()
 		offset_timer.name = "OffsetTimer"
 		offset_timer.connect("timeout", self, "_on_offset_timer_timeout")

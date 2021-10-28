@@ -1,18 +1,12 @@
-# Virtual Streamer Software (VSS)
+# OpenSeeFace GD Edition
 
-Forked from the original [openseeface-gd](https://github.com/you-win/openseeface-gd) project since multiple tracking backends are supported.
-
-# TODO update the rest of the README
-
-Special thanks to the [V-Sekai](https://github.com/V-Sekai) team for their help with `.vrm` importing.
+A Godot renderer for [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace). Special thanks to the [V-Sekai](https://github.com/V-Sekai) team for their help with `.vrm` importing.
 
 ![](demo.gif)
 
-All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` have not been tested but might work. `.tscn` files created with Godot should all import correctly as well.
+The receiver is located in `utils/OpenSeeGD.gd` and handles receiving OpenSeeFace packets and wrapping that information to be Godot-compatible. `screens/ModelDisplayScreen` handles the mapping and displaying of models. Heavily based on [OpenSeeFaceSample](https://github.com/emilianavt/OpenSeeFaceSample).
 
-## Supported tracking backends
-- [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace)
-- Mouse tracking (WIP)
+All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` have not been tested but might work. `.tscn` files created with Godot should all import correctly as well.
 
 ## Quickstart
 1. Download the latest release
