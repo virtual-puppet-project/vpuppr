@@ -19,6 +19,9 @@ var config_to_save: Reference
 
 var main: MainScreen
 
+# Load in OpenSeeFace by default
+var tracking_backend: TrackingBackend = load("res://utils/OpenSeeGD.tscn").instance()
+
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
@@ -37,6 +40,8 @@ func _ready() -> void:
 
 	cm.setup()
 
+	add_child(tracking_backend)
+
 func _process(delta: float) -> void:
 	if should_save:
 		debounce_counter += delta
@@ -50,8 +55,8 @@ func _process(delta: float) -> void:
 ###############################################################################
 
 func _on_tree_exiting() -> void:
-	if OpenSeeGd.is_listening:
-		OpenSeeGd.stop_receiver()
+	if tracking_backend.is_listening():
+		tracking_backend.stop_receiver()
 
 	cm.save_config()
 	
