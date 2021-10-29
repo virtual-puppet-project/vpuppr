@@ -108,7 +108,10 @@ class ConfigData:
 
 	var blink_threshold: float = 0.2
 
+	var tracker_should_launch: bool = true
 	var tracker_fps: int = 12
+	var tracker_address: String = "127.0.0.1"
+	var tracker_port: int = 11573
 
 	###
 	# Feature
@@ -285,6 +288,11 @@ func _init() -> void:
 
 	AppManager.sb.connect("camera_select", self, "_on_camera_select")
 
+	AppManager.sb.connect("tracker_should_launch", self, "_on_tracker_should_launch")
+	AppManager.sb.connect("tracker_fps", self, "_on_tracker_fps")
+	AppManager.sb.connect("tracker_address", self, "_on_tracker_address")
+	AppManager.sb.connect("tracker_port", self, "_on_tracker_port")
+
 	# Features
 
 	AppManager.sb.connect("main_light", self, "_on_main_light")
@@ -339,6 +347,18 @@ func _on_gaze_strength(value: float) -> void:
 
 func _on_blink_threshold(value: float) -> void:
 	current_model_config.blink_threshold = value
+
+func _on_tracker_should_launch(value: bool) -> void:
+	current_model_config.tracker_should_launch = value
+	
+func _on_tracker_fps(value: int) -> void:
+	current_model_config.tracker_fps = value
+
+func _on_tracker_address(value: String) -> void:
+	current_model_config.tracker_address = value
+
+func _on_tracker_port(value: int) -> void:
+	current_model_config.tracker_port = value
 
 func _on_camera_select(camera_index: String) -> void:
 	metadata_config.camera_index = camera_index
