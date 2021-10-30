@@ -2,12 +2,6 @@ extends "res://test/base_test.gd"
 
 const INTERPOLATION_DATA: Resource = preload("res://utils/InterpolationData.gd")
 
-
-func before_all():
-	AppManager.cm = ConfigManager.new()
-	AppManager.cm.current_model_config = ConfigManager.ConfigData.new()
-	gut.p("ran run setup", 2)
-
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
