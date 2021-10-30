@@ -5,8 +5,6 @@ const PACKET_FRAME_SIZE: int = 8 + 4 + 2 * 4 + 2 * 4 + 1 + 4 + 3 * 4 + 3 * 4 + 4
 
 # UDP server settings
 var server: UDPServer = UDPServer.new()
-export var listen_address: String = "127.0.0.1"
-export var listen_port: int = 11573
 
 var connection: PacketPeerUDP
 
@@ -196,7 +194,7 @@ var open_see_data_map: Dictionary # int: OpenSeeData
 var receive_thread: Thread = Thread.new()
 var stop_reception: bool = false
 
-var is_listening := false
+var is_tracking: bool = false
 
 var face_tracker_pid: int
 
@@ -211,7 +209,7 @@ func _ready() -> void:
 	
 	# start_receiver()
 
-	AppManager.sb.connect("start_tracker", self, "_on_start_tracker")
+	AppManager.sb.connect("toggle_tracker", self, "_on_toggle_tracker")
 
 #func _process(_delta: float) -> void:
 #	if(receive_thread and not receive_thread.is_active()):
@@ -224,104 +222,123 @@ func _exit_tree() -> void:
 # Connections                                                                 #
 ###############################################################################
 
-func _on_start_tracker() -> void:
-	if not is_listening:
-		AppManager.log_message("Starting face tracker.")
-
-		is_listening = true
-		stop_reception = false
-
-		if AppManager.cm.current_model_config.tracker_fps > 144:
-			AppManager.log_message("Face tracker fps is greater than 144. This is a bad idea.")
-			AppManager.log_message("Declining to start face tracker.")
-			return
-
-		var face_tracker_options: PoolStringArray = [
-			"-c",
-			AppManager.cm.metadata_config.camera_index,
-			"-F",
-			str(AppManager.cm.current_model_config.tracker_fps),
-			"-v",
-			"0",
-			"-s",
-			"1",
-			"-P",
-			"1",
-			"--discard-after",
-			"0",
-			"--scan-every",
-			"0",
-			"--no-3d-adapt",
-			"1",
-			"--max-feature-updates",
-			"900"
-		]
-		var pid: int = -1
-		match OS.get_name().to_lower():
-			"windows":
-				face_tracker_options.append_array(["-D", "-1"])
-				var exe_path: String = "%s%s" % [OS.get_executable_path().get_base_dir(), "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe"]
-				if OS.is_debug_build():
-					exe_path = "%s%s" % [ProjectSettings.globalize_path("res://export"), "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe"]
-					print(exe_path)
-				pid = OS.execute(exe_path,
-						face_tracker_options, false, [], true)
-			"osx", "x11":
-				var modified_options := PoolStringArray(["./OpenSeeFaceFolder/OpenSeeFace/facetracker.py"])
-				modified_options.append_array(face_tracker_options)
-
-				var python_alias: String = ""
-				
-				var shell_output: Array = []
-
-				OS.execute("command", ["-v", "python3"], true, shell_output)
-				if not shell_output.empty():
-					python_alias = "python3"
-				else:
-					OS.execute("command", ["-v", "python"], true, shell_output)
-					if not shell_output.empty():
-						python_alias = "python"
-				
-				if python_alias.empty():
-					AppManager.log_message("Unable to find python executable")
-					return
-				
-				pid = OS.execute("%s" % [python_alias], modified_options,
-						false, [], true)
-			_:
-				AppManager.log_message("Unhandled os type %s" % OS.get_name(), true)
-				return
-		
-		if pid <= 0:
-			is_listening = false
-			stop_reception = true
-			AppManager.log_message("Failed to start tracker", true)
-			return
-		face_tracker_pid = pid
-		AppManager.sb.broadcast_update_label_text("Start Tracker", STOP_FACE_TRACKER_TEXT)
-
-		start_receiver()
-
-		AppManager.main.model_display_screen.tracking_started()
-
-		AppManager.log_message("Face tracker started.")
+func _on_toggle_tracker() -> void:
+	var was_tracking: bool = is_tracking
+	if not was_tracking:
+		# only makes sense to start receiver if tracker was started
+		if _start_tracker():
+			start_receiver()
+			is_tracking = true
 	else:
-		AppManager.log_message("Stopping face tracker.")
-
-		is_listening = false
-		stop_reception = true
-		
+		# always shutdown receiver and tracker
 		stop_receiver()
-		
-		OS.kill(face_tracker_pid)
-		AppManager.sb.broadcast_update_label_text("Start Tracker", RUN_FACE_TRACKER_TEXT)
+		_stop_tracker()
+		is_tracking = false
 
-		AppManager.log_message("Face tracker stopped.")
-	pass
+	if was_tracking != is_tracking:
+		if is_tracking:
+			AppManager.sb.broadcast_update_label_text("Start Tracker", STOP_FACE_TRACKER_TEXT)
+			AppManager.main.model_display_screen.tracking_started()
+		else:
+			AppManager.sb.broadcast_update_label_text("Start Tracker", RUN_FACE_TRACKER_TEXT)
+			
 
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
+
+func _start_tracker() -> bool:
+	# if a tracker should be launched, launch it
+	# otherwise assume that the user launched a tracker manually already
+	if not AppManager.cm.current_model_config.tracker_should_launch:
+		AppManager.log_message("Assuming face tracker was manually launched.")
+		return true
+
+	AppManager.log_message("Starting face tracker.")
+
+	if AppManager.cm.current_model_config.tracker_fps > 144:
+		AppManager.log_message("Face tracker fps is greater than 144. This is a bad idea.")
+		AppManager.log_message("Declining to start face tracker.")
+		return false
+
+	var face_tracker_options: PoolStringArray = [
+		"-c",
+		AppManager.cm.metadata_config.camera_index,
+		"-F",
+		str(AppManager.cm.current_model_config.tracker_fps),
+		"-v",
+		"0",
+		"-s",
+		"1",
+		"-P",
+		"1",
+		"--discard-after",
+		"0",
+		"--scan-every",
+		"0",
+		"--no-3d-adapt",
+		"1",
+		"--max-feature-updates",
+		"900",
+		"--ip",
+		AppManager.cm.current_model_config.tracker_address,
+		"--port",
+		str(AppManager.cm.current_model_config.tracker_port),
+	]
+	var pid: int = -1
+	match OS.get_name().to_lower():
+		"windows":
+			face_tracker_options.append_array(["-D", "-1"])
+			var exe_path: String = "%s%s" % [OS.get_executable_path().get_base_dir(), "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe"]
+			if OS.is_debug_build():
+				exe_path = "%s%s" % [ProjectSettings.globalize_path("res://export"), "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe"]
+				print(exe_path)
+			pid = OS.execute(exe_path,
+					face_tracker_options, false, [], true)
+		"osx", "x11":
+			var modified_options := PoolStringArray(["./OpenSeeFaceFolder/OpenSeeFace/facetracker.py"])
+			modified_options.append_array(face_tracker_options)
+
+			var python_alias: String = ""
+			
+			var shell_output: Array = []
+
+			OS.execute("command", ["-v", "python3"], true, shell_output)
+			if not shell_output.empty():
+				python_alias = "python3"
+			else:
+				OS.execute("command", ["-v", "python"], true, shell_output)
+				if not shell_output.empty():
+					python_alias = "python"
+			
+			if python_alias.empty():
+				AppManager.log_message("Unable to find python executable")
+				return false
+			
+			# TODO pid can be set even if the tracker eventually fails to launch 
+			#      due to missing python deps. this should be checked as well
+			pid = OS.execute("%s" % [python_alias], modified_options, false, [], true)
+		_:
+			AppManager.log_message("Unhandled os type %s" % OS.get_name(), true)
+			return false
+	
+	if pid <= 0:
+		AppManager.log_message("Failed to start tracker", true)
+		return false
+
+	face_tracker_pid = pid
+
+	AppManager.log_message("Face tracker started, PID is %s." % face_tracker_pid)
+	return true
+
+func _stop_tracker() -> void:
+	AppManager.log_message("Stopping face tracker.")
+	if face_tracker_pid:
+		OS.kill(face_tracker_pid)
+		AppManager.log_message("Face tracker stopped, PID was %s." % face_tracker_pid)
+		face_tracker_pid = 0
+	else:
+		AppManager.log_message("No tracker started.")
 
 func _perform_reception(_x) -> void:
 	while not stop_reception:
@@ -347,13 +364,23 @@ func _perform_reception(_x) -> void:
 ###############################################################################
 
 func start_receiver() -> void:
+	var listen_address: String = AppManager.cm.current_model_config.tracker_address
+	var listen_port: int = AppManager.cm.current_model_config.tracker_port
+	
 	AppManager.log_message("Listening for data at %s:%s" % [listen_address, str(listen_port)])
 
 	server.listen(listen_port, listen_address)
 	
+	stop_reception = false
+
 	receive_thread.start(self, "_perform_reception")
 
 func stop_receiver() -> void:
+	if stop_reception:
+		return
+	
+	stop_reception = true
+
 	if receive_thread.is_active():
 		receive_thread.wait_to_finish()
 	if server.is_listening():
