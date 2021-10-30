@@ -96,9 +96,21 @@ signal tracker_fps(value)
 func broadcast_tracker_fps(value: int) -> void:
 	emit_signal("tracker_fps", value)
 
-signal start_tracker()
-func broadcast_start_tracker() -> void:
-	emit_signal("start_tracker")
+signal tracker_should_launch(value)
+func broadcast_tracker_should_launch(value: bool) -> void:
+	emit_signal("tracker_should_launch", value)
+
+signal tracker_address(value)
+func broadcast_tracker_address(value: String) -> void:
+	emit_signal("tracker_address", value)
+
+signal tracker_port(value)
+func broadcast_tracker_port(value: int) -> void:
+	emit_signal("tracker_port", value)
+	
+signal toggle_tracker()
+func broadcast_toggle_tracker() -> void:
+	emit_signal("toggle_tracker")
 
 # TODO started in Tracking.gd, to VRMModel, this isn't great
 signal blend_shapes(value)
