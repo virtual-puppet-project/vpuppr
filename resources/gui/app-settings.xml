@@ -1,4 +1,4 @@
-<view name="App Settings">
+<view name="App Settings" script="AppSettings.gd">
     <left>
         <input name="Default Search Path" data="default_search_path" event="default_search_path" type="string"/>
         <label name="Antialiasing"/>
@@ -10,5 +10,6 @@
     <right>
         <button name="View Licenses" event="view_licenses"/>
         <button name="Reconstruct Views" event="reconstruct_views"/>
+        <list name="Console" setup="setup_console"/>
     </right>
 </view>
