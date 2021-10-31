@@ -7,6 +7,9 @@ func setup() -> void:
     pass
 
 func setup_cameras(element: Control) -> void:
+    if camera_element:
+        return
+    
     camera_element = element
 
     var popup_menu = element.menu_button.get_popup()
@@ -23,6 +26,7 @@ func setup_cameras(element: Control) -> void:
                 exe_path = "%s%s" % [ProjectSettings.globalize_path("res://export"), "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe"]
             OS.execute(exe_path, ["-l", "1"], true, output)
         "osx", "x11":
+            # TODO actually implement this
             pass
 
     if not output.empty():
@@ -30,7 +34,7 @@ func setup_cameras(element: Control) -> void:
         result.pop_back() # First output is 'Available cameras'
         result.pop_front() # Last output is an empty string
     else:
-        result.append("Default camera")
+        result.append("0 Default camera")
 
     for option in result:
         popup_menu.add_item(option)

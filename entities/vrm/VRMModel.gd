@@ -281,11 +281,6 @@ func scan_mapped_bones() -> void:
 		if bone_name.to_lower() == "root":
 			additional_bones_to_pose_names.erase(bone_name)
 
-# func set_expression_weight(expression_name: String, expression_weight: float) -> void:
-# 	for mesh_name in vrm_mappings[expression_name].get_meshes():
-# 		for blend_name in vrm_mappings[expression_name].expression_data[mesh_name]:
-# 			_modify_blend_shape(mapped_meshes[mesh_name], blend_name, expression_weight)
-
 func custom_update(data, interpolation_data) -> void:
 	# NOTE: Eye mappings are intentionally reversed so that the model mirrors the data
 	if not eco_mode:
