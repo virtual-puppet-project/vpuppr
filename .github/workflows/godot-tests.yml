@@ -10,7 +10,8 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Docker test
-        uses: Zutatensuppe/godot-tester@v2.2
+        uses: croconut/godot-tester@master
         with:
           version: "3.4"
           release_type: "rc2"
+          test-dir: "res://tests"
