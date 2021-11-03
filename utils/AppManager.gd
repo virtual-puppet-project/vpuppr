@@ -18,6 +18,7 @@ var should_save := false
 var config_to_save: Reference
 
 var main: MainScreen
+var env: String = "default"
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -52,7 +53,8 @@ func _process(delta: float) -> void:
 func _on_tree_exiting() -> void:
 	OpenSeeGd.stop_receiver()
 
-	cm.save_config()
+	if env != "tests":
+		cm.save_config()
 	
 	log_message("Exiting. おやすみ。")
 
