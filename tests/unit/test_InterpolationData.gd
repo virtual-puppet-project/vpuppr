@@ -1,4 +1,4 @@
-extends "res://test/base_test.gd"
+extends "res://tests/base_test.gd"
 
 const INTERPOLATION_DATA: Resource = preload("res://utils/InterpolationData.gd")
 
