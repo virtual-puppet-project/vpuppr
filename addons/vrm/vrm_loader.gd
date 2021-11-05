@@ -790,7 +790,7 @@ func import_scene(path: String, flags: int, bake_fps: int, use_tmp: bool = false
 		gstate = load("res://addons/godot_gltf/GLTFState.gdns").new()
 		gltf = load("res://addons/godot_gltf/PackedSceneGLTF.gdns").new()
 	print(path);
-	var root_node: Node = gltf.import_gltf_scene(path, 0, 1000.0, gstate)
+	var root_node: Node = gltf.import_gltf_scene(path, 0, 1000.0, 2194432, gstate) # TODO this might break the gdns part?
 	root_node.name = path.get_basename().get_file()
 
 	if use_tmp:
