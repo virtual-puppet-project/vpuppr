@@ -301,19 +301,25 @@ func custom_update(data, interpolation_data) -> void:
 		if (last_expression != joy and last_expression != sorrow):
 			# Left eye blinking
 			if data.left_eye_open >= blink_threshold:
-				_modify_blend_shape(blink_r.morphs[0].mesh, blink_r.morphs[0].morph, blink_r.morphs[0].values[1] - interpolation_data.interpolate(InterpolationData.InterpolationDataType.LEFT_EYE_BLINK, 1.0))
+				for i in blink_r.morphs:
+					_modify_blend_shape(i.mesh, i.morph, i.values[1] - interpolation_data.interpolate(InterpolationData.InterpolationDataType.LEFT_EYE_BLINK, 1.0))
 			else:
-				_modify_blend_shape(blink_r.morphs[0].mesh, blink_r.morphs[0].morph, blink_r.morphs[0].values[1])
+				for i in blink_r.morphs:
+					_modify_blend_shape(i.mesh, i.morph, i.values[1])
 
 			# Right eye blinking
 			if data.right_eye_open >= blink_threshold:
-				_modify_blend_shape(blink_l.morphs[0].mesh, blink_l.morphs[0].morph, blink_l.morphs[0].values[1] - interpolation_data.interpolate(InterpolationData.InterpolationDataType.RIGHT_EYE_BLINK, 1.0))
+				for i in blink_l.morphs:
+					_modify_blend_shape(i.mesh, i.morph, i.values[1] - interpolation_data.interpolate(InterpolationData.InterpolationDataType.RIGHT_EYE_BLINK, 1.0))
 			else:
-				_modify_blend_shape(blink_l.morphs[0].mesh, blink_l.morphs[0].morph, blink_l.morphs[0].values[1])
+				for i in blink_l.morphs:
+					_modify_blend_shape(i.mesh, i.morph, i.values[1])
 		else:
 			# Unblink if the facial expression doesn't allow blinking
-			_modify_blend_shape(blink_r.morphs[0].mesh, blink_r.morphs[0].morph, blink_r.morphs[0].values[0])
-			_modify_blend_shape(blink_l.morphs[0].mesh, blink_l.morphs[0].morph, blink_l.morphs[0].values[0])
+			for i in blink_r.morphs:
+				_modify_blend_shape(i.mesh, i.morph, i.values[0])
+			for i in blink_l.morphs:
+				_modify_blend_shape(i.mesh, i.morph, i.values[0])
 
 		# TODO eyes show weird behaviour when blinking
 		# TODO make sure angle between eyes' x values are at least parallel
