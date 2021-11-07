@@ -4,14 +4,14 @@ A Godot renderer for [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace). S
 
 ![](demo.gif)
 
-The receiver is located in `utils/OpenSeeGD.gd` and handles receiving OpenSeeFace packets and wrapping that information to be Godot-compatible. `screens/ModelDisplayScreen` handles the mapping and displaying of models. Heavily based on [OpenSeeFaceSample](https://github.com/emilianavt/OpenSeeFaceSample).
+The initial implementation was heavily based on [OpenSeeFaceSample](https://github.com/emilianavt/OpenSeeFaceSample).
 
-All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` have not been tested but might work. `.tscn` files created with Godot should all import correctly as well.
+All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` have not been tested but might work. `.tscn` files created with Godot should all import correctly as well, but will require building the application yourself.
 
 ## Quickstart
 1. Download the latest release
 2. Unzip all files into a directory (do not move any of the files)
-3. Run the `.exe`
+3. Run the `.exe` on Windows or `chmod +x <binary name>` and run the binary on Linux
 4. Start the facetracker from within the application
 
 ### Controls
@@ -31,15 +31,14 @@ All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` h
 1. Download Godot 3.4
 2. Clone this project and load it in the editor
 3. Clone the [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace) face tracker
-4. Run the facetracker via Python or via the binary if on Windows
-5. Run the project
+4. If on Windows, move the `OpenSeeFace` repo into `$PROJECT_ROOT/export/OpenSeeFaceFolder`. If on Linux, run the facetracker via Python
+5. Run the project from the editor
+6. In the program, when starting face tracking and if you are running OpenSeeFace via Python, disable the option to have the program start the face tracker
+7. Start face tracking
+8. To export your own release binaries, you will need to use my patched version of Godot 3.4. Precompiled release templates can be downloaded from my [Godot fork](https://github.com/you-win/godot/releases/tag/3.3.2-gltf) (or compiled using `scons platform=<your platform> target=release tools=no use_module_gltf=yes -j8`
 
 ## Discussion
 A Discord server [is available here](https://discord.gg/6mcdWWBkrr) if you need help, like to contribute, or just want to chat.
-
-## Known bugs
-- after stopping the facetracker, if you don't wait long enough for the facetracker listener to stop, the program can crash on close. Probably, this is hard to reproduce
-- the facetracker is not automatically closed when the program crashes
 
 ## Work notes
 - [x] basic OpenSeeFace visualization
