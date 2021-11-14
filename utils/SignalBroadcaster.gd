@@ -206,9 +206,13 @@ func broadcast_preset_loaded() -> void:
 
 # App settings
 
-signal default_search_path(value)
-func broadcast_default_search_path(value: String) -> void:
-	emit_signal("default_search_path", value)
+signal default_model_search_path(value)
+func broadcast_default_model_search_path(value: String) -> void:
+	emit_signal("default_model_search_path", value)
+
+signal default_prop_search_path(value)
+func broadcast_default_prop_search_path(value: String) -> void:
+	emit_signal("default_prop_search_path", value)
 
 signal view_licenses()
 func broadcast_view_licenses() -> void:

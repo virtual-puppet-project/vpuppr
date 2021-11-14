@@ -16,7 +16,8 @@ var should_save := false
 
 class Metadata:
 	var default_model_to_load_path: String = ""
-	var default_search_path: String = "/"
+	var default_model_search_path: String = "/"
+	var default_prop_search_path: String = "/"
 	var should_use_portable_config_files: bool = false
 
 	# Antialiasing
@@ -302,7 +303,8 @@ func _init() -> void:
 
 	# App settings
 
-	AppManager.sb.connect("default_search_path", self, "_on_default_search_path")
+	AppManager.sb.connect("default_model_search_path", self, "_on_default_model_search_path")
+	AppManager.sb.connect("default_prop_search_path", self, "_on_default_prop_search_path")
 
 ###############################################################################
 # Connections                                                                 #
@@ -375,12 +377,45 @@ func _on_environment(prop_name: String, value) -> void:
 
 # App settings
 
-func _on_default_search_path(value: String) -> void:
-	metadata_config.default_search_path = value
+func _on_default_model_search_path(value: String) -> void:
+	metadata_config.default_model_search_path = _determine_search_path(value)
+
+func _on_default_prop_search_path(value: String) -> void:
+	metadata_config.default_prop_search_path = _determine_search_path(value)
 
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
+
+func _determine_search_path(value: String) -> String:
+	# if the given path is an internal path (res://) or the default path ("/")
+	# then use the default search path
+	if value.find("res://") == 0 or value == "/":
+		return _determine_default_search_path()
+
+	var dir = Directory.new()
+	# if given path is a file, use the file's parent dir
+	if dir.file_exists(value):
+		var parts: PoolStringArray = value.split("/")
+		parts.remove(parts.size() - 1)
+		value = parts.join("/")
+
+	# finally check if the dir exists, otherwise use the default search path
+	if dir.dir_exists(value):
+		return value
+
+	return _determine_default_search_path()
+
+func _determine_default_search_path() -> String:
+	var output: Array = []
+	match OS.get_name().to_lower():
+		"windows":
+			OS.execute("echo", ["%HOMEDRIVE%%HOMEPATH%"], true, output)
+		"osx", "x11":
+			OS.execute("echo", ["$HOME"], true, output)
+	if output.size() == 1:
+		return output[0].strip_edges()
+	return "/"
 
 func _load_metadata() -> bool:
 	AppManager.log_message("Begin loading metadata")
@@ -414,16 +449,10 @@ func _normalize_default_configs(p_config_name: String, p_model_name: String) -> 
 ###############################################################################
 
 func setup() -> void:
-	if not _load_metadata():
-		var output: Array = []
-		match OS.get_name().to_lower():
-			"windows":
-				OS.execute("echo", ["%HOMEDRIVE%%HOMEPATH%"], true, output)
-			"osx", "x11":
-				OS.execute("echo", ["$HOME"], true, output)
-		if output.size() == 1:
-			metadata_config.default_search_path = output[0].strip_edges()
+	metadata_config.default_model_search_path = _determine_search_path(metadata_config.default_model_search_path)
+	metadata_config.default_prop_search_path = _determine_search_path(metadata_config.default_prop_search_path)
 
+	if not _load_metadata():
 		var file_path = "%s/%s" % [metadata_path, METADATA_NAME]
 
 		var metadata_file := File.new()
