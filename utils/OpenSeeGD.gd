@@ -3,6 +3,8 @@ extends Node
 const NUMBER_OF_POINTS: int = 68
 const PACKET_FRAME_SIZE: int = 8 + 4 + 2 * 4 + 2 * 4 + 1 + 4 + 3 * 4 + 3 * 4 + 4 * 4 + 4 * 68 + 4 * 2 * 68 + 4 * 3 * 70 + 4 * 14
 
+const MAX_TRACKER_FPS: int = 144
+
 # UDP server settings
 var server: UDPServer = UDPServer.new()
 
@@ -11,6 +13,15 @@ var connection: PacketPeerUDP
 # Tracking data
 # var received_packets: int = 0
 var tracking_data: Array = [] # OpenSeeData
+
+# In theory we only need to receive data from tracker exactly FPS times per 
+# second, because that is the number of times that data will be sent.
+# However for low fps this will result in lagging behind, if the moment of 
+# sending to receiving data is not very close to each other.
+# As we limit the fps to 144, we can just poll every 1/144 seconds. At that
+# FPS there should be no perceivable lag while still keeping the CPU usage
+# at a low level when the receiver is started.
+var server_poll_interval: float = 1.0/MAX_TRACKER_FPS
 
 var max_fit_3d_error: float = 100.0
 
@@ -256,8 +267,8 @@ func _start_tracker() -> bool:
 
 	AppManager.log_message("Starting face tracker.")
 
-	if AppManager.cm.current_model_config.tracker_fps > 144:
-		AppManager.log_message("Face tracker fps is greater than 144. This is a bad idea.")
+	if AppManager.cm.current_model_config.tracker_fps > MAX_TRACKER_FPS:
+		AppManager.log_message("Face tracker fps is greater than %s. This is a bad idea.", MAX_TRACKER_FPS)
 		AppManager.log_message("Declining to start face tracker.")
 		return false
 
@@ -340,24 +351,28 @@ func _stop_tracker() -> void:
 	else:
 		AppManager.log_message("No tracker started.")
 
+func _receive() -> void:
+	#warning-ignore:return_value_discarded
+	server.poll()
+	if connection != null:
+		var packet := connection.get_packet()
+		if(packet.size() < 1 or packet.size() % PACKET_FRAME_SIZE != 0):
+			return
+		var offset: int = 0
+		while offset < packet.size():
+			var new_data: OpenSeeData = OpenSeeData.new()
+			new_data.read_from_packet(packet, offset)
+			open_see_data_map[new_data.id] = new_data
+			offset += PACKET_FRAME_SIZE
+		
+		tracking_data = open_see_data_map.values().duplicate(true)
+	elif server.is_connection_available():
+		connection = server.take_connection()
+
 func _perform_reception(_x) -> void:
 	while not stop_reception:
-		#warning-ignore:return_value_discarded
-		server.poll()
-		if connection != null:
-			var packet := connection.get_packet()
-			if(packet.size() < 1 or packet.size() % PACKET_FRAME_SIZE != 0):
-				continue
-			var offset: int = 0
-			while offset < packet.size():
-				var new_data: OpenSeeData = OpenSeeData.new()
-				new_data.read_from_packet(packet, offset)
-				open_see_data_map[new_data.id] = new_data
-				offset += PACKET_FRAME_SIZE
-			
-			tracking_data = open_see_data_map.values().duplicate(true)
-		elif server.is_connection_available():
-			connection = server.take_connection()
+		_receive()
+		yield(get_tree().create_timer(server_poll_interval), "timeout")
 
 ###############################################################################
 # Public functions                                                            #
