@@ -299,7 +299,7 @@ func _on_load_model() -> void:
 
 	yield(get_tree(), "idle_frame")
 
-	var load_path: String = AppManager.cm.metadata_config.default_search_path
+	var load_path: String = AppManager.cm.metadata_config.default_model_search_path
 	if not load_path.ends_with("/"):
 		load_path += "/"
 	popup.current_dir = load_path
@@ -307,6 +307,9 @@ func _on_load_model() -> void:
 
 	# TODO this might be a memory leak if you open up many popups but don't select a model
 	yield(popup, "file_selected")
+	
+	AppManager.sb.broadcast_default_model_search_path(popup.file)
+	AppManager.cm.save_config()
 
 	_cleanup_props()
 
@@ -348,14 +351,17 @@ func _on_add_custom_prop() -> void:
 
 	yield(get_tree(), "idle_frame")
 
-	var load_path: String = AppManager.cm.metadata_config.default_search_path
+	var load_path: String = AppManager.cm.metadata_config.default_prop_search_path
 	if not load_path.ends_with("/"):
 		load_path += "/"
 	popup.current_dir = load_path
 	popup.current_path = load_path
 
 	yield(popup, "file_selected")
-
+	
+	AppManager.sb.broadcast_default_prop_search_path(popup.file)
+	AppManager.cm.save_config()
+	
 	var prop_name: String = popup.file.get_file() \
 		.trim_suffix(popup.file.get_extension()).trim_suffix(".")
 	# Set distinct prop name so we don't accidentally override existing props
