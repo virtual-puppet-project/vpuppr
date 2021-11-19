@@ -35,6 +35,8 @@ var updated: float = 0.0
 var head_translation: Vector3 = Vector3.ZERO
 var head_rotation: Vector3 = Vector3.ZERO
 
+var is_tracking: bool = false
+
 class StoredOffsets:
 	var translation_offset: Vector3 = Vector3.ZERO
 	var rotation_offset: Vector3 = Vector3.ZERO
@@ -42,7 +44,7 @@ class StoredOffsets:
 	var euler_offset: Vector3 = Vector3.ZERO
 	var left_eye_gaze_offset: Vector3 = Vector3.ZERO
 	var right_eye_gaze_offset: Vector3 = Vector3.ZERO
-var stored_offsets: StoredOffsets = StoredOffsets.new()
+var stored_offsets: StoredOffsets = null
 
 ###
 # Various tracking options
@@ -142,13 +144,17 @@ func _ready() -> void:
 		model.skeleton.set_bone_pose(bone_index, bone_transform)
 
 func _physics_process(_delta: float) -> void:
-	if not stored_offsets:
+	# not tracking, so nothing to process
+	if not is_tracking:
 		return
-	
-	self.open_see_data = OpenSeeGd.get_open_see_data(face_id)
 
+	# get the latest tracking data, and return early if there is none or not accurate enough
+	open_see_data = OpenSeeGd.get_open_see_data(face_id)
 	if(not open_see_data or open_see_data.fit_3d_error > OpenSeeGd.max_fit_3d_error):
 		return
+
+	if not stored_offsets:
+		_save_offsets()
 	
 	# Don't return early if we are interpolating
 	if open_see_data.time > updated:
@@ -226,12 +232,6 @@ func _unhandled_input(event: InputEvent) -> void:
 # Connections                                                                 #
 ###############################################################################
 
-func _on_offset_timer_timeout() -> void:
-	get_node("OffsetTimer").queue_free()
-
-	open_see_data = OpenSeeGd.get_open_see_data(face_id)
-	_save_offsets()
-
 func _on_apply_translation(value: bool) -> void:
 	apply_translation = value
 
@@ -265,6 +265,7 @@ func _save_offsets() -> void:
 	if not open_see_data:
 		AppManager.log_message("No face tracking data found.")
 		return
+	stored_offsets = StoredOffsets.new()
 	stored_offsets.translation_offset = open_see_data.translation
 	stored_offsets.rotation_offset = open_see_data.rotation
 	stored_offsets.quat_offset = _to_godot_quat(open_see_data.raw_quaternion)
@@ -335,10 +336,8 @@ func load_external_model(file_path: String) -> Spatial:
 	return loaded_model
 
 func tracking_started() -> void:
-	if not open_see_data:
-		var offset_timer: Timer = Timer.new()
-		offset_timer.name = "OffsetTimer"
-		offset_timer.connect("timeout", self, "_on_offset_timer_timeout")
-		offset_timer.wait_time = tracking_start_delay
-		offset_timer.autostart = true
-		self.call_deferred("add_child", offset_timer)
+	is_tracking = true
+
+func tracking_stopped() -> void:
+	is_tracking = false
+	stored_offsets = null
