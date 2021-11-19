@@ -210,16 +210,24 @@ func _map_eye_expressions(expression_data):
 	left_eye = EyeClamps.new()
 	right_eye = EyeClamps.new()
 
+	var leftEyeMorph = "eye_L"
+	if vrm_meta.humanoid_bone_mapping.has("leftEye"):
+		leftEyeMorph = vrm_meta.humanoid_bone_mapping["leftEye"]
+	
+	var rightEyeMorph = "eye_R"
+	if vrm_meta.humanoid_bone_mapping.has("rightEye"):
+		rightEyeMorph = vrm_meta.humanoid_bone_mapping["rightEye"]
+
 	for look_up_value in expression_data["LOOKUP"].morphs:
 		if look_up_value:
 			var val = look_up_value.values.pop_back()
 			if val:
 				var rot: Quat = val["rotation"]
 				match look_up_value.morph:
-					"eye_L":
+					leftEyeMorph:
 						var x = rot.get_euler()
 						left_eye.up = x
-					"eye_R":
+					rightEyeMorph:
 						right_eye.up = rot.get_euler()
 
 	for look_down_value in expression_data["LOOKDOWN"].morphs:
@@ -228,9 +236,9 @@ func _map_eye_expressions(expression_data):
 			if val:
 				var rot: Quat = val["rotation"]
 				match look_down_value.morph:
-					"eye_L":
+					leftEyeMorph:
 						left_eye.down = rot.get_euler()
-					"eye_R":
+					rightEyeMorph:
 						right_eye.down = rot.get_euler()
 	
 	for look_left_value in expression_data["LOOKLEFT"].morphs:
@@ -239,9 +247,9 @@ func _map_eye_expressions(expression_data):
 			if val:
 				var rot: Quat = val["rotation"]
 				match look_left_value.morph:
-					"eye_L":
+					leftEyeMorph:
 						left_eye.left = rot.get_euler()
-					"eye_R":
+					rightEyeMorph:
 						right_eye.left = rot.get_euler()
 
 	for look_right_value in expression_data["LOOKRIGHT"].morphs:
@@ -250,9 +258,9 @@ func _map_eye_expressions(expression_data):
 			if val:
 				var rot: Quat = val["rotation"]
 				match look_right_value.morph:
-					"eye_L":
+					leftEyeMorph:
 						left_eye.right = rot.get_euler()
-					"eye_R":
+					rightEyeMorph:
 						right_eye.right = rot.get_euler()
 
 	# Some models don't have blendshapes for looking up/down/left/right
