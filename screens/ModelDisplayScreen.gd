@@ -3,14 +3,12 @@ extends Spatial
 
 const OPEN_SEE: Resource = preload("res://utils/OpenSeeGD.tscn")
 
-const DEFAULT_GENERIC_MODEL: Resource = preload("res://entities/basic-models/Duck.tscn")
+const DEFAULT_GENERIC_MODEL_PATH: String = "res://entities/basic-models/Duck.tscn"
 const GENERIC_MODEL_SCRIPT_PATH: String = "res://entities/BasicModel.gd"
 const VRM_MODEL_SCRIPT_PATH: String = "res://entities/vrm/VRMModel.gd"
 const VrmLoader: Resource = preload("res://addons/vrm/vrm_loader.gd")
 
 export var model_resource_path: String
-
-var script_to_use: String
 
 # Model nodes
 var model
@@ -79,48 +77,12 @@ func _ready() -> void:
 		set(i, AppManager.cm.current_model_config.get(i))
 
 	if model_resource_path:
-		match model_resource_path.get_extension():
-			"glb":
-				AppManager.log_message("Loading GLB file.")
-				script_to_use = GENERIC_MODEL_SCRIPT_PATH
-				model = load_external_model(model_resource_path)
-				model.scale_object_local(Vector3(0.4, 0.4, 0.4))
-				translation_adjustment = Vector3(1, -1, 1)
-				rotation_adjustment = Vector3(-1, -1, 1)
-			"vrm":
-				AppManager.log_message("Loading VRM file.")
-				script_to_use = VRM_MODEL_SCRIPT_PATH
-				model = load_external_model(model_resource_path)
-				model.transform = model.transform.rotated(Vector3.UP, PI)
-				AppManager.cm.current_model_config.model_transform = model.transform
-				translation_adjustment = Vector3(-1, -1, -1)
-				rotation_adjustment = Vector3(1, -1, -1)
-				
-				# Grab vrm mappings
-				# model.vrm_mappings = AppManager.vrm_mappings
-				# AppManager.vrm_mappings.dirty = false
-			"tscn":
-				AppManager.log_message("Loading TSCN file.")
-				var model_resource = load(model_resource_path)
-				model = model_resource.instance()
-				# TODO might not want this for tscn
-				model.scale_object_local(Vector3(0.4, 0.4, 0.4))
-				translation_adjustment = Vector3(1, -1, 1)
-				rotation_adjustment = Vector3(-1, -1, 1)
-				# TODO i dont think this is used for tscn?
-				script_to_use = GENERIC_MODEL_SCRIPT_PATH
-			_:
-				AppManager.log_message("File extension not recognized. %s" % model_resource_path)
-				printerr("File extension not recognized. %s" % model_resource_path)
+		_try_load_model(model_resource_path)
 	
 	# Load in generic model if nothing is loaded
 	if not model:
-		model = DEFAULT_GENERIC_MODEL.instance()
-		model.scale_object_local(Vector3(0.4, 0.4, 0.4))
-		translation_adjustment = Vector3(1, -1, 1)
-		rotation_adjustment = Vector3(-1, -1, 1)
-		# TODO i dont think this is used for tscn?
-		script_to_use = GENERIC_MODEL_SCRIPT_PATH
+		AppManager.log_message("Loading Default Model.")
+		_try_load_model(DEFAULT_GENERIC_MODEL_PATH)
 
 	model_parent.call_deferred("add_child", model)
 	
@@ -257,6 +219,48 @@ func _on_should_track_eye(value: bool) -> void:
 # Private functions                                                           #
 ###############################################################################
 
+func _try_load_model(file_path):
+	var dir := Directory.new()
+	if not dir.file_exists(file_path):
+		AppManager.log_message("File path not found: %s" % file_path, true)
+		return
+
+	match file_path.get_extension():
+		"glb":
+			AppManager.log_message("Loading GLB file.")
+			var gltf_loader := PackedSceneGLTF.new()
+			model = gltf_loader.import_gltf_scene(file_path)
+			model.set_script(load(GENERIC_MODEL_SCRIPT_PATH))
+			model.scale_object_local(Vector3(0.4, 0.4, 0.4))
+			translation_adjustment = Vector3(1, -1, 1)
+			rotation_adjustment = Vector3(-1, -1, 1)
+			AppManager.log_message("GLB file loaded successfully.")
+		"vrm":
+			AppManager.log_message("Loading VRM file.")
+			var vrm_loader = VrmLoader.new()
+			model = vrm_loader.import_scene(file_path, 1, 1000)
+			model.set_script(load(VRM_MODEL_SCRIPT_PATH))
+			model.transform = model.transform.rotated(Vector3.UP, PI)
+			AppManager.cm.current_model_config.model_transform = model.transform
+			translation_adjustment = Vector3(-1, -1, -1)
+			rotation_adjustment = Vector3(1, -1, -1)
+			# Grab vrm mappings
+			# model.vrm_mappings = AppManager.vrm_mappings
+			# AppManager.vrm_mappings.dirty = false
+			AppManager.log_message("VRM file loaded successfully.")
+		"tscn":
+			AppManager.log_message("Loading TSCN file.")
+			var model_resource = load(file_path)
+			model = model_resource.instance()
+			# TODO might not want this for tscn
+			model.scale_object_local(Vector3(0.4, 0.4, 0.4))
+			translation_adjustment = Vector3(1, -1, 1)
+			rotation_adjustment = Vector3(-1, -1, 1)
+			AppManager.log_message("TSCN file loaded successfully.")
+		_:
+			AppManager.log_message("File extension not recognized. %s" % file_path)
+			printerr("File extension not recognized. %s" % file_path)
+
 # TODO probably incorrect?
 static func _to_godot_quat(v: Quat) -> Quat:
 	return Quat(v.x, -v.y, v.z, v.w)
@@ -304,35 +308,6 @@ func _set_interpolation_rate(value: float) -> void:
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
-
-func load_external_model(file_path: String) -> Spatial:
-	var dir := Directory.new()
-	if not dir.file_exists(file_path):
-		AppManager.log_message("File path not found: %s\nLoading demo model" % file_path, true)
-		file_path = AppManager.cm.DEMO_MODEL_PATH
-
-	AppManager.log_message("Starting external loader.")
-	var loaded_model: Spatial
-	var vrm_meta: Dictionary
-	
-	match file_path.get_extension():
-		"glb":
-			var gltf := PackedSceneGLTF.new()
-			loaded_model = gltf.import_gltf_scene(file_path)
-		"vrm":
-			var vrm_loader = VrmLoader.new()
-			loaded_model = vrm_loader.import_scene(file_path, 1, 1000)
-			vrm_meta = loaded_model.vrm_meta
-
-	var model_script = load(script_to_use)
-	loaded_model.set_script(model_script)
-
-	if vrm_meta:
-		loaded_model.vrm_meta = vrm_meta
-	
-	AppManager.log_message("External file loaded successfully.")
-	
-	return loaded_model
 
 func tracking_started() -> void:
 	if not open_see_data:

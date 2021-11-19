@@ -1,8 +1,6 @@
 class_name ConfigManager
 extends Reference
 
-const DEMO_MODEL_PATH: String = "res://entities/basic-models/Duck.tscn"
-
 const CONFIG_FORMAT: String = "%s/%s.json"
 
 const METADATA_NAME: String = "app-config.json"
@@ -461,9 +459,6 @@ func setup() -> void:
 		metadata_file.store_string(metadata_config.get_as_json())
 
 		metadata_file.close()
-	
-	if metadata_config.default_model_to_load_path.empty():
-		metadata_config.default_model_to_load_path = DEMO_MODEL_PATH
 
 	has_loaded_metadata = true
 
