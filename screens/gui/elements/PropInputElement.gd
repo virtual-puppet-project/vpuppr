@@ -27,16 +27,16 @@ func _on_text_entered(text: String) -> void:
 				result = text
 			"float":
 				if not text.is_valid_float():
-					AppManager.log_message("%s is not valid float" % text, true)
+					AppManager.logger.error("%s is not valid float" % text)
 					return
 				result = float(text)
 			"integer", "int":
 				if not text.is_valid_integer():
-					AppManager.log_message("%s is not valid integer" % text, true)
+					AppManager.logger.error("%s is not valid integer" % text)
 					return
 				result = int(text)
 			_:
-				AppManager.log_message("Unhandled data type: %s" % data_type, true)
+				AppManager.logger.error("Unhandled data type: %s" % data_type)
 				return
 	_handle_event([event_name, prop_name, result])
 

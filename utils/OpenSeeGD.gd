@@ -263,14 +263,14 @@ func _start_tracker() -> bool:
 	# if a tracker should be launched, launch it
 	# otherwise assume that the user launched a tracker manually already
 	if not AppManager.cm.current_model_config.tracker_should_launch:
-		AppManager.log_message("Assuming face tracker was manually launched.")
+		AppManager.logger.info("Assuming face tracker was manually launched.")
 		return true
 
-	AppManager.log_message("Starting face tracker.")
+	AppManager.logger.info("Starting face tracker.")
 
 	if AppManager.cm.current_model_config.tracker_fps > MAX_TRACKER_FPS:
-		AppManager.log_message("Face tracker fps is greater than %s. This is a bad idea.", MAX_TRACKER_FPS)
-		AppManager.log_message("Declining to start face tracker.")
+		AppManager.logger.info("Face tracker fps is greater than %s. This is a bad idea." % MAX_TRACKER_FPS)
+		AppManager.logger.info("Declining to start face tracker.")
 		return false
 
 	var face_tracker_options: PoolStringArray = [
@@ -324,33 +324,33 @@ func _start_tracker() -> bool:
 					python_alias = "python"
 			
 			if python_alias.empty():
-				AppManager.log_message("Unable to find python executable")
+				AppManager.logger.info("Unable to find python executable")
 				return false
 			
 			# TODO pid can be set even if the tracker eventually fails to launch 
 			#      due to missing python deps. this should be checked as well
 			pid = OS.execute("%s" % [python_alias], modified_options, false, [], true)
 		_:
-			AppManager.log_message("Unhandled os type %s" % OS.get_name(), true)
+			AppManager.logger.error("Unhandled os type %s" % OS.get_name())
 			return false
 	
 	if pid <= 0:
-		AppManager.log_message("Failed to start tracker", true)
+		AppManager.logger.error("Failed to start tracker")
 		return false
 
 	face_tracker_pid = pid
 
-	AppManager.log_message("Face tracker started, PID is %s." % face_tracker_pid)
+	AppManager.logger.info("Face tracker started, PID is %s." % face_tracker_pid)
 	return true
 
 func _stop_tracker() -> void:
-	AppManager.log_message("Stopping face tracker.")
+	AppManager.logger.info("Stopping face tracker.")
 	if face_tracker_pid:
 		OS.kill(face_tracker_pid)
-		AppManager.log_message("Face tracker stopped, PID was %s." % face_tracker_pid)
+		AppManager.logger.info("Face tracker stopped, PID was %s." % face_tracker_pid)
 		face_tracker_pid = 0
 	else:
-		AppManager.log_message("No tracker started.")
+		AppManager.logger.info("No tracker started.")
 
 func _receive() -> void:
 	#warning-ignore:return_value_discarded
@@ -383,7 +383,7 @@ func start_receiver() -> void:
 	var listen_address: String = AppManager.cm.current_model_config.tracker_address
 	var listen_port: int = AppManager.cm.current_model_config.tracker_port
 	
-	AppManager.log_message("Listening for data at %s:%s" % [listen_address, str(listen_port)])
+	AppManager.logger.info("Listening for data at %s:%s" % [listen_address, str(listen_port)])
 
 	server.listen(listen_port, listen_address)
 	

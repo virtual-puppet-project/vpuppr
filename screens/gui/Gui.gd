@@ -339,7 +339,7 @@ func _on_bone_toggled(bone_name: String, toggle_type: String, toggle_value: bool
 			else:
 				should_modify_bone = false
 		_:
-			AppManager.log_message("Unhandled toggle received: %s" % toggle_type, true)
+			AppManager.logger.error("Unhandled toggle received: %s" % toggle_type)
 
 # Tracking
 
@@ -373,7 +373,7 @@ func _on_add_custom_prop() -> void:
 
 	var prop: Spatial = create_prop(popup.file)
 	if (prop and prop.get_child_count() == 0):
-		AppManager.log_message("Invalid prop", true)
+		AppManager.logger.error("Invalid prop")
 		return
 
 	AppManager.main.model_display_screen.props.call_deferred("add_child", prop)
@@ -499,11 +499,11 @@ func _on_delete_preset() -> void:
 	# Delete the config file
 	var config_path = AppManager.cm.metadata_config.config_data.get(preset_name)
 	if not config_path:
-		AppManager.log_message("Unable to delete preset, metadata does not contain preset: %s" % preset_name, true)
+		AppManager.logger.error("Unable to delete preset, metadata does not contain preset: %s" % preset_name)
 		return
 	var dir := Directory.new()
 	if not dir.file_exists(config_path):
-		AppManager.log_message("Unable to delete preset, file not found: %s" % preset_name)
+		AppManager.logger.info("Unable to delete preset, file not found: %s" % preset_name)
 		return
 	dir.remove(config_path)
 
@@ -602,17 +602,17 @@ func _construct_views_from_xml() -> void:
 	# Null check or else we segfault
 	var dir := Directory.new()
 	if not dir.dir_exists(base_path):
-		AppManager.log_message("%s does not exist. Please check your installation." % base_path, true)
+		AppManager.logger.error("%s does not exist. Please check your installation." % base_path)
 		return
 
 	var metadata_parser = GuiFileParser.new()
-	AppManager.log_message("Loading metadata: %s" % DEFAULT_METADATA)
+	AppManager.logger.info("Loading metadata: %s" % DEFAULT_METADATA)
 	metadata_parser.open_resource("%s/%s" % [base_path, DEFAULT_METADATA])
 	while true:
 		var data = metadata_parser.read_node()
 		if not data.is_empty and data.node_name == XmlConstants.FILE:
 			if not data.data.has(XmlConstants.NAME):
-				AppManager.log_message("Invalid gui metadata", true)
+				AppManager.logger.error("Invalid gui metadata")
 				return
 			xml_files_to_parse.append(data.data[XmlConstants.NAME])
 
@@ -630,7 +630,7 @@ func _construct_views_from_xml() -> void:
 		var floating = null
 
 		var gui_parser = GuiFileParser.new()
-		AppManager.log_message("Loading gui file: %s" % xml_file)
+		AppManager.logger.info("Loading gui file: %s" % xml_file)
 		gui_parser.open_resource("%s/%s" % [base_path, xml_file])
 		while true:
 			var data = gui_parser.read_node()
@@ -638,21 +638,21 @@ func _construct_views_from_xml() -> void:
 				match data.node_name:
 					XmlConstants.LEFT:
 						if left:
-							AppManager.log_message("Invalid data for %s" % xml_file, true)
+							AppManager.logger.error("Invalid data for %s" % xml_file)
 							return
 						left = LeftContainer.instance()
 						base_view.add_child(left)
 						c_view = XmlConstants.LEFT
 					XmlConstants.RIGHT:
 						if right:
-							AppManager.log_message("Invalid data for %s" % xml_file, true)
+							AppManager.logger.error("Invalid data for %s" % xml_file)
 							return
 						right = RightContainer.instance()
 						base_view.add_child(right)
 						c_view = XmlConstants.RIGHT
 					XmlConstants.FLOATING:
 						if floating:
-							AppManager.log_message("Invalid data for %s" % xml_file, true)
+							AppManager.logger.error("Invalid data for %s" % xml_file)
 							return
 						floating = FloatingContainer.instance()
 						base_view.add_child(floating)
@@ -663,7 +663,7 @@ func _construct_views_from_xml() -> void:
 						if data.data.has("script"):
 							var file := File.new()
 							if file.open("%s/%s" % [base_path, data.data["script"]], File.READ) != OK:
-								AppManager.log_message("Failed to open script", true)
+								AppManager.logger.error("Failed to open script")
 
 							var script: Script = base_view.get_script().duplicate()
 							script.source_code = file.get_as_text()
@@ -713,7 +713,7 @@ func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 	var result: BaseElement
 
 	if not data.has("name"):
-		AppManager.log_message("Invalid element data", true)
+		AppManager.logger.error("Invalid element data")
 		return result
 
 	var display_name: String = data["name"]
@@ -757,7 +757,7 @@ func generate_ui_element(tag_name: String, data: Dictionary) -> BaseElement:
 		XmlConstants.DROP_DOWN:
 			result = DropDownElement.instance()
 		_:
-			AppManager.log_message("Unhandled tag_name: %s" % tag_name)
+			AppManager.logger.info("Unhandled tag_name: %s" % tag_name)
 			return result
 
 	if data.has(XmlConstants.DATA):
@@ -836,7 +836,7 @@ func create_prop(prop_path: String, parent_transform: Transform = Transform(),
 			prop.texture = texture
 			prop.name = prop_path.get_file().trim_suffix(prop_path.get_extension())
 		_:
-			AppManager.log_message("Unhandled filetype: %s" % prop_path, true)
+			AppManager.logger.error("Unhandled filetype: %s" % prop_path)
 
 	if not prop:
 		return prop_parent

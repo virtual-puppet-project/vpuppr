@@ -68,7 +68,7 @@ func _load_prop_information(prop_name: String, is_visible: bool) -> void:
 	elif prop_name == "Environment":
 		yield(_generate_builtin_prop_elements("world_environment"), "completed")
 	else:
-		AppManager.log_message("Unhandled prop_name: %s" % prop_name, true)
+		AppManager.logger.error("Unhandled prop_name: %s" % prop_name)
 
 func _generate_prop_manipulation_elements(prop_name: String) -> void:
 	var parent = receiver.parent
@@ -120,7 +120,7 @@ func _generate_builtin_prop_elements(builtin_name: String) -> void:
 				xml_type = parent.XmlConstants.PROP_INPUT
 				data_type = "string"
 			_:
-				AppManager.log_message("Unhandled type: %d" % builtin_type, true)
+				AppManager.logger.error("Unhandled type: %d" % builtin_type)
 
 		var elem: BaseElement = parent.generate_ui_element(xml_type, {
 			"name": key,

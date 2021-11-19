@@ -1,7 +1,5 @@
 extends Node
 
-signal console_log(message)
-
 enum ModelType { GENERIC, VRM }
 
 const DYNAMIC_PHYSICS_BONES: bool = false
@@ -10,6 +8,7 @@ const DYNAMIC_PHYSICS_BONES: bool = false
 # onready var tm: TranslationManager = TranslationManager.new()
 onready var sb: SignalBroadcaster = load("res://utils/SignalBroadcaster.gd").new()
 onready var cm: ConfigManager = load("res://utils/ConfigManager.gd").new()
+onready var logger: Logger = load("res://utils/Logger.gd").new()
 
 # Debounce
 const DEBOUNCE_TIME: float = 5.0
@@ -56,7 +55,7 @@ func _on_tree_exiting() -> void:
 	if env != "tests":
 		cm.save_config()
 	
-	log_message("Exiting. おやすみ。")
+	logger.info("Exiting. おやすみ。")
 
 ###############################################################################
 # Private functions                                                           #
@@ -84,10 +83,3 @@ func save_config_instant(p_config: Reference = null) -> void:
 	should_save = false
 	debounce_counter = 0.0
 	cm.save_config(p_config)
-
-func log_message(message: String, is_error: bool = false) -> void:
-	if is_error:
-		message = "[ERROR] %s" % message
-		assert(false, message)
-	print(message)
-	emit_signal("console_log", message)
