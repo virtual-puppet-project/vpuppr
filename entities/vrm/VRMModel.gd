@@ -116,6 +116,8 @@ func _ready() -> void:
 
 			expression_data[animation_name].morphs.append(md)
 
+	anim_player.queue_free()
+
 	a = expression_data["A"]
 	angry = expression_data["ANGRY"]
 	blink = expression_data["BLINK"]
@@ -131,74 +133,7 @@ func _ready() -> void:
 
 	look_h = ExpressionData.new()
 	
-	left_eye = EyeClamps.new()
-	right_eye = EyeClamps.new()
-
-	for look_up_value in expression_data["LOOKUP"].morphs:
-		if look_up_value:
-			var val = look_up_value.values.pop_back()
-			if val:
-				var rot: Quat = val["rotation"]
-				match look_up_value.morph:
-					"eye_L":
-						left_eye.up = rot.get_euler()
-					"eye_R":
-						right_eye.up = rot.get_euler()
-
-	for look_down_value in expression_data["LOOKDOWN"].morphs:
-		if look_down_value:
-			var val = look_down_value.values.pop_back()
-			if val:
-				var rot: Quat = val["rotation"]
-				match look_down_value.morph:
-					"eye_L":
-						left_eye.down = rot.get_euler()
-					"eye_R":
-						right_eye.down = rot.get_euler()
-	
-	for look_left_value in expression_data["LOOKLEFT"].morphs:
-		if look_left_value:
-			var val = look_left_value.values.pop_back()
-			if val:
-				var rot: Quat = val["rotation"]
-				match look_left_value.morph:
-					"eye_L":
-						left_eye.left = rot.get_euler()
-					"eye_R":
-						right_eye.left = rot.get_euler()
-
-	for look_right_value in expression_data["LOOKRIGHT"].morphs:
-		if look_right_value:
-			var val = look_right_value.values.pop_back()
-			if val:
-				var rot: Quat = val["rotation"]
-				match look_right_value.morph:
-					"eye_L":
-						left_eye.right = rot.get_euler()
-					"eye_R":
-						right_eye.right = rot.get_euler()
-
-	# Some models don't have blendshapes for looking up/down/left/right
-	# So let their eyes rotate 360 degrees
-	if left_eye.down.x == 0:
-		left_eye.down.x = -360.0
-	if left_eye.up.x == 0:
-		left_eye.up.x = 360.0
-	if left_eye.right.y == 0:
-		left_eye.right.y = -360.0
-	if left_eye.left.y == 0:
-		left_eye.left.y = 360.0
-
-	if right_eye.down.x == 0:
-		right_eye.down.x = -360.0
-	if right_eye.up.x == 0:
-		right_eye.up.x = 360.0
-	if right_eye.right.y == 0:
-		right_eye.right.y = -360.0
-	if right_eye.left.y == 0:
-		right_eye.left.y = 360.0
-
-	anim_player.queue_free()
+	_map_eye_expressions(expression_data)
 
 	# Map bones
 	if vrm_meta.humanoid_bone_mapping.has("head"):
@@ -270,6 +205,75 @@ func _on_blend_shapes(value: String) -> void:
 
 static func _to_godot_quat(v: Quat) -> Quat:
 	return Quat(v.x, -v.y, v.z, v.w)
+
+func _map_eye_expressions(expression_data):
+	left_eye = EyeClamps.new()
+	right_eye = EyeClamps.new()
+
+	for look_up_value in expression_data["LOOKUP"].morphs:
+		if look_up_value:
+			var val = look_up_value.values.pop_back()
+			if val:
+				var rot: Quat = val["rotation"]
+				match look_up_value.morph:
+					"eye_L":
+						var x = rot.get_euler()
+						left_eye.up = x
+					"eye_R":
+						right_eye.up = rot.get_euler()
+
+	for look_down_value in expression_data["LOOKDOWN"].morphs:
+		if look_down_value:
+			var val = look_down_value.values.pop_back()
+			if val:
+				var rot: Quat = val["rotation"]
+				match look_down_value.morph:
+					"eye_L":
+						left_eye.down = rot.get_euler()
+					"eye_R":
+						right_eye.down = rot.get_euler()
+	
+	for look_left_value in expression_data["LOOKLEFT"].morphs:
+		if look_left_value:
+			var val = look_left_value.values.pop_back()
+			if val:
+				var rot: Quat = val["rotation"]
+				match look_left_value.morph:
+					"eye_L":
+						left_eye.left = rot.get_euler()
+					"eye_R":
+						right_eye.left = rot.get_euler()
+
+	for look_right_value in expression_data["LOOKRIGHT"].morphs:
+		if look_right_value:
+			var val = look_right_value.values.pop_back()
+			if val:
+				var rot: Quat = val["rotation"]
+				match look_right_value.morph:
+					"eye_L":
+						left_eye.right = rot.get_euler()
+					"eye_R":
+						right_eye.right = rot.get_euler()
+
+	# Some models don't have blendshapes for looking up/down/left/right
+	# So let their eyes rotate 360 degrees
+	if left_eye.down.x == 0:
+		left_eye.down.x = -360.0
+	if left_eye.up.x == 0:
+		left_eye.up.x = 360.0
+	if left_eye.right.y == 0:
+		left_eye.right.y = -360.0
+	if left_eye.left.y == 0:
+		left_eye.left.y = 360.0
+
+	if right_eye.down.x == 0:
+		right_eye.down.x = -360.0
+	if right_eye.up.x == 0:
+		right_eye.up.x = 360.0
+	if right_eye.right.y == 0:
+		right_eye.right.y = -360.0
+	if right_eye.left.y == 0:
+		right_eye.left.y = 360.0
 
 ###############################################################################
 # Public functions                                                            #
