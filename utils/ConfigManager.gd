@@ -39,7 +39,7 @@ class Metadata:
 		var json_data = parse_json(json_string)
 
 		if typeof(json_data) != TYPE_DICTIONARY:
-			AppManager.log_message("Invalid metadata loaded, using default metadata values", true)
+			AppManager.logger.error("Invalid metadata loaded, using default metadata values")
 			return false
 		
 		for key in (json_data as Dictionary).keys():
@@ -187,14 +187,14 @@ class ConfigData:
 		var json_result = parse_json(json_string)
 
 		if typeof(json_result) != TYPE_DICTIONARY:
-			AppManager.log_message("Invalid config data loaded", true)
+			AppManager.logger.error("Invalid config data loaded")
 			return
 		
 		for key in (json_result as Dictionary).keys():
 			var data = json_result[key]
 
 			if typeof(data) != TYPE_DICTIONARY:
-				AppManager.log_message("Invalid data point loaded", true)
+				AppManager.logger.error("Invalid data point loaded")
 				return
 			
 			var data_value = data[DataPoint.VALUE_KEY]
@@ -418,7 +418,7 @@ func _determine_default_search_path() -> String:
 	return "/"
 
 func _load_metadata() -> bool:
-	AppManager.log_message("Begin loading metadata")
+	AppManager.logger.info("Begin loading metadata")
 
 	var file_path = "%s/%s" % [metadata_path, METADATA_NAME]
 
@@ -427,12 +427,12 @@ func _load_metadata() -> bool:
 		return false
 
 	if not metadata_config.load_from_json(metadata_file.get_as_text()):
-		AppManager.log_message("Failed to load metadata file")
+		AppManager.logger.info("Failed to load metadata file")
 		return false
 
 	metadata_file.close()
 	
-	AppManager.log_message("Finished loading metadata")
+	AppManager.logger.info("Finished loading metadata")
 
 	return true
 
@@ -475,7 +475,7 @@ func load_config_for_preset(preset_name: String) -> ConfigData:
 	
 	var dir := Directory.new()
 	if not dir.file_exists(full_path):
-		AppManager.log_message("%s does not exist" % full_path, true)
+		AppManager.logger.error("%s does not exist" % full_path)
 		config.config_name = "invalid"
 		config.model_name = "invalid"
 		config.model_path = "invalid"
@@ -483,7 +483,7 @@ func load_config_for_preset(preset_name: String) -> ConfigData:
 	
 	var config_file := File.new()
 	if config_file.open(full_path, File.READ) != OK:
-		AppManager.log_message("Unable to open file at path: %s" % full_path, true)
+		AppManager.logger.error("Unable to open file at path: %s" % full_path)
 		config.config_name = "invalid"
 		config.model_name = "invalid"
 		config.model_path = "invalid"
@@ -500,13 +500,13 @@ func load_config_and_set_as_current(model_path: String) -> void:
 		config_name = metadata_config.model_defaults[model_name]
 	var full_path: String = CONFIG_FORMAT % [metadata_path, config_name]
 
-	AppManager.log_message("Begin loading config for %s" % full_path)
+	AppManager.logger.info("Begin loading config for %s" % full_path)
 
 	current_model_config = ConfigData.new()
 
 	# var dir := Directory.new()
 	# if not dir.file_exists(full_path):
-	# 	AppManager.log_message("%s does not exist" % full_path)
+	# 	AppManager.logger.info("%s does not exist" % full_path)
 	# 	current_model_config.config_name = model_name
 	# 	current_model_config.model_name = model_name
 	# 	current_model_config.model_path = model_path
@@ -517,7 +517,7 @@ func load_config_and_set_as_current(model_path: String) -> void:
 
 	var config_file := File.new()
 	if not config_file.open(full_path, File.READ) == OK:
-		AppManager.log_message("%s does not exist" % full_path)
+		AppManager.logger.info("%s does not exist" % full_path)
 		current_model_config.config_name = model_name
 		current_model_config.model_name = model_name
 		current_model_config.model_path = model_path
@@ -528,10 +528,10 @@ func load_config_and_set_as_current(model_path: String) -> void:
 	current_model_config.load_from_json(config_file.get_as_text())
 	config_file.close()
 
-	AppManager.log_message("Finished loading config")
+	AppManager.logger.info("Finished loading config")
 
 func save_config(p_config: ConfigData = null) -> void:
-	AppManager.log_message("Saving config")
+	AppManager.logger.info("Saving config")
 
 	var config: ConfigData
 	if p_config:
@@ -584,7 +584,7 @@ func save_config(p_config: ConfigData = null) -> void:
 	metadata_file.store_string(metadata_config.get_as_json())
 	metadata_file.close()
 
-	AppManager.log_message("Finished saving config")
+	AppManager.logger.info("Finished saving config")
 
 func get_config_as_dict(config_path: String) -> Dictionary:
 	var result: Dictionary = {}
@@ -595,14 +595,14 @@ func get_config_as_dict(config_path: String) -> Dictionary:
 	var json_dict = parse_json(config_file.get_as_text())
 	config_file.close()
 	if typeof(json_dict) != TYPE_DICTIONARY:
-		AppManager.log_message("Invalid config data loaded", true)
+		AppManager.logger.error("Invalid config data loaded")
 		return {}
 
 	for key in json_dict.keys():
 		var data = json_dict[key]
 
 		if typeof(data) != TYPE_DICTIONARY:
-			AppManager.log_message("Invalid data point loaded", true)
+			AppManager.logger.error("Invalid data point loaded")
 			return {}
 
 		var data_value = data[DataPoint.VALUE_KEY]

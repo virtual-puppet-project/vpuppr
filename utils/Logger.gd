@@ -1,45 +1,32 @@
-extends BaseElement
+class_name Logger
+extends Reference
 
-const PropData: Resource = preload("res://screens/gui/PropData.gd")
-const PresetData: Resource = preload("res://screens/gui/PresetData.gd")
-
-onready var label: Label = $VBoxContainer/Label
-onready var vbox: VBoxContainer = $VBoxContainer
+signal on_log(message)
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
-func _ready() -> void:
-	label.text = label_text
-
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
 
-func _cleanup() -> void:
-	clear_details()
-
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
+func _log(message: String, is_error: bool) -> void:
+	if is_error:
+		message = "[ERROR] %s" % message
+		assert(false, message)
+	print(message)
+	emit_signal("on_log", message)
 
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
 
-func clear_details() -> void:
-	var is_first: bool = true
+func info(message: String) -> void:
+	_log(message, false)
 
-	for c in vbox.get_children():
-		if is_first:
-			is_first = false
-			continue
-		c.queue_free()
-
-func get_value():
-	return vbox.get_children()
-
-func set_value(_value) -> void:
-	AppManager.logger.info("Skipping set_value on %s" % name)
-	pass
+func error(message: String) -> void:
+	_log(message, true)

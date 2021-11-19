@@ -29,7 +29,7 @@ func _init() -> void:
 ###############################################################################
 
 func _load_translation_file(path: String) -> void:
-	AppManager.log_message("Loading translation file %s" % path)
+	AppManager.logger.info("Loading translation file %s" % path)
 	var translation_file := File.new()
 	translation_file.open(path, File.READ)
 
@@ -37,7 +37,7 @@ func _load_translation_file(path: String) -> void:
 	if (data.error == OK and typeof(data.result) == TYPE_DICTIONARY):
 		current_translation = data.result.duplicate()
 	else:
-		AppManager.log_message("Unable to load translation file for %s" % path)
+		AppManager.logger.info("Unable to load translation file for %s" % path)
 
 ###############################################################################
 # Public functions                                                            #

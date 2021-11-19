@@ -81,14 +81,14 @@ func _ready() -> void:
 	if model_resource_path:
 		match model_resource_path.get_extension():
 			"glb":
-				AppManager.log_message("Loading GLB file.")
+				AppManager.logger.info("Loading GLB file.")
 				script_to_use = GENERIC_MODEL_SCRIPT_PATH
 				model = load_external_model(model_resource_path)
 				model.scale_object_local(Vector3(0.4, 0.4, 0.4))
 				translation_adjustment = Vector3(1, -1, 1)
 				rotation_adjustment = Vector3(-1, -1, 1)
 			"vrm":
-				AppManager.log_message("Loading VRM file.")
+				AppManager.logger.info("Loading VRM file.")
 				script_to_use = VRM_MODEL_SCRIPT_PATH
 				model = load_external_model(model_resource_path)
 				model.transform = model.transform.rotated(Vector3.UP, PI)
@@ -100,7 +100,7 @@ func _ready() -> void:
 				# model.vrm_mappings = AppManager.vrm_mappings
 				# AppManager.vrm_mappings.dirty = false
 			"tscn":
-				AppManager.log_message("Loading TSCN file.")
+				AppManager.logger.info("Loading TSCN file.")
 				var model_resource = load(model_resource_path)
 				model = model_resource.instance()
 				# TODO might not want this for tscn
@@ -110,7 +110,7 @@ func _ready() -> void:
 				# TODO i dont think this is used for tscn?
 				script_to_use = GENERIC_MODEL_SCRIPT_PATH
 			_:
-				AppManager.log_message("File extension not recognized. %s" % model_resource_path)
+				AppManager.logger.info("File extension not recognized. %s" % model_resource_path)
 				printerr("File extension not recognized. %s" % model_resource_path)
 	
 	# Load in generic model if nothing is loaded
@@ -263,7 +263,7 @@ static func _to_godot_quat(v: Quat) -> Quat:
 
 func _save_offsets() -> void:
 	if not open_see_data:
-		AppManager.log_message("No face tracking data found.")
+		AppManager.logger.info("No face tracking data found.")
 		return
 	stored_offsets.translation_offset = open_see_data.translation
 	stored_offsets.rotation_offset = open_see_data.rotation
@@ -274,7 +274,7 @@ func _save_offsets() -> void:
 	stored_offsets.euler_offset = corrected_euler
 	stored_offsets.left_eye_gaze_offset = open_see_data.left_gaze.get_euler()
 	stored_offsets.right_eye_gaze_offset = open_see_data.right_gaze.get_euler()
-	AppManager.log_message("New offsets saved.")
+	AppManager.logger.info("New offsets saved.")
 
 static func _find_bone_chain(skeleton: Skeleton, root_bone: int, tip_bone: int) -> Array:
 	var result: Array = []
@@ -290,7 +290,7 @@ static func _find_bone_chain(skeleton: Skeleton, root_bone: int, tip_bone: int) 
 		result.append(bone_parent)
 	# Shouldn't happen but who knows
 	elif bone_parent == -1:
-		AppManager.log_message("Tip bone %s is apparently has no parent bone. Unable to find IK chain." % str(tip_bone))
+		AppManager.logger.info("Tip bone %s is apparently has no parent bone. Unable to find IK chain." % str(tip_bone))
 	# Recursively find the rest of the chain
 	else:
 		result.append_array(_find_bone_chain(skeleton, root_bone, bone_parent))
@@ -308,10 +308,10 @@ func _set_interpolation_rate(value: float) -> void:
 func load_external_model(file_path: String) -> Spatial:
 	var dir := Directory.new()
 	if not dir.file_exists(file_path):
-		AppManager.log_message("File path not found: %s\nLoading demo model" % file_path, true)
+		AppManager.logger.error("File path not found: %s\nLoading demo model" % file_path)
 		file_path = AppManager.cm.DEMO_MODEL_PATH
 
-	AppManager.log_message("Starting external loader.")
+	AppManager.logger.info("Starting external loader.")
 	var loaded_model: Spatial
 	var vrm_meta: Dictionary
 	
@@ -330,7 +330,7 @@ func load_external_model(file_path: String) -> Spatial:
 	if vrm_meta:
 		loaded_model.vrm_meta = vrm_meta
 	
-	AppManager.log_message("External file loaded successfully.")
+	AppManager.logger.info("External file loaded successfully.")
 	
 	return loaded_model
 

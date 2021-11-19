@@ -63,7 +63,7 @@ func _handle_event(event_value) -> void:
 		TYPE_STRING:
 			AppManager.sb.call("broadcast_%s" % event_value)
 		_:
-			AppManager.log_message("Unhandled gui event" % str(event_value), true)
+			AppManager.logger.error("Unhandled gui event" % str(event_value))
 	
 	if not parent.current_edited_preset:
 		AppManager.save_config()
@@ -75,11 +75,11 @@ func _handle_event(event_value) -> void:
 ###############################################################################
 
 func get_value():
-	AppManager.log_message("%s.get_value() not implemented" % self.name)
+	AppManager.logger.info("%s.get_value() not implemented" % self.name)
 	return null
 
 func set_value(_value) -> void:
-	AppManager.log_message("%s.set_value() not implemented" % self.name)
+	AppManager.logger.info("%s.set_value() not implemented" % self.name)
 
 func setup() -> void:
 	if (not setup_function.empty() and containing_view.has_method(setup_function)):

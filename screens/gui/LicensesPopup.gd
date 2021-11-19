@@ -22,7 +22,7 @@ func _ready():
 	# TODO read from licenses
 	var dir := Directory.new()
 	if not dir.dir_exists(LICENSES_DIRECTORY):
-		AppManager.log_message("%s does not exist, please visit the main repo to find licenses" % LICENSES_DIRECTORY)
+		AppManager.logger.info("%s does not exist, please visit the main repo to find licenses" % LICENSES_DIRECTORY)
 		return
 
 	_traverse_directory(LICENSES_DIRECTORY)
