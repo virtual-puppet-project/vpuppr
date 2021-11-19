@@ -3,9 +3,6 @@ extends Reference
 
 const DEMO_MODEL_PATH: String = "res://entities/basic-models/Duck.tscn"
 
-const CONFIG_FORMAT: String = "%s/%s.json"
-
-const METADATA_NAME: String = "app-config.json"
 var metadata_path: String = ""
 var metadata_config := Metadata.new()
 
@@ -49,14 +46,16 @@ class Metadata:
 
 		return true
 	
-	func get_as_json() -> String:
+	func get_as_dict() -> Dictionary:
 		var result: Dictionary = {}
 		for i in get_property_list():
 			if i.name in ["Reference", "script", "Script Variables"]:
 				continue
 			result[i.name] = get(i.name)
+		return result
 
-		return to_json(result)
+	func get_as_json() -> String:
+		return to_json(get_as_dict())
 	
 	func apply_rendering_changes(viewport: Viewport) -> void:
 		viewport.transparent_bg = use_transparent_background
@@ -179,6 +178,9 @@ class ConfigData:
 				result[i.name] = data_point.get_as_dict()
 
 		return result
+	
+	func get_as_json() -> String:
+		return to_json(get_as_dict())
 
 	func load_from_json(json_string: String) -> void:
 		"""
@@ -387,6 +389,18 @@ func _on_default_prop_search_path(value: String) -> void:
 # Private functions                                                           #
 ###############################################################################
 
+func _config_path(config_name: String) -> String:
+	return "%s/%s.json" % [metadata_path, config_name]
+
+func _metadata_path() -> String:
+	return _config_path('app-config')
+	
+func _write_file(path: String, content: String) -> void:
+	var file := File.new()
+	file.open(path, File.WRITE)
+	file.store_string(content)
+	file.close()
+
 func _determine_search_path(value: String) -> String:
 	# if the given path is an internal path (res://) or the default path ("/")
 	# then use the default search path
@@ -420,10 +434,8 @@ func _determine_default_search_path() -> String:
 func _load_metadata() -> bool:
 	AppManager.logger.info("Begin loading metadata")
 
-	var file_path = "%s/%s" % [metadata_path, METADATA_NAME]
-
 	var metadata_file := File.new()
-	if metadata_file.open(file_path, File.READ) != OK:
+	if metadata_file.open(_metadata_path(), File.READ) != OK:
 		return false
 
 	if not metadata_config.load_from_json(metadata_file.get_as_text()):
@@ -453,14 +465,7 @@ func setup() -> void:
 	metadata_config.default_prop_search_path = _determine_search_path(metadata_config.default_prop_search_path)
 
 	if not _load_metadata():
-		var file_path = "%s/%s" % [metadata_path, METADATA_NAME]
-
-		var metadata_file := File.new()
-		metadata_file.open(file_path, File.WRITE)
-
-		metadata_file.store_string(metadata_config.get_as_json())
-
-		metadata_file.close()
+		_write_file(_metadata_path(), metadata_config.get_as_json())
 	
 	if metadata_config.default_model_to_load_path.empty():
 		metadata_config.default_model_to_load_path = DEMO_MODEL_PATH
@@ -470,7 +475,7 @@ func setup() -> void:
 func load_config_for_preset(preset_name: String) -> ConfigData:
 	var full_path: String = preset_name
 	if not full_path.is_abs_path():
-		full_path = CONFIG_FORMAT % [metadata_path, preset_name]
+		full_path = _config_path(preset_name)
 	var config := ConfigData.new()
 	
 	var dir := Directory.new()
@@ -488,6 +493,7 @@ func load_config_for_preset(preset_name: String) -> ConfigData:
 		config.model_name = "invalid"
 		config.model_path = "invalid"
 		return config
+		
 	config.load_from_json(config_file.get_as_text())
 	config_file.close()
 	
@@ -498,7 +504,7 @@ func load_config_and_set_as_current(model_path: String) -> void:
 	var config_name: String = model_name
 	if metadata_config.model_defaults.has(model_name):
 		config_name = metadata_config.model_defaults[model_name]
-	var full_path: String = CONFIG_FORMAT % [metadata_path, config_name]
+	var full_path: String = _config_path(config_name)
 
 	AppManager.logger.info("Begin loading config for %s" % full_path)
 
@@ -556,7 +562,7 @@ func save_config(p_config: ConfigData = null) -> void:
 	var is_default = config.is_default_for_model
 	var is_default_dirty = config.is_default_dirty
 
-	var config_path := CONFIG_FORMAT % [metadata_path, config_name]
+	var config_path := _config_path(config_name)
 
 	metadata_config.config_data[config_name] = config_path
 
@@ -574,15 +580,8 @@ func save_config(p_config: ConfigData = null) -> void:
 		var prop_data = AppManager.main.gui.props[prop_key]
 		config.instanced_props[prop_data.prop_name] = prop_data.get_as_dict()
 	
-	var config_file := File.new()
-	config_file.open(config_path, File.WRITE)
-	config_file.store_string(to_json(config.get_as_dict()))
-	config_file.close()
-
-	var metadata_file := File.new()
-	metadata_file.open("%s/%s" % [metadata_path, METADATA_NAME], File.WRITE)
-	metadata_file.store_string(metadata_config.get_as_json())
-	metadata_file.close()
+	_write_file(config_path, config.get_as_json())
+	_write_file(_metadata_path(), metadata_config.get_as_json())
 
 	AppManager.logger.info("Finished saving config")
 
@@ -630,20 +629,18 @@ func update_config_from_dict(old_name: String, new_config: Dictionary) -> void:
 	var model_name: String = new_config["model_name"]
 	var is_default: bool = new_config["is_default_for_model"]
 	
-	var config_path := CONFIG_FORMAT % [metadata_path, old_name]
+	var config_path := _config_path(old_name)
 
 	# NOTE necessary because we can't just store the raw dictionary
 	var cd := ConfigData.new()
 	cd.load_from_dict(new_config)
 
-	var config_file := File.new()
-	config_file.open(config_path, File.WRITE)
-	config_file.store_string(to_json(cd.get_as_dict()))
+	_write_file(config_path, cd.get_as_json())
 
 	var should_resave_metadata := false
 	if config_name != old_name:
 		should_resave_metadata = true
-		var new_config_path := CONFIG_FORMAT % [metadata_path, config_name]
+		var new_config_path := _config_path(config_name)
 		var dir := Directory.new()
 		dir.rename(config_path, new_config_path)
 
@@ -655,7 +652,4 @@ func update_config_from_dict(old_name: String, new_config: Dictionary) -> void:
 		metadata_config.model_defaults[model_name] = config_name
 
 	if should_resave_metadata:
-		var metadata_file := File.new()
-		metadata_file.open("%s/%s" % [metadata_path, METADATA_NAME], File.WRITE)
-		metadata_file.store_string(metadata_config.get_as_json())
-		metadata_file.close()
+		_write_file(_metadata_path(), metadata_config.get_as_json())
