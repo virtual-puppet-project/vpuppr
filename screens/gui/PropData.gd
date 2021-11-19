@@ -55,9 +55,9 @@ func load_from_dict(dict: Dictionary) -> void:
 	if not dict.has("parent_transform"):
 		AppManager.logger.error("Invalid prop data: no parent_transform")
 		return
-	parent_transform = JSONUtil.dictionary_to_transform(dict["child_transform"])
+	parent_transform = JSONUtil.dictionary_to_transform(dict["parent_transform"])
 
 	if not dict.has("child_transform"):
 		AppManager.logger.error("Invalid prop data: no child_transform")
 		return
-	child_transform = JSONUtil.dictionary_to_transform(dict["parent_transform"])
+	child_transform = JSONUtil.dictionary_to_transform(dict["child_transform"])
