@@ -135,39 +135,7 @@ func _ready() -> void:
 	
 	_map_eye_expressions(expression_data)
 
-	# Map bones
-	if vrm_meta.humanoid_bone_mapping.has("head"):
-		head_bone = vrm_meta.humanoid_bone_mapping["head"]
-		head_bone_id = skeleton.find_bone(head_bone)
-
-		AppManager.sb.broadcast_head_bone(head_bone)
-
-	if vrm_meta.humanoid_bone_mapping.has("leftEye"):
-		left_eye_id = skeleton.find_bone(vrm_meta.humanoid_bone_mapping["leftEye"])
-	if vrm_meta.humanoid_bone_mapping.has("rightEye"):
-		right_eye_id = skeleton.find_bone(vrm_meta.humanoid_bone_mapping["rightEye"])
-
-	if vrm_meta.humanoid_bone_mapping.has("neck"):
-		neck_bone_id = skeleton.find_bone(vrm_meta.humanoid_bone_mapping["neck"])
-		additional_bones_to_pose_names.append(vrm_meta.humanoid_bone_mapping["neck"])
-
-	if vrm_meta.humanoid_bone_mapping.has("spine"):
-		spine_bone_id = skeleton.find_bone(vrm_meta.humanoid_bone_mapping["spine"])
-		additional_bones_to_pose_names.append(vrm_meta.humanoid_bone_mapping["spine"])
-
-	if vrm_meta.humanoid_bone_mapping.has("leftShoulder"):
-		skeleton.set_bone_pose(skeleton.find_bone(vrm_meta.humanoid_bone_mapping["leftShoulder"]),
-				Transform(Quat(0, 0, 0.1, 0.85)))
-	if vrm_meta.humanoid_bone_mapping.has("rightShoulder"):
-		skeleton.set_bone_pose(skeleton.find_bone(vrm_meta.humanoid_bone_mapping["rightShoulder"]),
-				Transform(Quat(0, 0, -0.1, 0.85)))
-
-	if vrm_meta.humanoid_bone_mapping.has("leftUpperArm"):
-		skeleton.set_bone_pose(skeleton.find_bone(vrm_meta.humanoid_bone_mapping["leftUpperArm"]),
-				Transform(Quat(0, 0, 0.4, 0.85)))
-	if vrm_meta.humanoid_bone_mapping.has("rightUpperArm"):
-		skeleton.set_bone_pose(skeleton.find_bone(vrm_meta.humanoid_bone_mapping["rightUpperArm"]),
-				Transform(Quat(0, 0, -0.4, 0.85)))
+	_map_bones()
 
 	scan_mapped_bones()
 
@@ -282,6 +250,40 @@ func _map_eye_expressions(expression_data):
 		right_eye.right.y = -360.0
 	if right_eye.left.y == 0:
 		right_eye.left.y = 360.0
+
+func _map_bones():
+	if vrm_meta.humanoid_bone_mapping.has("head"):
+		head_bone = vrm_meta.humanoid_bone_mapping["head"]
+		head_bone_id = skeleton.find_bone(head_bone)
+
+		AppManager.sb.broadcast_head_bone(head_bone)
+
+	if vrm_meta.humanoid_bone_mapping.has("leftEye"):
+		left_eye_id = skeleton.find_bone(vrm_meta.humanoid_bone_mapping["leftEye"])
+	if vrm_meta.humanoid_bone_mapping.has("rightEye"):
+		right_eye_id = skeleton.find_bone(vrm_meta.humanoid_bone_mapping["rightEye"])
+
+	if vrm_meta.humanoid_bone_mapping.has("neck"):
+		neck_bone_id = skeleton.find_bone(vrm_meta.humanoid_bone_mapping["neck"])
+		additional_bones_to_pose_names.append(vrm_meta.humanoid_bone_mapping["neck"])
+
+	if vrm_meta.humanoid_bone_mapping.has("spine"):
+		spine_bone_id = skeleton.find_bone(vrm_meta.humanoid_bone_mapping["spine"])
+		additional_bones_to_pose_names.append(vrm_meta.humanoid_bone_mapping["spine"])
+
+	if vrm_meta.humanoid_bone_mapping.has("leftShoulder"):
+		skeleton.set_bone_pose(skeleton.find_bone(vrm_meta.humanoid_bone_mapping["leftShoulder"]),
+				Transform(Quat(0, 0, 0.1, 0.85)))
+	if vrm_meta.humanoid_bone_mapping.has("rightShoulder"):
+		skeleton.set_bone_pose(skeleton.find_bone(vrm_meta.humanoid_bone_mapping["rightShoulder"]),
+				Transform(Quat(0, 0, -0.1, 0.85)))
+
+	if vrm_meta.humanoid_bone_mapping.has("leftUpperArm"):
+		skeleton.set_bone_pose(skeleton.find_bone(vrm_meta.humanoid_bone_mapping["leftUpperArm"]),
+				Transform(Quat(0, 0, 0.4, 0.85)))
+	if vrm_meta.humanoid_bone_mapping.has("rightUpperArm"):
+		skeleton.set_bone_pose(skeleton.find_bone(vrm_meta.humanoid_bone_mapping["rightUpperArm"]),
+				Transform(Quat(0, 0, -0.4, 0.85)))
 
 ###############################################################################
 # Public functions                                                            #
