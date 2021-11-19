@@ -46,14 +46,16 @@ class Metadata:
 
 		return true
 	
-	func get_as_json() -> String:
+	func get_as_dict() -> Dictionary:
 		var result: Dictionary = {}
 		for i in get_property_list():
 			if i.name in ["Reference", "script", "Script Variables"]:
 				continue
 			result[i.name] = get(i.name)
+		return result
 
-		return to_json(result)
+	func get_as_json() -> String:
+		return to_json(get_as_dict())
 	
 	func apply_rendering_changes(viewport: Viewport) -> void:
 		viewport.transparent_bg = use_transparent_background
@@ -176,6 +178,9 @@ class ConfigData:
 				result[i.name] = data_point.get_as_dict()
 
 		return result
+	
+	func get_as_json() -> String:
+		return to_json(get_as_dict())
 
 	func load_from_json(json_string: String) -> void:
 		"""
@@ -575,7 +580,7 @@ func save_config(p_config: ConfigData = null) -> void:
 		var prop_data = AppManager.main.gui.props[prop_key]
 		config.instanced_props[prop_data.prop_name] = prop_data.get_as_dict()
 	
-	_write_file(config_path, to_json(config.get_as_dict()))
+	_write_file(config_path, config.get_as_json())
 	_write_file(_metadata_path(), metadata_config.get_as_json())
 
 	AppManager.log_message("Finished saving config")
@@ -630,7 +635,7 @@ func update_config_from_dict(old_name: String, new_config: Dictionary) -> void:
 	var cd := ConfigData.new()
 	cd.load_from_dict(new_config)
 
-	_write_file(config_path, to_json(cd.get_as_dict()))
+	_write_file(config_path, cd.get_as_json())
 
 	var should_resave_metadata := false
 	if config_name != old_name:
