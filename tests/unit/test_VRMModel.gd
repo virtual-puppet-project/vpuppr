@@ -24,6 +24,7 @@ func _create_morph_data(name, values):
 
 func test_map_eye_expressions() -> void:
 	var vrm_model: VRM_MODEL = VRM_MODEL.new()
+	vrm_model.vrm_meta = { "humanoid_bone_mapping": { "leftEye" : "eye_L", "rightEye": "eye_R" } }
 	
 	assert_true(vrm_model.left_eye == null)
 	assert_true(vrm_model.right_eye == null)
