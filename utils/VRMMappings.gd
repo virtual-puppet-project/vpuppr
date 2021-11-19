@@ -63,7 +63,7 @@ func create_expression_data(expression_name: String, mesh_name: String, morph_na
 		if not meshes_used.has(mesh_name):
 			meshes_used.append(mesh_name)
 	else:
-		AppManager.log_message("Skipping unhandled expression name %s" % expression_name)
+		AppManager.logger.info("Skipping unhandled expression name %s" % expression_name)
 
 # func create_eye_data(eye_side: int, eye_name: String, x_data: Vector2, y_data: Vector2) -> void:
 # 	match eye_side:
@@ -72,4 +72,4 @@ func create_expression_data(expression_name: String, mesh_name: String, morph_na
 # 		EyeSide.RIGHT:
 # 			right_eye = EyeData.new(eye_name, x_data, y_data)
 # 		EyeSide.NONE:
-# 			AppManager.log_message("Invalid EyeSide in %s" % self.name)
+# 			AppManager.logger.info("Invalid EyeSide in %s" % self.name)

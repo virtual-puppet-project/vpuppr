@@ -68,4 +68,4 @@ func get_value():
 	return label.text
 
 func set_value(_value) -> void:
-	AppManager.log_message("Tried to set value on a double toggle")
+	AppManager.logger.info("Tried to set value on a double toggle")

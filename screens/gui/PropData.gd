@@ -43,21 +43,21 @@ func get_as_dict() -> Dictionary:
 
 func load_from_dict(dict: Dictionary) -> void:
 	if not dict.has("prop_name"):
-		AppManager.log_message("Invalid prop data: no prop_name", true)
+		AppManager.logger.error("Invalid prop data: no prop_name")
 		return
 	prop_name = dict["prop_name"]
 
 	if not dict.has("prop_path"):
-		AppManager.log_message("Invalid prop data: no prop_path", true)
+		AppManager.logger.error("Invalid prop data: no prop_path")
 		return
 	prop_path = dict["prop_path"]
 
 	if not dict.has("parent_transform"):
-		AppManager.log_message("Invalid prop data: no parent_transform", true)
+		AppManager.logger.error("Invalid prop data: no parent_transform")
 		return
 	parent_transform = JSONUtil.dictionary_to_transform(dict["child_transform"])
 
 	if not dict.has("child_transform"):
-		AppManager.log_message("Invalid prop data: no child_transform", true)
+		AppManager.logger.error("Invalid prop data: no child_transform")
 		return
 	child_transform = JSONUtil.dictionary_to_transform(dict["parent_transform"])

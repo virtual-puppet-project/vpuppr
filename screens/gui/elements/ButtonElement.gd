@@ -32,7 +32,7 @@ func get_value():
 	return button.text
 
 func set_value(_value) -> void:
-	AppManager.log_message("Tried to set value on a Button element", true)
+	AppManager.logger.error("Tried to set value on a Button element")
 
 func setup() -> void:
 	pass # Do nothing on setup
