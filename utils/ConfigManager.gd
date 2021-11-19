@@ -388,7 +388,7 @@ func _config_path(config_name: String) -> String:
 	return "%s/%s.json" % [metadata_path, config_name]
 
 func _metadata_path() -> String:
-	return "%s/%s" % [metadata_path, "app-config.json"]
+	return _config_path('app-config')
 	
 func _write_file(path: String, content: String) -> void:
 	var file := File.new()
