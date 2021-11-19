@@ -99,12 +99,12 @@ func _ready() -> void:
 			var split_name: PoolStringArray = track_name.split(":")
 
 			if split_name.size() != 2:
-				AppManager.log_message("Model has ultra nested meshes: %s" % track_name)
+				AppManager.logger.info("Model has ultra nested meshes: %s" % track_name)
 				continue
 			
 			var mesh = get_node_or_null((split_name[0]))
 			if not mesh:
-				AppManager.log_message("Unable to find mesh: %s" % split_name[0])
+				AppManager.logger.info("Unable to find mesh: %s" % split_name[0])
 				continue
 			
 			var md = MorphData.new()

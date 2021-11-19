@@ -80,10 +80,10 @@ func _ready() -> void:
 
 	if model_resource_path:
 		_try_load_model(model_resource_path)
-	
+
 	# Load in generic model if nothing is loaded
 	if not model:
-		AppManager.log_message("Loading Default Model.")
+		AppManager.logger.info("Loading Default Model.")
 		_try_load_model(DEFAULT_GENERIC_MODEL_PATH)
 
 	model_parent.call_deferred("add_child", model)
@@ -222,21 +222,21 @@ func _on_should_track_eye(value: bool) -> void:
 func _try_load_model(file_path):
 	var dir := Directory.new()
 	if not dir.file_exists(file_path):
-		AppManager.log_message("File path not found: %s" % file_path, true)
+		AppManager.logger.error("File path not found: %s" % file_path)
 		return
 
 	match file_path.get_extension():
 		"glb":
-			AppManager.log_message("Loading GLB file.")
+			AppManager.logger.info("Loading GLB file.")
 			var gltf_loader := PackedSceneGLTF.new()
 			model = gltf_loader.import_gltf_scene(file_path)
 			model.set_script(load(GENERIC_MODEL_SCRIPT_PATH))
 			model.scale_object_local(Vector3(0.4, 0.4, 0.4))
 			translation_adjustment = Vector3(1, -1, 1)
 			rotation_adjustment = Vector3(-1, -1, 1)
-			AppManager.log_message("GLB file loaded successfully.")
+			AppManager.logger.info("GLB file loaded successfully.")
 		"vrm":
-			AppManager.log_message("Loading VRM file.")
+			AppManager.logger.info("Loading VRM file.")
 			var vrm_loader = VrmLoader.new()
 			# TODO: this needs to be futher looked at, as it seems like a hack
 			# vrm_meta needs to be read, stored in a var, and then AFTER
@@ -254,18 +254,18 @@ func _try_load_model(file_path):
 			# Grab vrm mappings
 			# model.vrm_mappings = AppManager.vrm_mappings
 			# AppManager.vrm_mappings.dirty = false
-			AppManager.log_message("VRM file loaded successfully.")
+			AppManager.logger.info("VRM file loaded successfully.")
 		"tscn":
-			AppManager.log_message("Loading TSCN file.")
+			AppManager.logger.info("Loading TSCN file.")
 			var model_resource = load(file_path)
 			model = model_resource.instance()
 			# TODO might not want this for tscn
 			model.scale_object_local(Vector3(0.4, 0.4, 0.4))
 			translation_adjustment = Vector3(1, -1, 1)
 			rotation_adjustment = Vector3(-1, -1, 1)
-			AppManager.log_message("TSCN file loaded successfully.")
+			AppManager.logger.info("TSCN file loaded successfully.")
 		_:
-			AppManager.log_message("File extension not recognized. %s" % file_path)
+			AppManager.logger.info("File extension not recognized. %s" % file_path)
 			printerr("File extension not recognized. %s" % file_path)
 
 # TODO probably incorrect?
@@ -274,7 +274,7 @@ static func _to_godot_quat(v: Quat) -> Quat:
 
 func _save_offsets() -> void:
 	if not open_see_data:
-		AppManager.log_message("No face tracking data found.")
+		AppManager.logger.info("No face tracking data found.")
 		return
 	stored_offsets = StoredOffsets.new()
 	stored_offsets.translation_offset = open_see_data.translation
@@ -286,7 +286,7 @@ func _save_offsets() -> void:
 	stored_offsets.euler_offset = corrected_euler
 	stored_offsets.left_eye_gaze_offset = open_see_data.left_gaze.get_euler()
 	stored_offsets.right_eye_gaze_offset = open_see_data.right_gaze.get_euler()
-	AppManager.log_message("New offsets saved.")
+	AppManager.logger.info("New offsets saved.")
 
 static func _find_bone_chain(skeleton: Skeleton, root_bone: int, tip_bone: int) -> Array:
 	var result: Array = []
@@ -302,7 +302,7 @@ static func _find_bone_chain(skeleton: Skeleton, root_bone: int, tip_bone: int) 
 		result.append(bone_parent)
 	# Shouldn't happen but who knows
 	elif bone_parent == -1:
-		AppManager.log_message("Tip bone %s is apparently has no parent bone. Unable to find IK chain." % str(tip_bone))
+		AppManager.logger.info("Tip bone %s is apparently has no parent bone. Unable to find IK chain." % str(tip_bone))
 	# Recursively find the rest of the chain
 	else:
 		result.append_array(_find_bone_chain(skeleton, root_bone, bone_parent))
