@@ -238,8 +238,15 @@ func _try_load_model(file_path):
 		"vrm":
 			AppManager.log_message("Loading VRM file.")
 			var vrm_loader = VrmLoader.new()
+			# TODO: this needs to be futher looked at, as it seems like a hack
+			# vrm_meta needs to be read, stored in a var, and then AFTER
+			# set_script it needs to be set again, otherwise it somehow 
+			# isnt there when the script runs
+			var vrm_meta
 			model = vrm_loader.import_scene(file_path, 1, 1000)
+			vrm_meta = model.vrm_meta
 			model.set_script(load(VRM_MODEL_SCRIPT_PATH))
+			model.vrm_meta = vrm_meta
 			model.transform = model.transform.rotated(Vector3.UP, PI)
 			AppManager.cm.current_model_config.model_transform = model.transform
 			translation_adjustment = Vector3(-1, -1, -1)
