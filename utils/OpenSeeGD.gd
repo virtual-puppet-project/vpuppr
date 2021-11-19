@@ -252,6 +252,7 @@ func _on_toggle_tracker() -> void:
 			AppManager.main.model_display_screen.tracking_started()
 		else:
 			AppManager.sb.broadcast_update_label_text("Start Tracker", RUN_FACE_TRACKER_TEXT)
+			AppManager.main.model_display_screen.tracking_stopped()
 			
 
 ###############################################################################

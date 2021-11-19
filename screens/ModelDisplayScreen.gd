@@ -3,14 +3,12 @@ extends Spatial
 
 const OPEN_SEE: Resource = preload("res://utils/OpenSeeGD.tscn")
 
-const DEFAULT_GENERIC_MODEL: Resource = preload("res://entities/basic-models/Duck.tscn")
+const DEFAULT_GENERIC_MODEL_PATH: String = "res://entities/basic-models/Duck.tscn"
 const GENERIC_MODEL_SCRIPT_PATH: String = "res://entities/BasicModel.gd"
 const VRM_MODEL_SCRIPT_PATH: String = "res://entities/vrm/VRMModel.gd"
 const VrmLoader: Resource = preload("res://addons/vrm/vrm_loader.gd")
 
 export var model_resource_path: String
-
-var script_to_use: String
 
 # Model nodes
 var model
@@ -35,6 +33,8 @@ var updated: float = 0.0
 var head_translation: Vector3 = Vector3.ZERO
 var head_rotation: Vector3 = Vector3.ZERO
 
+var is_tracking: bool = false
+
 class StoredOffsets:
 	var translation_offset: Vector3 = Vector3.ZERO
 	var rotation_offset: Vector3 = Vector3.ZERO
@@ -42,7 +42,7 @@ class StoredOffsets:
 	var euler_offset: Vector3 = Vector3.ZERO
 	var left_eye_gaze_offset: Vector3 = Vector3.ZERO
 	var right_eye_gaze_offset: Vector3 = Vector3.ZERO
-var stored_offsets: StoredOffsets = StoredOffsets.new()
+var stored_offsets: StoredOffsets = null
 
 ###
 # Various tracking options
@@ -79,48 +79,12 @@ func _ready() -> void:
 		set(i, AppManager.cm.current_model_config.get(i))
 
 	if model_resource_path:
-		match model_resource_path.get_extension():
-			"glb":
-				AppManager.logger.info("Loading GLB file.")
-				script_to_use = GENERIC_MODEL_SCRIPT_PATH
-				model = load_external_model(model_resource_path)
-				model.scale_object_local(Vector3(0.4, 0.4, 0.4))
-				translation_adjustment = Vector3(1, -1, 1)
-				rotation_adjustment = Vector3(-1, -1, 1)
-			"vrm":
-				AppManager.logger.info("Loading VRM file.")
-				script_to_use = VRM_MODEL_SCRIPT_PATH
-				model = load_external_model(model_resource_path)
-				model.transform = model.transform.rotated(Vector3.UP, PI)
-				AppManager.cm.current_model_config.model_transform = model.transform
-				translation_adjustment = Vector3(-1, -1, -1)
-				rotation_adjustment = Vector3(1, -1, -1)
-				
-				# Grab vrm mappings
-				# model.vrm_mappings = AppManager.vrm_mappings
-				# AppManager.vrm_mappings.dirty = false
-			"tscn":
-				AppManager.logger.info("Loading TSCN file.")
-				var model_resource = load(model_resource_path)
-				model = model_resource.instance()
-				# TODO might not want this for tscn
-				model.scale_object_local(Vector3(0.4, 0.4, 0.4))
-				translation_adjustment = Vector3(1, -1, 1)
-				rotation_adjustment = Vector3(-1, -1, 1)
-				# TODO i dont think this is used for tscn?
-				script_to_use = GENERIC_MODEL_SCRIPT_PATH
-			_:
-				AppManager.logger.info("File extension not recognized. %s" % model_resource_path)
-				printerr("File extension not recognized. %s" % model_resource_path)
-	
+		_try_load_model(model_resource_path)
+
 	# Load in generic model if nothing is loaded
 	if not model:
-		model = DEFAULT_GENERIC_MODEL.instance()
-		model.scale_object_local(Vector3(0.4, 0.4, 0.4))
-		translation_adjustment = Vector3(1, -1, 1)
-		rotation_adjustment = Vector3(-1, -1, 1)
-		# TODO i dont think this is used for tscn?
-		script_to_use = GENERIC_MODEL_SCRIPT_PATH
+		AppManager.logger.info("Loading Default Model.")
+		_try_load_model(DEFAULT_GENERIC_MODEL_PATH)
 
 	model_parent.call_deferred("add_child", model)
 	
@@ -142,13 +106,17 @@ func _ready() -> void:
 		model.skeleton.set_bone_pose(bone_index, bone_transform)
 
 func _physics_process(_delta: float) -> void:
-	if not stored_offsets:
+	# not tracking, so nothing to process
+	if not is_tracking:
 		return
-	
-	self.open_see_data = OpenSeeGd.get_open_see_data(face_id)
 
+	# get the latest tracking data, and return early if there is none or not accurate enough
+	open_see_data = OpenSeeGd.get_open_see_data(face_id)
 	if(not open_see_data or open_see_data.fit_3d_error > OpenSeeGd.max_fit_3d_error):
 		return
+
+	if not stored_offsets:
+		_save_offsets()
 	
 	# Don't return early if we are interpolating
 	if open_see_data.time > updated:
@@ -226,12 +194,6 @@ func _unhandled_input(event: InputEvent) -> void:
 # Connections                                                                 #
 ###############################################################################
 
-func _on_offset_timer_timeout() -> void:
-	get_node("OffsetTimer").queue_free()
-
-	open_see_data = OpenSeeGd.get_open_see_data(face_id)
-	_save_offsets()
-
 func _on_apply_translation(value: bool) -> void:
 	apply_translation = value
 
@@ -257,6 +219,55 @@ func _on_should_track_eye(value: bool) -> void:
 # Private functions                                                           #
 ###############################################################################
 
+func _try_load_model(file_path):
+	var dir := Directory.new()
+	if not dir.file_exists(file_path):
+		AppManager.logger.error("File path not found: %s" % file_path)
+		return
+
+	match file_path.get_extension():
+		"glb":
+			AppManager.logger.info("Loading GLB file.")
+			var gltf_loader := PackedSceneGLTF.new()
+			model = gltf_loader.import_gltf_scene(file_path)
+			model.set_script(load(GENERIC_MODEL_SCRIPT_PATH))
+			model.scale_object_local(Vector3(0.4, 0.4, 0.4))
+			translation_adjustment = Vector3(1, -1, 1)
+			rotation_adjustment = Vector3(-1, -1, 1)
+			AppManager.logger.info("GLB file loaded successfully.")
+		"vrm":
+			AppManager.logger.info("Loading VRM file.")
+			var vrm_loader = VrmLoader.new()
+			# TODO: this needs to be futher looked at, as it seems like a hack
+			# vrm_meta needs to be read, stored in a var, and then AFTER
+			# set_script it needs to be set again, otherwise it somehow 
+			# isnt there when the script runs
+			var vrm_meta
+			model = vrm_loader.import_scene(file_path, 1, 1000)
+			vrm_meta = model.vrm_meta
+			model.set_script(load(VRM_MODEL_SCRIPT_PATH))
+			model.vrm_meta = vrm_meta
+			model.transform = model.transform.rotated(Vector3.UP, PI)
+			AppManager.cm.current_model_config.model_transform = model.transform
+			translation_adjustment = Vector3(-1, -1, -1)
+			rotation_adjustment = Vector3(1, -1, -1)
+			# Grab vrm mappings
+			# model.vrm_mappings = AppManager.vrm_mappings
+			# AppManager.vrm_mappings.dirty = false
+			AppManager.logger.info("VRM file loaded successfully.")
+		"tscn":
+			AppManager.logger.info("Loading TSCN file.")
+			var model_resource = load(file_path)
+			model = model_resource.instance()
+			# TODO might not want this for tscn
+			model.scale_object_local(Vector3(0.4, 0.4, 0.4))
+			translation_adjustment = Vector3(1, -1, 1)
+			rotation_adjustment = Vector3(-1, -1, 1)
+			AppManager.logger.info("TSCN file loaded successfully.")
+		_:
+			AppManager.logger.info("File extension not recognized. %s" % file_path)
+			printerr("File extension not recognized. %s" % file_path)
+
 # TODO probably incorrect?
 static func _to_godot_quat(v: Quat) -> Quat:
 	return Quat(v.x, -v.y, v.z, v.w)
@@ -265,6 +276,7 @@ func _save_offsets() -> void:
 	if not open_see_data:
 		AppManager.logger.info("No face tracking data found.")
 		return
+	stored_offsets = StoredOffsets.new()
 	stored_offsets.translation_offset = open_see_data.translation
 	stored_offsets.rotation_offset = open_see_data.rotation
 	stored_offsets.quat_offset = _to_godot_quat(open_see_data.raw_quaternion)
@@ -305,40 +317,9 @@ func _set_interpolation_rate(value: float) -> void:
 # Public functions                                                            #
 ###############################################################################
 
-func load_external_model(file_path: String) -> Spatial:
-	var dir := Directory.new()
-	if not dir.file_exists(file_path):
-		AppManager.logger.error("File path not found: %s\nLoading demo model" % file_path)
-		file_path = AppManager.cm.DEMO_MODEL_PATH
-
-	AppManager.logger.info("Starting external loader.")
-	var loaded_model: Spatial
-	var vrm_meta: Dictionary
-	
-	match file_path.get_extension():
-		"glb":
-			var gltf := PackedSceneGLTF.new()
-			loaded_model = gltf.import_gltf_scene(file_path)
-		"vrm":
-			var vrm_loader = VrmLoader.new()
-			loaded_model = vrm_loader.import_scene(file_path, 1, 1000)
-			vrm_meta = loaded_model.vrm_meta
-
-	var model_script = load(script_to_use)
-	loaded_model.set_script(model_script)
-
-	if vrm_meta:
-		loaded_model.vrm_meta = vrm_meta
-	
-	AppManager.logger.info("External file loaded successfully.")
-	
-	return loaded_model
-
 func tracking_started() -> void:
-	if not open_see_data:
-		var offset_timer: Timer = Timer.new()
-		offset_timer.name = "OffsetTimer"
-		offset_timer.connect("timeout", self, "_on_offset_timer_timeout")
-		offset_timer.wait_time = tracking_start_delay
-		offset_timer.autostart = true
-		self.call_deferred("add_child", offset_timer)
+	is_tracking = true
+
+func tracking_stopped() -> void:
+	is_tracking = false
+	stored_offsets = null
