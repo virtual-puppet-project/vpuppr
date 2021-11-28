@@ -103,8 +103,8 @@ class ConfigData:
 
 	var should_track_eye: bool = true
 	var gaze_strength: float = 0.5
-
 	var blink_threshold: float = 0.2
+	var use_raw_eye_rotation: bool = false
 
 	var tracker_should_launch: bool = true
 	var tracker_fps: int = 12
@@ -286,6 +286,8 @@ func _init() -> void:
 
 	AppManager.sb.connect("should_track_eye", self, "_on_should_track_eye")
 	AppManager.sb.connect("gaze_strength", self, "_on_gaze_strength")
+	AppManager.sb.connect("blink_threshold", self, "_on_blink_threshold")
+	AppManager.sb.connect("use_raw_eye_rotation", self, "_on_use_raw_eye_rotation")
 
 	AppManager.sb.connect("camera_select", self, "_on_camera_select")
 
@@ -349,6 +351,9 @@ func _on_gaze_strength(value: float) -> void:
 
 func _on_blink_threshold(value: float) -> void:
 	current_model_config.blink_threshold = value
+
+func _on_use_raw_eye_rotation(value: bool) -> void:
+	current_model_config.use_raw_eye_rotation = value
 
 func _on_tracker_should_launch(value: bool) -> void:
 	current_model_config.tracker_should_launch = value
