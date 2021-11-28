@@ -311,7 +311,7 @@ func _start_tracker() -> bool:
 
 			# These paths must be absolute paths
 			var exe_path: String = "%s%s" % [OS.get_executable_path().get_base_dir(), face_tracker_path]
-			var script_path: String = "%s%s" % [OS.get_executable_path().get_base_dir(), "/resources/scripts/run_osf_linux"]
+			var script_path: String = "%s%s" % [OS.get_executable_path().get_base_dir(), "/resources/scripts/run_osf_linux.sh"]
 			if OS.is_debug_build():
 				exe_path = "%s%s" % [ProjectSettings.globalize_path("res://export"), face_tracker_path]
 				script_path = ProjectSettings.globalize_path("res://resources/scripts/run_osf_linux.sh")
