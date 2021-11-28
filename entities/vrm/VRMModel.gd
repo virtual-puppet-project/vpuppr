@@ -3,23 +3,13 @@ extends BasicModel
 
 var eco_mode: bool = false
 
-# var stored_offsets: ModelDisplayScreen.StoredOffsets
-
 var vrm_meta: Dictionary
 
-# var vrm_mappings: VRMMappings # TODO probably unused?
 var left_eye_id: int
 var right_eye_id: int
 
 var neck_bone_id: int
 var spine_bone_id: int
-
-# var mapped_meshes: Dictionary
-
-var facial_expressions
-var mouth_shapes
-var blinking
-var eye_movement
 
 # Blinking
 var blink_threshold: float
@@ -33,6 +23,8 @@ class EyeClamps:
 
 var left_eye: EyeClamps
 var right_eye: EyeClamps
+
+var use_raw_eye_rotation: bool = false
 
 # Mouth
 var min_mouth_value: float = 0.0
@@ -81,11 +73,11 @@ func _ready() -> void:
 	blink_threshold = AppManager.cm.current_model_config.blink_threshold
 	AppManager.sb.connect("blink_threshold", self, "_on_blink_threshold")
 
+	use_raw_eye_rotation = AppManager.cm.current_model_config.use_raw_eye_rotation
+	AppManager.sb.connect("use_raw_eye_rotation", self, "_on_use_raw_eye_rotation")
+
 	# TODO stopgap
 	AppManager.sb.connect("blend_shapes", self, "_on_blend_shapes")
-
-	# TODO this is gross
-	# stored_offsets = get_parent().get_parent().stored_offsets
 
 	# Map expressions
 	var anim_player: AnimationPlayer = find_node("anim")
@@ -145,6 +137,9 @@ func _ready() -> void:
 
 func _on_blink_threshold(value: float) -> void:
 	blink_threshold = value
+
+func _on_use_raw_eye_rotation(value: bool) -> void:
+	use_raw_eye_rotation = value
 
 # TODO go back to this after refactoring expression mapping
 func _on_blend_shapes(value: String) -> void:
@@ -336,12 +331,20 @@ func custom_update(data, interpolation_data) -> void:
 		right_eye_rotation.y = average_eye_x_rotation
 
 		# Left eye gaze
-		left_eye_rotation.x = clamp(left_eye_rotation.x, left_eye.down.x, left_eye.up.x)
-		left_eye_rotation.y = clamp(left_eye_rotation.y, left_eye.right.y, left_eye.left.y)
+		if use_raw_eye_rotation:
+			left_eye_rotation.x = left_eye_rotation.x
+			left_eye_rotation.y = left_eye_rotation.y
+		else:
+			left_eye_rotation.x = clamp(left_eye_rotation.x, left_eye.down.x, left_eye.up.x)
+			left_eye_rotation.y = clamp(left_eye_rotation.y, left_eye.right.y, left_eye.left.y)
 
 		# Right eye gaze
-		right_eye_rotation.x = clamp(right_eye_rotation.x, right_eye.down.x, right_eye.up.x)
-		right_eye_rotation.y = clamp(right_eye_rotation.y, right_eye.right.y, right_eye.left.y)
+		if use_raw_eye_rotation:
+			right_eye_rotation.x = right_eye_rotation.x
+			right_eye_rotation.y = right_eye_rotation.y
+		else:
+			right_eye_rotation.x = clamp(right_eye_rotation.x, right_eye.down.x, right_eye.up.x)
+			right_eye_rotation.y = clamp(right_eye_rotation.y, right_eye.right.y, right_eye.left.y)
 		
 		# Left eye gaze
 		var left_eye_transform: Transform = Transform()

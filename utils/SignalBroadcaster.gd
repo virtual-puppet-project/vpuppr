@@ -88,6 +88,10 @@ signal blink_threshold(value)
 func broadcast_blink_threshold(value: float) -> void:
 	emit_signal("blink_threshold", value)
 
+signal use_raw_eye_rotation(value)
+func broadcast_use_raw_eye_rotation(value: bool) -> void:
+	emit_signal("use_raw_eye_rotation", value)
+
 signal camera_select(value)
 func broadcast_camera_select(value: String) -> void:
 	emit_signal("camera_select", value)

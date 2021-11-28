@@ -18,6 +18,7 @@
         <toggle name="Should Track Eye" data="should_track_eye" event="should_track_eye"/>
         <input name="Gaze Strength" data="gaze_strength" event="gaze_strength" type="float"/>
         <input name="Blink Threshold" data="blink_threshold" event="blink_threshold" type="float"/>
+        <toggle name="Use Raw Eye Rotation" data="use_raw_eye_rotation" event="use_raw_eye_rotation"/>
     </left>
     <right>
         <label name="Tracking Options"/>
