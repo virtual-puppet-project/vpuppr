@@ -308,28 +308,29 @@ func _start_tracker() -> bool:
 			pid = OS.execute(exe_path,
 					face_tracker_options, false, [], true)
 		"osx", "x11":
-			var modified_options := PoolStringArray(["./OpenSeeFaceFolder/OpenSeeFace/facetracker.py"])
-			modified_options.append_array(face_tracker_options)
+			var face_tracker_path: String = "/OpenSeeFaceFolder/OpenSeeFace/facetracker.py"
 
-			var python_alias: String = ""
+			# These paths must be absolute paths
+			var exe_path: String = "%s%s" % [OS.get_executable_path().get_base_dir(), face_tracker_path]
+			var script_path: String = "%s%s" % [OS.get_executable_path().get_base_dir(), "/resources/scripts/run_osf_linux"]
+			if OS.is_debug_build():
+				exe_path = "%s%s" % [ProjectSettings.globalize_path("res://export"), face_tracker_path]
+				script_path = ProjectSettings.globalize_path("res://resources/scripts/run_osf_linux.sh")
 			
-			var shell_output: Array = []
+			var user_data_path: String = ProjectSettings.globalize_path("user://")
 
-			OS.execute("command", ["-v", "python3"], true, shell_output)
-			if not shell_output.empty():
-				python_alias = "python3"
-			else:
-				OS.execute("command", ["-v", "python"], true, shell_output)
-				if not shell_output.empty():
-					python_alias = "python"
-			
-			if python_alias.empty():
-				AppManager.logger.info("Unable to find python executable")
-				return false
-			
-			# TODO pid can be set even if the tracker eventually fails to launch 
-			#      due to missing python deps. this should be checked as well
-			pid = OS.execute("%s" % [python_alias], modified_options, false, [], true)
+			pid = OS.execute(
+				script_path,
+				[
+					user_data_path,
+					exe_path,
+					AppManager.cm.metadata_config.camera_index,
+					str(AppManager.cm.current_model_config.tracker_fps),
+					AppManager.cm.current_model_config.tracker_address,
+					str(AppManager.cm.current_model_config.tracker_port)
+				],
+				false
+			)
 		_:
 			AppManager.logger.error("Unhandled os type %s" % OS.get_name())
 			return false
@@ -346,7 +347,16 @@ func _start_tracker() -> bool:
 func _stop_tracker() -> void:
 	AppManager.logger.info("Stopping face tracker.")
 	if face_tracker_pid:
-		OS.kill(face_tracker_pid)
+		match OS.get_name().to_lower():
+			"windows":
+				OS.kill(face_tracker_pid)
+			"osx", "x11":
+				# The bash script spawns a child process that does not get cleaned up by OS.kill()
+				# Thus, we call pkill to kill the process group
+				OS.execute("pkill", ["-15", "-P", face_tracker_pid])
+			_:
+				AppManager.logger.error("Unhandled os type %s" % OS.get_name())
+				return
 		AppManager.logger.info("Face tracker stopped, PID was %s." % face_tracker_pid)
 		face_tracker_pid = 0
 	else:
@@ -370,7 +380,7 @@ func _receive() -> void:
 	elif server.is_connection_available():
 		connection = server.take_connection()
 
-func _perform_reception(_x) -> void:
+func _perform_reception() -> void:
 	while not stop_reception:
 		_receive()
 		yield(get_tree().create_timer(server_poll_interval), "timeout")
@@ -400,8 +410,9 @@ func stop_receiver() -> void:
 	if receive_thread.is_active():
 		receive_thread.wait_to_finish()
 	if server.is_listening():
-		connection.close()
-		connection = null
+		if (connection != null and connection.is_connected_to_host()):
+			connection.close()
+			connection = null
 		server.stop()
 
 func get_open_see_data(face_id: int) -> OpenSeeData:
