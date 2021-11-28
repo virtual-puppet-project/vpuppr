@@ -357,9 +357,10 @@ func custom_update(data, interpolation_data) -> void:
 		skeleton.set_bone_pose(left_eye_id, right_eye_transform)
 		
 		# Mouth tracking
-		_modify_blend_shape(a.morphs[0].mesh, a.morphs[0].morph,
-				min(max(a.morphs[0].values[0], interpolation_data.interpolate(InterpolationData.InterpolationDataType.MOUTH_MOVEMENT, 2.0)),
-				a.morphs[0].values[1]))
+		for i in a.morphs:
+			_modify_blend_shape(i.mesh, i.morph,
+					min(max(i.values[0], interpolation_data.interpolate(InterpolationData.InterpolationDataType.MOUTH_MOVEMENT, 2.0)),
+					i.values[1]))
 	else:
 		# TODO implement eco mode, should be more efficient than standard mode
 		# Eco-mode blinking
