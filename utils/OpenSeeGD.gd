@@ -243,7 +243,6 @@ func _on_toggle_tracker() -> void:
 	else:
 		# always shutdown receiver and tracker
 		stop_receiver()
-		_stop_tracker()
 		is_tracking = false
 
 	if was_tracking != is_tracking:
@@ -405,6 +404,7 @@ func stop_receiver() -> void:
 	if stop_reception:
 		return
 	
+	_stop_tracker()
 	stop_reception = true
 
 	if receive_thread.is_active():
