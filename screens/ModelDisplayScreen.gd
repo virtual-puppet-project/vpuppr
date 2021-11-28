@@ -104,13 +104,16 @@ func _ready() -> void:
 		var bone_transform: Transform = AppManager.cm.current_model_config.bone_transforms[bone_name]
 
 		model.skeleton.set_bone_pose(bone_index, bone_transform)
+	
+	# TODO consequence of async signal system, this seems wrong
+	is_tracking = OpenSeeGd.is_tracking
 
 func _physics_process(_delta: float) -> void:
-	# not tracking, so nothing to process
+	# Not tracking, so nothing to process
 	if not is_tracking:
 		return
 
-	# get the latest tracking data, and return early if there is none or not accurate enough
+	# Get the latest tracking data, and return early if there is none or not accurate enough
 	open_see_data = OpenSeeGd.get_open_see_data(face_id)
 	if(not open_see_data or open_see_data.fit_3d_error > OpenSeeGd.max_fit_3d_error):
 		return
