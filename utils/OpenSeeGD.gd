@@ -11,7 +11,6 @@ var server: UDPServer = UDPServer.new()
 var connection: PacketPeerUDP
 
 # Tracking data
-# var received_packets: int = 0
 var tracking_data: Array = [] # OpenSeeData
 
 # In theory we only need to receive data from tracker exactly FPS times per 
@@ -199,8 +198,6 @@ const RUN_FACE_TRACKER_TEXT: String = "Run tracker"
 const STOP_FACE_TRACKER_TEXT: String = "Stop tracker"
 
 var open_see_data_map: Dictionary # int: OpenSeeData
-# TODO this might be unity specific?
-# var socket
 # var buffer: PoolByteArray
 var receive_thread: Thread = Thread.new()
 var stop_reception: bool = false
@@ -216,15 +213,8 @@ var face_tracker_pid: int
 func _ready() -> void:
 	if not open_see_data_map:
 		self.open_see_data_map = {}
-	# self.buffer = PoolByteArray()
-	
-	# start_receiver()
 
 	AppManager.sb.connect("toggle_tracker", self, "_on_toggle_tracker")
-
-#func _process(_delta: float) -> void:
-#	if(receive_thread and not receive_thread.is_active()):
-#		self._ready()
 
 func _exit_tree() -> void:
 	stop_receiver()
@@ -308,6 +298,23 @@ func _start_tracker() -> bool:
 			pid = OS.execute(exe_path,
 					face_tracker_options, false, [], true)
 		"osx", "x11":
+			var user_data_path: String = ProjectSettings.globalize_path("user://")
+
+			var dir := Directory.new()
+			if not dir.dir_exists("%s%s" % [user_data_path, "venv"]):
+				var popup = load("res://screens/gui/EphemeralPopup.tscn").instance()
+				popup.popup_text = "First time setup: creating venv"
+				get_tree().root.add_child(popup)
+
+				var create_venv_script: String = "%s%s" % [OS.get_executable_path().get_base_dir(), "/resources/scripts/create_venv.sh"]
+				if OS.is_debug_build():
+					create_venv_script = ProjectSettings.globalize_path("res://resources/scripts/create_venv.sh")
+				
+				yield(get_tree(), "idle_frame")
+				yield(get_tree(), "idle_frame")
+
+				OS.execute(create_venv_script, [user_data_path])
+
 			var face_tracker_path: String = "/OpenSeeFaceFolder/OpenSeeFace/facetracker.py"
 
 			# These paths must be absolute paths
@@ -316,8 +323,6 @@ func _start_tracker() -> bool:
 			if OS.is_debug_build():
 				exe_path = "%s%s" % [ProjectSettings.globalize_path("res://export"), face_tracker_path]
 				script_path = ProjectSettings.globalize_path("res://resources/scripts/run_osf_linux.sh")
-			
-			var user_data_path: String = ProjectSettings.globalize_path("user://")
 
 			pid = OS.execute(
 				script_path,
