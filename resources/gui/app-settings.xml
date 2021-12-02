@@ -2,7 +2,7 @@
     <left>
         <label name="Antialiasing"/>
         <toggle name="Use Transparent Background" data="use_transparent_background" event="use_transparent_background"/>
-        <toggle name="Use FXAA" data="use_fxaa" event="use_fxaa"/>
+        <toggle name="Use FXAA" data="use_fxaa" event="use_fxaa" setup="fxaa"/>
         <!-- TODO update to use a dropdown -->
         <toggle name="MSAA Amount" data="msaa_value" event="msaa_value"/>
     </left>
