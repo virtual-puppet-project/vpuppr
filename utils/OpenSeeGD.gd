@@ -299,7 +299,8 @@ func _start_tracker() -> bool:
 	var pid: int = -1
 	match OS.get_name().to_lower():
 		"windows":
-			face_tracker_options.append_array(["-D", "-1"])
+			# TODO maybe make this configurable?
+			# face_tracker_options.append_array(["-D", "-1"])
 			var exe_path: String = "%s%s" % [OS.get_executable_path().get_base_dir(), "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe"]
 			if OS.is_debug_build():
 				exe_path = "%s%s" % [ProjectSettings.globalize_path("res://export"), "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe"]
