@@ -1,5 +1,7 @@
 extends Control
 
+# Console
+
 const MAX_LOGS: int = 26
 
 var console: VBoxContainer
@@ -23,3 +25,17 @@ func _on_log(message: String) -> void:
 
 	if console.get_child_count() > MAX_LOGS:
 		console.get_child(MAX_LOGS).free()
+
+# Fxaa
+
+var has_shown_fxaa_popup: bool = false
+
+func fxaa(element: Control) -> void:
+	element.toggle.connect("toggled", self, "_on_fxaa_toggled")
+
+func _on_fxaa_toggled(button_state: bool) -> void:
+	if (not has_shown_fxaa_popup and button_state == true):
+		var popup = load("res://screens/gui/EphemeralPopup.tscn").instance()
+		popup.popup_text = "Enabling FXAA will cause transparent backgrounds to malfunction, if you have transparent backgrounds enabled."
+		get_tree().root.add_child(popup)
+		has_shown_fxaa_popup = true
