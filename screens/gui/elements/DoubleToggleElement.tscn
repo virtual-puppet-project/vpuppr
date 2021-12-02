@@ -21,6 +21,7 @@ margin_top = 436.0
 margin_right = 1426.0
 margin_bottom = 450.0
 size_flags_horizontal = 3
+autowrap = true
 
 [node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer"]
 margin_left = 1430.0
