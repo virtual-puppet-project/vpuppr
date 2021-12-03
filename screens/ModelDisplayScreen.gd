@@ -52,8 +52,8 @@ var translation_adjustment: Vector3 = Vector3.ONE
 export var apply_rotation: bool = true
 var rotation_adjustment: Vector3 = Vector3.ONE
 export var interpolate_model: bool = true # TODO may or may not be working correctly?
-var last_interpolation_rate: float # Used for toggling interpolate model on/off
-var interpolation_rate: float = 0.1 setget _set_interpolation_rate
+# var last_interpolation_rate: float # Used for toggling interpolate model on/off
+# var interpolation_rate: float = 0.1 setget _set_interpolation_rate
 var interpolation_data: InterpolationData = InterpolationData.new()
 var should_track_eye: bool = true
 
@@ -74,7 +74,7 @@ export var mouse_move_strength: float = 0.002
 ###############################################################################
 
 func _ready() -> void:
-	for i in ["apply_translation", "apply_rotation", "interpolate_model", "interpolation_rate", "should_track_eye"]:
+	for i in ["apply_translation", "apply_rotation", "should_track_eye"]:
 		AppManager.sb.connect(i, self, "_on_%s" % i)
 		set(i, AppManager.cm.current_model_config.get(i))
 
@@ -203,17 +203,17 @@ func _on_apply_translation(value: bool) -> void:
 func _on_apply_rotation(value: bool) -> void:
 	apply_rotation = value
 
-func _on_interpolate_model(value: bool) -> void:
-	interpolate_model = value
-	if value:
-		_set_interpolation_rate(last_interpolation_rate)
-	else:
-		last_interpolation_rate = interpolation_rate
-		_set_interpolation_rate(1.0)
+# func _on_interpolate_model(value: bool) -> void:
+# 	interpolate_model = value
+# 	if value:
+# 		_set_interpolation_rate(last_interpolation_rate)
+# 	else:
+# 		last_interpolation_rate = interpolation_rate
+# 		_set_interpolation_rate(1.0)
 
-func _on_interpolation_rate(value: float) -> void:
-	last_interpolation_rate = value
-	_set_interpolation_rate(value)
+# func _on_interpolation_rate(value: float) -> void:
+# 	last_interpolation_rate = value
+# 	_set_interpolation_rate(value)
 
 func _on_should_track_eye(value: bool) -> void:
 	should_track_eye = value
@@ -312,9 +312,9 @@ static func _find_bone_chain(skeleton: Skeleton, root_bone: int, tip_bone: int) 
 
 	return result
 
-func _set_interpolation_rate(value: float) -> void:
-	interpolation_rate = value
-	interpolation_data.rate = value
+# func _set_interpolation_rate(value: float) -> void:
+# 	interpolation_rate = value
+# 	interpolation_data.rate = value
 
 ###############################################################################
 # Public functions                                                            #

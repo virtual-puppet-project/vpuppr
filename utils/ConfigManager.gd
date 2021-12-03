@@ -98,8 +98,19 @@ class ConfigData:
 	var apply_translation: bool = false
 	var apply_rotation: bool = true
 
+	# Base interpolation options
 	var interpolate_model: bool = true
 	var interpolation_rate: float = 0.1
+	
+	# Overrideable interpolation options
+	var interpolate_bones: bool = false
+	var bone_interpolation_rate: float = 0.1
+	var interpolate_gaze: bool = false
+	var gaze_interpolation_rate: float = 0.1
+	var interpolate_blinking: bool = false
+	var blinking_interpolation_rate: float = 0.1
+	var interpolate_mouth: bool = false
+	var mouth_interpolation_rate: float = 0.1
 
 	var should_track_eye: bool = true
 	var gaze_strength: float = 0.5
@@ -284,6 +295,15 @@ func _init() -> void:
 	AppManager.sb.connect("interpolate_model", self, "_on_interpolate_model")
 	AppManager.sb.connect("interpolation_rate", self, "_on_interpolation_rate")
 
+	AppManager.sb.connect("interpolate_bones", self, "_on_interpolate_bones")
+	AppManager.sb.connect("bone_interpolation_rate", self, "_on_bone_interpolation_rate")
+	AppManager.sb.connect("interpolate_gaze", self, "_on_interpolate_gaze")
+	AppManager.sb.connect("gaze_interpolation_rate", self, "_on_gaze_interpolation_rate")
+	AppManager.sb.connect("interpolate_blinking", self, "_on_interpolate_blinking")
+	AppManager.sb.connect("blinking_interpolation_rate", self, "_on_blinking_interpolation_rate")
+	AppManager.sb.connect("interpolate_mouth", self, "_on_interpolate_mouth")
+	AppManager.sb.connect("mouth_interpolation_rate", self, "_on_mouth_interpolation_rate")
+
 	AppManager.sb.connect("should_track_eye", self, "_on_should_track_eye")
 	AppManager.sb.connect("gaze_strength", self, "_on_gaze_strength")
 	AppManager.sb.connect("blink_threshold", self, "_on_blink_threshold")
@@ -342,6 +362,30 @@ func _on_interpolate_model(value: bool) -> void:
 
 func _on_interpolation_rate(value: float) -> void:
 	current_model_config.interpolation_rate = value
+
+func _on_interpolate_bones(value: bool) -> void:
+	current_model_config.interpolate_bones = value
+
+func _on_bone_interpolation_rate(value: float) -> void:
+	current_model_config.bone_interpolation_rate = value
+
+func _on_interpolate_gaze(value: bool) -> void:
+	current_model_config.interpolate_gaze = value
+
+func _on_gaze_interpolation_rate(value: float) -> void:
+	current_model_config.gaze_interpolation_rate = value
+
+func _on_interpolate_blinking(value: bool) -> void:
+	current_model_config.interpolate_blinking = value
+
+func _on_blinking_interpolation_rate(value: float) -> void:
+	current_model_config.blinking_interpolation_rate = value
+
+func _on_interpolate_mouth(value: bool) -> void:
+	current_model_config.interpolate_mouth = value
+
+func _on_mouth_interpolation_rate(value: float) -> void:
+	current_model_config.mouth_interpolation_rate = value
 
 func _on_should_track_eye(value: float) -> void:
 	current_model_config.should_track_eye = value
