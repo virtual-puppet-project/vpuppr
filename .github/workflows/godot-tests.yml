@@ -13,5 +13,5 @@ jobs:
         uses: croconut/godot-tester@master
         with:
           version: "3.4"
-          release_type: "rc2"
+          release_type: "stable"
           test-dir: "res://tests"
