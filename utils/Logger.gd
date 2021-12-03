@@ -3,6 +3,8 @@ extends Reference
 
 signal on_log(message)
 
+enum LogType { NONE, INFO, DEBUG, TRACE, ERROR }
+
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
@@ -14,10 +16,36 @@ signal on_log(message)
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
-func _log(message: String, is_error: bool) -> void:
-	if is_error:
-		message = "[ERROR] %s" % message
-		assert(false, message)
+
+# TODO add support for log levels
+func _log(message: String, log_type: int) -> void:
+	var datetime: Dictionary = OS.get_datetime()
+	message = "%s-%s-%s_%s:%s:%s %s" % [
+		datetime["year"],
+		datetime["month"],
+		datetime["day"],
+		datetime["hour"],
+		datetime["minute"],
+		datetime["second"],
+		message
+	]
+	
+	match log_type:
+		LogType.INFO:
+			message = "[INFO] %s" % message
+		LogType.DEBUG:
+			message = "[DEBUG] %s" % message
+		LogType.TRACE:
+			message = "[TRACE] %s" % message
+			var stack_trace: Array = get_stack()
+			for i in stack_trace.size() - 2:
+				var data: Dictionary = stack_trace[i + 2]
+				message = "%s\n\t%d - %s:%d - %s" % [
+					message, i, data["source"], data["line"], data["function"]]
+		LogType.ERROR:
+			message = "[ERROR] %s" % message
+			assert(false, message)
+
 	print(message)
 	emit_signal("on_log", message)
 
@@ -26,7 +54,15 @@ func _log(message: String, is_error: bool) -> void:
 ###############################################################################
 
 func info(message: String) -> void:
-	_log(message, false)
+	_log(message, LogType.INFO)
+
+func debug(message: String) -> void:
+	if OS.is_debug_build():
+		_log(message, LogType.DEBUG)
+
+func trace(message: String) -> void:
+	if OS.is_debug_build():
+		_log(message, LogType.TRACE)
 
 func error(message: String) -> void:
-	_log(message, true)
+	_log(message, LogType.ERROR)
