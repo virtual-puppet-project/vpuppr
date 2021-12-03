@@ -92,7 +92,7 @@ const PresetToggleElement: Resource = preload("res://screens/gui/elements/Preset
 const BaseProp: Resource = preload("res://entities/BaseProp.gd")
 
 const GUI_GROUP: String = "Gui"
-const GUI_VIEWS: Dictionary = {} # String: BaseView
+var gui_views: Dictionary = {} # String: BaseView
 
 const PROP_SCRIPT_PATH := "res://entities/BaseProp.gd"
 
@@ -575,7 +575,7 @@ func _switch_view_to(view_name: String) -> void:
 
 func _toggle_view(view_name: String) -> void:
 	if view_name:
-		GUI_VIEWS[view_name].visible = not GUI_VIEWS[view_name].visible
+		gui_views[view_name].visible = not gui_views[view_name].visible
 
 func _setup_gui_nodes() -> void:
 	for node in get_tree().get_nodes_in_group(GUI_GROUP):
@@ -589,11 +589,11 @@ func _cleanup_props() -> void:
 
 func _construct_views_from_xml() -> void:
 	# These must use queue_free or else we hard crash
-	for value in GUI_VIEWS.values():
+	for value in gui_views.values():
 		value.queue_free()
 	for child in button_bar_hbox.get_children():
 		child.queue_free()
-	GUI_VIEWS.clear()
+	gui_views.clear()
 
 	yield(get_tree(), "idle_frame")
 
@@ -694,13 +694,13 @@ func _construct_views_from_xml() -> void:
 		button.connect("view_selected", self, "_on_view_button_pressed")
 		button_bar_hbox.add_child(button)
 
-		GUI_VIEWS[base_view.name] = base_view
+		gui_views[base_view.name] = base_view
 
 	emit_signal("setup_completed")
 
 	# Toggle initial views
 	current_view = button_bar_hbox.get_child(0).name
-	for key in GUI_VIEWS.keys():
+	for key in gui_views.keys():
 		if key == current_view:
 			continue
 		_toggle_view(key)
