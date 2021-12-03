@@ -37,27 +37,27 @@ class MorphData:
 	var morph: String
 	var values: Array
 
-var a := ExpressionData.new()
-var angry := ExpressionData.new()
-var blink := ExpressionData.new()
-var blink_l := ExpressionData.new()
-var blink_r := ExpressionData.new()
-var e := ExpressionData.new()
-var fun := ExpressionData.new()
-var i := ExpressionData.new()
-var joy := ExpressionData.new()
+var a: ExpressionData
+var angry: ExpressionData
+var blink: ExpressionData
+var blink_l: ExpressionData
+var blink_r: ExpressionData
+var e: ExpressionData
+var fun: ExpressionData
+var i: ExpressionData
+var joy: ExpressionData
 # var lookdown := ExpressionData.new()
 # var lookleft := ExpressionData.new()
 # var lookright := ExpressionData.new()
 # var lookup := ExpressionData.new()
-var look_h := ExpressionData.new()
-var look_v := ExpressionData.new()
-var o := ExpressionData.new()
-var sorrow := ExpressionData.new()
-var u := ExpressionData.new()
+var o: ExpressionData
+var sorrow: ExpressionData
+var u: ExpressionData
 
 # TODO stopgap
 var last_expression: ExpressionData
+
+var all_expressions: Dictionary = {} # String: ExpressionData
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -82,9 +82,8 @@ func _ready() -> void:
 	# Map expressions
 	var anim_player: AnimationPlayer = find_node("anim")
 
-	var expression_data: Dictionary = {}
 	for animation_name in anim_player.get_animation_list():
-		expression_data[animation_name] = ExpressionData.new()
+		var ed := ExpressionData.new()
 		var animation: Animation = anim_player.get_animation(animation_name)
 		for track_index in animation.get_track_count():
 			var track_name: String = animation.track_get_path(track_index)
@@ -106,26 +105,16 @@ func _ready() -> void:
 			for key_index in animation.track_get_key_count(track_index):
 				md.values.append(animation.track_get_key_value(track_index, key_index))
 
-			expression_data[animation_name].morphs.append(md)
+			ed.morphs.append(md)
+
+		all_expressions[animation_name.to_lower()] = ed
 
 	anim_player.queue_free()
 
-	a = expression_data["A"]
-	angry = expression_data["ANGRY"]
-	blink = expression_data["BLINK"]
-	blink_l = expression_data["BLINK_L"]
-	blink_r = expression_data["BLINK_R"]
-	e = expression_data["E"]
-	fun = expression_data["FUN"]
-	i = expression_data["I"]
-	joy = expression_data["JOY"]
-	o = expression_data["O"]
-	sorrow = expression_data["SORROW"]
-	u = expression_data["U"]
-
-	look_h = ExpressionData.new()
+	for key in all_expressions.keys():
+		set(key, all_expressions[key])
 	
-	_map_eye_expressions(expression_data)
+	_map_eye_expressions(all_expressions)
 
 	_map_bones()
 
@@ -144,9 +133,12 @@ func _on_use_raw_eye_rotation(value: bool) -> void:
 # TODO go back to this after refactoring expression mapping
 func _on_blend_shapes(value: String) -> void:
 	var ed = get(value)
-	if not ed:
-		return
+	if ed == null:
+		ed = all_expressions.get(value)
+		if ed == null:
+			return
 
+	# Undo the last expression
 	if last_expression:
 		for idx in last_expression.morphs.size():
 			_modify_blend_shape(last_expression.morphs[idx].mesh, last_expression.morphs[idx].morph,
@@ -169,7 +161,7 @@ func _on_blend_shapes(value: String) -> void:
 static func _to_godot_quat(v: Quat) -> Quat:
 	return Quat(v.x, -v.y, v.z, v.w)
 
-func _map_eye_expressions(expression_data):
+func _map_eye_expressions(data: Dictionary):
 	left_eye = EyeClamps.new()
 	right_eye = EyeClamps.new()
 
@@ -181,7 +173,7 @@ func _map_eye_expressions(expression_data):
 	if vrm_meta.humanoid_bone_mapping.has("rightEye"):
 		rightEyeMorph = vrm_meta.humanoid_bone_mapping["rightEye"]
 
-	for look_up_value in expression_data["LOOKUP"].morphs:
+	for look_up_value in data["lookup"].morphs:
 		if look_up_value:
 			var val = look_up_value.values.pop_back()
 			if val:
@@ -193,7 +185,7 @@ func _map_eye_expressions(expression_data):
 					rightEyeMorph:
 						right_eye.up = rot.get_euler()
 
-	for look_down_value in expression_data["LOOKDOWN"].morphs:
+	for look_down_value in data["lookdown"].morphs:
 		if look_down_value:
 			var val = look_down_value.values.pop_back()
 			if val:
@@ -204,7 +196,7 @@ func _map_eye_expressions(expression_data):
 					rightEyeMorph:
 						right_eye.down = rot.get_euler()
 	
-	for look_left_value in expression_data["LOOKLEFT"].morphs:
+	for look_left_value in data["lookleft"].morphs:
 		if look_left_value:
 			var val = look_left_value.values.pop_back()
 			if val:
@@ -215,7 +207,7 @@ func _map_eye_expressions(expression_data):
 					rightEyeMorph:
 						right_eye.left = rot.get_euler()
 
-	for look_right_value in expression_data["LOOKRIGHT"].morphs:
+	for look_right_value in data["lookright"].morphs:
 		if look_right_value:
 			var val = look_right_value.values.pop_back()
 			if val:
