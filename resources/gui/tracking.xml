@@ -11,8 +11,16 @@
         <toggle name="Apply Rotation" data="apply_rotation" event="apply_rotation"/>
 
         <label name="Interpolation Options"/>
-        <toggle name="Interpolate Model" data="interpolate_model" event="interpolate_model"/>
-        <input name="Interpolation Rate" data="interpolation_rate" event="interpolation_rate" type="float"/>
+        <toggle name="Global Interpolate Model" data="interpolate_model" event="interpolate_model"/>
+        <input name="Global Interpolation Rate" data="interpolation_rate" event="interpolation_rate" type="float"/>
+        <toggle name="Interpolate Bones" data="interpolate_bones" event="interpolate_bones"/>
+        <input name="Bone Interpolation Rate" data="bone_interpolation_rate" event="bone_interpolation_rate" type="float"/>
+        <toggle name="Interpolate Gaze" data="interpolate_gaze" event="interpolate_gaze"/>
+        <input name="Gaze Interpolation Rate" data="gaze_interpolation_rate" event="gaze_interpolation_rate" type="float"/>
+        <toggle name="Interpolate Blinking" data="interpolate_blinking" event="interpolate_blinking"/>
+        <input name="Blinking Interpolation Rate" data="blinking_interpolation_rate" event="blinking_interpolation_rate" type="float"/>
+        <toggle name="Interpolate Mouth" data="interpolate_mouth" event="interpolate_mouth"/>
+        <input name="Mouth Interpolation Rate" data="mouth_interpolation_rate" event="mouth_interpolation_rate" type="float"/>
 
         <label name="Misc."/>
         <toggle name="Should Track Eye" data="should_track_eye" event="should_track_eye"/>

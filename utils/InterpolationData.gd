@@ -128,28 +128,28 @@ func _on_toggle_interpolation(value: bool, i_name: String) -> void:
 				bone_interpolation_rate = last_bone_interpolation_rate
 			else:
 				last_bone_interpolation_rate = bone_interpolation_rate
-				bone_interpolation_rate = 1.0
+				bone_interpolation_rate = base_interpolation_rate
 		"interpolate_gaze":
 			should_interpolate_gaze = value
 			if value:
 				gaze_interpolation_rate = last_gaze_interpolation_rate
 			else:
 				last_gaze_interpolation_rate = gaze_interpolation_rate
-				gaze_interpolation_rate = 1.0
+				gaze_interpolation_rate = base_interpolation_rate
 		"interpolate_blinking":
 			should_interpolate_blinking = value
 			if value:
 				blinking_interpolation_rate = last_blinking_interpolation_rate
 			else:
 				last_blinking_interpolation_rate = blinking_interpolation_rate
-				blinking_interpolation_rate = 1.0
+				blinking_interpolation_rate = base_interpolation_rate
 		"interpolate_mouth":
 			should_interpolate_mouth = value
 			if value:
 				mouth_interpolation_rate = last_mouth_interpolation_rate
 			else:
 				last_mouth_interpolation_rate = mouth_interpolation_rate
-				mouth_interpolation_rate = 1.0
+				mouth_interpolation_rate = base_interpolation_rate
 
 func _on_set_interpolation_rate(value: float, i_name: String) -> void:
 	match i_name:
