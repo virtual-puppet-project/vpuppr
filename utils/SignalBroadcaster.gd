@@ -76,6 +76,38 @@ signal interpolation_rate(value)
 func broadcast_interpolation_rate(value: float) -> void:
 	emit_signal("interpolation_rate", value)
 
+signal interpolate_bones(value)
+func broadcast_interpolation_bones(value: bool) -> void:
+	emit_signal("interpolate_bones", value)
+
+signal bone_interpolation_rate(value)
+func broadcast_bone_interpolation_rate(value: float) -> void:
+	emit_signal("bone_interpolation_rate", value)
+
+signal interpolate_gaze(value)
+func broadcast_interpolate_gaze(value: bool) -> void:
+	emit_signal("interpolate_gaze", value)
+
+signal gaze_interpolation_rate(value)
+func broadcast_gaze_interpolation_rate(value: float) -> void:
+	emit_signal("gaze_interpolation_rate", value)
+
+signal interpolate_blinking(value)
+func broadcast_interpolate_blinking(value: bool) -> void:
+	emit_signal("interpolate_blinking", value)
+
+signal blinking_interpolation_rate(value)
+func broadcast_blinking_interpolation_rate(value: float) -> void:
+	emit_signal("blinking_interpolation_rate", value)
+
+signal interpolate_mouth(value)
+func broadcast_interpolate_mouth(value: bool) -> void:
+	emit_signal("interpolate_mouth", value)
+
+signal mouth_interpolation_rate(value)
+func broadcast_mouth_interpolation_rate(value: float) -> void:
+	emit_signal("mouth_interpolation_rate", value)
+
 signal should_track_eye(value)
 func broadcast_should_track_eye(value: bool) -> void:
 	emit_signal("should_track_eye", value)
