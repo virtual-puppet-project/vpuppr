@@ -31,7 +31,8 @@ func _on_log(message: String) -> void:
 var has_shown_fxaa_popup: bool = false
 
 func fxaa(element: Control) -> void:
-	element.toggle.connect("toggled", self, "_on_fxaa_toggled")
+	if not element.toggle.is_connected("toggled", self, "_on_fxaa_toggled"):
+		element.toggle.connect("toggled", self, "_on_fxaa_toggled")
 
 func _on_fxaa_toggled(button_state: bool) -> void:
 	if (not has_shown_fxaa_popup and button_state == true):
