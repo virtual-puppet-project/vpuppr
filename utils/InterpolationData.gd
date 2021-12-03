@@ -19,6 +19,7 @@ var should_interpolate: bool
 var base_interpolation_rate: float
 var last_base_interpolation_rate: float
 
+# TODO current unused
 var should_interpolate_bones: bool
 var bone_interpolation_rate: float
 var last_bone_interpolation_rate: float
