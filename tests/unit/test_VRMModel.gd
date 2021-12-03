@@ -32,10 +32,10 @@ func test_map_eye_expressions() -> void:
 	
 	var expression_data_dict: Dictionary
 	expression_data_dict = {
-		"LOOKUP": VRM_MODEL.ExpressionData.new(),
-		"LOOKDOWN": VRM_MODEL.ExpressionData.new(),
-		"LOOKLEFT": VRM_MODEL.ExpressionData.new(),
-		"LOOKRIGHT": VRM_MODEL.ExpressionData.new(),
+		"lookup": VRM_MODEL.ExpressionData.new(),
+		"lookdown": VRM_MODEL.ExpressionData.new(),
+		"lookleft": VRM_MODEL.ExpressionData.new(),
+		"lookright": VRM_MODEL.ExpressionData.new(),
 	}
 	
 	vrm_model._map_eye_expressions(expression_data_dict)
@@ -48,16 +48,16 @@ func test_map_eye_expressions() -> void:
 	assert_eq(vrm_model.right_eye.left, Vector3(0, 360, 0))
 	assert_eq(vrm_model.right_eye.right, Vector3(0, -360, 0))
 
-	expression_data_dict["LOOKUP"].morphs = [
+	expression_data_dict["lookup"].morphs = [
 		_create_morph_data('eye_L', []), 
 	]
-	expression_data_dict["LOOKDOWN"].morphs = [
+	expression_data_dict["lookdown"].morphs = [
 		_create_morph_data('eye_L', [{"rotation": Quat(Vector3())}]), 
 	]
-	expression_data_dict["LOOKLEFT"].morphs = [
+	expression_data_dict["lookleft"].morphs = [
 		_create_morph_data('eye_L', [{"rotation": Quat(Vector3(0.5, 0.5, 0.5))}]), 
 	]
-	expression_data_dict["LOOKRIGHT"].morphs = [
+	expression_data_dict["lookright"].morphs = [
 		_create_morph_data('eye_L', [{"rotation": Quat(Vector3(0.5, 0.5, 0.5))}]), 
 	]
 	vrm_model._map_eye_expressions(expression_data_dict)
@@ -70,19 +70,19 @@ func test_map_eye_expressions() -> void:
 	assert_eq(vrm_model.right_eye.left, Vector3(0, 360, 0))
 	assert_eq(vrm_model.right_eye.right, Vector3(0, -360, 0))
 	
-	expression_data_dict["LOOKUP"].morphs = [
+	expression_data_dict["lookup"].morphs = [
 		_create_morph_data('eye_L', []), 
 		_create_morph_data('eye_R', []),
 	]
-	expression_data_dict["LOOKDOWN"].morphs = [
+	expression_data_dict["lookdown"].morphs = [
 		_create_morph_data('eye_L', [{"rotation": Quat(Vector3())}]), 
 		_create_morph_data('eye_R', [{"rotation": Quat(Vector3())}]),
 	]
-	expression_data_dict["LOOKLEFT"].morphs = [
+	expression_data_dict["lookleft"].morphs = [
 		_create_morph_data('eye_L', [{"rotation": Quat(Vector3(0.5, 0.5, 0.5))}]), 
 		_create_morph_data('eye_R', [{"rotation": Quat(Vector3(0.5, 0.5, 0.5))}]),
 	]
-	expression_data_dict["LOOKRIGHT"].morphs = [
+	expression_data_dict["lookright"].morphs = [
 		_create_morph_data('eye_L', [{"rotation": Quat(Vector3(0.5, 0.5, 0.5))}]), 
 		_create_morph_data('eye_R', [{"rotation": Quat(Vector3(0.5, 0.5, 0.5))}]),
 	]
