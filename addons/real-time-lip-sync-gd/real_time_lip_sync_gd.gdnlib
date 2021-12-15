@@ -1,0 +1,14 @@
+[general]
+
+singleton=false
+load_once=true
+symbol_prefix="godot_"
+reloadable=true
+
+[entry]
+
+Windows.64="res://addons/real-time-lip-sync-gd/real_time_lip_sync_gd.dll"
+
+[dependencies]
+
+Windows.64=[  ]

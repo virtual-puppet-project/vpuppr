@@ -1,0 +1,8 @@
+[gd_resource type="NativeScript" load_steps=2 format=2]
+
+[ext_resource path="res://addons/real-time-lip-sync-gd/real_time_lip_sync_gd.gdnlib" type="GDNativeLibrary" id=1]
+
+[resource]
+resource_name = "LipSync"
+class_name = "LipSync"
+library = ExtResource( 1 )

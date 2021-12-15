@@ -5,6 +5,8 @@ const DEV_UI: Resource = preload("res://utils/gui/DevUI.tscn")
 
 const MODEL_SCREEN: Resource = preload("res://screens/ModelDisplayScreen.tscn")
 
+const LIP_SYNC = "res://addons/real-time-lip-sync-gd/lip_sync.gdns"
+
 # var current_model_path: String = ""
 
 onready var main_light: Spatial = $MainLight
@@ -12,6 +14,8 @@ onready var world_environment: WorldEnvironment = $WorldEnvironment
 
 var model_display_screen: Spatial
 onready var gui: CanvasLayer = $GuiHandler
+
+var lip_sync: Reference
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -39,7 +43,18 @@ func _ready() -> void:
 
 	AppManager.cm.metadata_config.apply_rendering_changes(get_viewport())
 	
+	lip_sync = load(LIP_SYNC).new()
+	lip_sync.connect("lip_sync_panicked", self, "_on_lip_sync_panicked")
+	
 	AppManager.logger.notify("Welcome to openseeface-gd!")
+
+func _process(delta):
+	lip_sync.update()
+	print(lip_sync.result())
+
+func _exit_tree():
+	lip_sync.stop_thread()
+	lip_sync.shutdown()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if(event.is_action_pressed("ui_cancel") and OS.is_debug_build()):
@@ -59,6 +74,11 @@ func _on_main_light(prop_name: String, value) -> void:
 
 func _on_environment(prop_name: String, value) -> void:
 	world_environment.environment.set(prop_name, value)
+
+func _on_lip_sync_panicked(message: String) -> void:
+	AppManager.logger.error(message)
+	lip_sync.stop_thread()
+	lip_sync.shutdown()
 
 ###############################################################################
 # Private functions                                                           #
