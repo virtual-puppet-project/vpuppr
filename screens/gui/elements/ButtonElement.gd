@@ -33,6 +33,3 @@ func get_value():
 
 func set_value(_value) -> void:
 	AppManager.logger.error("Tried to set value on a Button element")
-
-func setup() -> void:
-	pass # Do nothing on setup
