@@ -31,9 +31,13 @@ signal reset_model_transform()
 func broadcast_reset_model_transform() -> void:
 	emit_signal("reset_model_transform")
 
-signal reset_model_pose()
-func broadcast_reset_model_pose() -> void:
-	emit_signal("reset_model_pose")
+signal a_pose_model()
+func broadcast_a_pose_model() -> void:
+	emit_signal("a_pose_model")
+
+signal t_pose_model()
+func broadcast_t_pose_model() -> void:
+	emit_signal("t_pose_model")
 
 signal bone_toggled()
 func broadcast_bone_toggled(value: Array) -> void:

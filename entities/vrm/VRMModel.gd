@@ -258,19 +258,7 @@ func _map_bones():
 		spine_bone_id = skeleton.find_bone(vrm_meta.humanoid_bone_mapping["spine"])
 		additional_bones_to_pose_names.append(vrm_meta.humanoid_bone_mapping["spine"])
 
-	if vrm_meta.humanoid_bone_mapping.has("leftShoulder"):
-		skeleton.set_bone_pose(skeleton.find_bone(vrm_meta.humanoid_bone_mapping["leftShoulder"]),
-				Transform(Quat(0, 0, 0.1, 0.85)))
-	if vrm_meta.humanoid_bone_mapping.has("rightShoulder"):
-		skeleton.set_bone_pose(skeleton.find_bone(vrm_meta.humanoid_bone_mapping["rightShoulder"]),
-				Transform(Quat(0, 0, -0.1, 0.85)))
-
-	if vrm_meta.humanoid_bone_mapping.has("leftUpperArm"):
-		skeleton.set_bone_pose(skeleton.find_bone(vrm_meta.humanoid_bone_mapping["leftUpperArm"]),
-				Transform(Quat(0, 0, 0.4, 0.85)))
-	if vrm_meta.humanoid_bone_mapping.has("rightUpperArm"):
-		skeleton.set_bone_pose(skeleton.find_bone(vrm_meta.humanoid_bone_mapping["rightUpperArm"]),
-				Transform(Quat(0, 0, -0.4, 0.85)))
+	a_pose()
 
 ###############################################################################
 # Public functions                                                            #
@@ -363,3 +351,18 @@ func custom_update(data, interpolation_data) -> void:
 			pass
 		else:
 			pass
+
+func a_pose() -> void:
+	if vrm_meta.humanoid_bone_mapping.has("leftShoulder"):
+		skeleton.set_bone_pose(skeleton.find_bone(vrm_meta.humanoid_bone_mapping["leftShoulder"]),
+				Transform(Quat(0, 0, 0.1, 0.85)))
+	if vrm_meta.humanoid_bone_mapping.has("rightShoulder"):
+		skeleton.set_bone_pose(skeleton.find_bone(vrm_meta.humanoid_bone_mapping["rightShoulder"]),
+				Transform(Quat(0, 0, -0.1, 0.85)))
+
+	if vrm_meta.humanoid_bone_mapping.has("leftUpperArm"):
+		skeleton.set_bone_pose(skeleton.find_bone(vrm_meta.humanoid_bone_mapping["leftUpperArm"]),
+				Transform(Quat(0, 0, 0.4, 0.85)))
+	if vrm_meta.humanoid_bone_mapping.has("rightUpperArm"):
+		skeleton.set_bone_pose(skeleton.find_bone(vrm_meta.humanoid_bone_mapping["rightUpperArm"]),
+				Transform(Quat(0, 0, -0.4, 0.85)))
