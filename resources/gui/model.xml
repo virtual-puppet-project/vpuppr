@@ -10,6 +10,8 @@
         <toggle name="Rotate model" event="rotate_model"/>
         <toggle name="Zoom model" event="zoom_model"/>
         <button name="Reset model transform" event="reset_model_transform"/>
-        <button name="Reset model pose" event="reset_model_pose"/>
+        <label name="Model pose"/>
+        <button name="A-pose model" event="a_pose_model" setup="setup_a_pose"/>
+        <button name="T-pose model" event="t_pose_model" setup="setup_t_pose"/>
     </right>
 </view>
