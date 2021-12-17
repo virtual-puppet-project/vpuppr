@@ -1,13 +1,12 @@
 extends Node
 
-enum ModelType { GENERIC, VRM }
-
 const DYNAMIC_PHYSICS_BONES: bool = false
 
 # TODO currently unused
 # onready var tm: TranslationManager = TranslationManager.new()
 onready var sb: SignalBroadcaster = load("res://utils/SignalBroadcaster.gd").new()
 onready var cm: ConfigManager = load("res://utils/ConfigManager.gd").new()
+var nm: NotificationManager = load("res://utils/NotificationManager.gd").new()
 onready var logger: Logger = load("res://utils/Logger.gd").new()
 
 # Debounce
@@ -36,6 +35,7 @@ func _ready() -> void:
 		# goth.run_bdd_tests()
 
 	cm.setup()
+	add_child(nm)
 
 func _process(delta: float) -> void:
 	if should_save:
@@ -83,3 +83,5 @@ func save_config_instant(p_config: Reference = null) -> void:
 	should_save = false
 	debounce_counter = 0.0
 	cm.save_config(p_config)
+
+

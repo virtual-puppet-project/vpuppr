@@ -302,9 +302,11 @@ func _start_tracker() -> bool:
 
 			var dir := Directory.new()
 			if not dir.dir_exists("%s%s" % [user_data_path, "venv"]):
-				var popup = load("res://screens/gui/EphemeralPopup.tscn").instance()
-				popup.popup_text = "First time setup: creating venv"
-				get_tree().root.add_child(popup)
+#				var popup = load("res://screens/gui/EphemeralPopup.tscn").instance()
+#				popup.popup_text = "First time setup: creating venv"
+#				get_tree().root.add_child(popup)
+				
+				AppManager.logger.notify("First time setup: creating venv", AppManager.logger.NotifyType.POPUP)
 
 				var create_venv_script: String = "%s%s" % [OS.get_executable_path().get_base_dir(), "/resources/scripts/create_venv.sh"]
 				if OS.is_debug_build():

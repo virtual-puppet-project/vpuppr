@@ -17,6 +17,7 @@ func setup_console(element: Control) -> void:
 
 func _on_log(message: String) -> void:
 	var label := Label.new()
+	label.autowrap = true
 	label.text = message
 
 	console.add_child(label)
@@ -36,7 +37,5 @@ func fxaa(element: Control) -> void:
 
 func _on_fxaa_toggled(button_state: bool) -> void:
 	if (not has_shown_fxaa_popup and button_state == true):
-		var popup = load("res://screens/gui/EphemeralPopup.tscn").instance()
-		popup.popup_text = "Enabling FXAA will cause transparent backgrounds to malfunction, if you have transparent backgrounds enabled."
-		get_tree().root.add_child(popup)
+		AppManager.logger.notify("Enabling FXAA will cause transparent backgrounds to malfunction, if you have transparent backgrounds enabled.")
 		has_shown_fxaa_popup = true

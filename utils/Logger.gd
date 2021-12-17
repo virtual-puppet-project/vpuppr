@@ -3,7 +3,8 @@ extends Reference
 
 signal on_log(message)
 
-enum LogType { NONE, INFO, DEBUG, TRACE, ERROR }
+enum LogType { NONE, NOTIFY, INFO, DEBUG, TRACE, ERROR }
+enum NotifyType { NONE, TOAST, POPUP }
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -31,7 +32,7 @@ func _log(message: String, log_type: int) -> void:
 	]
 	
 	match log_type:
-		LogType.INFO:
+		LogType.INFO, LogType.NOTIFY:
 			message = "[INFO] %s" % message
 		LogType.DEBUG:
 			message = "[DEBUG] %s" % message
@@ -52,6 +53,16 @@ func _log(message: String, log_type: int) -> void:
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
+
+func notify(message: String, notify_type: int = NotifyType.TOAST) -> void:
+	_log(message, LogType.NOTIFY)
+	match notify_type:
+		NotifyType.TOAST:
+			AppManager.nm.show_toast(message)
+		NotifyType.POPUP:
+			AppManager.nm.show_popup(message)
+		_:
+			assert(false, message)
 
 func info(message: String) -> void:
 	_log(message, LogType.INFO)

@@ -1,5 +1,7 @@
 extends CanvasLayer
 
+signal closed
+
 onready var popup: AcceptDialog = $AcceptDialog
 
 var popup_text: String
@@ -22,6 +24,7 @@ func _ready() -> void:
 ###############################################################################
 
 func _on_close() -> void:
+	emit_signal("closed")
 	queue_free()
 
 ###############################################################################
