@@ -151,7 +151,8 @@ func _ready() -> void:
 	AppManager.sb.connect("load_model", self, "_on_load_model")
 	
 	AppManager.sb.connect("reset_model_transform", self, "_on_reset_model_transform")
-	AppManager.sb.connect("reset_model_pose", self, "_on_reset_model_pose")
+	AppManager.sb.connect("a_pose_model", self, "_on_a_pose_model")
+	AppManager.sb.connect("t_pose_model", self, "_on_t_pose_model")
 
 	AppManager.sb.connect("bone_toggled", self, "_on_bone_toggled")
 
@@ -321,8 +322,11 @@ func _on_reset_model_transform() -> void:
 	model.transform = initial_model_transform
 	model_parent.transform = initial_model_parent_transform
 
-func _on_reset_model_pose() -> void:
+func _on_t_pose_model() -> void:
 	model.reset_all_bone_poses()
+
+func _on_a_pose_model() -> void:
+	model.a_pose()
 
 func _on_bone_toggled(bone_name: String, toggle_type: String, toggle_value: bool) -> void:
 	match toggle_type:
