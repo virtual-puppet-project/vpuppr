@@ -349,6 +349,7 @@ func _start_tracker() -> bool:
 	face_tracker_pid = pid
 
 	AppManager.logger.info("Face tracker started, PID is %s." % face_tracker_pid)
+	AppManager.logger.notify("Press spacebar to recenter the model if it's not looking correct!")
 	return true
 
 func _stop_tracker() -> void:
