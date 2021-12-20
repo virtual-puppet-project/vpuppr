@@ -37,6 +37,15 @@
         <input name="Tracker Address" data="tracker_address" event="tracker_address" type="string"/>
         <input name="Tracker Port" data="tracker_port" event="tracker_port" type="integer"/>
         <button name="Start Tracker" event="toggle_tracker" label_updatable="true"/>
+        <label name="Lip Sync"/>
+        <toggle name="Use lip sync" data="use_lip_sync" event="use_lip_sync"/>
+        <!-- TODO limit input to specific ranges -->
+        <input name="MFCC data count" data="mfcc_data_count" event="mfcc_data_count" type="int"/>
+        <input name="Mel filter bank channels" data="mel_filter_bank_channels" event="mel_filter_bank_channels" type="int"/>
+        <input name="Target sample rate" data="target_sample_rate" event="target_sample_rate" type="int"/>
+        <input name="Sample count" data="sample_count" event="sample_count" type="int"/>
+        <input name="Min volume" data="min_volume" event="min_volume" type="float"/>
+        <input name="Max volume" data="max_volume" event="max_volume" type="float"/>
         <!-- TODO this is bad, should refactor into a list -->
         <label name="Blend Shapes"/>
         <drop_down name="Blend Shapes" event="blend_shapes" setup="setup_blend_shapes"/>

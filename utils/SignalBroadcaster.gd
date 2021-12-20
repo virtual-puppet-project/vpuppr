@@ -152,6 +152,34 @@ signal toggle_tracker()
 func broadcast_toggle_tracker() -> void:
 	emit_signal("toggle_tracker")
 
+signal use_lip_sync(value)
+func broadcast_use_lip_sync(value: bool) -> void:
+	emit_signal("use_lip_sync", value)
+
+signal mfcc_data_count(value)
+func broadcast_mfcc_data_count(value: int) -> void:
+	emit_signal("mfcc_data_count", value)
+
+signal mel_filter_bank_channels(value)
+func broadcast_mel_filter_bank_channels(value: int) -> void:
+	emit_signal("mel_filter_bank_channels", value)
+
+signal target_sample_rate(value)
+func broadcast_target_sample_rate(value: int) -> void:
+	emit_signal("target_sample_rate", value)
+
+signal sample_count(value)
+func broadcast_sample_count(value: int) -> void:
+	emit_signal("sample_count", value)
+
+signal min_volume(value)
+func broadcast_min_volume(value: float) -> void:
+	emit_signal("min_volume", value)
+
+signal max_volume(value)
+func broadcast_max_volume(value: float) -> void:
+	emit_signal("max_volume", value)
+
 # TODO started in Tracking.gd, to VRMModel, this isn't great
 signal blend_shapes(value)
 func broadcast_blend_shapes(value: String) -> void:

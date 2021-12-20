@@ -33,6 +33,8 @@ func _ready() -> void:
 
 	AppManager.sb.connect("main_light", self, "_on_main_light")
 	AppManager.sb.connect("world_environment", self, "_on_environment")
+	
+	AppManager.sb.connect("use_lip_sync", self, "_on_use_lip_sync")
 
 	# TODO accommodate config manager changes, this is gross
 	while not AppManager.cm.has_loaded_metadata:
@@ -49,8 +51,9 @@ func _ready() -> void:
 	AppManager.logger.notify("Welcome to openseeface-gd!")
 
 func _process(delta):
-	lip_sync.update()
-	print(lip_sync.result())
+	if AppManager.cm.metadata_config.use_lip_sync:
+		lip_sync.update()
+		print(lip_sync.result())
 
 func _exit_tree():
 	lip_sync.stop_thread()
@@ -74,6 +77,13 @@ func _on_main_light(prop_name: String, value) -> void:
 
 func _on_environment(prop_name: String, value) -> void:
 	world_environment.environment.set(prop_name, value)
+
+func _on_use_lip_sync(value: bool) -> void:
+	if value:
+		lip_sync.start_thread()
+	else:
+		lip_sync.stop_thread()
+		lip_sync.shutdown()
 
 func _on_lip_sync_panicked(message: String) -> void:
 	AppManager.logger.error(message)

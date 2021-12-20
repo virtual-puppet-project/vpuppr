@@ -29,6 +29,15 @@ class Metadata:
 	# Not stored as an int since we can guarantee that this value
 	# will always come as a String
 	var camera_index: String = "0"
+	
+	# Lip sync
+	var use_lip_sync: bool = false
+	var mfcc_data_count: int = 32
+	var mel_filter_bank_channels: int = 24
+	var target_sample_rate: int = 16000
+	var sample_count: int = 512
+	var min_volume: float = -4.0
+	var max_volume: float = -2.0
 
 	func load_from_json(json_string: String) -> bool:
 		var json_data = parse_json(json_string)
@@ -315,6 +324,14 @@ func _init() -> void:
 	AppManager.sb.connect("tracker_fps", self, "_on_tracker_fps")
 	AppManager.sb.connect("tracker_address", self, "_on_tracker_address")
 	AppManager.sb.connect("tracker_port", self, "_on_tracker_port")
+	
+	AppManager.sb.connect("use_lip_sync", self, "_on_use_lip_sync")
+	AppManager.sb.connect("mfcc_data_count", self, "_on_mfcc_data_count")
+	AppManager.sb.connect("mel_filter_bank_channels", self, "_on_mel_filter_bank_channels")
+	AppManager.sb.connect("target_sample_rate", self, "_on_target_sample_rate")
+	AppManager.sb.connect("sample_count", self, "_on_sample_count")
+	AppManager.sb.connect("min_volume", self, "_on_min_volume")
+	AppManager.sb.connect("max_volume", self, "_on_max_volume")
 
 	# Features
 
@@ -410,6 +427,27 @@ func _on_tracker_address(value: String) -> void:
 
 func _on_tracker_port(value: int) -> void:
 	current_model_config.tracker_port = value
+
+func _on_use_lip_sync(value: bool) -> void:
+	metadata_config.use_lip_sync = value
+
+func _on_mfcc_data_count(value: int) -> void:
+	metadata_config.mfcc_data_count = value
+
+func _on_mel_filter_bank_channels(value: int) -> void:
+	metadata_config.mel_filter_bank_channels = value
+
+func _on_target_sample_rate(value: int) -> void:
+	metadata_config.target_sample_rate = value
+
+func _on_sample_count(value: int) -> void:
+	metadata_config.sample_count = value
+
+func _on_min_volume(value: float) -> void:
+	metadata_config.min_volume = value
+
+func _on_max_volume(value: float) -> void:
+	metadata_config.max_volume = value
 
 func _on_camera_select(camera_index: String) -> void:
 	metadata_config.camera_index = camera_index
