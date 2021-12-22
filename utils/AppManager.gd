@@ -7,6 +7,7 @@ const DYNAMIC_PHYSICS_BONES: bool = false
 onready var sb: SignalBroadcaster = load("res://utils/SignalBroadcaster.gd").new()
 onready var cm: ConfigManager = load("res://utils/ConfigManager.gd").new()
 var nm: NotificationManager = load("res://utils/NotificationManager.gd").new()
+onready var lsm: LipSyncManager = load("res://utils/LipSyncManager.gd").new()
 onready var logger: Logger = load("res://utils/Logger.gd").new()
 
 # Debounce
@@ -36,6 +37,7 @@ func _ready() -> void:
 
 	cm.setup()
 	add_child(nm)
+	add_child(lsm)
 
 func _process(delta: float) -> void:
 	if should_save:
