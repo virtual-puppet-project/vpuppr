@@ -30,6 +30,9 @@ class Metadata:
 	# will always come as a String
 	var camera_index: String = "0"
 
+	# Lip sync
+	var use_lip_sync: bool = false
+
 	func load_from_json(json_string: String) -> bool:
 		var json_data = parse_json(json_string)
 
@@ -316,6 +319,8 @@ func _init() -> void:
 	AppManager.sb.connect("tracker_address", self, "_on_tracker_address")
 	AppManager.sb.connect("tracker_port", self, "_on_tracker_port")
 
+	AppManager.sb.connect("use_lip_sync", self, "_on_use_lip_sync")
+
 	# Features
 
 	AppManager.sb.connect("main_light", self, "_on_main_light")
@@ -410,6 +415,9 @@ func _on_tracker_address(value: String) -> void:
 
 func _on_tracker_port(value: int) -> void:
 	current_model_config.tracker_port = value
+
+func _on_use_lip_sync(value: bool) -> void:
+	metadata_config.use_lip_sync = value
 
 func _on_camera_select(camera_index: String) -> void:
 	metadata_config.camera_index = camera_index

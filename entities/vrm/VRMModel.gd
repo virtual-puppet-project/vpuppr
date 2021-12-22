@@ -57,6 +57,11 @@ var u: ExpressionData
 # TODO stopgap
 var last_expression: ExpressionData
 
+var current_mouth_shape: ExpressionData
+const VOWEL_HISTORY: int = 5 # TODO move to config
+const MIN_VOWEL_CHANGE: int = 3 # TODO move to config
+var last_vowels: Array = []
+
 var all_expressions: Dictionary = {} # String: ExpressionData
 
 ###############################################################################
@@ -78,6 +83,8 @@ func _ready() -> void:
 
 	# TODO stopgap
 	AppManager.sb.connect("blend_shapes", self, "_on_blend_shapes")
+
+	AppManager.sb.connect("lip_sync_updated", self, "_on_lip_sync_updated")
 
 	# Map expressions
 	var anim_player: AnimationPlayer = find_node("anim")
@@ -113,6 +120,8 @@ func _ready() -> void:
 
 	for key in all_expressions.keys():
 		set(key, all_expressions[key])
+
+	current_mouth_shape = a
 	
 	_map_eye_expressions(all_expressions)
 
@@ -153,6 +162,53 @@ func _on_blend_shapes(value: String) -> void:
 				ed.morphs[idx].values[1])
 
 	last_expression = ed
+
+func _on_lip_sync_updated(data: Dictionary) -> void:
+	for x in current_mouth_shape.morphs:
+		_modify_blend_shape(x.mesh, x.morph, 1)
+	
+	last_vowels.push_back(data["vowel"])
+	if last_vowels.size() > VOWEL_HISTORY:
+		last_vowels.pop_front()
+
+	var vowel_count: Dictionary = {
+		"a": 0,
+		"i": 0,
+		"u": 0,
+		"e": 0,
+		"o": 0
+	}
+	for x in last_vowels:
+		match x:
+			0: # A
+				vowel_count.a += 1
+			1: # I
+				vowel_count.i += 1
+			2: # U
+				vowel_count.u += 1
+			3: # E
+				vowel_count.e += 1
+			4: # O
+				vowel_count.o += 1
+	
+	var last_shape = current_mouth_shape
+	
+	if vowel_count.a >= MIN_VOWEL_CHANGE:
+		current_mouth_shape = a
+	elif vowel_count.i >= MIN_VOWEL_CHANGE:
+		current_mouth_shape = i
+	elif vowel_count.u >= MIN_VOWEL_CHANGE:
+		current_mouth_shape = u
+	elif vowel_count.e >= MIN_VOWEL_CHANGE:
+		current_mouth_shape = e
+	elif vowel_count.o >= MIN_VOWEL_CHANGE:
+		current_mouth_shape = o
+
+	if current_mouth_shape != last_shape:
+		for x in current_mouth_shape.morphs:
+			_modify_blend_shape(x.mesh, x.morph, 1)
+		for x in last_shape.morphs:
+			_modify_blend_shape(x.mesh, x.morph, 0)
 
 ###############################################################################
 # Private functions                                                           #
@@ -276,25 +332,25 @@ func custom_update(data, interpolation_data) -> void:
 		if (last_expression != joy and last_expression != sorrow):
 			# Left eye blinking
 			if data.left_eye_open >= blink_threshold:
-				for i in blink_r.morphs:
-					_modify_blend_shape(i.mesh, i.morph, i.values[1] - interpolation_data.interpolate(InterpolationData.InterpolationDataType.LEFT_EYE_BLINK, 1.0))
+				for x in blink_r.morphs:
+					_modify_blend_shape(x.mesh, x.morph, x.values[1] - interpolation_data.interpolate(InterpolationData.InterpolationDataType.LEFT_EYE_BLINK, 1.0))
 			else:
-				for i in blink_r.morphs:
-					_modify_blend_shape(i.mesh, i.morph, i.values[1])
+				for x in blink_r.morphs:
+					_modify_blend_shape(x.mesh, x.morph, x.values[1])
 
 			# Right eye blinking
 			if data.right_eye_open >= blink_threshold:
-				for i in blink_l.morphs:
-					_modify_blend_shape(i.mesh, i.morph, i.values[1] - interpolation_data.interpolate(InterpolationData.InterpolationDataType.RIGHT_EYE_BLINK, 1.0))
+				for x in blink_l.morphs:
+					_modify_blend_shape(x.mesh, x.morph, x.values[1] - interpolation_data.interpolate(InterpolationData.InterpolationDataType.RIGHT_EYE_BLINK, 1.0))
 			else:
-				for i in blink_l.morphs:
-					_modify_blend_shape(i.mesh, i.morph, i.values[1])
+				for x in blink_l.morphs:
+					_modify_blend_shape(x.mesh, x.morph, x.values[1])
 		else:
 			# Unblink if the facial expression doesn't allow blinking
-			for i in blink_r.morphs:
-				_modify_blend_shape(i.mesh, i.morph, i.values[0])
-			for i in blink_l.morphs:
-				_modify_blend_shape(i.mesh, i.morph, i.values[0])
+			for x in blink_r.morphs:
+				_modify_blend_shape(x.mesh, x.morph, x.values[0])
+			for x in blink_l.morphs:
+				_modify_blend_shape(x.mesh, x.morph, x.values[0])
 
 		# TODO eyes show weird behaviour when blinking
 		# TODO make sure angle between eyes' x values are at least parallel
@@ -340,10 +396,10 @@ func custom_update(data, interpolation_data) -> void:
 		skeleton.set_bone_pose(left_eye_id, right_eye_transform)
 		
 		# Mouth tracking
-		for i in a.morphs:
-			_modify_blend_shape(i.mesh, i.morph,
-					min(max(i.values[0], interpolation_data.interpolate(InterpolationData.InterpolationDataType.MOUTH_MOVEMENT, 2.0)),
-					i.values[1]))
+		for x in current_mouth_shape.morphs:
+			_modify_blend_shape(x.mesh, x.morph,
+					min(max(x.values[0], interpolation_data.interpolate(InterpolationData.InterpolationDataType.MOUTH_MOVEMENT, 2.0)),
+					x.values[1]))
 	else:
 		# TODO implement eco mode, should be more efficient than standard mode
 		# Eco-mode blinking
