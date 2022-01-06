@@ -69,6 +69,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://utils/JSONUtil.gd"
 }, {
+"base": "Node",
+"class": "LipSyncManager",
+"language": "GDScript",
+"path": "res://utils/LipSyncManager.gd"
+}, {
 "base": "Reference",
 "class": "Logger",
 "language": "GDScript",
@@ -122,6 +127,7 @@ _global_script_class_icons={
 "GOTHGui": "",
 "InterpolationData": "",
 "JSONUtil": "",
+"LipSyncManager": "",
 "Logger": "",
 "MainScreen": "",
 "ModelDisplayScreen": "",
@@ -137,6 +143,10 @@ _global_script_class_icons={
 config/name="OpenSeeFace GD"
 run/main_scene="res://screens/MainScreen.tscn"
 config/icon="res://assets/osfgd_icon.png"
+
+[audio]
+
+enable_audio_input=true
 
 [autoload]
 

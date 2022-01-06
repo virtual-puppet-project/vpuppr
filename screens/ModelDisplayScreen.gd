@@ -78,6 +78,8 @@ func _ready() -> void:
 		AppManager.sb.connect(i, self, "_on_%s" % i)
 		set(i, AppManager.cm.current_model_config.get(i))
 
+	AppManager.sb.connect("lip_sync_updated", self, "_on_lip_sync_updated")
+
 	if model_resource_path:
 		_try_load_model(model_resource_path)
 
@@ -218,6 +220,10 @@ func _on_apply_rotation(value: bool) -> void:
 func _on_should_track_eye(value: bool) -> void:
 	should_track_eye = value
 
+func _on_lip_sync_updated(_data: Dictionary) -> void:
+	interpolation_data.target_mouth_movement = 1
+	interpolation_data.interpolate(InterpolationData.InterpolationDataType.MOUTH_MOVEMENT, 0.8)
+
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
@@ -226,6 +232,7 @@ func _try_load_model(file_path):
 	var dir := Directory.new()
 	if not dir.file_exists(file_path):
 		AppManager.logger.error("File path not found: %s" % file_path)
+		AppManager.logger.notify("File path not found: %s" % file_path)
 		return
 
 	match file_path.get_extension():
@@ -268,7 +275,7 @@ func _try_load_model(file_path):
 			rotation_adjustment = Vector3(-1, -1, 1)
 			AppManager.logger.info("TSCN file loaded successfully.")
 		_:
-			AppManager.logger.info("File extension not recognized. %s" % file_path)
+			AppManager.logger.notify("File extension not recognized. %s" % file_path)
 			printerr("File extension not recognized. %s" % file_path)
 
 # TODO probably incorrect?
