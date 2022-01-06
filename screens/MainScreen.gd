@@ -39,7 +39,7 @@ func _ready() -> void:
 
 	AppManager.cm.metadata_config.apply_rendering_changes(get_viewport())
 	
-	AppManager.logger.notify("Welcome to openseeface-gd!")
+	AppManager.logger.notify("Press TAB to hide the UI")
 
 func _unhandled_input(event: InputEvent) -> void:
 	if(event.is_action_pressed("ui_cancel") and OS.is_debug_build()):

@@ -152,6 +152,10 @@ signal toggle_tracker()
 func broadcast_toggle_tracker() -> void:
 	emit_signal("toggle_tracker")
 
+signal use_lip_sync(value)
+func broadcast_use_lip_sync(value: bool) -> void:
+	emit_signal("use_lip_sync", value)
+
 # TODO started in Tracking.gd, to VRMModel, this isn't great
 signal blend_shapes(value)
 func broadcast_blend_shapes(value: String) -> void:
@@ -287,6 +291,16 @@ func set_file_to_load(file_path: String) -> void:
 signal model_loaded(model) # Used by model scripts to indicate when they are ready
 func broadcast_model_loaded(model: BasicModel) -> void:
 	emit_signal("model_loaded", model)
+
+# Lip sync
+
+signal lip_sync_updated(data)
+func broadcast_lip_sync_updated(data: Dictionary) -> void:
+	emit_signal("lip_sync_updated", data)
+
+signal lip_sync_panicked(message)
+func broadcast_lip_sync_panicked(message: String) -> void:
+	emit_signal("lip_sync_panicked", message)
 
 # Legacy gui
 

@@ -37,6 +37,10 @@ func _process(delta: float) -> void:
 		_on_close()
 		is_closing = true
 
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("toggle_gui"):
+		toast.visible = not toast.visible
+
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################

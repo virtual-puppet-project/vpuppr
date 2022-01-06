@@ -37,6 +37,8 @@
         <input name="Tracker Address" data="tracker_address" event="tracker_address" type="string"/>
         <input name="Tracker Port" data="tracker_port" event="tracker_port" type="integer"/>
         <button name="Start Tracker" event="toggle_tracker" label_updatable="true"/>
+        <label name="Lip Sync"/>
+        <toggle name="Use lip sync" data="use_lip_sync" event="use_lip_sync"/>
         <!-- TODO this is bad, should refactor into a list -->
         <label name="Blend Shapes"/>
         <drop_down name="Blend Shapes" event="blend_shapes" setup="setup_blend_shapes"/>

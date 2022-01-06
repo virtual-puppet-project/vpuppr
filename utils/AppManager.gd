@@ -7,6 +7,13 @@ const DYNAMIC_PHYSICS_BONES: bool = false
 onready var sb: SignalBroadcaster = load("res://utils/SignalBroadcaster.gd").new()
 onready var cm: ConfigManager = load("res://utils/ConfigManager.gd").new()
 var nm: NotificationManager = load("res://utils/NotificationManager.gd").new()
+onready var lsm: LipSyncManager = load("res://utils/LipSyncManager.gd").new()
+# TODO clean this up with a stripped down implementation
+#onready var estimate_vowel = load("res://addons/godot-audio-processing/EstimateVowel.gd").new()
+#onready var rtls = load("res://addons/real-time-lip-sync-gd/lip_sync.gdns").new()
+#var effect
+#var buffer = 5
+
 onready var logger: Logger = load("res://utils/Logger.gd").new()
 
 # Debounce
@@ -36,8 +43,10 @@ func _ready() -> void:
 
 	cm.setup()
 	add_child(nm)
+	add_child(lsm)
 
 func _process(delta: float) -> void:
+#	rtls.poll()
 	if should_save:
 		debounce_counter += delta
 		if debounce_counter > DEBOUNCE_TIME:
