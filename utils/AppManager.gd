@@ -2,17 +2,18 @@ extends Node
 
 const DYNAMIC_PHYSICS_BONES: bool = false
 
+const ENV_VAR_NAME: String = "VSS_ENV"
+const ENVS: Dictionary = {
+	"DEFAULT": "default",
+	"TEST": "test"
+}
+
 # TODO currently unused
 # onready var tm: TranslationManager = TranslationManager.new()
 onready var sb: SignalBroadcaster = load("res://utils/SignalBroadcaster.gd").new()
 onready var cm: ConfigManager = load("res://utils/ConfigManager.gd").new()
 var nm: NotificationManager = load("res://utils/NotificationManager.gd").new()
 onready var lsm: LipSyncManager = load("res://utils/LipSyncManager.gd").new()
-# TODO clean this up with a stripped down implementation
-#onready var estimate_vowel = load("res://addons/godot-audio-processing/EstimateVowel.gd").new()
-#onready var rtls = load("res://addons/real-time-lip-sync-gd/lip_sync.gdns").new()
-#var effect
-#var buffer = 5
 
 onready var logger: Logger = load("res://utils/Logger.gd").new()
 
@@ -23,7 +24,7 @@ var should_save := false
 var config_to_save: Reference
 
 var main: MainScreen
-var env: String = "default"
+var env: String = ENVS.DEFAULT
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -31,6 +32,10 @@ var env: String = "default"
 
 func _ready() -> void:
 	self.connect("tree_exiting", self, "_on_tree_exiting")
+
+	var system_env = OS.get_environment(ENV_VAR_NAME)
+	if system_env:
+		env = system_env
 
 	# if not OS.is_debug_build():
 	# 	save_directory_path = OS.get_executable_path().get_base_dir()
@@ -61,7 +66,7 @@ func _process(delta: float) -> void:
 func _on_tree_exiting() -> void:
 	OpenSeeGd.stop_receiver()
 
-	if env != "tests":
+	if env != AppManager.ENVS.TEST:
 		cm.save_config()
 	
 	logger.info("Exiting. おやすみ。")
