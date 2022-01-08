@@ -2,6 +2,7 @@ class_name LipSyncManager
 extends Node
 
 const LIP_SYNC: String = "res://addons/real-time-lip-sync-gd/lip_sync.gdns"
+const LIP_SYNC_MOCK: String = "res://addons/real-time-lip-sync-gd/lip_sync_mock.gd"
 const BUFFER: int = 1024
 const BUS_NAME: String = "Record"
 
@@ -17,10 +18,16 @@ var asp: AudioStreamPlayer
 func _ready() -> void:
 	connect("tree_exiting", self, "_on_tree_exiting")
 	
-	lip_sync = load(LIP_SYNC).new()
-	
-	lip_sync.connect("lip_sync_updated", self, "_on_lip_sync_updated")
-	lip_sync.connect("lip_sync_panicked", self, "_on_lip_sync_panicked")
+	match AppManager.env:
+		AppManager.ENVS.DEFAULT:
+			lip_sync = load(LIP_SYNC).new()
+			lip_sync.connect("lip_sync_updated", self, "_on_lip_sync_updated")
+			lip_sync.connect("lip_sync_panicked", self, "_on_lip_sync_panicked")
+		AppManager.ENVS.TEST:
+			lip_sync = load(LIP_SYNC_MOCK).new()
+		_:
+			AppManager.logger.error("Invalid environment detected: %s\nUsing lip sync mock" % AppManager.env)
+			lip_sync = load(LIP_SYNC_MOCK).new()
 	
 	var bus_index: int = AudioServer.bus_count
 	AudioServer.add_bus(bus_index)
@@ -57,8 +64,6 @@ func _process(_delta: float) -> void:
 				10000,
 				AudioEffectSpectrumAnalyzerInstance.MAGNITUDE_AVERAGE
 				).length()
-		
-		print(aec.get_buffer(BUFFER))
 
 		if volume > 0.001: # TODO move to config
 			var audio_frames := aec.get_buffer(BUFFER)
@@ -77,11 +82,9 @@ func _on_tree_exiting() -> void:
 	lip_sync.shutdown()
 
 func _on_lip_sync_updated(data: Dictionary) -> void:
-	print(data)
 	AppManager.sb.broadcast_lip_sync_updated(data)
 
 func _on_lip_sync_panicked(message: String) -> void:
-	print(message)
 	pass
 
 ###############################################################################
