@@ -1,6 +1,8 @@
 class_name NotificationManager
 extends Node
 
+const MIN_TIME_BETWEEN_DUPLICATE_TOAST: int = 5000 # In milliseconds
+
 const EPHEMERAL_POPUP: PackedScene = preload("res://screens/gui/EphemeralPopup.tscn")
 const TOAST: PackedScene = preload("res://screens/gui/Toast.tscn")
 
@@ -11,6 +13,9 @@ var has_popup: bool = false
 var toast_queue: Array = []
 var current_toast: CanvasLayer
 var has_toast: bool = false
+
+var last_toast_message: String
+var last_toast_timestamp: int
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -62,6 +67,17 @@ func show_popup(text: String) -> void:
 	_show_popup(text)
 
 func show_toast(text: String) -> void:
+	# Periodically clear the last_toast_message
+	var timestamp: int = OS.get_ticks_msec()
+	if abs(timestamp - last_toast_timestamp) > MIN_TIME_BETWEEN_DUPLICATE_TOAST:
+		last_toast_message = ""
+		last_toast_timestamp = timestamp
+	
+	if text == last_toast_message:
+		return
+	
+	last_toast_message = text
+	
 	if has_toast:
 		toast_queue.append(text)
 		return

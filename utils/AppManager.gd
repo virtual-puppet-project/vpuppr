@@ -12,8 +12,11 @@ const ENVS: Dictionary = {
 # onready var tm: TranslationManager = TranslationManager.new()
 onready var sb: SignalBroadcaster = load("res://utils/SignalBroadcaster.gd").new()
 onready var cm: ConfigManager = load("res://utils/ConfigManager.gd").new()
+
+# These must be initialized AFTER ConfigManager since they need to pull config data
 var nm: NotificationManager = load("res://utils/NotificationManager.gd").new()
-onready var lsm: LipSyncManager = load("res://utils/LipSyncManager.gd").new()
+var lsm: LipSyncManager = load("res://utils/LipSyncManager.gd").new()
+var rcm: RemoteControlManager = load("res://utils/RemoteControlManager.gd").new()
 
 onready var logger: Logger = load("res://utils/Logger.gd").new()
 
@@ -49,6 +52,7 @@ func _ready() -> void:
 	cm.setup()
 	add_child(nm)
 	add_child(lsm)
+	add_child(rcm)
 
 func _process(delta: float) -> void:
 #	rtls.poll()
@@ -65,6 +69,7 @@ func _process(delta: float) -> void:
 
 func _on_tree_exiting() -> void:
 	OpenSeeGd.stop_receiver()
+	rcm.shutdown()
 
 	if env != AppManager.ENVS.TEST:
 		cm.save_config()

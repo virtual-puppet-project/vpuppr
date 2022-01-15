@@ -278,6 +278,22 @@ signal reconstruct_views()
 func broadcast_reconstruct_views() -> void:
 	emit_signal("reconstruct_views")
 
+signal remote_control_port(port)
+func broadcast_remote_control_port(port: int) -> void:
+	emit_signal("remote_control_port", port)
+
+signal use_remote_control(value)
+func broadcast_use_remote_control(value: bool) -> void:
+	emit_signal("use_remote_control", value)
+
+signal remote_control_data_received(data)
+func broadcast_remote_control_data_received(data: Dictionary) -> void:
+	"""
+	Rebroadcast this signal as well as immediately calling the associated signal
+	"""
+	call("broadcast_%s" % data["signal"], data["value"])
+	emit_signal("remote_control_data_received", data)
+
 # File select popup
 
 signal file_to_load_changed(file_path)
