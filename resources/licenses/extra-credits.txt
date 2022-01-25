@@ -6,3 +6,6 @@ Cappy Ishihara (@CappyIshihara on Twitter)
 
 Testing and Bug Reports
 Rogue Ren (@ItsRogueRen on Twitter)
+
+Python version checking on Linux
+ByteDream (@bytedream_dev on Twitter, ByteDream#4312 on Discord)

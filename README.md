@@ -31,7 +31,7 @@ All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` h
 1. Download Godot 3.4
 2. Clone this project and load it in the editor
 3. Clone the [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace) face tracker
-4. If on Windows, move the `OpenSeeFace` repo into `$PROJECT_ROOT/export/OpenSeeFaceFolder`. If on Linux, run the facetracker via Python
+4. If on Windows, move the `OpenSeeFace` repo into `$PROJECT_ROOT/export/OpenSeeFaceFolder`. If on Linux, run the facetracker via Python (currently only versions below 3.10 are supported)
 5. Run the project from the editor
 6. In the program, when starting face tracking and if you are running OpenSeeFace via Python, disable the option to have the program start the face tracker
 7. Start face tracking
