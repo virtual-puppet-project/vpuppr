@@ -4,11 +4,14 @@ set -e
 
 python_command=""
 
-if python_command="$(type -p python3)"; then
-    python_command="python3"
-elif python_command="$(type -p python)"; then
-    python_command="python"
-else
+for v in "" "3" "3.9" "3.8" "3.7" "3.6"; do
+    if "python$v" --version 2> /dev/null | grep -E -q "[2-3]\.[0-9]\."; then
+        python_command="python$v"
+        break
+    fi
+done
+
+if [ "$python_command" == "" ]; then
     exit 1
 fi
 
