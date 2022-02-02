@@ -33,6 +33,10 @@ class Metadata:
 	# Lip sync
 	var use_lip_sync: bool = false
 
+	# Remote control
+	var remote_control_port: int = 24202
+	var use_remote_control: bool = false
+
 	func load_from_json(json_string: String) -> bool:
 		var json_data = parse_json(json_string)
 
@@ -332,6 +336,8 @@ func _init() -> void:
 
 	AppManager.sb.connect("default_model_search_path", self, "_on_default_model_search_path")
 	AppManager.sb.connect("default_prop_search_path", self, "_on_default_prop_search_path")
+	AppManager.sb.connect("remote_control_port", self, "_on_remote_control_port")
+	AppManager.sb.connect("use_remote_control", self, "_on_use_remote_control")
 
 ###############################################################################
 # Connections                                                                 #
@@ -439,6 +445,12 @@ func _on_default_model_search_path(value: String) -> void:
 
 func _on_default_prop_search_path(value: String) -> void:
 	metadata_config.default_prop_search_path = _determine_search_path(value)
+
+func _on_remote_control_port(port: int) -> void:
+	metadata_config.remote_control_port = port
+
+func _on_use_remote_control(value: bool) -> void:
+	metadata_config.use_remote_control = value
 
 ###############################################################################
 # Private functions                                                           #

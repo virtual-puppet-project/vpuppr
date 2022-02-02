@@ -1,22 +1,51 @@
 class_name SignalBroadcaster
 extends Reference
 
+func register(o: Object, signal_name: String) -> void:
+	"""
+	Wrapper for generically connecting to a signal
+	"""
+	connect(signal_name, o, "_on_%s" % signal_name)
+
 signal update_label_text(element_name, value)
 func broadcast_update_label_text(element_name: String, value: String) -> void:
 	emit_signal("update_label_text", element_name, value)
+
+signal mouse_motion_data(mouse_delta)
+func broadcast_mouse_motion_data(mouse_delta: Vector2) -> void:
+	"""
+	Should correlate with InputEventMouseMotion.relative
+	"""
+	emit_signal("mouse_motion_data", mouse_delta)
+
+signal mouse_scroll_data(scroll_direction)
+func broadcast_mouse_scroll_data(scroll_direction: int) -> void:
+	"""
+	Scroll up is positive, scroll down is negative
+	"""
+	emit_signal("mouse_scroll_data", scroll_direction)
 
 # Model gui
 
 signal move_model(value)
 func broadcast_move_model(value: bool) -> void:
+	"""
+	Describes whether or not the model should be moved by the mouse
+	"""
 	emit_signal("move_model", value)
 
 signal rotate_model(value)
 func broadcast_rotate_model(value: bool) -> void:
+	"""
+	Describes whether or not the model should be rotated by the mouse
+	"""
 	emit_signal("rotate_model", value)
 
 signal zoom_model(value)
 func broadcast_zoom_model(value: bool) -> void:
+	"""
+	Describes whether or not the model should be zoomed in/out by the mouse
+	"""
 	emit_signal("zoom_model", value)
 
 signal load_model()
@@ -277,6 +306,22 @@ func broadcast_msaa_value(value: bool) -> void:
 signal reconstruct_views()
 func broadcast_reconstruct_views() -> void:
 	emit_signal("reconstruct_views")
+
+signal remote_control_port(port)
+func broadcast_remote_control_port(port: int) -> void:
+	emit_signal("remote_control_port", port)
+
+signal use_remote_control(value)
+func broadcast_use_remote_control(value: bool) -> void:
+	emit_signal("use_remote_control", value)
+
+signal remote_control_data_received(data)
+func broadcast_remote_control_data_received(data: Dictionary) -> void:
+	"""
+	Rebroadcast this signal as well as immediately calling the associated signal
+	"""
+	call("broadcast_%s" % data["signal"], data["value"])
+	emit_signal("remote_control_data_received", data) # TODO maybe we should filter before rebroadcasting?
 
 # File select popup
 
