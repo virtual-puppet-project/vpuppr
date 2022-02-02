@@ -180,6 +180,10 @@ func broadcast_tracker_address(value: String) -> void:
 signal tracker_port(value)
 func broadcast_tracker_port(value: int) -> void:
 	emit_signal("tracker_port", value)
+
+signal python_path(path)
+func broadcast_python_path(path: String) -> void:
+	emit_signal("python_path", path)
 	
 signal toggle_tracker()
 func broadcast_toggle_tracker() -> void:

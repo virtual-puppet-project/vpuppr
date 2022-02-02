@@ -299,6 +299,9 @@ func _start_tracker() -> bool:
 					face_tracker_options, false, [], true)
 		"osx", "x11":
 			var user_data_path: String = ProjectSettings.globalize_path("user://")
+			var python_path: String = AppManager.cm.metadata_config.python_path
+			if python_path == "*":
+				python_path = ""
 
 			var dir := Directory.new()
 			if not dir.dir_exists("%s%s" % [user_data_path, "venv"]):
@@ -311,7 +314,7 @@ func _start_tracker() -> bool:
 				yield(get_tree(), "idle_frame")
 				yield(get_tree(), "idle_frame")
 
-				OS.execute(create_venv_script, [user_data_path])
+				OS.execute(create_venv_script, [python_path, user_data_path])
 
 			var face_tracker_path: String = "/OpenSeeFaceFolder/OpenSeeFace/facetracker.py"
 
@@ -325,6 +328,7 @@ func _start_tracker() -> bool:
 			pid = OS.execute(
 				script_path,
 				[
+					python_path,
 					user_data_path,
 					exe_path,
 					AppManager.cm.metadata_config.camera_index,

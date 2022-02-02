@@ -37,6 +37,7 @@
         <toggle name="Should launch tracker" data="tracker_should_launch" event="tracker_should_launch"/>
         <input name="Tracker Address" data="tracker_address" event="tracker_address" type="string"/>
         <input name="Tracker Port" data="tracker_port" event="tracker_port" type="integer"/>
+        <input name="Python Path" data="python_path" event="python_path" type="string" setup="python_path"/>
         <button name="Start Tracker" event="toggle_tracker" label_updatable="true"/>
         <label name="Lip Sync"/>
         <toggle name="Use lip sync" data="use_lip_sync" event="use_lip_sync"/>
