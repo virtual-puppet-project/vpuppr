@@ -27,6 +27,8 @@ var setup_data: Array
 ###############################################################################
 
 func _ready() -> void:
+	AppManager.sb.register(self, "remote_control_data_received")
+
 	is_ready = true
 
 ###############################################################################
@@ -48,6 +50,10 @@ func _on_label_updated(label_name: String, value: String) -> void:
 
 func _on_value_updated(value) -> void:
 	set_value(value)
+
+func _on_remote_control_data_received(data: Dictionary) -> void:
+	if data["signal"] == event_name:
+		set_value(data["value"])
 
 ###############################################################################
 # Private functions                                                           #
