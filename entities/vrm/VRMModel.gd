@@ -13,6 +13,7 @@ var spine_bone_id: int
 
 # Blinking
 var blink_threshold: float
+var link_eye_blinks: bool
 var eco_mode_is_blinking: bool = false
 
 class EyeClamps:
@@ -76,15 +77,18 @@ func _ready() -> void:
 	# additional_bone_damp = 0.6
 
 	blink_threshold = AppManager.cm.current_model_config.blink_threshold
-	AppManager.sb.connect("blink_threshold", self, "_on_blink_threshold")
+	AppManager.sb.register(self, "blink_threshold")
+
+	link_eye_blinks = AppManager.cm.current_model_config.link_eye_blinks
+	AppManager.sb.register(self, "link_eye_blinks")
 
 	use_raw_eye_rotation = AppManager.cm.current_model_config.use_raw_eye_rotation
-	AppManager.sb.connect("use_raw_eye_rotation", self, "_on_use_raw_eye_rotation")
+	AppManager.sb.register(self, "use_raw_eye_rotation")
 
 	# TODO stopgap
-	AppManager.sb.connect("blend_shapes", self, "_on_blend_shapes")
+	AppManager.sb.register(self, "blend_shapes")
 
-	AppManager.sb.connect("lip_sync_updated", self, "_on_lip_sync_updated")
+	AppManager.sb.register(self, "lip_sync_updated")
 
 	# Map expressions
 	var anim_player: AnimationPlayer = find_node("anim")
@@ -135,6 +139,9 @@ func _ready() -> void:
 
 func _on_blink_threshold(value: float) -> void:
 	blink_threshold = value
+
+func _on_link_eye_blinks(is_linked: bool) -> void:
+	link_eye_blinks = is_linked
 
 func _on_use_raw_eye_rotation(value: bool) -> void:
 	use_raw_eye_rotation = value
@@ -329,8 +336,14 @@ func scan_mapped_bones() -> void:
 func custom_update(data, interpolation_data) -> void:
 	# NOTE: Eye mappings are intentionally reversed so that the model mirrors the data
 	if not eco_mode:
+		#region Blinking
+
 		if (last_expression != joy and last_expression != sorrow):
-			# Left eye blinking
+			if link_eye_blinks:
+				var average_eye_open = (data.left_eye_open + data.right_eye_open) / 2
+				data.left_eye_open = average_eye_open
+				data.right_eye_open = average_eye_open
+
 			if data.left_eye_open >= blink_threshold:
 				for x in blink_r.morphs:
 					_modify_blend_shape(x.mesh, x.morph, x.values[1] - interpolation_data.interpolate(InterpolationData.InterpolationDataType.LEFT_EYE_BLINK, 1.0))
@@ -338,7 +351,6 @@ func custom_update(data, interpolation_data) -> void:
 				for x in blink_r.morphs:
 					_modify_blend_shape(x.mesh, x.morph, x.values[1])
 
-			# Right eye blinking
 			if data.right_eye_open >= blink_threshold:
 				for x in blink_l.morphs:
 					_modify_blend_shape(x.mesh, x.morph, x.values[1] - interpolation_data.interpolate(InterpolationData.InterpolationDataType.RIGHT_EYE_BLINK, 1.0))
@@ -351,6 +363,8 @@ func custom_update(data, interpolation_data) -> void:
 				_modify_blend_shape(x.mesh, x.morph, x.values[0])
 			for x in blink_l.morphs:
 				_modify_blend_shape(x.mesh, x.morph, x.values[0])
+
+		#endregion
 
 		# TODO eyes show weird behaviour when blinking
 		# TODO make sure angle between eyes' x values are at least parallel

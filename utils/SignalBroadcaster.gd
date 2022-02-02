@@ -153,6 +153,10 @@ signal blink_threshold(value)
 func broadcast_blink_threshold(value: float) -> void:
 	emit_signal("blink_threshold", value)
 
+signal link_eye_blinks(is_linked)
+func broadcast_link_eye_blinks(is_linked: bool) -> void:
+	emit_signal("link_eye_blinks", is_linked)
+
 signal use_raw_eye_rotation(value)
 func broadcast_use_raw_eye_rotation(value: bool) -> void:
 	emit_signal("use_raw_eye_rotation", value)
