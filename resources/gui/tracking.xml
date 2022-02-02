@@ -23,10 +23,11 @@
         <toggle name="Interpolate Mouth" data="interpolate_mouth" event="interpolate_mouth"/>
         <input name="Mouth Interpolation Rate" data="mouth_interpolation_rate" event="mouth_interpolation_rate" type="float"/>
 
-        <label name="Misc."/>
+        <label name="Eye options"/>
         <toggle name="Should Track Eye" data="should_track_eye" event="should_track_eye"/>
         <input name="Gaze Strength" data="gaze_strength" event="gaze_strength" type="float"/>
         <input name="Blink Threshold" data="blink_threshold" event="blink_threshold" type="float"/>
+        <toggle name="Link eye blinks" data="link_eye_blinks" event="link_eye_blinks"/>
         <toggle name="Use Raw Eye Rotation" data="use_raw_eye_rotation" event="use_raw_eye_rotation"/>
     </left>
     <right>
