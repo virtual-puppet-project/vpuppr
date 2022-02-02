@@ -5,6 +5,9 @@
         <toggle name="Use FXAA" data="use_fxaa" event="use_fxaa" setup="fxaa"/>
         <!-- TODO update to use a dropdown -->
         <toggle name="MSAA Amount" data="msaa_value" event="msaa_value"/>
+        <label name="Remote control">
+        <input name="Remote control port" data="remote_control_port" event="remote_control_port" type="integer"/>
+        <toggle name="Enable remote control" data="use_remote_control" event="use_remote_control"/>
     </left>
     <right>
         <button name="View Licenses" event="view_licenses"/>

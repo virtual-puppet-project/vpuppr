@@ -9,7 +9,7 @@ const PresetData: Resource = preload("res://screens/gui/PresetData.gd")
 const DEFAULT_METADATA: String = "metadata.xml"
 
 const XmlConstants: Dictionary = {
-	# Tag names
+	#region Tag names
 	"FILE": "file",
 
 	"VIEW": "view",
@@ -34,6 +34,8 @@ const XmlConstants: Dictionary = {
 	"PROP_COLOR_PICKER": "prop_color_picker",
 	
 	"PRESET_TOGGLE": "preset_toggle",
+
+	#endregion
 
 	# Attribute names
 	"NAME": "name",
@@ -96,6 +98,66 @@ var gui_views: Dictionary = {} # String: BaseView
 
 const PROP_SCRIPT_PATH := "res://entities/BaseProp.gd"
 
+#region Signal groups
+
+const HIGH_INTENSITY_SIGNALS := [
+	"mouse_motion_data",
+	"mouse_scroll_data"
+]
+
+const MODEL_SIGNALS := [
+	"move_model",
+	"rotate_model",
+	"zoom_model",
+	
+	"load_model",
+
+	"reset_model_transform",
+	"a_pose_model",
+	"t_pose_model",
+
+	"bone_toggled"
+]
+
+const TRACKING_SIGNALS := [
+
+]
+
+const FEATURES_SIGNALS := [
+	"add_custom_prop",
+
+	"prop_toggled",
+	
+	"move_prop",
+	"rotate_prop",
+	"zoom_prop",
+	"delete_prop"
+]
+
+const PRESET_SIGNALS := [
+	"new_preset",
+	"preset_toggled",
+
+	"config_name",
+	"description",
+	"hotkey",
+	"notes",
+	"is_default_for_model",
+	"load_preset",
+	"delete_preset"
+]
+
+const APP_SETTINGS_SIGNALS := [
+	"use_transparent_background",
+	"use_fxaa",
+	"msaa_value",
+
+	"view_licenses",
+	"reconstruct_views"
+]
+
+#endregion
+
 onready var button_bar: Control = $ButtonBar
 onready var button_bar_hbox: HBoxContainer = $ButtonBar/HBoxContainer
 
@@ -141,55 +203,24 @@ var current_edited_preset: Reference
 
 func _ready() -> void:
 	AppManager.sb.connect("model_loaded", self, "_on_model_loaded")
-	
-	# Model callbacks
 
-	AppManager.sb.connect("move_model", self, "_on_move_model")
-	AppManager.sb.connect("rotate_model", self, "_on_rotate_model")
-	AppManager.sb.connect("zoom_model", self, "_on_zoom_model")
+	for i in HIGH_INTENSITY_SIGNALS:
+		AppManager.sb.register(self, i)
 
-	AppManager.sb.connect("load_model", self, "_on_load_model")
-	
-	AppManager.sb.connect("reset_model_transform", self, "_on_reset_model_transform")
-	AppManager.sb.connect("a_pose_model", self, "_on_a_pose_model")
-	AppManager.sb.connect("t_pose_model", self, "_on_t_pose_model")
+	for i in MODEL_SIGNALS:
+		AppManager.sb.register(self, i)
 
-	AppManager.sb.connect("bone_toggled", self, "_on_bone_toggled")
+	for i in TRACKING_SIGNALS:
+		AppManager.sb.register(self, i)
 
-	# Tracking callbacks
+	for i in FEATURES_SIGNALS:
+		AppManager.sb.register(self, i)
 
-	# Features callbacks
+	for i in PRESET_SIGNALS:
+		AppManager.sb.register(self, i)
 
-	AppManager.sb.connect("add_custom_prop", self, "_on_add_custom_prop")
-
-	AppManager.sb.connect("prop_toggled", self, "_on_prop_toggled")
-
-	AppManager.sb.connect("move_prop", self, "_on_move_prop")
-	AppManager.sb.connect("rotate_prop", self, "_on_rotate_prop")
-	AppManager.sb.connect("zoom_prop", self, "_on_zoom_prop")
-	AppManager.sb.connect("delete_prop", self, "_on_delete_prop")
-
-	# Preset callbacks
-
-	AppManager.sb.connect("new_preset", self, "_on_new_preset")
-	AppManager.sb.connect("preset_toggled", self, "_on_preset_toggled")
-
-	AppManager.sb.connect("config_name", self, "_on_config_name")
-	AppManager.sb.connect("description", self, "_on_description")
-	AppManager.sb.connect("hotkey", self, "_on_hotkey")
-	AppManager.sb.connect("notes", self, "_on_notes")
-	AppManager.sb.connect("is_default_for_model", self, "_on_is_default_for_model")
-	AppManager.sb.connect("load_preset", self, "_on_load_preset")
-	AppManager.sb.connect("delete_preset", self, "_on_delete_preset")
-
-	# App settings
-
-	AppManager.sb.connect("use_transparent_background", self, "_on_use_transparent_background")
-	AppManager.sb.connect("use_fxaa", self, "_on_use_fxaa")
-	AppManager.sb.connect("msaa_value", self, "_on_msaa_value")
-
-	AppManager.sb.connect("view_licenses", self, "_on_view_licenses")
-	AppManager.sb.connect("reconstruct_views", self, "_on_reconstruct_views")
+	for i in APP_SETTINGS_SIGNALS:
+		AppManager.sb.register(self, i)
 
 	if not OS.is_debug_build():
 		base_path = "%s/%s" % [OS.get_executable_path().get_base_dir(), "resources/gui"]
@@ -242,27 +273,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	
 	# Model and prop movement
 	if (is_left_clicking and event is InputEventMouseMotion):
-		if should_move_model:
-			model_parent.translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
-		if should_rotate_model:
-			model.rotate_x(event.relative.y * mouse_move_strength)
-			model.rotate_y(event.relative.x * mouse_move_strength)
-
-		if should_move_prop:
-			prop_to_move.translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
-		if should_rotate_prop:
-			prop_to_move.get_child(0).rotate_x(event.relative.y * mouse_move_strength)
-			prop_to_move.get_child(0).rotate_y(event.relative.x * mouse_move_strength)
+		AppManager.sb.broadcast_mouse_motion_data(event.relative)
 	elif event.is_action("scroll_up"):
-		if should_zoom_model:
-			model_parent.translate(Vector3(0.0, 0.0, scroll_strength))
-		if should_zoom_prop:
-			prop_to_move.translate(Vector3(0.0, 0.0, scroll_strength))
+		AppManager.sb.broadcast_mouse_scroll_data(1)
 	elif event.is_action("scroll_down"):
-		if should_zoom_model:
-			model_parent.translate(Vector3(0.0, 0.0, -scroll_strength))
-		if should_zoom_prop:
-			prop_to_move.translate(Vector3(0.0, 0.0, -scroll_strength))
+		AppManager.sb.broadcast_mouse_scroll_data(2)
 
 ###############################################################################
 # Connections                                                                 #
@@ -282,6 +297,25 @@ func _on_model_loaded(p_model: BasicModel) -> void:
 	model.scan_mapped_bones()
 
 	_setup_gui_nodes()
+
+func _on_mouse_motion_data(mouse_delta: Vector2) -> void:
+	if should_move_model:
+		model_parent.translate(Vector3(mouse_delta.x, -mouse_delta.y, 0.0) * mouse_move_strength)
+	if should_rotate_model:
+		model.rotate_x(mouse_delta.y * mouse_move_strength)
+		model.rotate_y(mouse_delta.x * mouse_move_strength)
+
+	if should_move_prop:
+		prop_to_move.translate(Vector3(mouse_delta.x, -mouse_delta.y, 0.0) * mouse_move_strength)
+	if should_rotate_prop:
+		prop_to_move.get_child(0).rotate_x(mouse_delta.y * mouse_move_strength)
+		prop_to_move.get_child(0).rotate_y(mouse_delta.x * mouse_move_strength)
+
+func _on_mouse_scroll_data(scroll_direction: int) -> void:
+	if should_zoom_model:
+		model_parent.translate(Vector3(0.0, 0.0, scroll_strength * scroll_direction))
+	if should_zoom_prop:
+		prop_to_move.translate(Vector3(0.0, 0.0, scroll_strength * scroll_direction))
 
 # Model
 
