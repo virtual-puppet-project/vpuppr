@@ -75,12 +75,12 @@ func _on_data_received(id: int) -> void:
 		return
 	
 	if (typeof(json_result.result) != TYPE_DICTIONARY
-			or not (json_result.result as Dictionary).has("signal")
-			or not (json_result.result as Dictionary).has("value")):
+			or not json_result.result.has("signal")
+			or not json_result.result.has("value")):
 		AppManager.logger.error("Invalid data type received from client %d" % id)
 		return
 	
-	if (json_result.result as Dictionary)["value"] == "remote_control_data_received":
+	if (typeof(json_result.result["value"]) == TYPE_STRING and json_result.result["value"] == "remote_control_data_received"):
 		var error_message: String = "Malicious client detected. Tried to trigger infinite loop.\nShutting down"
 		AppManager.logger.error(error_message)
 		AppManager.logger.notify("%s\n\nPlease delete the remote control app you are using as it is probably compromised."
