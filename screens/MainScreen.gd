@@ -39,10 +39,13 @@ func _ready() -> void:
 
 	AppManager.cm.metadata_config.apply_rendering_changes(get_viewport())
 	
-	AppManager.logger.notify("Press TAB to hide the UI")
+	AppManager.logger.notify("Press ESCAPE to hide the UI")
+	
+	if OS.is_debug_build():
+		set_process_unhandled_input(true)
 
 func _unhandled_input(event: InputEvent) -> void:
-	if(event.is_action_pressed("ui_cancel") and OS.is_debug_build()):
+	if event.is_action_pressed("ui_end"):
 		get_tree().quit()
 
 ###############################################################################
