@@ -73,7 +73,8 @@ const FilePopup: Resource = preload("res://screens/gui/BaseFilePopup.tscn")
 
 const LicensesPopup: PackedScene = preload("res://screens/gui/LicensesPopup.tscn")
 
-# Elements
+#region Elements
+
 const ButtonElement: Resource = preload("res://screens/gui/elements/ButtonElement.tscn")
 const InputElement: Resource = preload("res://screens/gui/elements/InputElement.tscn")
 const LabelElement: Resource = preload("res://screens/gui/elements/LabelElement.tscn")
@@ -90,6 +91,8 @@ const PropToggleElement: Resource = preload("res://screens/gui/elements/PropTogg
 const PropColorPickerElement: Resource = preload("res://screens/gui/elements/PropColorPickerElement.tscn")
 
 const PresetToggleElement: Resource = preload("res://screens/gui/elements/PresetToggleElement.tscn")
+
+#endregion
 
 const BaseProp: Resource = preload("res://entities/BaseProp.gd")
 
@@ -170,7 +173,8 @@ var model_parent: Spatial
 var initial_model_transform: Transform
 var initial_model_parent_transform: Transform
 
-# Input
+#region Input
+
 var is_left_clicking := false
 var should_modify_bone := false
 var bone_to_modify: String = ""
@@ -181,17 +185,22 @@ var should_rotate_model := false
 var mouse_move_strength: float = 0.002
 var scroll_strength: float = 0.05
 
+#endregion
+
 # View toggling
 var current_view: String = ""
 var should_hide := false
 
-# Props
+#region Props
+
 var props: Dictionary = {} # String: PropData
 var current_prop_data: Reference = PropData.new()
 var prop_to_move: Spatial
 var should_move_prop := false
 var should_rotate_prop := false
 var should_zoom_prop := false
+
+#endregion
 
 # Presets
 var presets: Dictionary = {} # String: PresetToggleElement

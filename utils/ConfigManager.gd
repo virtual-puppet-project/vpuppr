@@ -122,6 +122,7 @@ class ConfigData:
 	var should_track_eye: bool = true
 	var gaze_strength: float = 0.5
 	var blink_threshold: float = 0.2
+	var link_eye_blinks: bool = false
 	var use_raw_eye_rotation: bool = false
 
 	var tracker_should_launch: bool = true
