@@ -84,3 +84,7 @@ func setup_blend_shapes(element: Control) -> void:
 # TODO this is bad
 func _on_blend_shape_pressed(idx: int) -> void:
 	blend_shape_element._handle_event([blend_shape_element.event_name, blend_shape_element.menu_button.get_popup().get_item_text(idx)])
+
+func python_path(element: Control) -> void:
+	if OS.get_name().to_lower() == "windows":
+		element.hide()
