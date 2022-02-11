@@ -27,15 +27,17 @@ func setup_cameras(element: Control) -> void:
 				exe_path = "%s%s" % [ProjectSettings.globalize_path("res://export"), "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe"]
 			OS.execute(exe_path, ["-l", "1"], true, output)
 		"osx", "x11":
-			# TODO actually implement this
-			pass
+			OS.execute("ls", ["/dev/", "|", "grep", "video"], true, output)
 
 	if not output.empty():
+		# TODO check to see if this is correct on linux
 		result.append_array((output[0] as String).split("\n"))
-		result.pop_back() # First output is 'Available cameras'
-		result.pop_front() # Last output is an empty string
+		if OS.get_name().to_lower() == "windows":
+			result.pop_back() # First output is 'Available cameras'
+			result.pop_front() # Last output is an empty string
 	else:
-		result.append("0 Default camera")
+		result.append("Unable to list cameras")
+		popup_menu.disconnect("index_pressed", self, "_on_camera_pressed")
 
 	for option in result:
 		popup_menu.add_item(option)
@@ -59,9 +61,6 @@ func setup_blend_shapes(element: Control) -> void:
 		return
 
 	popup_menu.clear()
-
-	# for i in ["angry", "fun", "joy", "sorrow"]:
-	# 	popup_menu.add_item(i)
 
 	yield(get_tree(), "idle_frame")
 
