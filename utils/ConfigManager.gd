@@ -37,6 +37,8 @@ class Metadata:
 	var remote_control_port: int = 24202
 	var use_remote_control: bool = false
 
+	var python_path: String = "*"
+
 	func load_from_json(json_string: String) -> bool:
 		var json_data = parse_json(json_string)
 
@@ -70,9 +72,28 @@ class Metadata:
 		else:
 			viewport.msaa = Viewport.MSAA_DISABLED
 
-var current_model_config: ConfigData
+var current_model_config := ConfigData.new()
 
 class ConfigData:
+	# TODO these need to be refactored
+	const UNCONNECTED_PROPERTIES := [
+		"mapped_bones",
+		"bone_transforms",
+		"model_transform",
+		"model_parent_transform",
+
+		"config_name",
+		"description",
+		"hotkey",
+		"notes",
+		"is_default_for_model",
+		"is_default_dirty",
+		"model_name",
+		"model_path",
+
+		"instanced_props"
+	]
+
 	###
 	# Metadata
 	###
@@ -285,60 +306,21 @@ func _init() -> void:
 	else:
 		metadata_path = "res://export"
 
-	# Model
+	for p in current_model_config.get_property_list():
+		if p.name in ["Reference", "script", "Script Variables"] or p.name in ConfigData.UNCONNECTED_PROPERTIES:
+			continue
 
-	AppManager.sb.connect("set_model_as_default", self, "_on_set_model_as_default")
+		AppManager.sb.register(self, p.name)
 
-	# Tracking
-
-	AppManager.sb.connect("translation_damp", self, "_on_translation_damp")
-	AppManager.sb.connect("rotation_damp", self, "_on_rotation_damp")
-	AppManager.sb.connect("additional_bone_damp", self, "_on_additional_bone_damp")
-
-	AppManager.sb.connect("head_bone", self, "_on_head_bone")
-
-	AppManager.sb.connect("apply_translation", self, "_on_apply_translation")
-	AppManager.sb.connect("apply_rotation", self, "_on_apply_rotation")
-
-	AppManager.sb.connect("interpolate_model", self, "_on_interpolate_model")
-	AppManager.sb.connect("interpolation_rate", self, "_on_interpolation_rate")
-
-	AppManager.sb.connect("interpolate_bones", self, "_on_interpolate_bones")
-	AppManager.sb.connect("bone_interpolation_rate", self, "_on_bone_interpolation_rate")
-	AppManager.sb.connect("interpolate_gaze", self, "_on_interpolate_gaze")
-	AppManager.sb.connect("gaze_interpolation_rate", self, "_on_gaze_interpolation_rate")
-	AppManager.sb.connect("interpolate_blinking", self, "_on_interpolate_blinking")
-	AppManager.sb.connect("blinking_interpolation_rate", self, "_on_blinking_interpolation_rate")
-	AppManager.sb.connect("interpolate_mouth", self, "_on_interpolate_mouth")
-	AppManager.sb.connect("mouth_interpolation_rate", self, "_on_mouth_interpolation_rate")
-
-	AppManager.sb.connect("should_track_eye", self, "_on_should_track_eye")
-	AppManager.sb.connect("gaze_strength", self, "_on_gaze_strength")
-	AppManager.sb.connect("blink_threshold", self, "_on_blink_threshold")
-	AppManager.sb.connect("use_raw_eye_rotation", self, "_on_use_raw_eye_rotation")
-
-	AppManager.sb.connect("camera_select", self, "_on_camera_select")
-
-	AppManager.sb.connect("tracker_should_launch", self, "_on_tracker_should_launch")
-	AppManager.sb.connect("tracker_fps", self, "_on_tracker_fps")
-	AppManager.sb.connect("tracker_address", self, "_on_tracker_address")
-	AppManager.sb.connect("tracker_port", self, "_on_tracker_port")
-
-	AppManager.sb.connect("use_lip_sync", self, "_on_use_lip_sync")
-
-	# Features
-
-	AppManager.sb.connect("main_light", self, "_on_main_light")
-	AppManager.sb.connect("world_environment", self, "_on_environment")
-
-	# Presets
-
-	# App settings
-
-	AppManager.sb.connect("default_model_search_path", self, "_on_default_model_search_path")
-	AppManager.sb.connect("default_prop_search_path", self, "_on_default_prop_search_path")
-	AppManager.sb.connect("remote_control_port", self, "_on_remote_control_port")
-	AppManager.sb.connect("use_remote_control", self, "_on_use_remote_control")
+	# Metadata functions must be set manually since those go through additional processing
+	AppManager.sb.register(self, "set_model_as_default")
+	AppManager.sb.register(self, "camera_select")
+	AppManager.sb.register(self, "use_lip_sync")
+	AppManager.sb.register(self, "default_model_search_path")
+	AppManager.sb.register(self, "default_prop_search_path")
+	AppManager.sb.register(self, "remote_control_port")
+	AppManager.sb.register(self, "use_remote_control")
+	AppManager.sb.register(self, "python_path")
 
 ###############################################################################
 # Connections                                                                 #
@@ -422,6 +404,9 @@ func _on_tracker_address(value: String) -> void:
 
 func _on_tracker_port(value: int) -> void:
 	current_model_config.tracker_port = value
+
+func _on_python_path(path: String) -> void:
+	metadata_config.python_path = path
 
 func _on_use_lip_sync(value: bool) -> void:
 	metadata_config.use_lip_sync = value
