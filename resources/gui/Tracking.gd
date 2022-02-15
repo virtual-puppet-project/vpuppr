@@ -17,24 +17,31 @@ func setup_cameras(element: Control) -> void:
 	if not popup_menu.is_connected("index_pressed", self, "_on_camera_pressed"):
 		popup_menu.connect("index_pressed", self, "_on_camera_pressed")
 
+	var os_name := OS.get_name().to_lower()
+
 	var result: Array = []
 
 	var output: Array = []
-	match OS.get_name().to_lower():
+	match os_name:
 		"windows":
 			var exe_path: String = "%s%s" % [OS.get_executable_path().get_base_dir(), "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe"]
 			if OS.is_debug_build():
 				exe_path = "%s%s" % [ProjectSettings.globalize_path("res://export"), "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe"]
 			OS.execute(exe_path, ["-l", "1"], true, output)
 		"osx", "x11":
-			OS.execute("ls", ["/dev/", "|", "grep", "video"], true, output)
+			var exe_path := "%s%s" % [OS.get_executable_path().get_base_dir(), "/resources/scripts/get_video_devices.sh"]
+			if OS.is_debug_build():
+				exe_path = "%s%s" % [ProjectSettings.globalize_path("res://export"), "/resources/scripts/get_video_devices.sh"]
+			OS.execute(exe_path, [], true, output)
 
 	if not output.empty():
-		# TODO check to see if this is correct on linux
 		result.append_array((output[0] as String).split("\n"))
-		if OS.get_name().to_lower() == "windows":
-			result.pop_back() # First output is 'Available cameras'
-			result.pop_front() # Last output is an empty string
+		match os_name:
+			"windows":
+				result.pop_back() # Last output is an empty string
+				result.pop_front() # First output is 'Available cameras'
+			"osx", "x11":
+				result.pop_back() # Last output is an empty string
 	else:
 		result.append("Unable to list cameras")
 		popup_menu.disconnect("index_pressed", self, "_on_camera_pressed")
@@ -44,7 +51,11 @@ func setup_cameras(element: Control) -> void:
 
 # TODO this is bad
 func _on_camera_pressed(idx: int) -> void:
-	camera_element._handle_event([camera_element.event_name, camera_element.menu_button.get_popup().get_item_text(idx)[0]])
+	match OS.get_name().to_lower():
+		"windows":
+			camera_element._handle_event([camera_element.event_name, camera_element.menu_button.get_popup().get_item_text(idx)[0]])
+		"osx", "x11":
+			camera_element._handle_event([camera_element.event_name, "/dev/%s" % camera_element.menu_button.get_popup().get_item_text(idx)])
 
 # Blend shapes
 

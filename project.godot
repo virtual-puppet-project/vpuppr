@@ -146,7 +146,7 @@ _global_script_class_icons={
 
 [application]
 
-config/name="OpenSeeFace GD"
+config/name="OpenSeeFaceGD"
 run/main_scene="res://screens/MainScreen.tscn"
 config/icon="res://assets/osfgd_icon.png"
 
@@ -172,7 +172,7 @@ window/per_pixel_transparency/enabled=true
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/gut/plugin.cfg" )
+enabled=PoolStringArray(  )
 
 [gdnative]
 

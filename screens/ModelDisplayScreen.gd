@@ -265,15 +265,15 @@ func _try_load_model(file_path):
 			# model.vrm_mappings = AppManager.vrm_mappings
 			# AppManager.vrm_mappings.dirty = false
 			AppManager.logger.info("VRM file loaded successfully.")
-		"tscn":
-			AppManager.logger.info("Loading TSCN file.")
+		"tscn", "scn":
+			AppManager.logger.info("Loading PackedScene file.")
 			var model_resource = load(file_path)
 			model = model_resource.instance()
 			# TODO might not want this for tscn
 			model.scale_object_local(Vector3(0.4, 0.4, 0.4))
 			translation_adjustment = Vector3(1, -1, 1)
 			rotation_adjustment = Vector3(-1, -1, 1)
-			AppManager.logger.info("TSCN file loaded successfully.")
+			AppManager.logger.info("PackedScene file loaded successfully.")
 		_:
 			AppManager.logger.notify("File extension not recognized. %s" % file_path)
 			printerr("File extension not recognized. %s" % file_path)
