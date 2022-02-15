@@ -50,7 +50,7 @@ All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` h
 5. Run the project from the editor
 6. In the program, when starting face tracking and if you are running OpenSeeFace via Python, disable the option to have the program start the face tracker
 7. Start face tracking
-8. To export your own release binaries, you will need to use my patched version of Godot 3.4. Precompiled release templates can be downloaded from my [Godot fork](https://github.com/you-win/godot/releases/tag/3.3.2-gltf) (or compiled using `scons platform=<your platform> target=release tools=no use_module_gltf=yes -j<number of threads, no space between j>`
+8. To export your own release binaries, you will need to use my patched version of Godot 3.4. Precompiled release templates can be downloaded from my [Godot fork](https://github.com/you-win/godot/releases/tag/3.4-gltf-module) (or compiled using `scons platform=<your platform> target=release tools=no use_module_gltf=yes -j<number of threads, no space between j>`
 
 ## Discussion
 A Discord server [is available here](https://discord.gg/6mcdWWBkrr) if you need help, like to contribute, or just want to chat.

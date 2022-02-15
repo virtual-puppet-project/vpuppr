@@ -19,11 +19,5 @@ export_presets.cfg
 .mono/
 data_*/
 export/
+export_templates/
 
-assets/robo/
-assets/future-tank/
-assets/local/
-
-entities/robo/
-entities/future-tank/
-entities/local/
