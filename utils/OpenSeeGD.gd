@@ -328,7 +328,6 @@ func _start_tracker() -> bool:
 			pid = OS.execute(
 				script_path,
 				[
-					python_path,
 					user_data_path,
 					exe_path,
 					AppManager.cm.metadata_config.camera_index,
