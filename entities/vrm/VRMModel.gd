@@ -409,11 +409,18 @@ func custom_update(data, interpolation_data) -> void:
 		skeleton.set_bone_pose(right_eye_id, left_eye_transform)
 		skeleton.set_bone_pose(left_eye_id, right_eye_transform)
 		
-		# Mouth tracking
+		#region Mouth tracking
+		
+		# Actual mouth shape
+		# TODO stub
+		
+		# Open or closed
 		for x in current_mouth_shape.morphs:
 			_modify_blend_shape(x.mesh, x.morph,
-					min(max(x.values[0], interpolation_data.interpolate(InterpolationData.InterpolationDataType.MOUTH_MOVEMENT, 2.0)),
+					min(max(x.values[0], interpolation_data.interpolate(InterpolationData.InterpolationDataType.MOUTH_OPEN, 2.0)),
 					x.values[1]))
+
+		#endregion
 	else:
 		# TODO implement eco mode, should be more efficient than standard mode
 		# Eco-mode blinking
