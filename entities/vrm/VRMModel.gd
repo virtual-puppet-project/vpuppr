@@ -411,14 +411,55 @@ func custom_update(data, interpolation_data) -> void:
 		
 		#region Mouth tracking
 		
-		# Actual mouth shape
-		# TODO stub
+		var mouth_open: float = interpolation_data.interpolate(InterpolationData.InterpolationDataType.MOUTH_OPEN, 2.0)
+		var mouth_wide: float = interpolation_data.interpolate(InterpolationData.InterpolationDataType.MOUTH_WIDE, 2.0)
+
+		var mouth_scale_x: int = 0
+		var mouth_scale_y: int = 0
 		
-		# Open or closed
+		if mouth_open < 0.33:
+			mouth_scale_x = 1
+		elif mouth_open <= 0.66:
+			mouth_scale_x = 2
+		else:
+			mouth_scale_x = 3
+
+		if mouth_wide < 0.33:
+			mouth_scale_y = 1
+		elif mouth_wide <= 0.66:
+			mouth_scale_y = 2
+		else:
+			mouth_scale_y = 3
+
+		var last_shape = current_mouth_shape
+
+		match mouth_scale_x:
+			1:
+				match mouth_scale_y:
+					1:
+						current_mouth_shape = u
+					2:
+						current_mouth_shape = e
+					3:
+						current_mouth_shape = i
+			2:
+				current_mouth_shape = e
+			3:
+				match mouth_scale_y:
+					1:
+						current_mouth_shape = o
+					2:
+						current_mouth_shape = e
+					3:
+						current_mouth_shape = a
+
+		if current_mouth_shape != last_shape:
+			for x in last_shape.morphs:
+				_modify_blend_shape(x.mesh, x.morph, 0)
+		
 		for x in current_mouth_shape.morphs:
-			_modify_blend_shape(x.mesh, x.morph,
-					min(max(x.values[0], interpolation_data.interpolate(InterpolationData.InterpolationDataType.MOUTH_OPEN, 2.0)),
-					x.values[1]))
+			# Open or closed
+			_modify_blend_shape(x.mesh, x.morph, min(max(x.values[0], mouth_open), x.values[1]))
 
 		#endregion
 	else:
