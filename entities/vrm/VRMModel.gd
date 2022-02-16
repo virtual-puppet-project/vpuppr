@@ -228,13 +228,13 @@ func _map_eye_expressions(data: Dictionary):
 	left_eye = EyeClamps.new()
 	right_eye = EyeClamps.new()
 
-	var leftEyeMorph = "eye_L"
+	var let_eye_morph = "eye_L"
 	if vrm_meta.humanoid_bone_mapping.has("leftEye"):
-		leftEyeMorph = vrm_meta.humanoid_bone_mapping["leftEye"]
+		let_eye_morph = vrm_meta.humanoid_bone_mapping["leftEye"]
 	
-	var rightEyeMorph = "eye_R"
+	var right_eye_morph = "eye_R"
 	if vrm_meta.humanoid_bone_mapping.has("rightEye"):
-		rightEyeMorph = vrm_meta.humanoid_bone_mapping["rightEye"]
+		right_eye_morph = vrm_meta.humanoid_bone_mapping["rightEye"]
 
 	for look_up_value in data["lookup"].morphs:
 		if look_up_value:
@@ -242,10 +242,10 @@ func _map_eye_expressions(data: Dictionary):
 			if val:
 				var rot: Quat = val["rotation"]
 				match look_up_value.morph:
-					leftEyeMorph:
+					let_eye_morph:
 						var x = rot.get_euler()
 						left_eye.up = x
-					rightEyeMorph:
+					right_eye_morph:
 						right_eye.up = rot.get_euler()
 
 	for look_down_value in data["lookdown"].morphs:
@@ -254,9 +254,9 @@ func _map_eye_expressions(data: Dictionary):
 			if val:
 				var rot: Quat = val["rotation"]
 				match look_down_value.morph:
-					leftEyeMorph:
+					let_eye_morph:
 						left_eye.down = rot.get_euler()
-					rightEyeMorph:
+					right_eye_morph:
 						right_eye.down = rot.get_euler()
 	
 	for look_left_value in data["lookleft"].morphs:
@@ -265,9 +265,9 @@ func _map_eye_expressions(data: Dictionary):
 			if val:
 				var rot: Quat = val["rotation"]
 				match look_left_value.morph:
-					leftEyeMorph:
+					let_eye_morph:
 						left_eye.left = rot.get_euler()
-					rightEyeMorph:
+					right_eye_morph:
 						right_eye.left = rot.get_euler()
 
 	for look_right_value in data["lookright"].morphs:
@@ -276,9 +276,9 @@ func _map_eye_expressions(data: Dictionary):
 			if val:
 				var rot: Quat = val["rotation"]
 				match look_right_value.morph:
-					leftEyeMorph:
+					let_eye_morph:
 						left_eye.right = rot.get_euler()
-					rightEyeMorph:
+					right_eye_morph:
 						right_eye.right = rot.get_euler()
 
 	# Some models don't have blendshapes for looking up/down/left/right
