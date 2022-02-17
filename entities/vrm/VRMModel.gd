@@ -11,7 +11,8 @@ var right_eye_id: int
 var neck_bone_id: int
 var spine_bone_id: int
 
-# Blinking
+#region Eye data
+
 var blink_threshold: float
 var link_eye_blinks: bool
 var eco_mode_is_blinking: bool = false
@@ -27,8 +28,7 @@ var right_eye: EyeClamps
 
 var use_raw_eye_rotation: bool = false
 
-# Mouth
-var min_mouth_value: float = 0.0
+#endregion
 
 class ExpressionData:
 	var morphs: Array # MorphData
@@ -58,10 +58,17 @@ var u: ExpressionData
 # TODO stopgap
 var last_expression: ExpressionData
 
+#region Lip sync
+
 var current_mouth_shape: ExpressionData
 const VOWEL_HISTORY: int = 5 # TODO move to config
 const MIN_VOWEL_CHANGE: int = 3 # TODO move to config
 var last_vowels: Array = []
+var lip_sync_has_lock := false
+const LIP_SYNC_LOCK_RESET_TIME: float = 0.1
+var lip_sync_lock_reset_counter := 0.0
+
+#endregion
 
 var all_expressions: Dictionary = {} # String: ExpressionData
 
@@ -133,6 +140,13 @@ func _ready() -> void:
 
 	scan_mapped_bones()
 
+func _process(delta: float) -> void:
+	if lip_sync_has_lock:
+		lip_sync_lock_reset_counter += delta
+		if lip_sync_lock_reset_counter >= LIP_SYNC_LOCK_RESET_TIME:
+			lip_sync_has_lock = false
+			lip_sync_lock_reset_counter = 0.0
+
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
@@ -171,9 +185,6 @@ func _on_blend_shapes(value: String) -> void:
 	last_expression = ed
 
 func _on_lip_sync_updated(data: Dictionary) -> void:
-	for x in current_mouth_shape.morphs:
-		_modify_blend_shape(x.mesh, x.morph, 1)
-	
 	last_vowels.push_back(data["vowel"])
 	if last_vowels.size() > VOWEL_HISTORY:
 		last_vowels.pop_front()
@@ -211,11 +222,14 @@ func _on_lip_sync_updated(data: Dictionary) -> void:
 	elif vowel_count.o >= MIN_VOWEL_CHANGE:
 		current_mouth_shape = o
 
+	lip_sync_has_lock = true
+	lip_sync_lock_reset_counter = 0.0
+
 	if current_mouth_shape != last_shape:
 		for x in current_mouth_shape.morphs:
-			_modify_blend_shape(x.mesh, x.morph, 1)
+			_modify_blend_shape(x.mesh, x.morph, x.values[1] / 2.0)
 		for x in last_shape.morphs:
-			_modify_blend_shape(x.mesh, x.morph, 0)
+			_modify_blend_shape(x.mesh, x.morph, x.values[0])
 
 ###############################################################################
 # Private functions                                                           #
@@ -412,54 +426,65 @@ func custom_update(data, interpolation_data) -> void:
 		#region Mouth tracking
 		
 		var mouth_open: float = interpolation_data.interpolate(InterpolationData.InterpolationDataType.MOUTH_OPEN, 2.0)
-		var mouth_wide: float = interpolation_data.interpolate(InterpolationData.InterpolationDataType.MOUTH_WIDE, 2.0)
 
-		var mouth_scale_x: int = 0
-		var mouth_scale_y: int = 0
+		if not lip_sync_has_lock: # Use face tracking data
+			var mouth_wide: float = interpolation_data.interpolate(InterpolationData.InterpolationDataType.MOUTH_WIDE, 2.0)
+
+			var mouth_scale_x: int = 0
+			var mouth_scale_y: int = 0
+			
+			# TODO these should be in config
+			if mouth_open < 2.0 * 0.25:
+				mouth_scale_x = 1
+			elif mouth_open <= 2.0 * 0.3:
+				mouth_scale_x = 2
+			else:
+				mouth_scale_x = 3
+
+			if mouth_wide < 2.0 * 0.25:
+				mouth_scale_y = 1
+			elif mouth_wide <= 2.0 * 0.3:
+				mouth_scale_y = 2
+			else:
+				mouth_scale_y = 3
+
+			var last_shape = current_mouth_shape
+
+			match mouth_scale_x:
+				1:
+					match mouth_scale_y:
+						1:
+							current_mouth_shape = u
+						2:
+							# current_mouth_shape = e
+							pass
+						3:
+							current_mouth_shape = i
+				2:
+					current_mouth_shape = e
+				3:
+					match mouth_scale_y:
+						1:
+							current_mouth_shape = o
+						2:
+							# current_mouth_shape = e
+							pass
+						3:
+							current_mouth_shape = a
+
+			if current_mouth_shape != last_shape:
+				for x in last_shape.morphs:
+					_modify_blend_shape(x.mesh, x.morph, 0)
 		
-		if mouth_open < 0.33:
-			mouth_scale_x = 1
-		elif mouth_open <= 0.66:
-			mouth_scale_x = 2
-		else:
-			mouth_scale_x = 3
-
-		if mouth_wide < 0.33:
-			mouth_scale_y = 1
-		elif mouth_wide <= 0.66:
-			mouth_scale_y = 2
-		else:
-			mouth_scale_y = 3
-
-		var last_shape = current_mouth_shape
-
-		match mouth_scale_x:
-			1:
-				match mouth_scale_y:
-					1:
-						current_mouth_shape = u
-					2:
-						current_mouth_shape = e
-					3:
-						current_mouth_shape = i
-			2:
-				current_mouth_shape = e
-			3:
-				match mouth_scale_y:
-					1:
-						current_mouth_shape = o
-					2:
-						current_mouth_shape = e
-					3:
-						current_mouth_shape = a
-
-		if current_mouth_shape != last_shape:
-			for x in last_shape.morphs:
-				_modify_blend_shape(x.mesh, x.morph, 0)
-		
-		for x in current_mouth_shape.morphs:
-			# Open or closed
-			_modify_blend_shape(x.mesh, x.morph, min(max(x.values[0], mouth_open), x.values[1]))
+			for x in current_mouth_shape.morphs:
+				_modify_blend_shape(x.mesh, x.morph, min(max(x.values[0], mouth_open), x.values[1]))
+		else: # Use lip sync mouth shape
+			for x in current_mouth_shape.morphs:
+				_modify_blend_shape(
+					x.mesh,
+					x.morph,
+					min(max(_get_blend_shape_weight(x.mesh, x.morph), mouth_open), x.values[1])
+				)
 
 		#endregion
 	else:
