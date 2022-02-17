@@ -131,10 +131,8 @@ func _physics_process(_delta: float) -> void:
 			updated,
 			stored_offsets.translation_offset - open_see_data.translation,
 			stored_offsets.euler_offset - corrected_euler,
-			(stored_offsets.left_eye_gaze_offset - open_see_data.left_gaze.get_euler()) *
-					float(should_track_eye),
-			(stored_offsets.right_eye_gaze_offset - open_see_data.right_gaze.get_euler()) *
-					float(should_track_eye),
+			stored_offsets.left_eye_gaze_offset - open_see_data.left_gaze.get_euler() if should_track_eye else Vector3.ZERO,
+			stored_offsets.right_eye_gaze_offset - open_see_data.right_gaze.get_euler() if should_track_eye else Vector3.ZERO,
 			open_see_data.left_eye_open,
 			open_see_data.right_eye_open,
 			open_see_data.features.mouth_open,
@@ -203,6 +201,9 @@ func _on_apply_translation(value: bool) -> void:
 
 func _on_apply_rotation(value: bool) -> void:
 	apply_rotation = value
+
+func _on_should_track_eye(value: bool) -> void:
+	should_track_eye = value
 
 ###############################################################################
 # Private functions                                                           #
