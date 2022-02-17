@@ -78,8 +78,6 @@ func _ready() -> void:
 		AppManager.sb.connect(i, self, "_on_%s" % i)
 		set(i, AppManager.cm.current_model_config.get(i))
 
-	AppManager.sb.connect("lip_sync_updated", self, "_on_lip_sync_updated")
-
 	if model_resource_path:
 		_try_load_model(model_resource_path)
 
@@ -205,25 +203,6 @@ func _on_apply_translation(value: bool) -> void:
 
 func _on_apply_rotation(value: bool) -> void:
 	apply_rotation = value
-
-# func _on_interpolate_model(value: bool) -> void:
-# 	interpolate_model = value
-# 	if value:
-# 		_set_interpolation_rate(last_interpolation_rate)
-# 	else:
-# 		last_interpolation_rate = interpolation_rate
-# 		_set_interpolation_rate(1.0)
-
-# func _on_interpolation_rate(value: float) -> void:
-# 	last_interpolation_rate = value
-# 	_set_interpolation_rate(value)
-
-func _on_should_track_eye(value: bool) -> void:
-	should_track_eye = value
-
-func _on_lip_sync_updated(_data: Dictionary) -> void:
-	interpolation_data.target_mouth_movement = 1
-	interpolation_data.interpolate(InterpolationData.InterpolationDataType.MOUTH_MOVEMENT, 0.8)
 
 ###############################################################################
 # Private functions                                                           #

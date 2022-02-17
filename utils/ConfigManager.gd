@@ -137,14 +137,25 @@ class ConfigData:
 	var gaze_interpolation_rate: float = 0.1
 	var interpolate_blinking: bool = false
 	var blinking_interpolation_rate: float = 0.1
-	var interpolate_mouth: bool = false
-	var mouth_interpolation_rate: float = 0.1
+	var interpolate_mouth: bool = true # NOTE It's better to use rawer data for mouth
+	var mouth_interpolation_rate: float = 0.8
 
 	var should_track_eye: bool = true
 	var gaze_strength: float = 0.5
 	var blink_threshold: float = 0.2
 	var link_eye_blinks: bool = false
 	var use_raw_eye_rotation: bool = false
+
+	#region Mouth tracking values
+
+	var mouth_open_assumed_max: float = 2.0
+	var mouth_open_group_1: float = 0.25
+	var mouth_open_group_2: float = 0.3
+	var mouth_wide_assumed_max: float = 2.0
+	var mouth_wide_group_1: float = 0.25
+	var mouth_wide_group_2: float = 0.3
+
+	#endregion
 
 	var tracker_should_launch: bool = true
 	var tracker_fps: int = 12
