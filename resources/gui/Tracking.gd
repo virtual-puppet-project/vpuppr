@@ -3,7 +3,7 @@ extends Control
 func setup() -> void:
 	pass
 
-# Camera select
+#region Camera select
 
 var camera_element
 
@@ -57,7 +57,19 @@ func _on_camera_pressed(idx: int) -> void:
 		"osx", "x11":
 			camera_element._handle_event([camera_element.event_name, "/dev/%s" % camera_element.menu_button.get_popup().get_item_text(idx)])
 
-# Blend shapes
+#endregion
+
+#region Start Tracker
+
+func setup_start_tracker(element: Control) -> void:
+	if OpenSeeGd.is_tracking:
+		element.button.text = OpenSeeGd.STOP_FACE_TRACKER_TEXT
+	else:
+		element.button.text = OpenSeeGd.RUN_FACE_TRACKER_TEXT
+
+#endregion
+
+#region Blend shapes
 
 var blend_shape_element
 
@@ -84,6 +96,8 @@ func setup_blend_shapes(element: Control) -> void:
 # TODO this is bad
 func _on_blend_shape_pressed(idx: int) -> void:
 	blend_shape_element._handle_event([blend_shape_element.event_name, blend_shape_element.menu_button.get_popup().get_item_text(idx)])
+
+#endregion
 
 func python_path(element: Control) -> void:
 	if OS.get_name().to_lower() == "windows":
