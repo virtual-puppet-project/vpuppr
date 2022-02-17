@@ -38,11 +38,20 @@
         <input name="Tracker Address" data="tracker_address" event="tracker_address" type="string"/>
         <input name="Tracker Port" data="tracker_port" event="tracker_port" type="integer"/>
         <input name="Python Path" data="python_path" event="python_path" type="string" setup="python_path"/>
-        <button name="Start Tracker" event="toggle_tracker" label_updatable="true"/>
+        <button name="Start Tracker" event="toggle_tracker" label_updatable="true" setup="setup_start_tracker"/>
         <label name="Lip Sync"/>
         <toggle name="Use lip sync" data="use_lip_sync" event="use_lip_sync"/>
+        
         <!-- TODO this is bad, should refactor into a list -->
         <label name="Blend Shapes"/>
         <drop_down name="Blend Shapes" event="blend_shapes" setup="setup_blend_shapes"/>
+
+        <label name="Mouth shapes"/>
+        <input name="Mouth open max" data="mouth_open_max" event="mouth_open_max" type="float"/>
+        <input name="Mouth open group 1" data="mouth_open_group_1" event="mouth_open_group_1" type="float"/>
+        <input name="Mouth open group 2" data="mouth_open_group_2" event="mouth_open_group_2" type="float"/>
+        <input name="Mouth wide max" data="mouth_wide_max" event="mouth_wide_max" type="float"/>
+        <input name="Mouth wide group 1" data="mouth_wide_group_1" event="mouth_wide_group_1" type="float"/>
+        <input name="Mouth wide group 2" data="mouth_wide_group_2" event="mouth_wide_group_2" type="float"/>
     </right>
 </view>

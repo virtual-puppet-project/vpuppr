@@ -75,7 +75,7 @@ func broadcast_bone_toggled(value: Array) -> void:
 	"""
 	emit_signal("bone_toggled", value[0], value[1], value[2])
 
-# Tracking
+#region Tracking
 
 signal translation_damp(value)
 func broadcast_translation_damp(value: float) -> void:
@@ -198,7 +198,33 @@ signal blend_shapes(value)
 func broadcast_blend_shapes(value: String) -> void:
 	emit_signal("blend_shapes", value)
 
-# Features gui
+signal mouth_open_max(value)
+func broadcast_mouth_open_max(value: float) -> void:
+	emit_signal("mouth_open_max", value)
+
+signal mouth_open_group_1(value)
+func broadcast_mouth_open_group_1(value: float) -> void:
+	emit_signal("mouth_open_group_1", value)
+
+signal mouth_open_group_2(value)
+func broadcast_mouth_open_group_2(value: float) -> void:
+	emit_signal("mouth_open_group_2", value)
+
+signal mouth_wide_max(value)
+func broadcast_mouth_wide_max(value: float) -> void:
+	emit_signal("mouth_wide_max", value)
+
+signal mouth_wide_group_1(value)
+func broadcast_mouth_wide_group_1(value: float) -> void:
+	emit_signal("mouth_wide_group_1", value)
+
+signal mouth_wide_group_2(value)
+func broadcast_mouth_wide_group_2(value: float) -> void:
+	emit_signal("mouth_wide_group_2", value)
+
+#endregion
+
+#region Features
 
 signal add_custom_prop()
 func broadcast_add_custom_prop() -> void:
@@ -208,7 +234,9 @@ signal custom_prop_toggle_created(value)
 func broadcast_custom_prop_toggle_created(value: BaseElement) -> void:
 	emit_signal("custom_prop_toggle_created", value)
 
-# Props
+#endregion
+
+#region Props
 
 signal prop_toggled(prop_name, value)
 func broadcast_prop_toggled(value: Array) -> void:
@@ -238,7 +266,9 @@ signal delete_prop()
 func broadcast_delete_prop() -> void:
 	emit_signal("delete_prop")
 
-# Presets
+#endregion
+
+#region Presets
 
 signal new_preset(preset_name)
 func broadcast_new_preset(value: String) -> void:
@@ -285,7 +315,9 @@ signal preset_loaded()
 func broadcast_preset_loaded() -> void:
 	emit_signal("preset_loaded")
 
-# App settings
+#endregion
+
+#region App settings
 
 signal default_model_search_path(value)
 func broadcast_default_model_search_path(value: String) -> void:
@@ -330,6 +362,8 @@ func broadcast_remote_control_data_received(data: Dictionary) -> void:
 	"""
 	call("broadcast_%s" % data["signal"], data["value"])
 	emit_signal("remote_control_data_received", data) # TODO maybe we should filter before rebroadcasting?
+
+#endregion
 
 # File select popup
 
