@@ -433,17 +433,16 @@ func custom_update(data, interpolation_data) -> void:
 			var mouth_scale_x: int = 0
 			var mouth_scale_y: int = 0
 			
-			# TODO these should be in config
-			if mouth_open < 2.0 * 0.25:
+			if mouth_open < AppManager.cm.current_model_config.mouth_open_max * AppManager.cm.current_model_config.mouth_open_group_1:
 				mouth_scale_x = 1
-			elif mouth_open <= 2.0 * 0.3:
+			elif mouth_open <= AppManager.cm.current_model_config.mouth_open_max * AppManager.cm.current_model_config.mouth_open_group_2:
 				mouth_scale_x = 2
 			else:
 				mouth_scale_x = 3
 
-			if mouth_wide < 2.0 * 0.25:
+			if mouth_wide < AppManager.cm.current_model_config.mouth_wide_max * AppManager.cm.current_model_config.mouth_wide_group_1:
 				mouth_scale_y = 1
-			elif mouth_wide <= 2.0 * 0.3:
+			elif mouth_wide <= AppManager.cm.current_model_config.mouth_wide_max * AppManager.cm.current_model_config.mouth_wide_group_2:
 				mouth_scale_y = 2
 			else:
 				mouth_scale_y = 3
