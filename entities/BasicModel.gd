@@ -65,6 +65,9 @@ func _on_gaze_strength(value: float) -> void:
 func _modify_blend_shape(mesh_instance: MeshInstance, blend_shape: String, value: float) -> void:
 	mesh_instance.set(blend_shape, value)
 
+func _get_blend_shape_weight(mesh_instance: MeshInstance, blend_shape: String) -> float:
+	return mesh_instance.get(blend_shape)
+
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################

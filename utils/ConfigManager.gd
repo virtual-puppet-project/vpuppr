@@ -137,14 +137,25 @@ class ConfigData:
 	var gaze_interpolation_rate: float = 0.1
 	var interpolate_blinking: bool = false
 	var blinking_interpolation_rate: float = 0.1
-	var interpolate_mouth: bool = false
-	var mouth_interpolation_rate: float = 0.1
+	var interpolate_mouth: bool = true # NOTE It's better to use rawer data for mouth
+	var mouth_interpolation_rate: float = 0.8
 
 	var should_track_eye: bool = true
 	var gaze_strength: float = 0.5
 	var blink_threshold: float = 0.2
 	var link_eye_blinks: bool = false
 	var use_raw_eye_rotation: bool = false
+
+	#region Mouth tracking values
+
+	var mouth_open_max: float = 2.0
+	var mouth_open_group_1: float = 0.25
+	var mouth_open_group_2: float = 0.3
+	var mouth_wide_max: float = 2.0
+	var mouth_wide_group_1: float = 0.25
+	var mouth_wide_group_2: float = 0.3
+
+	#endregion
 
 	var tracker_should_launch: bool = true
 	var tracker_fps: int = 12
@@ -326,12 +337,14 @@ func _init() -> void:
 # Connections                                                                 #
 ###############################################################################
 
-# Model
+#region Model
 
 func _on_set_model_as_default() -> void:
 	metadata_config.default_model_to_load_path = current_model_config.model_path
 
-# Tracking
+#endregion
+
+#region Tracking
 
 func _on_translation_damp(value: float) -> void:
 	current_model_config.translation_damp = value
@@ -350,6 +363,8 @@ func _on_apply_translation(value: bool) -> void:
 
 func _on_apply_rotation(value: bool) -> void:
 	current_model_config.apply_rotation = value
+
+#region Interpolation
 
 func _on_interpolate_model(value: bool) -> void:
 	current_model_config.interpolate_model = value
@@ -380,6 +395,8 @@ func _on_interpolate_mouth(value: bool) -> void:
 
 func _on_mouth_interpolation_rate(value: float) -> void:
 	current_model_config.mouth_interpolation_rate = value
+
+#endregion
 
 func _on_should_track_eye(value: float) -> void:
 	current_model_config.should_track_eye = value
@@ -414,7 +431,31 @@ func _on_use_lip_sync(value: bool) -> void:
 func _on_camera_select(camera_index: String) -> void:
 	metadata_config.camera_index = camera_index
 
-# Features
+#region Mouth shapes
+
+func _on_mouth_open_max(value: float) -> void:
+	current_model_config.mouth_open_max = value
+
+func _on_mouth_open_group_1(value: float) -> void:
+	current_model_config.mouth_open_group_1 = value
+
+func _on_mouth_open_group_2(value: float) -> void:
+	current_model_config.mouth_open_group_2 = value
+
+func _on_mouth_wide_max(value: float) -> void:
+	current_model_config.mouth_wide_max = value
+
+func _on_mouth_wide_group_1(value: float) -> void:
+	current_model_config.mouth_wide_group_1 = value
+
+func _on_mouth_wide_group_2(value: float) -> void:
+	current_model_config.mouth_wide_group_2 = value
+
+#endregion
+
+#endregion
+
+#region Features
 
 func _on_main_light(prop_name: String, value) -> void:
 	current_model_config.main_light[prop_name] = value
@@ -422,9 +463,13 @@ func _on_main_light(prop_name: String, value) -> void:
 func _on_environment(prop_name: String, value) -> void:
 	current_model_config.world_environment[prop_name] = value
 
-# Presets
+#endregion
 
-# App settings
+#region Presets
+
+#endregion
+
+#region App settings
 
 func _on_default_model_search_path(value: String) -> void:
 	metadata_config.default_model_search_path = _determine_search_path(value)
@@ -437,6 +482,8 @@ func _on_remote_control_port(port: int) -> void:
 
 func _on_use_remote_control(value: bool) -> void:
 	metadata_config.use_remote_control = value
+
+#endregion
 
 ###############################################################################
 # Private functions                                                           #
