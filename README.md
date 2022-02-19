@@ -40,7 +40,7 @@ All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` h
 
 `Control` + `Middle Click`: Reset the model's transform
 
-`Tab`: Toggle the UI
+`Escape`: Toggle the UI
 
 ## Building from source
 1. Download Godot 3.4
