@@ -46,11 +46,11 @@ All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` h
 1. Download Godot 3.4
 2. Clone this project and load it in the editor
 3. Clone the [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace) face tracker
-4. If on Windows, move the `OpenSeeFace` repo into `$PROJECT_ROOT/export/OpenSeeFaceFolder`. If on Linux, run the facetracker via Python (currently only versions below 3.10 are supported)
+4. Move the `OpenSeeFace` repo into `$PROJECT_ROOT/export/OpenSeeFaceFolder`
 5. Run the project from the editor
-6. In the program, when starting face tracking and if you are running OpenSeeFace via Python, disable the option to have the program start the face tracker
+6. If running the project on Linux, the facetracker is controlled via shell scripts in `resources/scripts`. If the tracker doesn't start correctly, it is a good idea to start debugging from there
 7. Start face tracking
-8. To export your own release binaries, you will need to use my patched version of Godot 3.4. Precompiled release templates can be downloaded from my [Godot fork](https://github.com/you-win/godot/releases/tag/3.4-gltf-module) (or compiled using `scons platform=<your platform> target=release tools=no use_module_gltf=yes -j<number of threads, no space between j>`
+8. To export your own release binaries, you will need to use my patched version of Godot 3.4. Precompiled release templates can be downloaded from my [Godot fork](https://github.com/you-win/godot/releases/tag/3.4-gltf-module) (or compiled using `scons platform=<your platform> target=release tools=no module_gltf=yes -j<number of threads, no space between j>`
 
 ## Discussion
 A Discord server [is available here](https://discord.gg/6mcdWWBkrr) if you need help, like to contribute, or just want to chat.
