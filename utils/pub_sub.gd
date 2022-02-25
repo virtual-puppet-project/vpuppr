@@ -33,6 +33,10 @@ class RegisterPayload:
 				return
 
 class ToggleToggled:
+	"""
+	Base class for toggle element data
+	"""
+
 	var toggle_name := ""
 	var toggle_value := false
 	
@@ -136,13 +140,22 @@ func unregister_for_plugin(o: Object, plugin_key: String, custom_callback: Strin
 
 #endregion
 
-signal config_data_changed(key, data)
+signal metadata_changed(key, data)
+func broadcast_metadata_changed(key: String, data) -> void:
+	"""
+	All metadata changes are broadcast through this signal
+
+	Metadata values exist across configs
+	"""
+	emit_signal("metadata_changed", key, data)
+
+signal model_config_data_changed(key, data)
 func broadcast_config_data_changed(key: String, data) -> void:
 	"""
 	All config changes are broadcast through this signal.
 	It is up to each subscriber to determine whether or not they will handle the changed data.
 	"""
-	emit_signal("config_data_changed", key, data)
+	emit_signal("model_config_data_changed", key, data)
 
 
 signal update_label_text(element_name, value)
@@ -155,35 +168,12 @@ func broadcast_update_label_text(element_name: String, value: String) -> void:
 	"""
 	emit_signal("update_label_text", element_name, value)
 
-signal mouse_motion_data(mouse_delta)
-func broadcast_mouse_motion_data(mouse_delta: Vector2) -> void:
-	"""
-	Usually emitted from the RemoteControlManager.
-
-	Mouse delta data from an InputEventMouseMotion.
-	"""
-	emit_signal("mouse_motion_data", mouse_delta)
-
-signal mouse_scroll_data(scroll_direction)
-func broadcast_mouse_scroll_data(scroll_data: Vector2) -> void:
-	"""
-	Usually emitted from the RemoteControlManager.
-
-	Scroll data from an InputEventMouseButton.
-	"""
-	emit_signal("mouse_scroll_data", scroll_data)
-
 signal model_loaded(model)
 func broadcast_model_loaded(model: BaseModel) -> void:
 	"""
 	Indicates when it's okay to start applying tracking data
 	"""
 	emit_signal("model_loaded", model)
-
-signal lip_sync_updated(data)
-func broadcast_lip_sync_updated(data: Dictionary) -> void:
-	""""""
-	emit_signal("lip_sync_updated", data)
 
 #region Builtin screens
 

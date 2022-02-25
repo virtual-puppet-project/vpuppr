@@ -85,6 +85,13 @@ func parse_string(data: String) -> Result:
 
 	return parse_dict(json_data)
 
+func has_data(key: String) -> bool:
+	if get(key) != null:
+		return true
+	elif other.has(key):
+		return true
+	return false
+
 func get_data(key: String):
 	var r = get(key)
 	if r != null:
@@ -94,6 +101,12 @@ func get_data(key: String):
 	if r != null:
 		return r
 
-	AppManager.logger.error("key not found %s" % key)
+	AM.logger.error("key not found %s" % key)
 	
 	return r # Still null but print an error
+
+func set_data(key: String, value):
+	if get(key) != null:
+		set(key, value)
+	else:
+		other[key] = value
