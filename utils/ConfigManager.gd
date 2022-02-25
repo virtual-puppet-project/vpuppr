@@ -1,4 +1,4 @@
-class_name ConfigManager
+class_name ConfigManagerOld
 extends Reference
 
 var metadata_path: String = ""

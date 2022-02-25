@@ -6,9 +6,15 @@ signal on_log(message)
 enum LogType { NONE, NOTIFY, INFO, DEBUG, TRACE, ERROR }
 enum NotifyType { NONE, TOAST, POPUP }
 
+var parent_name := "DefaultLogger"
+
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
+
+func _init(v = null):
+	if v != null:
+		setup(v)
 
 ###############################################################################
 # Connections                                                                 #
@@ -21,7 +27,8 @@ enum NotifyType { NONE, TOAST, POPUP }
 # TODO add support for log levels
 func _log(message: String, log_type: int) -> void:
 	var datetime: Dictionary = OS.get_datetime()
-	message = "%s-%s-%s_%s:%s:%s %s" % [
+	message = "%s %s-%s-%s_%s:%s:%s %s" % [
+		parent_name,
 		datetime["year"],
 		datetime["month"],
 		datetime["day"],
@@ -53,6 +60,16 @@ func _log(message: String, log_type: int) -> void:
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
+
+func setup(n) -> void:
+	if typeof(n) == TYPE_STRING:
+		parent_name = n
+	elif n.get_script():
+		parent_name = n.get_script().resource_path.get_file()
+	elif n.get("name"):
+		parent_name = n.name
+	else:
+		trace("Unable to setup logger using var: %s" % str(n))
 
 func notify(message: String, notify_type: int = NotifyType.TOAST) -> void:
 	_log(message, LogType.NOTIFY)
