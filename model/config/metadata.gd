@@ -14,9 +14,10 @@ var model_defaults := {} # Model name: String -> Config name: String
 
 var camera_index := "0"
 
-var use_lip_sync := false
+# TODO these are being removed in favor of a plugin architecture
+# var use_lip_sync := false
 
-var remote_control_port: int = 24202
-var use_remote_control := false
+# var remote_control_port: int = 24202
+# var use_remote_control := false
 
 var python_path := ""

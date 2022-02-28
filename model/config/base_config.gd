@@ -103,7 +103,35 @@ func get_data(key: String):
 
 	AM.logger.error("key not found %s" % key)
 	
-	return r # Still null but print an error
+	return null # Still null but log something
+
+func get_nested_data(query: String):
+	var keys := query.lstrip("/").rstrip("/").split("/")
+	
+	var r := [self]
+
+	for key_idx in keys.size():
+		var current_container = r[key_idx]
+		var key: String = keys[key_idx]
+		
+		var val
+		
+		match typeof(current_container):
+			TYPE_OBJECT, TYPE_DICTIONARY:
+				val = current_container.get(key)
+			TYPE_ARRAY:
+				if key.is_valid_integer():
+					val = current_container[int(key)]
+		
+		if val != null:
+			r.append(val)
+			continue
+		
+		AM.logger.error("invalid search query %s" % query)
+		
+		return null
+
+	return r.pop_back()
 
 func set_data(key: String, value):
 	if get(key) != null:

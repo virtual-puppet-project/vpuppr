@@ -7,7 +7,7 @@ extends "res://tests/base_test.gd"
 ###############################################################################
 
 func before_all():
-	pass
+	.before_all()
 
 func before_each():
 	pass

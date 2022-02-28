@@ -52,7 +52,8 @@ func _log(message: String, log_type: int) -> void:
 					message, i, data["source"], data["line"], data["function"]]
 		LogType.ERROR:
 			message = "[ERROR] %s" % message
-			assert(false, message)
+			if AM.env.current_env != Env.Envs.TEST:
+				assert(false, message)
 
 	print(message)
 	emit_signal("on_log", message)
