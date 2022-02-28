@@ -1,6 +1,13 @@
 class_name ModelConfig
 extends BaseConfig
 
+enum CustomTypes {
+	NONE = 200,
+	
+	MAIN_LIGHT,
+	MAIN_WORLD_ENVIRONMENT
+}
+
 #region Metadata
 
 var config_name := "changeme"
@@ -175,8 +182,70 @@ func _marshal_data(data) -> Result:
 				r.append(result.unwrap())
 
 			return Result.ok(r)
+		TYPE_OBJECT:
+			return Result.ok(data.get_as_dict())
 		_:
 			return Result.ok(data)
+
+func _unmarshal_data(data_type: int, data_value) -> Result:
+	if data_value is Result:
+		return data_value
+	if data_value == null:
+		return Result.err(Error.Code.NULL_VALUE)
+
+	match data_type:
+		TYPE_COLOR:
+			return Result.ok(JSONUtil.dictionary_to_color(data_value))
+		TYPE_TRANSFORM:
+			return Result.ok(JSONUtil.dictionary_to_transform(data_value))
+		TYPE_DICTIONARY:
+			var r := {}
+
+			for key in data_value.keys():
+				var data_point = data_value[key]
+				var result := _unmarshal_data(data_point[DataPoint.TYPE_KEY], data_point[DataPoint.VALUE_KEY])
+				if result.is_err():
+					return result
+
+				r[key] = result.unwrap()
+
+			return Result.ok(r)
+		TYPE_ARRAY:
+			var r := []
+
+			for point in data_value:
+				var result := _unmarshal_data(point[DataPoint.TYPE_KEY], point[DataPoint.VALUE_KEY])
+				if result.is_err():
+					return result
+
+				r.append(result.unwrap())
+
+			return Result.ok(r)
+		CustomTypes.MAIN_LIGHT:
+			var ml := MainLight.new()
+			var result := ml.parse_dict(data_value)
+			if result.is_err():
+				return result
+			return Result.ok(ml)
+		CustomTypes.MAIN_WORLD_ENVIRONMENT:
+			var mwe := MainWorldEnvironment.new()
+			var result := mwe.parse_dict(data_value)
+			if result.is_err():
+				return result
+			return Result.ok(mwe)
+		_:
+			return Result.ok(data_value)
+
+func _normalize_data_type(data) -> int:
+	var type := typeof(data)
+
+	if type == TYPE_OBJECT:
+		if data is MainLight:
+			type = CustomTypes.MAIN_LIGHT
+		elif data is MainWorldEnvironment:
+			type = CustomTypes.MAIN_WORLD_ENVIRONMENT
+	
+	return type
 
 ###############################################################################
 # Public functions                                                            #
@@ -196,6 +265,22 @@ func get_as_dict() -> Dictionary:
 			AM.logger.error(str(result.unwrap_err()))
 			continue
 
-		r[i.name] = DataPoint.new(typeof(data_value), result.unwrap()).get_as_dict()
+		r[i.name] = DataPoint.new(_normalize_data_type(data_value), result.unwrap()).get_as_dict()
 
 	return r
+
+func parse_dict(data: Dictionary) -> Result:
+	for key in data.keys():
+		var data_point = data[key]
+
+		if typeof(data_point) != TYPE_DICTIONARY:
+			AM.logger.error("Invalid data point loaded: %s, bailing out" % str(data_point))
+			return Result.err(Error.Code.MODEL_CONFIG_UNEXPECTED_DATA)
+
+		var result := _unmarshal_data(data_point[DataPoint.TYPE_KEY], data_point[DataPoint.VALUE_KEY])
+		if result.is_err():
+			return result
+
+		set(key, result.unwrap())
+
+	return Result.ok()

@@ -51,7 +51,7 @@ var good_string1 := """
 }
 """
 
-func test_metadata_parse_pass():
+func test_parse_get_data_pass():
 	var md0 := Metadata.new()
 
 	assert_true(md0.parse_string(good_string0).is_ok())
@@ -63,6 +63,13 @@ func test_metadata_parse_pass():
 	assert_eq(md0.get_data("use_fxaa"), false)
 	assert_eq(md0.get_data("msaa_value"), false)
 	assert_eq(md0.get_data("model_configs").duck_config, "duck/path")
-	assert_eq(md0.get_data("model_defaults")["duck.glb"], "duck_config")
+	assert_eq(md0.get_nested_data("model_defaults/duck.glb"), "duck_config")
 	assert_eq(md0.get_data("camera_index"), "1")
 	assert_eq(md0.get_data("python_path"), "python/path")
+
+	var md1 := Metadata.new()
+
+	assert_true(md1.parse_string(good_string1).is_ok())
+	assert_eq(md1.get_nested_data("other/some_garbage"), "garbage_value")
+	assert_eq(md1.get_nested_data("other/use_lip_sync"), true)
+	assert_eq(md1.get_data("default_model_path"), "eh/path")
