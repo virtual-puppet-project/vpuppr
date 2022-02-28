@@ -1,4 +1,3 @@
-class_name InterpolationData
 extends Reference
 
 enum InterpolationDataType {

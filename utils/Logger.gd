@@ -75,9 +75,9 @@ func notify(message: String, notify_type: int = NotifyType.TOAST) -> void:
 	_log(message, LogType.NOTIFY)
 	match notify_type:
 		NotifyType.TOAST:
-			AppManager.nm.show_toast(message)
+			AM.nm.show_toast(message)
 		NotifyType.POPUP:
-			AppManager.nm.show_popup(message)
+			AM.nm.show_popup(message)
 		_:
 			assert(false, message)
 

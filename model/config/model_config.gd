@@ -54,6 +54,8 @@ var interpolate_blinks := false
 var blinks_interpolation_rate := 0.1
 var interpolate_mouth := true # NOTE It's better to use rawer data for mouth
 var mouth_interpolation_rate := 0.8
+var interpolate_eyebrows := false
+var eyebrow_interpolation_rate := 0.1
 
 #endregion
 

@@ -72,7 +72,7 @@ _global_script_classes=[ {
 "base": "Reference",
 "class": "InterpolationData",
 "language": "GDScript",
-"path": "res://utils/InterpolationData.gd"
+"path": "res://entities/interpolation_data.gd"
 }, {
 "base": "Reference",
 "class": "JSONUtil",

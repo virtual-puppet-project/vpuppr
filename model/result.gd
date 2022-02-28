@@ -30,7 +30,7 @@ func unwrap_err() -> Error:
 
 func expect(text: String):
 	if is_err():
-		AppManager.logger.error(text)
+		AM.logger.error(text)
 		return null
 	return _value
 
