@@ -139,10 +139,10 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://utils/TranslationManager.gd"
 }, {
-"base": "BasicModel",
+"base": "BaseModel",
 "class": "VRMModel",
 "language": "GDScript",
-"path": "res://entities/vrm/VRMModel.gd"
+"path": "res://entities/vrm_model.gd"
 }, {
 "base": "Spatial",
 "class": "VRMTopLevel",

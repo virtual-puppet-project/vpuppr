@@ -6,7 +6,8 @@ const DEFAULT_CONFIG_VALUES := [
 	"translation_damp",
 	"rotation_damp",
 	"additional_bone_damp",
-	"gaze_strength"
+	"gaze_strength",
+	"additional_bones"
 ]
 
 const SKELETON_NODE = "Skeleton"
@@ -51,9 +52,7 @@ func _ready() -> void:
 
 	head_bone_id = skeleton.find_bone(head_bone)
 	if head_bone_id < 0:
-		logger.error("No head bone found, bailing out early")
-		AM.ps.broadcast_model_loaded(self)
-		return
+		logger.info("No head bone found")
 
 	for i in skeleton.get_bone_count():
 		initial_bone_poses[i] = skeleton.get_bone_pose(i)
@@ -109,18 +108,14 @@ func _get_blend_shape_weight(mesh_instance: MeshInstance, blend_shape: String) -
 ###############################################################################
 
 # TODO add static typing
-func custom_update(data, _interpolation_data) -> void:
+func custom_update(_data, _interpolation_data) -> void:
 	logger.error("Model custom update not implemented")
 
-func get_mapped_bones() -> Dictionary: # Bone name: String -> is_mapped: bool
-	var r := {}
+func get_bone_names() -> Array:
+	var r := []
 
 	for i in skeleton.get_bone_count():
-		var bone_name := skeleton.get_bone_name(i)
-		if additional_bones.has(bone_name):
-			r[bone_name] = true
-		else:
-			r[bone_name] = false
+		r.append(skeleton.get_bone_name(i))
 
 	return r
 

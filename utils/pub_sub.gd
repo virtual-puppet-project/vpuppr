@@ -150,7 +150,7 @@ func broadcast_metadata_changed(key: String, data) -> void:
 	emit_signal("metadata_changed", key, data)
 
 signal model_config_data_changed(key, data)
-func broadcast_config_data_changed(key: String, data) -> void:
+func broadcast_model_config_data_changed(key: String, data) -> void:
 	"""
 	All config changes are broadcast through this signal.
 	It is up to each subscriber to determine whether or not they will handle the changed data.

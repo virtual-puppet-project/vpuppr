@@ -54,19 +54,19 @@ class Interpolation:
 			last_interpolation_rate = interpolation_rate
 			interpolation_rate = global_rate
 
-	func interpolate():
+	func interpolate(rate: float = interpolation_rate):
 		"""
 		Interpolate the value, update the stored floating target, and return the result
 		"""
-		last_value = lerp(last_value, target_value * damping, interpolation_rate)
+		last_value = lerp(last_value, target_value * damping, rate)
 
 		return last_value
 
-	func interpolate_no_update():
+	func interpolate_no_update(rate: float = interpolation_rate):
 		"""
 		Interpolate the value and return the result. Does not update the stored floating target
 		"""
-		return lerp(last_value, target_value * damping, interpolation_rate)
+		return lerp(last_value, target_value * damping, rate)
 
 class InterpolationHelper:
 	"""

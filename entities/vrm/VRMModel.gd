@@ -1,4 +1,4 @@
-class_name VRMModel
+# class_name VRMModel
 extends BasicModel
 
 var eco_mode: bool = false
