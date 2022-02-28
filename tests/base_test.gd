@@ -1,7 +1,5 @@
 extends "res://addons/gut/test.gd"
 
 func before_all():
-	AppManager.env = AppManager.ENVS.TEST
-	AppManager.cm = ConfigManager.new()
-	AppManager.cm.current_model_config = ConfigManager.ConfigData.new()
-	gut.p("ran run setup", 2)
+	AM.env.current_env = Env.Envs.TEST
+	gut.p("Setup complete", 2)

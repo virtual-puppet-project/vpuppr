@@ -50,7 +50,8 @@ func _on_tree_exiting() -> void:
 			plugin.shutdown()
 
 	if env.current_env != Env.Envs.TEST:
-		save_config_instant()
+		print("hello")
+#		save_config_instant()
 	
 	logger.info("Exiting. おやすみ。")
 

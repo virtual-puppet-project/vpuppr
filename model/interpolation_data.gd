@@ -33,17 +33,18 @@ class Interpolation:
 		target_value = p_target_value
 
 	func set_both_rates(new_value: float) -> void:
-		interpolation_rate = new_value
+		if should_interpolate:
+			interpolation_rate = new_value
 		last_interpolation_rate = new_value
 
-	func base_rate_changed(new_value: float) -> void:
+	func global_rate_changed(new_value: float) -> void:
 		"""
 		Called when toggling base interpolation
 		"""
 		if not should_interpolate:
 			interpolation_rate = new_value
 
-	func maybe_reset_rate(base_rate: float) -> void:
+	func maybe_reset_rate(global_rate: float) -> void:
 		"""
 		Called when setting specific interpolation rates
 		"""
@@ -51,7 +52,7 @@ class Interpolation:
 			interpolation_rate = last_interpolation_rate
 		else:
 			last_interpolation_rate = interpolation_rate
-			interpolation_rate = base_rate
+			interpolation_rate = global_rate
 
 	func interpolate():
 		"""
@@ -80,9 +81,9 @@ class InterpolationHelper:
 		for i in interpolations:
 			i.should_interpolate = value
 
-	func base_rate_changed(rate: float) -> void:
+	func global_rate_changed(rate: float) -> void:
 		for i in interpolations:
-			i.base_rate_changed(rate)
+			i.global_rate_changed(rate)
 
 	func maybe_reset_rate(rate: float) -> void:
 		for i in interpolations:
@@ -145,6 +146,9 @@ var non_global_interpolations := [
 func _init() -> void:
 	AM.ps.connect("model_config_data_changed", self, "_on_model_config_data_changed")
 
+	for i in LISTEN_VALUES:
+		_on_model_config_data_changed(i, AM.cm.model_config.get(i))
+
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
@@ -159,19 +163,19 @@ func _on_model_config_data_changed(key: String, value) -> void:
 
 				# Toggle off other options if they are already toggled off
 				for i in non_global_interpolations:
-					i.base_rate_changed(global.interpolation_rate)
+					i.global_rate_changed(global.interpolation_rate)
 			else:
 				global.last_interpolation_rate = global.interpolation_rate
 				global.interpolation_rate = 1.0
 
 				# Toggle off other options if they are already toggled off
 				for i in non_global_interpolations:
-					i.base_rate_changed(1.0)
+					i.global_rate_changed(1.0)
 		"interpolate_rate":
 			global.set_both_rates(value)
 
 			for i in non_global_interpolations:
-				i.base_rate_changed(value)
+				i.global_rate_changed(value)
 		"interpolate_bones":
 			bone_helper.set_should_interpolate(value)
 			bone_helper.maybe_reset_rate(global.interpolation_rate)
@@ -219,7 +223,16 @@ func update_values(
 	p_target_right_eye_blink: float,
 
 	p_target_mouth_open: float,
-	p_target_mouth_wide: float
+	p_target_mouth_wide: float,
+
+	p_target_eyebrow_steepness_left: float,
+	p_target_eyebrow_steepness_right: float,
+
+	p_target_eyebrow_up_down_left: float,
+	p_target_eyebrow_up_down_right: float,
+
+	p_target_eyebrow_quirk_left: float,
+	p_target_eyebrow_quirk_right: float
 ) -> void:
 	last_updated = p_last_updated
 
@@ -234,3 +247,12 @@ func update_values(
 
 	mouth_open.target_value = p_target_mouth_open
 	mouth_wide.target_value = p_target_mouth_wide
+
+	eyebrow_steepness_left.target_value = p_target_eyebrow_steepness_left
+	eyebrow_steepness_right.target_value = p_target_eyebrow_steepness_right
+
+	eyebrow_up_down_left.target_value = p_target_eyebrow_up_down_left
+	eyebrow_up_down_right.target_value = p_target_eyebrow_up_down_right
+
+	eyebrow_quirk_left.target_value = p_target_eyebrow_quirk_left
+	eyebrow_quirk_right.target_value = p_target_eyebrow_quirk_right

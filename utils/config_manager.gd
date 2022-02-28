@@ -58,7 +58,7 @@ func save() -> Result:
 	if result.is_err():
 		return result
 
-	result = _save_to_file("%.json" % model_config.config_name, model_config.get_as_json_string())
+	result = _save_to_file("%s.json" % model_config.config_name, model_config.get_as_json_string())
 	if result.is_err():
 		return result
 

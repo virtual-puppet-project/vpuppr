@@ -72,7 +72,7 @@ _global_script_classes=[ {
 "base": "Reference",
 "class": "InterpolationData",
 "language": "GDScript",
-"path": "res://entities/interpolation_data.gd"
+"path": "res://model/interpolation_data.gd"
 }, {
 "base": "Reference",
 "class": "JSONUtil",
@@ -193,7 +193,6 @@ enable_audio_input=true
 [autoload]
 
 AM="*res://utils/app_manager.gd"
-OpenSeeGd="*res://utils/OpenSeeGD.gd"
 
 [debug]
 

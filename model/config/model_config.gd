@@ -193,7 +193,7 @@ func get_as_dict() -> Dictionary:
 
 		var result := _marshal_data(data_value)
 		if result.is_err():
-			AppManager.logger.error(str(result.unwrap_err()))
+			AM.logger.error(str(result.unwrap_err()))
 			continue
 
 		r[i.name] = DataPoint.new(typeof(data_value), result.unwrap()).get_as_dict()

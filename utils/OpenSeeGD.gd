@@ -214,7 +214,7 @@ func _ready() -> void:
 	if not open_see_data_map:
 		self.open_see_data_map = {}
 
-	AppManager.sb.connect("toggle_tracker", self, "_on_toggle_tracker")
+	AM.ps.connect("toggle_tracker", self, "_on_toggle_tracker")
 
 func _exit_tree() -> void:
 	stop_receiver()
@@ -237,11 +237,11 @@ func _on_toggle_tracker() -> void:
 
 	if was_tracking != is_tracking:
 		if is_tracking:
-			AppManager.sb.broadcast_update_label_text("Start Tracker", STOP_FACE_TRACKER_TEXT)
-			AppManager.main.model_display_screen.tracking_started()
+			AM.sb.broadcast_update_label_text("Start Tracker", STOP_FACE_TRACKER_TEXT)
+			AM.main.model_display_screen.tracking_started()
 		else:
-			AppManager.sb.broadcast_update_label_text("Start Tracker", RUN_FACE_TRACKER_TEXT)
-			AppManager.main.model_display_screen.tracking_stopped()
+			AM.sb.broadcast_update_label_text("Start Tracker", RUN_FACE_TRACKER_TEXT)
+			AM.main.model_display_screen.tracking_stopped()
 			
 
 ###############################################################################
@@ -251,22 +251,22 @@ func _on_toggle_tracker() -> void:
 func _start_tracker() -> bool:
 	# if a tracker should be launched, launch it
 	# otherwise assume that the user launched a tracker manually already
-	if not AppManager.cm.current_model_config.tracker_should_launch:
-		AppManager.logger.info("Assuming face tracker was manually launched.")
+	if not AM.cm.current_model_config.tracker_should_launch:
+		AM.logger.info("Assuming face tracker was manually launched.")
 		return true
 
-	AppManager.logger.info("Starting face tracker.")
+	AM.logger.info("Starting face tracker.")
 
-	if AppManager.cm.current_model_config.tracker_fps > MAX_TRACKER_FPS:
-		AppManager.logger.info("Face tracker fps is greater than %s. This is a bad idea." % MAX_TRACKER_FPS)
-		AppManager.logger.info("Declining to start face tracker.")
+	if AM.cm.current_model_config.tracker_fps > MAX_TRACKER_FPS:
+		AM.logger.info("Face tracker fps is greater than %s. This is a bad idea." % MAX_TRACKER_FPS)
+		AM.logger.info("Declining to start face tracker.")
 		return false
 
 	var face_tracker_options: PoolStringArray = [
 		"-c",
-		AppManager.cm.metadata_config.camera_index,
+		AM.cm.metadata_config.camera_index,
 		"-F",
-		str(AppManager.cm.current_model_config.tracker_fps),
+		str(AM.cm.current_model_config.tracker_fps),
 		"-v",
 		"0",
 		"-s",
@@ -282,9 +282,9 @@ func _start_tracker() -> bool:
 		"--max-feature-updates",
 		"900",
 		"--ip",
-		AppManager.cm.current_model_config.tracker_address,
+		AM.cm.current_model_config.tracker_address,
 		"--port",
-		str(AppManager.cm.current_model_config.tracker_port),
+		str(AM.cm.current_model_config.tracker_port),
 	]
 	var pid: int = -1
 	match OS.get_name().to_lower():
@@ -299,13 +299,13 @@ func _start_tracker() -> bool:
 					face_tracker_options, false, [], true)
 		"osx", "x11":
 			var user_data_path: String = ProjectSettings.globalize_path("user://")
-			var python_path: String = AppManager.cm.metadata_config.python_path
+			var python_path: String = AM.cm.metadata_config.python_path
 			if python_path == "*":
 				python_path = ""
 
 			var dir := Directory.new()
 			if not dir.dir_exists("%s%s" % [user_data_path, "venv"]):
-				AppManager.logger.notify("First time setup: creating venv", AppManager.logger.NotifyType.POPUP)
+				AM.logger.notify("First time setup: creating venv", AM.logger.NotifyType.POPUP)
 
 				var create_venv_script: String = "%s%s" % [OS.get_executable_path().get_base_dir(), "/resources/scripts/create_venv.sh"]
 				if OS.is_debug_build():
@@ -330,29 +330,29 @@ func _start_tracker() -> bool:
 				[
 					user_data_path,
 					exe_path,
-					AppManager.cm.metadata_config.camera_index,
-					str(AppManager.cm.current_model_config.tracker_fps),
-					AppManager.cm.current_model_config.tracker_address,
-					str(AppManager.cm.current_model_config.tracker_port)
+					AM.cm.metadata_config.camera_index,
+					str(AM.cm.current_model_config.tracker_fps),
+					AM.cm.current_model_config.tracker_address,
+					str(AM.cm.current_model_config.tracker_port)
 				],
 				false
 			)
 		_:
-			AppManager.logger.error("Unhandled os type %s" % OS.get_name())
+			AM.logger.error("Unhandled os type %s" % OS.get_name())
 			return false
 	
 	if pid <= 0:
-		AppManager.logger.error("Failed to start tracker")
+		AM.logger.error("Failed to start tracker")
 		return false
 
 	face_tracker_pid = pid
 
-	AppManager.logger.info("Face tracker started, PID is %s." % face_tracker_pid)
-	AppManager.logger.notify("Press spacebar to recenter the model if it's not looking correct!")
+	AM.logger.info("Face tracker started, PID is %s." % face_tracker_pid)
+	AM.logger.notify("Press spacebar to recenter the model if it's not looking correct!")
 	return true
 
 func _stop_tracker() -> void:
-	AppManager.logger.info("Stopping face tracker.")
+	AM.logger.info("Stopping face tracker.")
 	if face_tracker_pid:
 		match OS.get_name().to_lower():
 			"windows":
@@ -362,12 +362,12 @@ func _stop_tracker() -> void:
 				# Thus, we call pkill to kill the process group
 				OS.execute("pkill", ["-15", "-P", face_tracker_pid])
 			_:
-				AppManager.logger.error("Unhandled os type %s" % OS.get_name())
+				AM.logger.error("Unhandled os type %s" % OS.get_name())
 				return
-		AppManager.logger.info("Face tracker stopped, PID was %s." % face_tracker_pid)
+		AM.logger.info("Face tracker stopped, PID was %s." % face_tracker_pid)
 		face_tracker_pid = 0
 	else:
-		AppManager.logger.info("No tracker started.")
+		AM.logger.info("No tracker started.")
 
 func _receive() -> void:
 	#warning-ignore:return_value_discarded
@@ -397,10 +397,10 @@ func _perform_reception() -> void:
 ###############################################################################
 
 func start_receiver() -> void:
-	var listen_address: String = AppManager.cm.current_model_config.tracker_address
-	var listen_port: int = AppManager.cm.current_model_config.tracker_port
+	var listen_address: String = AM.cm.current_model_config.tracker_address
+	var listen_port: int = AM.cm.current_model_config.tracker_port
 	
-	AppManager.logger.info("Listening for data at %s:%s" % [listen_address, str(listen_port)])
+	AM.logger.info("Listening for data at %s:%s" % [listen_address, str(listen_port)])
 
 	server.listen(listen_port, listen_address)
 	
