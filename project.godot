@@ -119,6 +119,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://utils/NotificationManager.gd"
 }, {
+"base": "Node",
+"class": "OpenSeeFace",
+"language": "GDScript",
+"path": "res://trackers/open_see_face.gd"
+}, {
 "base": "Reference",
 "class": "PubSub",
 "language": "GDScript",
@@ -177,6 +182,7 @@ _global_script_class_icons={
 "ModelConfig": "",
 "ModelDisplayScreen": "",
 "NotificationManager": "",
+"OpenSeeFace": "",
 "PubSub": "",
 "RemoteControlManager": "",
 "Result": "",
@@ -199,6 +205,7 @@ enable_audio_input=true
 [autoload]
 
 AM="*res://utils/app_manager.gd"
+OSF="*res://trackers/open_see_face.gd"
 
 [debug]
 

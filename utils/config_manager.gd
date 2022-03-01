@@ -77,3 +77,16 @@ func set_data(key: String, value) -> void:
 		metadata.set_data(key, value)
 	else:
 		logger.error("Key %s not found in ModelConfig or Metadata. Declining to set data %s." % [key, str(value)])
+
+func get_data(key: String):
+	var val = model_config.get_data(key)
+	if val != null:
+		return val
+	
+	val = metadata.get_data(key)
+	if val != null:
+		return val
+
+	logger.error("Key %s not found in ModelConfig and Metadata" % key)
+
+	return null
