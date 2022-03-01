@@ -4,43 +4,43 @@ extends TrackingData
 const NUMBER_OF_POINTS: int = 68
 
 # The time this tracking data was captured at
-var time: float
+var time: float = -1.0
 # ID of the tracked face
-var id: int
-var camera_resolution: Vector2
+var id: int = -1
+var camera_resolution := Vector2.ZERO
 # How likely it is that the given eye is open
-var right_eye_open: float
-var left_eye_open: float
+var right_eye_open: float = -1.0
+var left_eye_open: float = -1.0
 # Rotation of the given eyeball
-var right_gaze: Quat
-var left_gaze: Quat
+var right_gaze := Quat.IDENTITY
+var left_gaze := Quat.IDENTITY
 # Tells you if the 3D points have been successfully estimated from the 2d points
 # If false, do not rely on pose or 3D data
-var got_3d_points: bool
+var got_3d_points := false
 # The error for fitting the original 3D points
 # Shouldn't matter much, but if it is very high, something is probably wrong
-var fit_3d_error: float
+var fit_3d_error: float = -1.0
 # Rotation vector for the 3D points to turn into the estimated face pose
-var rotation: Vector3
+var rotation := Vector3.ZERO
 # Translation vector for the 3D points to turn into the estimated face pose
-var translation: Vector3
+var translation := Vector3.ZERO
 # Raw rotation quaternion calculated from the OpenCV rotation matrix
-var raw_quaternion: Quat
+var raw_quaternion := Quat.IDENTITY
 # Raw rotation euler angles calculated by OpenCV from the rotation matrix
-var raw_euler: Vector3
+var raw_euler := Vector3.ZERO
 # How certain the tracker is
-var confidence: PoolRealArray
+var confidence := PoolRealArray()
 # The detected face landmarks in image coordinates
 # There are 60 points
 # The last 2 points are pupil points from the gaze tracker
-var points: PoolVector2Array
+var points := PoolVector2Array()
 # 3D points estimated from the 2D points
 # They should be rotation and translation compensated
 # There are 70 points with guess for the eyeball center positions
 # being added at the end of 68 2D points
-var points_3d: PoolVector3Array
+var points_3d := PoolVector3Array()
 # The number of action unit-like features
-var features: OpenSeeFaceFeatures
+var features := OpenSeeFaceFeatures.new()
 
 # We need to pass ints by reference
 class Integer:
@@ -54,11 +54,8 @@ class Integer:
 ###############################################################################
 
 func _init() -> void:
-	confidence = PoolRealArray()
 	confidence.resize(NUMBER_OF_POINTS)
-	points = PoolVector2Array()
 	points.resize(NUMBER_OF_POINTS)
-	points_3d = PoolVector3Array()
 	points_3d.resize(NUMBER_OF_POINTS + 2)
 
 ###############################################################################
@@ -87,6 +84,7 @@ func _read_quaternion(b: StreamPeerBuffer, i: Integer) -> Quat:
 	return Quat(x, y, z, w)
 
 func _read_vector3(b: StreamPeerBuffer, i: Integer) -> Vector3:
+	# NOTE we invert the y value here
 	return Vector3(_read_float(b, i), -_read_float(b, i), _read_float(b, i))
 
 func _read_vector2(b: StreamPeerBuffer, i: Integer) -> Vector2:
@@ -146,7 +144,6 @@ func read_from_packet(b: PoolByteArray, regular_int: int) -> void:
 	right_gaze = Quat(Transform().looking_at(points_3d[66] - points_3d[68], Vector3.UP).basis).normalized()
 	left_gaze = Quat(Transform().looking_at(points_3d[67] - points_3d[69], Vector3.UP).basis).normalized()
 
-	features = OpenSeeFaceFeatures.new()
 	features.eye_left = _read_float(spb, i)
 	features.eye_right = _read_float(spb, i)
 	features.eyebrow_steepness_left = _read_float(spb, i)

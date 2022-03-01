@@ -20,11 +20,12 @@ func _init() -> void:
 	else:
 		save_data_path = "res://export"
 	
-	if AM.ps.connect("metadata_changed", self, "_on_metadata_changed") != OK:
-		logger.error("Unable to subscribe to metadata_changed")
+	if AM.env.current_env != Env.Envs.TEST:
+		if AM.ps.connect("metadata_changed", self, "_on_metadata_changed") != OK:
+			logger.error("Unable to subscribe to metadata_changed")
 
-	if AM.ps.connect("model_config_data_changed", self, "_on_model_config_data_changed") != OK:
-		logger.error("Unable to subscribe to model_config_data_changed")
+		if AM.ps.connect("model_config_data_changed", self, "_on_model_config_data_changed") != OK:
+			logger.error("Unable to subscribe to model_config_data_changed")
 
 ###############################################################################
 # Connections                                                                 #

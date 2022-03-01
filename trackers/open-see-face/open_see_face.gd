@@ -1,7 +1,6 @@
 class_name OpenSeeFace
 extends TrackingBackend
 
-const NUMBER_OF_POINTS: int = 68
 const PACKET_FRAME_SIZE: int = 8 + 4 + 2 * 4 + 2 * 4 + 1 + 4 + 3 * 4 + 3 * 4 + 4 * 4 + 4 * 68 + 4 * 2 * 68 + 4 * 3 * 70 + 4 * 14
 
 const MAX_TRACKER_FPS: int = 144
@@ -43,7 +42,8 @@ var _tree: SceneTree
 ###############################################################################
 
 func _init() -> void:
-	AM.ps.connect("toggle_tracker", self, "_on_toggle_tracker")
+	if AM.env.current_env != Env.Envs.TEST:
+		AM.ps.connect("toggle_tracker", self, "_on_toggle_tracker")
 
 	_tree = Engine.get_main_loop()
 
@@ -132,8 +132,8 @@ func _start_tracker() -> bool:
 					create_venv_script = ProjectSettings.globalize_path("res://resources/scripts/create_venv.sh")
 				
 				# Give the popup time to actually popup/display
-				yield(Engine.get_main_loop().get_tree(), "idle_frame")
-				yield(Engine.get_main_loop().get_tree(), "idle_frame")
+				yield(_tree, "idle_frame")
+				yield(_tree, "idle_frame")
 
 				OS.execute(create_venv_script, [python_path, user_data_path])
 
@@ -243,11 +243,14 @@ func stop_receiver() -> void:
 	_stop_tracker()
 	stop_reception = true
 
-	if receive_thread.is_active():
+	if receive_thread != null and receive_thread.is_active():
+		receive_thread.wait_to_finish()
+	
+	if server.is_listening():
 		if connection != null and connection.is_connected_to_host():
 			connection.close()
 			connection = null
 		server.stop()
 
-func get_data(param: int = 0) -> TrackingData:
+func get_data(param = 0) -> TrackingData:
 	return data_map.get(param, null)

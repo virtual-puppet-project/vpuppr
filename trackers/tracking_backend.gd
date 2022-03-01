@@ -1,5 +1,5 @@
 class_name TrackingBackend
-extends Reference
+extends Node
 
 """
 Interface for defining Tracking Backends

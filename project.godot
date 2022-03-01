@@ -154,7 +154,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://utils/SignalBroadcaster.gd"
 }, {
-"base": "Reference",
+"base": "Node",
 "class": "TrackingBackend",
 "language": "GDScript",
 "path": "res://trackers/tracking_backend.gd"
@@ -229,7 +229,6 @@ enable_audio_input=true
 [autoload]
 
 AM="*res://utils/app_manager.gd"
-OSF="*res://trackers/open-see-face/open_see_face.gd"
 
 [debug]
 
