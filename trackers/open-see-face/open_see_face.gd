@@ -1,5 +1,5 @@
 class_name OpenSeeFace
-extends Node
+extends TrackingBackend
 
 const NUMBER_OF_POINTS: int = 68
 const PACKET_FRAME_SIZE: int = 8 + 4 + 2 * 4 + 2 * 4 + 1 + 4 + 3 * 4 + 3 * 4 + 4 * 4 + 4 * 68 + 4 * 2 * 68 + 4 * 3 * 70 + 4 * 14
@@ -27,19 +27,25 @@ var connection: PacketPeerUDP # Must be taken when running the server
 
 var receive_thread: Thread # Must be created when starting tracking
 
+var reception_counter: float = 0.0
+
 var stop_reception := false
 var is_tracking := false
 
 var face_tracker_pid: int = -1
 
-var data # TODO add static typing
+var data_map := {} # Face id: int -> OpenSeeFaceData
+
+var _tree: SceneTree
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
-func _ready() -> void:
+func _init() -> void:
 	AM.ps.connect("toggle_tracker", self, "_on_toggle_tracker")
+
+	_tree = Engine.get_main_loop()
 
 func _exit_tree() -> void:
 	stop_receiver()
@@ -97,28 +103,17 @@ func _start_tracker() -> bool:
 			pid = OS.execute(
 				exe_path,
 				[
-					"-c",
-					AM.cm.get_data("camera_index"),
-					"-F",
-					str(AM.cm.get_data("tracker_fps")),
-					"-v",
-					"0",
-					"-s",
-					"1",
-					"-P",
-					"1",
-					"--discard-after",
-					"0",
-					"--scan-every",
-					"0",
-					"--no-3d-adapt",
-					"1",
-					"--max-feature-updates",
-					"900",
-					"--ip",
-					AM.cm.get_data("tracker_address"),
-					"--port",
-					str(AM.cm.get_data("tracker_port")),
+					"-c", AM.cm.get_data("camera_index"),
+					"-F", str(AM.cm.get_data("tracker_fps")),
+					"-v", "0",
+					"-s", "1",
+					"-P", "1",
+					"--discard-after", "0",
+					"--scan-every", "0",
+					"--no-3d-adapt", "1",
+					"--max-feature-updates", "900",
+					"--ip", AM.cm.get_data("tracker_address"),
+					"--port", str(AM.cm.get_data("tracker_port")),
 				]
 			)
 		"osx", "x11":
@@ -137,8 +132,8 @@ func _start_tracker() -> bool:
 					create_venv_script = ProjectSettings.globalize_path("res://resources/scripts/create_venv.sh")
 				
 				# Give the popup time to actually popup/display
-				yield(get_tree(), "idle_frame")
-				yield(get_tree(), "idle_frame")
+				yield(Engine.get_main_loop().get_tree(), "idle_frame")
+				yield(Engine.get_main_loop().get_tree(), "idle_frame")
 
 				OS.execute(create_venv_script, [python_path, user_data_path])
 
@@ -206,12 +201,11 @@ func _receive() -> void:
 		if(packet.size() < 1 or packet.size() % PACKET_FRAME_SIZE != 0):
 			return
 		var offset: int = 0
-		# TODO add back once OpenSeeFaceData is implemented
-		# while offset < packet.size():
-		# 	var new_data = OpenSeeData.new()
-		# 	new_data.read_from_packet(packet, offset)
-		# 	open_see_data_map[new_data.id] = new_data
-		# 	offset += PACKET_FRAME_SIZE
+		while offset < packet.size():
+			var new_data := OpenSeeFaceData.new()
+			new_data.read_from_packet(packet, offset)
+			data_map[new_data.id] = new_data
+			offset += PACKET_FRAME_SIZE
 		
 		# tracking_data = open_see_data_map.values().duplicate(true)
 	elif server.is_connection_available():
@@ -220,15 +214,40 @@ func _receive() -> void:
 func _perform_reception() -> void:
 	while not stop_reception:
 		_receive()
-		# TODO this seems weird
-		yield(get_tree().create_timer(server_poll_interval), "timeout")
+		yield(_tree.create_timer(server_poll_interval), "timeout")
 
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
 
+func is_listening() -> bool:
+	return is_tracking
+
 func start_receiver() -> void:
-	pass
+	var listen_address: String = AM.cm.get_data("tracker_address")
+	var listen_port: int = AM.cm.get_data("tracker_port")
+
+	AM.logger.info("Listening for data at %s:%d" % [listen_address, listen_port])
+
+	server.listen(listen_port, listen_address)
+
+	stop_reception = false
+
+	receive_thread = Thread.new()
+	receive_thread.start(self, "_perform_reception")
 
 func stop_receiver() -> void:
-	pass
+	if stop_reception:
+		return
+
+	_stop_tracker()
+	stop_reception = true
+
+	if receive_thread.is_active():
+		if connection != null and connection.is_connected_to_host():
+			connection.close()
+			connection = null
+		server.stop()
+
+func get_data(param: int = 0) -> TrackingData:
+	return data_map.get(param, null)

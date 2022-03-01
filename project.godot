@@ -119,10 +119,20 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://utils/NotificationManager.gd"
 }, {
-"base": "Node",
+"base": "TrackingBackend",
 "class": "OpenSeeFace",
 "language": "GDScript",
-"path": "res://trackers/open_see_face.gd"
+"path": "res://trackers/open-see-face/open_see_face.gd"
+}, {
+"base": "TrackingData",
+"class": "OpenSeeFaceData",
+"language": "GDScript",
+"path": "res://trackers/open-see-face/open_see_face_data.gd"
+}, {
+"base": "Reference",
+"class": "OpenSeeFaceFeatures",
+"language": "GDScript",
+"path": "res://trackers/open-see-face/open_see_face_features.gd"
 }, {
 "base": "Reference",
 "class": "PubSub",
@@ -143,6 +153,16 @@ _global_script_classes=[ {
 "class": "SignalBroadcaster",
 "language": "GDScript",
 "path": "res://utils/SignalBroadcaster.gd"
+}, {
+"base": "Reference",
+"class": "TrackingBackend",
+"language": "GDScript",
+"path": "res://trackers/tracking_backend.gd"
+}, {
+"base": "Reference",
+"class": "TrackingData",
+"language": "GDScript",
+"path": "res://trackers/tracking_data.gd"
 }, {
 "base": "Reference",
 "class": "TranslationManager",
@@ -183,10 +203,14 @@ _global_script_class_icons={
 "ModelDisplayScreen": "",
 "NotificationManager": "",
 "OpenSeeFace": "",
+"OpenSeeFaceData": "",
+"OpenSeeFaceFeatures": "",
 "PubSub": "",
 "RemoteControlManager": "",
 "Result": "",
 "SignalBroadcaster": "",
+"TrackingBackend": "",
+"TrackingData": "",
 "TranslationManager": "",
 "VRMModel": "",
 "VRMTopLevel": ""
@@ -205,7 +229,7 @@ enable_audio_input=true
 [autoload]
 
 AM="*res://utils/app_manager.gd"
-OSF="*res://trackers/open_see_face.gd"
+OSF="*res://trackers/open-see-face/open_see_face.gd"
 
 [debug]
 
