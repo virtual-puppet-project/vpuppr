@@ -55,6 +55,11 @@ _global_script_classes=[ {
 "path": "res://utils/ConfigManager.gd"
 }, {
 "base": "Reference",
+"class": "DataPoint",
+"language": "GDScript",
+"path": "res://model/config/data_point.gd"
+}, {
+"base": "Reference",
 "class": "Env",
 "language": "GDScript",
 "path": "res://model/env.gd"
@@ -77,7 +82,7 @@ _global_script_classes=[ {
 "base": "Reference",
 "class": "JSONUtil",
 "language": "GDScript",
-"path": "res://utils/JSONUtil.gd"
+"path": "res://utils/json_util.gd"
 }, {
 "base": "Node",
 "class": "LipSyncManager",
@@ -159,6 +164,7 @@ _global_script_class_icons={
 "BasicPhysicsAttachment": "",
 "ConfigManager": "",
 "ConfigManagerOld": "",
+"DataPoint": "",
 "Env": "",
 "Error": "",
 "GlobalConstants": "",

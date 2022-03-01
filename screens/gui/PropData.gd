@@ -36,8 +36,8 @@ func get_as_dict() -> Dictionary:
 
 	result["prop_name"] = prop_name
 	result["prop_path"] = prop_path
-	result["parent_transform"] = JSONUtil.transform_to_dictionary(prop.transform)
-	result["child_transform"] = JSONUtil.transform_to_dictionary(prop.get_child(0).transform)
+	result["parent_transform"] = JSONUtil.transform_to_dict(prop.transform)
+	result["child_transform"] = JSONUtil.transform_to_dict(prop.get_child(0).transform)
 
 	return result
 
@@ -55,9 +55,9 @@ func load_from_dict(dict: Dictionary) -> void:
 	if not dict.has("parent_transform"):
 		AppManager.logger.error("Invalid prop data: no parent_transform")
 		return
-	parent_transform = JSONUtil.dictionary_to_transform(dict["parent_transform"])
+	parent_transform = JSONUtil.dict_to_transform(dict["parent_transform"])
 
 	if not dict.has("child_transform"):
 		AppManager.logger.error("Invalid prop data: no child_transform")
 		return
-	child_transform = JSONUtil.dictionary_to_transform(dict["child_transform"])
+	child_transform = JSONUtil.dict_to_transform(dict["child_transform"])

@@ -6,3 +6,10 @@ const IGNORED_PROPERTIES_REFERENCE := [
 	"script",
 	"Script Variables"
 ]
+
+enum CustomTypes {
+	NONE = 200,
+	
+	MAIN_LIGHT,
+	MAIN_WORLD_ENVIRONMENT
+}

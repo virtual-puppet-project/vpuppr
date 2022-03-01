@@ -201,9 +201,9 @@ class ConfigData:
 				data_point.data_type = typeof(i_value)
 				match data_point.data_type:
 					TYPE_COLOR:
-						i_value = JSONUtil.color_to_dictionary(i_value)
+						i_value = JSONUtil.color_to_dict(i_value)
 					TYPE_TRANSFORM:
-						i_value = JSONUtil.transform_to_dictionary(i_value)
+						i_value = JSONUtil.transform_to_dict(i_value)
 					TYPE_DICTIONARY:
 						# Dicts are guaranteed to be only 1 dict nested deep
 						i_value = i_value.duplicate(true)
@@ -212,9 +212,9 @@ class ConfigData:
 							i_data_point.data_type = typeof(i_value[key])
 							match i_data_point.data_type:
 								TYPE_TRANSFORM:
-									i_data_point.data_value = JSONUtil.transform_to_dictionary(i_value[key])
+									i_data_point.data_value = JSONUtil.transform_to_dict(i_value[key])
 								TYPE_COLOR:
-									i_data_point.data_value = JSONUtil.color_to_dictionary(i_value[key])
+									i_data_point.data_value = JSONUtil.color_to_dict(i_value[key])
 								_:
 									i_data_point.data_value = i_value[key]
 							i_value[key] = i_data_point.get_as_dict()
@@ -252,9 +252,9 @@ class ConfigData:
 
 			match int(data[DataPoint.TYPE_KEY]):
 				TYPE_COLOR:
-					data_value = JSONUtil.dictionary_to_color(data_value)
+					data_value = JSONUtil.dict_to_color(data_value)
 				TYPE_TRANSFORM:
-					data_value = JSONUtil.dictionary_to_transform(data_value)
+					data_value = JSONUtil.dict_to_transform(data_value)
 				TYPE_DICTIONARY:
 					# Dicts are guaranteed to be only 1 dict nested deep
 					data_value = data_value.duplicate()
@@ -262,9 +262,9 @@ class ConfigData:
 						var i_data_value = data_value[key_i][DataPoint.VALUE_KEY]
 						match int(data_value[key_i][DataPoint.TYPE_KEY]):
 							TYPE_COLOR:
-								i_data_value = JSONUtil.dictionary_to_color(i_data_value)
+								i_data_value = JSONUtil.dict_to_color(i_data_value)
 							TYPE_TRANSFORM:
-								i_data_value = JSONUtil.dictionary_to_transform(i_data_value)
+								i_data_value = JSONUtil.dict_to_transform(i_data_value)
 						data_value[key_i] = i_data_value
 				_:
 					pass
@@ -705,9 +705,9 @@ func get_config_as_dict(config_path: String) -> Dictionary:
 
 		match int(data[DataPoint.TYPE_KEY]):
 			TYPE_COLOR:
-				data_value = JSONUtil.dictionary_to_color(data_value)
+				data_value = JSONUtil.dict_to_color(data_value)
 			TYPE_TRANSFORM:
-				data_value = JSONUtil.dictionary_to_transform(data_value)
+				data_value = JSONUtil.dict_to_transform(data_value)
 			_:
 				pass
 

@@ -96,42 +96,23 @@ var tracker_port: int = 11573
 
 #region Features
 
-class MainLight extends BaseConfig:
-	var light_color := Color.white
-	var light_energy: float = 0.7
-	var light_indirect_energy: float = 1.0
-	var light_specular: float = 0.0
-	var shadow_enabled := true
+var main_light := {
+	"light_color": Color.white,
+	"light_energy": 0.7,
+	"light_indirect_energy": 1.0,
+	"light_specular": 0.0,
+	"shadow_enabled": true
+}
 
-var main_light := MainLight.new()
-
-class MainWorldEnvironment extends BaseConfig:
-	var ambient_light_color := Color.black
-	var ambient_light_energy: float = 0.5
-	var ambient_light_sky_contribution: float = 1.0
-
-var main_world_environment := MainWorldEnvironment.new()
+var main_world_environment := {
+	"ambient_light_color": Color.black,
+	"ambient_light_energy": 0.5,
+	"ambient_light_sky_contribution": 1.0
+}
 
 var instanced_props := {} # Prop name: String -> PropData
 
 #endregion
-
-class DataPoint:
-	const TYPE_KEY := "type"
-	const VALUE_KEY := "value"
-	
-	var data_type: int
-	var data_value
-
-	func _init(dt: int, dv) -> void:
-		data_type = dt
-		data_value = dv
-
-	func get_as_dict() -> Dictionary:
-		return {
-			TYPE_KEY: data_type,
-			VALUE_KEY: data_value
-		}
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -150,7 +131,6 @@ func _set_is_default_for_model(value: bool) -> void:
 		is_default_for_model = value
 		is_default_dirty = true
 
-
 func _marshal_data(data) -> Result:
 	if data is Result:
 		return data
@@ -159,9 +139,9 @@ func _marshal_data(data) -> Result:
 
 	match typeof(data):
 		TYPE_COLOR:
-			return Result.ok(JSONUtil.color_to_dictionary(data))
+			return Result.ok(JSONUtil.color_to_dict(data))
 		TYPE_TRANSFORM:
-			return Result.ok(JSONUtil.transform_to_dictionary(data))
+			return Result.ok(JSONUtil.transform_to_dict(data))
 		TYPE_DICTIONARY:
 			var r := {}
 
@@ -182,8 +162,6 @@ func _marshal_data(data) -> Result:
 				r.append(result.unwrap())
 
 			return Result.ok(r)
-		TYPE_OBJECT:
-			return Result.ok(data.get_as_dict())
 		_:
 			return Result.ok(data)
 
@@ -195,9 +173,9 @@ func _unmarshal_data(data_type: int, data_value) -> Result:
 
 	match data_type:
 		TYPE_COLOR:
-			return Result.ok(JSONUtil.dictionary_to_color(data_value))
+			return Result.ok(JSONUtil.dict_to_color(data_value))
 		TYPE_TRANSFORM:
-			return Result.ok(JSONUtil.dictionary_to_transform(data_value))
+			return Result.ok(JSONUtil.dict_to_transform(data_value))
 		TYPE_DICTIONARY:
 			var r := {}
 
@@ -221,31 +199,8 @@ func _unmarshal_data(data_type: int, data_value) -> Result:
 				r.append(result.unwrap())
 
 			return Result.ok(r)
-		CustomTypes.MAIN_LIGHT:
-			var ml := MainLight.new()
-			var result := ml.parse_dict(data_value)
-			if result.is_err():
-				return result
-			return Result.ok(ml)
-		CustomTypes.MAIN_WORLD_ENVIRONMENT:
-			var mwe := MainWorldEnvironment.new()
-			var result := mwe.parse_dict(data_value)
-			if result.is_err():
-				return result
-			return Result.ok(mwe)
 		_:
 			return Result.ok(data_value)
-
-func _normalize_data_type(data) -> int:
-	var type := typeof(data)
-
-	if type == TYPE_OBJECT:
-		if data is MainLight:
-			type = CustomTypes.MAIN_LIGHT
-		elif data is MainWorldEnvironment:
-			type = CustomTypes.MAIN_WORLD_ENVIRONMENT
-	
-	return type
 
 ###############################################################################
 # Public functions                                                            #
@@ -265,7 +220,7 @@ func get_as_dict() -> Dictionary:
 			AM.logger.error(str(result.unwrap_err()))
 			continue
 
-		r[i.name] = DataPoint.new(_normalize_data_type(data_value), result.unwrap()).get_as_dict()
+		r[i.name] = DataPoint.new(typeof(data_value), result.unwrap()).get_as_dict()
 
 	return r
 

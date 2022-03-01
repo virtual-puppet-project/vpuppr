@@ -106,6 +106,11 @@ func get_data(key: String):
 	return null # Still null but log something
 
 func get_nested_data(query: String):
+	"""
+	Grab nested data using Godot-style node path syntax
+
+	e.g. other/some_array/0
+	"""
 	var keys := query.lstrip("/").rstrip("/").split("/")
 	
 	var r := [self]

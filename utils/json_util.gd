@@ -1,23 +1,7 @@
 class_name JSONUtil
 extends Reference
 
-###############################################################################
-# Builtin functions                                                           #
-###############################################################################
-
-###############################################################################
-# Connections                                                                 #
-###############################################################################
-
-###############################################################################
-# Private functions                                                           #
-###############################################################################
-
-###############################################################################
-# Public functions                                                            #
-###############################################################################
-
-static func transform_to_dictionary(transform: Transform) -> Dictionary:
+static func transform_to_dict(transform: Transform) -> Dictionary:
 	var result: Dictionary = {}
 	
 	result["basis"] = {
@@ -46,7 +30,7 @@ static func transform_to_dictionary(transform: Transform) -> Dictionary:
 	
 	return result
 
-static func dictionary_to_transform(data: Dictionary) -> Transform:
+static func dict_to_transform(data: Dictionary) -> Transform:
 	var result: Transform = Transform()
 	
 	result.basis.x.x = data["basis"]["x"]["x"]
@@ -67,7 +51,7 @@ static func dictionary_to_transform(data: Dictionary) -> Transform:
 	
 	return result
 
-static func color_to_dictionary(color: Color) -> Dictionary:
+static func color_to_dict(color: Color) -> Dictionary:
 	return {
 		"r": color.r,
 		"g": color.g,
@@ -75,7 +59,7 @@ static func color_to_dictionary(color: Color) -> Dictionary:
 		"a": color.a
 	}
 
-static func dictionary_to_color(data: Dictionary) -> Color:
+static func dict_to_color(data: Dictionary) -> Color:
 	return Color(
 		data["r"],
 		data["g"],

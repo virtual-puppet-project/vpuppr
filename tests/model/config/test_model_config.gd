@@ -41,10 +41,25 @@ var good_string0 := """
 }
 """
 
-func test_parse_get_data():
+func test_parse_get_data_pass():
 	var mc0 := ModelConfig.new()
 
 	assert_true(mc0.parse_string(good_string0).is_ok())
 	assert_true(mc0.other.empty())
 	assert_eq(mc0.get_data("config_name"), "changeme")
 	assert_eq(mc0.get_nested_data("main_light/light_energy"), 0.7)
+	assert_eq(mc0.get_nested_data("main_light/light_color"), Color.white) # Uses default value
+
+func test_roundtrip_pass():
+	var mc0 := ModelConfig.new()
+
+	assert_true(mc0.parse_string(good_string0).is_ok())
+	
+	var str0 := mc0.get_as_json_string()
+	
+	var mc1 := ModelConfig.new()
+	
+	assert_true(mc1.parse_string(str0).is_ok())
+
+	assert_eq(mc1.get_as_json_string().replace(" ", "").strip_edges().strip_escapes(),
+		mc0.get_as_json_string().replace(" ", "").strip_edges().strip_escapes())

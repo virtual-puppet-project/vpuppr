@@ -63,3 +63,17 @@ func save() -> Result:
 		return result
 
 	return Result.ok()
+
+func set_data(key: String, value) -> void:
+	"""
+	Wrapper for setting KNOWN data in ModelConfig or Metadata, in that search order.
+
+	Has no effect if the key does not exist. If arbitrary data should be set, the individual config file
+	should be accessed and have set_data(...) called on them directly
+	"""
+	if model_config.get_data(key) != null:
+		model_config.set_data(key, value)
+	elif metadata.get_data(key) != null:
+		metadata.set_data(key, value)
+	else:
+		logger.error("Key %s not found in ModelConfig or Metadata. Declining to set data %s." % [key, str(value)])
