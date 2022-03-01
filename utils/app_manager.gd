@@ -1,7 +1,7 @@
-# class_name AppManager
+class_name AppManager
 extends Node
 
-var logger := Logger.new("AppManager")
+var logger: Logger
 
 var env := Env.new()
 
@@ -14,10 +14,12 @@ var plugins := {} # Plugin name: String -> Plugin: Object
 #region Debounce
 
 const DEBOUNCE_TIME: float = 3.0
-var debouce_counter: float = 0.0
+var debounce_counter: float = 0.0
 var should_save := false
 
 #endregion
+
+var tracker: TrackingBackend
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -32,10 +34,13 @@ func _ready() -> void:
 
 	# These must be initialized AFTER ConfigManager because they need to pull config data
 
+	# Initialized here since loggers must connect to the PubSub
+	logger = Logger.new("AppManager")
+
 func _process(delta: float) -> void:
 	if should_save:
-		debouce_counter += delta
-		if debouce_counter > DEBOUNCE_TIME:
+		debounce_counter += delta
+		if debounce_counter > DEBOUNCE_TIME:
 			save_config_instant()
 
 ###############################################################################
@@ -43,6 +48,8 @@ func _process(delta: float) -> void:
 ###############################################################################
 
 func _on_tree_exiting() -> void:
+	if tracker != null:
+		tracker.stop_receiver()
 
 	for key in plugins.keys():
 		var plugin = plugins[key]
@@ -50,8 +57,7 @@ func _on_tree_exiting() -> void:
 			plugin.shutdown()
 
 	if env.current_env != Env.Envs.TEST:
-		print("hello")
-#		save_config_instant()
+		save_config_instant()
 	
 	logger.info("Exiting. おやすみ。")
 
@@ -68,5 +74,5 @@ func save_config() -> void:
 
 func save_config_instant() -> void:
 	should_save = false
-	debouce_counter = 0.0
+	debounce_counter = 0.0
 	cm.save()

@@ -1,7 +1,7 @@
 class_name Logger
 extends Reference
 
-signal on_log(message)
+signal message_logged(message)
 
 enum LogType { NONE, NOTIFY, INFO, DEBUG, TRACE, ERROR }
 enum NotifyType { NONE, TOAST, POPUP }
@@ -56,13 +56,18 @@ func _log(message: String, log_type: int) -> void:
 				assert(false, message)
 
 	print(message)
-	emit_signal("on_log", message)
+	emit_signal("message_logged", message)
 
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
 
 func setup(n) -> void:
+	# Sometimes we initialize too quickly
+	while AM.ps == null:
+		yield(AM.get_tree(), "idle_frame")
+	connect("message_logged", AM.ps, "broadcast_logger_rebroadcast")
+
 	if typeof(n) == TYPE_STRING:
 		parent_name = n
 	elif n.get_script():

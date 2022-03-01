@@ -82,6 +82,10 @@ func register(o: Object, signal_name: String, payload: RegisterPayload = null) -
 
 	return Result.ok()
 
+signal logger_rebroadcast(message)
+func broadcast_logger_rebroadcast(message: String) -> void:
+	emit_signal("logger_rebroadcast", message)
+
 #region Plugins
 
 var plugins := {}
