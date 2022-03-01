@@ -1,13 +1,6 @@
 class_name ModelConfig
 extends BaseConfig
 
-enum CustomTypes {
-	NONE = 200,
-	
-	MAIN_LIGHT,
-	MAIN_WORLD_ENVIRONMENT
-}
-
 #region Metadata
 
 var config_name := "changeme"
@@ -96,19 +89,9 @@ var tracker_port: int = 11573
 
 #region Features
 
-var main_light := {
-	"light_color": Color.white,
-	"light_energy": 0.7,
-	"light_indirect_energy": 1.0,
-	"light_specular": 0.0,
-	"shadow_enabled": true
-}
+var main_light := {}
 
-var main_world_environment := {
-	"ambient_light_color": Color.black,
-	"ambient_light_energy": 0.5,
-	"ambient_light_sky_contribution": 1.0
-}
+var main_world_environment := {}
 
 var instanced_props := {} # Prop name: String -> PropData
 
@@ -149,7 +132,8 @@ func _marshal_data(data) -> Result:
 				var result := _marshal_data(data[key])
 				if result.is_err():
 					return result
-				r[key] = result.unwrap()
+				# r[key] = result.unwrap()
+				r[key] = DataPoint.new(typeof(data[key]), result.unwrap()).get_as_dict()
 
 			return Result.ok(r)
 		TYPE_ARRAY:
@@ -159,7 +143,8 @@ func _marshal_data(data) -> Result:
 				var result := _marshal_data(v)
 				if result.is_err():
 					return result
-				r.append(result.unwrap())
+				# r.append(result.unwrap())
+				r.append(DataPoint.new(typeof(v), result.unwrap()).get_as_dict())
 
 			return Result.ok(r)
 		_:
