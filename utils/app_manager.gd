@@ -75,4 +75,4 @@ func save_config() -> void:
 func save_config_instant() -> void:
 	should_save = false
 	debounce_counter = 0.0
-	cm.save()
+	cm.save_data()

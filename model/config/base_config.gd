@@ -8,6 +8,8 @@ var other := {}
 func _to_string() -> String:
 	return get_as_json_string()
 
+#region Export
+
 func get_as_dict() -> Dictionary:
 	var r := {}
 
@@ -21,6 +23,10 @@ func get_as_dict() -> Dictionary:
 
 func get_as_json_string() -> String:
 	return JSON.print(get_as_dict(), "\t")
+
+#endregion
+
+#region Parsing
 
 func _parse_data(data) -> Result:
 	if data is Result:
@@ -85,6 +91,10 @@ func parse_string(data: String) -> Result:
 
 	return parse_dict(json_data)
 
+#endregion
+
+#region Data getter/setter
+
 func has_data(key: String) -> bool:
 	if get(key) != null:
 		return true
@@ -105,7 +115,7 @@ func get_data(key: String):
 	
 	return null # Still null but log something
 
-func get_nested_data(query: String):
+func find_data(query: String):
 	"""
 	Grab nested data using Godot-style node path syntax
 
@@ -143,3 +153,5 @@ func set_data(key: String, value):
 		set(key, value)
 	else:
 		other[key] = value
+
+#endregion

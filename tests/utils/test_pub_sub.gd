@@ -24,21 +24,25 @@ func after_all():
 
 class TestClass:
 	var callback_count: int = 0
-	var other_callback_count: int = 0
-	var other_callback_args := []
 
-	var metadata_changed_count: int = 0
-
-	func _callback(_text: String) -> void:
+	func _on_callback() -> void:
 		callback_count += 1
 
-	func _other_callback(_k: String, _v, arg0, arg1) -> void:
-		other_callback_count += 1
-		other_callback_args.append(arg0)
-		other_callback_args.append(arg1)
+	var other_callback_count: int = 0
+	var other_callback_arg := ""
 
-	func _on_metadata_changed(_k: String, _v) -> void:
-		metadata_changed_count += 1
+	func _other_callback(k: String) -> void:
+		other_callback_count += 1
+		other_callback_arg = k
+
+	var last_callback_count: int = 0
+	var args := []
+	var key := ""
+
+	func _last_callback(arg, p_key: String = "") -> void:
+		last_callback_count += 1
+		args.append(arg)
+		key = p_key
 
 ###############################################################################
 # Tests                                                                       #
@@ -46,37 +50,44 @@ class TestClass:
 
 var pub_sub: PubSub
 
-func test_register_pass():
+func test_register_for_signal_pass():
+	pub_sub.add_user_signal("callback")
+	pub_sub.add_user_signal("other_signal")
+	pub_sub.add_user_signal("last_signal")
+	
 	watch_signals(pub_sub)
 
 	var test_class := TestClass.new()
-
-	pub_sub.register(test_class, "metadata_changed")
-	pub_sub.register(test_class, "logger_rebroadcast", PubSub.RegisterPayload.new("_callback"))
-	pub_sub.register(test_class, "model_config_data_changed", PubSub.RegisterPayload.new({
-		"args": ["test_arg0", "test_arg1"],
-		"custom_callback": "_other_callback"
+	
+	pub_sub.register(test_class, "callback")
+	pub_sub.register(test_class, "other_signal", PubSubPayload.new("_other_callback"))
+	pub_sub.register(test_class, "last_signal", PubSubPayload.new({
+		"callback": "_last_callback",
+		"args": ["test_key"]
 	}))
 
-	pub_sub.broadcast_metadata_changed("test_key", "test_value")
+	pub_sub.emit_signal("callback")
+	
+	assert_signal_emit_count(pub_sub, "callback", 1)
+	assert_eq(test_class.callback_count, 1)
 
-	assert_signal_emit_count(pub_sub, "metadata_changed", 1)
-	assert_eq(test_class.metadata_changed_count, 1)
+	pub_sub.emit_signal("callback")
 
-	pub_sub.broadcast_logger_rebroadcast("test")
-	pub_sub.broadcast_logger_rebroadcast("test")
+	pub_sub.emit_signal("other_signal", "test")
 
-	pub_sub.broadcast_model_config_data_changed("other_test_key", "other_test_value")
+	pub_sub.emit_signal("last_signal", "arg0")
+	pub_sub.emit_signal("last_signal", "arg1")
 
-	assert_signal_emit_count(pub_sub, "logger_rebroadcast", 2)
+	assert_signal_emit_count(pub_sub, "callback", 2)
 	assert_eq(test_class.callback_count, 2)
 
-	assert_signal_emit_count(pub_sub, "model_config_data_changed", 1)
+	assert_signal_emit_count(pub_sub, "other_signal", 1)
 	assert_eq(test_class.other_callback_count, 1)
-	assert_has(test_class.other_callback_args, "test_arg0")
-	assert_has(test_class.other_callback_args, "test_arg1")
-	assert_does_not_have(test_class.other_callback_args, "other_test_key")
-	assert_does_not_have(test_class.other_callback_args, "other_test_value")
+	assert_eq(test_class.other_callback_arg, "test")
 
-func test_register_plugin_pass():
-	pass
+	assert_signal_emit_count(pub_sub, "last_signal", 2)
+	assert_eq(test_class.last_callback_count, 2)
+	assert_eq(test_class.key, "test_key")
+	assert_has(test_class.args, "arg0")
+	assert_has(test_class.args, "arg1")
+	assert_does_not_have(test_class.args, "test_key")

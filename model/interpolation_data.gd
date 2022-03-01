@@ -144,16 +144,15 @@ var non_global_interpolations := [
 ###############################################################################
 
 func _init() -> void:
-	AM.ps.connect("model_config_data_changed", self, "_on_model_config_data_changed")
-
 	for i in LISTEN_VALUES:
-		_on_model_config_data_changed(i, AM.cm.model_config.get(i))
+		AM.ps.register(self, i, PubSubPayload.new({"args": [i], "callback": "_on_model_config_data_changed"}))
+		_on_model_config_data_changed(AM.cm.model_config.get(i), i)
 
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
 
-func _on_model_config_data_changed(key: String, value) -> void:
+func _on_model_config_data_changed(value, key: String) -> void:
 	match key:
 		"interpolate_global":
 			global.should_interpolate = value

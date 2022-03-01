@@ -105,8 +105,8 @@ func test_update_values_pass():
 func test_update_config_pass():
 	var id := InterpolationData.new()
 
-	id._on_model_config_data_changed("interpolate_rate", 0.1)
-	id._on_model_config_data_changed("bone_interpolation_rate", 1.0)
+	id._on_model_config_data_changed(0.1, "interpolate_rate")
+	id._on_model_config_data_changed(1.0, "bone_interpolation_rate")
 
 	assert_eq(id.global.should_interpolate, true)
 	assert_eq(id.global.interpolation_rate, 0.1)
@@ -116,17 +116,21 @@ func test_update_config_pass():
 	assert_eq(id.bone_translation.interpolation_rate, 0.1)
 	assert_eq(id.bone_translation.last_interpolation_rate, 1.0)
 
-	id._on_model_config_data_changed("interpolate_global", false)
+	id._on_model_config_data_changed(false, "interpolate_global")
 
 	assert_eq(id.bone_translation.interpolation_rate, 1.0)
 	assert_eq(id.bone_translation.last_interpolation_rate, 1.0)
 
-	id._on_model_config_data_changed("interpolate_global", true)
+	id._on_model_config_data_changed(true, "interpolate_global")
 
 	assert_eq(id.bone_translation.interpolation_rate, 0.1)
 	assert_eq(id.bone_translation.last_interpolation_rate, 1.0)
 
-	id._on_model_config_data_changed("interpolate_bones", true)
+	id._on_model_config_data_changed(true, "interpolate_bones")
 
 	assert_eq(id.bone_translation.interpolation_rate, 1.0)
 	assert_eq(id.bone_translation.last_interpolation_rate, 1.0)
+	
+	AM.ps.emit_signal("bone_interpolation_rate", 0.5)
+	
+	assert_eq(id.bone_translation.interpolation_rate, 0.5)
