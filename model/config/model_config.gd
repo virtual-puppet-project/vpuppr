@@ -23,7 +23,7 @@ var model_path := "changeme"
 #region Model
 
 var additional_bones := [] # Bone id: int
-var bone_transforms := {} # Bone name: String -> Bone transform: Transform
+var bone_transforms := {} # Bone id: int -> Bone transform: Transform
 var model_transform := Transform()
 var model_parent_transform := Transform()
 

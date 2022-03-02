@@ -39,7 +39,8 @@ var has_custom_update := false
 func _ready() -> void:
 	_setup_logger()
 
-	AM.sb.connect("model_config_data_changed", self, "_on_model_config_data_changed")
+	# TODO this needs to change
+#	AM.ps.connect("model_config_data_changed", self, "_on_model_config_data_changed")
 
 	for i in DEFAULT_CONFIG_VALUES:
 		set(i, AM.cm.model_config.get_data(i))

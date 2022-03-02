@@ -85,6 +85,8 @@ func _read_quaternion(b: StreamPeerBuffer, i: Integer) -> Quat:
 
 func _read_vector3(b: StreamPeerBuffer, i: Integer) -> Vector3:
 	# NOTE we invert the y value here
+	# TODO we adjust the y value when loading models and always seem to negate it
+	# Maybe we don't need to negate it here?
 	return Vector3(_read_float(b, i), -_read_float(b, i), _read_float(b, i))
 
 func _read_vector2(b: StreamPeerBuffer, i: Integer) -> Vector2:

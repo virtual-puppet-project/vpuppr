@@ -122,7 +122,7 @@ func get_data(key: String):
 	if r != null:
 		return r
 
-	AM.logger.error("key not found %s" % key)
+	AM.logger.info("key not found %s" % key)
 	
 	return null # Still null but log something
 
@@ -165,24 +165,6 @@ func _find_data(split_query: PoolStringArray) -> Array:
 		return []
 
 	return r
-
-	# if new_value != null:
-	# 	var val = r[r.size() - 2]
-	# 	var key = keys[keys.size() - 1]
-	# 	match typeof(val):
-	# 		TYPE_OBJECT:
-	# 			val.set(key, new_value)
-	# 			return null
-	# 		TYPE_ARRAY:
-	# 			val[int(key)] = new_value
-	# 			return null
-	# 		TYPE_DICTIONARY:
-	# 			val[key] = new_value
-	# 			return null
-	# 	AM.logger.error("Unable to set nested value %s - %s" % [query, str(new_value)])
-	# 	return OK
-	# else:
-	# 	return r.pop_back()
 
 func find_data_get(query: String) -> Result:
 	var r := _find_data(_split_query(query))

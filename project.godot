@@ -89,6 +89,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://utils/json_util.gd"
 }, {
+"base": "CanvasLayer",
+"class": "LandingScreen",
+"language": "GDScript",
+"path": "res://screens/landing_screen.gd"
+}, {
 "base": "Node",
 "class": "LipSyncManager",
 "language": "GDScript",
@@ -164,6 +169,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://utils/SignalBroadcaster.gd"
 }, {
+"base": "Reference",
+"class": "StoredOffsets",
+"language": "GDScript",
+"path": "res://model/stored_offsets.gd"
+}, {
 "base": "Node",
 "class": "TrackingBackend",
 "language": "GDScript",
@@ -206,6 +216,7 @@ _global_script_class_icons={
 "GlobalConstants": "",
 "InterpolationData": "",
 "JSONUtil": "",
+"LandingScreen": "",
 "LipSyncManager": "",
 "Logger": "",
 "MainScreen": "",
@@ -221,6 +232,7 @@ _global_script_class_icons={
 "RemoteControlManager": "",
 "Result": "",
 "SignalBroadcaster": "",
+"StoredOffsets": "",
 "TrackingBackend": "",
 "TrackingData": "",
 "TranslationManager": "",
@@ -231,7 +243,7 @@ _global_script_class_icons={
 [application]
 
 config/name="OpenSeeFaceGD"
-run/main_scene="res://screens/MainScreen.tscn"
+run/main_scene="res://screens/landing_screen.tscn"
 config/icon="res://assets/osfgd_icon.png"
 
 [audio]
