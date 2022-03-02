@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://screens/default_model_viewer.gd" type="Script" id=1]
+[ext_resource path="res://entities/sun.tscn" type="PackedScene" id=2]
 
 [node name="DefaultModelViewer" type="Spatial"]
 script = ExtResource( 1 )
@@ -8,3 +9,10 @@ script = ExtResource( 1 )
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3 )
 current = true
+
+[node name="MainLight" type="Spatial" parent="."]
+
+[node name="SpotLight" type="SpotLight" parent="MainLight"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3 )
+
+[node name="Sun" parent="." instance=ExtResource( 2 )]

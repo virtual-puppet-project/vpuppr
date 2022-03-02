@@ -6,7 +6,7 @@ const CONFIG_LISTEN_VALUES := [
 	"should_track_eye"
 ]
 
-const DUCK_PATH := "res://assets/duck/rubber-duck.glb"
+const DUCK_PATH := "res://entities/duck/duck.tscn"
 
 const BASE_MODEL_SCRIPT_PATH := "res://entities/base_model.gd"
 const VRM_MODEL_SCRIPT_PATH := "res://entities/vrm_model.gd"

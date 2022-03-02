@@ -1,8 +1,8 @@
 [gd_scene load_steps=15 format=2]
 
-[ext_resource path="res://entities/basic-models/DuckEyes.tres" type="Material" id=1]
-[ext_resource path="res://entities/basic-models/Duck.gd" type="Script" id=2]
-[ext_resource path="res://assets/duck/m_duck.material" type="Material" id=3]
+[ext_resource path="res://assets/duck/m_duck.material" type="Material" id=1]
+[ext_resource path="res://entities/duck/duck_eyes.tres" type="Material" id=2]
+[ext_resource path="res://entities/duck/duck.gd" type="Script" id=3]
 
 [sub_resource type="ArrayMesh" id=1]
 resource_name = "rubber-duck_Cube006"
@@ -13,7 +13,7 @@ surfaces/0 = {
 "blend_shape_data": [  ],
 "format": 2194935,
 "index_count": 312,
-"material": ExtResource( 3 ),
+"material": ExtResource( 1 ),
 "primitive": 4,
 "skeleton_aabb": [ AABB( 0, 0, 0, -1, -1, -1 ), AABB( 0, 0, 0, -1, -1, -1 ), AABB( -0.75, -0.5, -0.5, 1.5, 1.3506, 1.3125 ), AABB( -0.75, -0.5, -1.875, 1.5, 1.28966, 2.37501 ), AABB( -0.5, -0.5, -1.875, 1, 1, 1.37501 ), AABB( -0.75, -0.5, -0.5, 1.5, 0.8125, 1.00001 ), AABB( -0.75, -0.1875, -0.65007, 1.5, 1.75703, 1.57514 ), AABB( -0.65007, 0.602158, -0.65007, 1.30014, 1.02987, 1.57514 ) ],
 "vertex_count": 208
@@ -56,7 +56,7 @@ surfaces/0 = {
 "blend_shape_data": [  ],
 "format": 2194935,
 "index_count": 12,
-"material": ExtResource( 1 ),
+"material": ExtResource( 2 ),
 "primitive": 4,
 "skeleton_aabb": [ AABB( 0, 0, 0, -1, -1, -1 ), AABB( 0, 0, 0, -1, -1, -1 ), AABB( 0, 0, 0, -1, -1, -1 ), AABB( 0, 0, 0, -1, -1, -1 ), AABB( 0, 0, 0, -1, -1, -1 ), AABB( 0, 0, 0, -1, -1, -1 ), AABB( -0.350388, 1.15685, 0.247143, 0.700776, 0.412694, 0.402928 ), AABB( -0.350388, 1.15685, 0.247143, 0.700776, 0.412694, 0.402928 ) ],
 "vertex_count": 8
@@ -197,7 +197,7 @@ tracks/1/keys = {
 }
 
 [node name="Duck" type="Spatial"]
-script = ExtResource( 2 )
+script = ExtResource( 3 )
 
 [node name="Armature" type="Spatial" parent="."]
 

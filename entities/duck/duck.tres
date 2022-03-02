@@ -1,6 +1,7 @@
 [gd_resource type="SpatialMaterial" load_steps=2 format=2]
 
-[ext_resource path="res://entities/basic-models/DuckTexture.tres" type="Texture" id=1]
+[ext_resource path="res://entities/duck/duck_texture.tres" type="Texture" id=1]
+
 
 [resource]
 resource_name = "m_duck"
