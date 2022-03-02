@@ -1,9 +1,11 @@
 class_name ModelConfig
 extends BaseConfig
 
+const DEFAULT_NAME := "changeme"
+
 #region Metadata
 
-var config_name := "changeme"
+var config_name := DEFAULT_NAME
 var description := "changeme"
 var hotkey := ""
 var notes := ""

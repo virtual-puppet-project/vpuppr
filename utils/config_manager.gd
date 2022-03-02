@@ -21,13 +21,12 @@ func _init() -> void:
 		save_data_path = "res://export"
 
 	if AM.env.current_env != Env.Envs.TEST:
-		var result := load_data()
+		var result := load_metadata()
 		if result.is_err():
 			logger.error(result.unwrap_err().to_string())
 			
 			logger.info("Using defaults")
 			metadata = Metadata.new()
-			model_config = ModelConfig.new()
 		
 		result = _register_all_configs_with_pub_sub()
 		if result.is_err():
@@ -72,6 +71,8 @@ func _register_config_data_with_pub_sub(data: Dictionary, callback: String) -> R
 		if key != "other":
 			var result: Result = AM.ps.create_signal(key)
 			if result.is_err():
+				if result.unwrap_err().error_code() == Error.Code.PUB_SUB_USER_SIGNAL_ALREADY_EXISTS:
+					continue
 				return result
 
 			result = AM.ps.register(self, key, PubSubPayload.new({
@@ -79,6 +80,8 @@ func _register_config_data_with_pub_sub(data: Dictionary, callback: String) -> R
 				"callback": callback
 			}))
 		else:
+			# This doesn't infinite recurse because we are passing the dictionary
+			# for "other", not the "other" key
 			var result: Result = _register_config_data_with_pub_sub(data[key], callback)
 			if result.is_err():
 				return result
@@ -89,20 +92,66 @@ func _register_config_data_with_pub_sub(data: Dictionary, callback: String) -> R
 # Public functions                                                            #
 ###############################################################################
 
-func load_data() -> Result:
-	# TODO stub
+#region Save/load
+
+func load_metadata() -> Result:
+	logger.info("Loading metadata")
+
+	var file := File.new()
+	if file.open("%s/%s" % [save_data_path, METADATA_FILE_NAME], File.READ) != OK:
+		return Result.err(Error.Code.CONFIG_MANAGER_METADATA_LOAD_ERROR)
+
+	var result := metadata.parse_string(file.get_as_text())
+	if result.is_err():
+		return result
+
+	logger.info("Finished loading metadata")
+	
 	return Result.ok()
+
+func load_model_config(path: String) -> Result:
+	var result := load_model_config_no_set(path)
+	if result.is_err():
+		return result
+
+	model_config = result.unwrap()
+
+	logger.info("Successfully set ModelConfig %s" % path)
+
+	return Result.ok()
+
+func load_model_config_no_set(path: String) -> Result:
+	logger.info("Loading model config: %s" % path)
+
+	var file := File.new()
+	if file.open("%s/%s" % [save_data_path, path] if not path.is_abs_path() else path, File.READ) != OK:
+		return Result.err(Error.Code.CONFIG_MANAGER_MODEL_CONFIG_LOAD_ERROR)
+
+	var mc := ModelConfig.new()
+
+	var result := mc.parse_string(file.get_as_text())
+	if result.is_err():
+		return result
+
+	logger.info("Finished loading model config")
+
+	return Result.ok(mc)
 
 func save_data() -> Result:
 	var result := _save_to_file(METADATA_FILE_NAME, metadata.get_as_json_string())
 	if result.is_err():
 		return result
 
-	result = _save_to_file("%s.json" % model_config.config_name, model_config.get_as_json_string())
-	if result.is_err():
-		return result
+	if model_config.config_name != ModelConfig.DEFAULT_NAME:
+		result = _save_to_file("%s.json" % model_config.config_name, model_config.get_as_json_string())
+		if result.is_err():
+			return result
 
 	return Result.ok()
+
+#endregion
+
+#region Data access
 
 func set_data(key: String, value) -> void:
 	"""
@@ -169,3 +218,5 @@ func find_data_set(query: String, new_value) -> Result:
 	logger.error("Invalid search query %s" % query)
 
 	return Result.err(Error.Code.CONFIG_MANAGER_DATA_NOT_FOUND)
+
+#endregion
