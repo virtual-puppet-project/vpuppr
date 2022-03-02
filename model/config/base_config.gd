@@ -126,24 +126,26 @@ func get_data(key: String):
 	
 	return null # Still null but log something
 
-func find_data(query: String, new_value = null):
+func _split_query(query: String) -> PoolStringArray:
+	return query.lstrip("/").rstrip("/").split("/")
+
+func _find_data(split_query: PoolStringArray) -> Array:
 	"""
 	Grab nested data using Godot-style node path syntax.
 	
-	Also optionally change the data if a new_value is provided. The value must already exist
+	Also optionally change the data if a new_value is provided. The value must already exist. Returns OK on success
 
 	e.g. other/some_array/0
 	"""
-	var keys := query.lstrip("/").rstrip("/").split("/")
-	if keys.empty():
-		AM.logger.error("Search query was empty %s" % query)
-		return null
+	if split_query.empty():
+		AM.logger.error("Search query was empty %s" % split_query)
+		return []
 	
 	var r := [self]
 
-	for key_idx in keys.size():
+	for key_idx in split_query.size():
 		var current_container = r[key_idx]
-		var key: String = keys[key_idx]
+		var key: String = split_query[key_idx]
 		
 		var val
 		
@@ -158,24 +160,58 @@ func find_data(query: String, new_value = null):
 			r.append(val)
 			continue
 		
-		AM.logger.error("Invalid search query %s" % query)
+		AM.logger.error("Invalid search query %s" % split_query)
 		
-		return null
+		return []
 
-	if new_value != null:
-		var val = r[r.size() - 2]
-		var key = keys[keys.size() - 1]
-		match typeof(val):
-			TYPE_OBJECT:
-				val.set(key, new_value)
-				return null
-			TYPE_ARRAY, TYPE_DICTIONARY:
-				val[key] = new_value
-				return null
-		AM.logger.error("Unable to set nested value %s - %s" % [query, str(new_value)])
-		return null
-	else:
-		return r.pop_back()
+	return r
+
+	# if new_value != null:
+	# 	var val = r[r.size() - 2]
+	# 	var key = keys[keys.size() - 1]
+	# 	match typeof(val):
+	# 		TYPE_OBJECT:
+	# 			val.set(key, new_value)
+	# 			return null
+	# 		TYPE_ARRAY:
+	# 			val[int(key)] = new_value
+	# 			return null
+	# 		TYPE_DICTIONARY:
+	# 			val[key] = new_value
+	# 			return null
+	# 	AM.logger.error("Unable to set nested value %s - %s" % [query, str(new_value)])
+	# 	return OK
+	# else:
+	# 	return r.pop_back()
+
+func find_data_get(query: String) -> Result:
+	var r := _find_data(_split_query(query))
+
+	if r.empty():
+		return Result.err(Error.Code.BASE_CONFIG_DATA_NOT_FOUND)
+
+	return Result.ok(r.pop_back())
+
+func find_data_set(query: String, new_value) -> Result:
+	var split := _split_query(query)
+	var r := _find_data(split)
+
+	if r.empty():
+		return Result.err(Error.Code.BASE_CONFIG_DATA_NOT_FOUND)
+
+	var val = r[r.size() - 2]
+	var key = split[split.size() - 1]
+	match typeof(val):
+		TYPE_OBJECT:
+			val.set(key, new_value)
+		TYPE_ARRAY:
+			val[int(key)] = new_value
+		TYPE_DICTIONARY:
+			val[key] = new_value
+		_:
+			return Result.err(Error.Code.BASE_CONFIG_UNHANDLED_FIND_SET_DATA_TYPE)
+
+	return Result.ok()
 
 func set_data(key: String, value):
 	if get(key) != null:

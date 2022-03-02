@@ -38,9 +38,14 @@ func test_get_set_data_pass():
 	cm.metadata.other["nested_dict"]["hello"] = "world"
 
 	assert_eq(cm.get_data("description"), "test description")
-	assert_eq(cm.find_data("other/nested_dict/nested_array/1"), 10)
-	assert_eq(cm.find_data("other/nested_dict/hello"), "world")
+	assert_eq(cm.find_data_get("other/nested_dict/nested_array/1").unwrap(), 10)
+	assert_eq(cm.find_data_get("other/nested_dict/hello").unwrap(), "world")
 
 	cm.set_data("description", "other description")
 
 	assert_eq(cm.get_data("description"), "other description")
+
+	assert_true(cm.find_data_set("other/nested_dict/nested_array/1", 20).is_ok())
+	assert_false(cm.find_data_set("asdf/asdf", 123).is_ok())
+
+	assert_eq(cm.find_data_get("other/nested_dict/nested_array/1").unwrap(), 20)

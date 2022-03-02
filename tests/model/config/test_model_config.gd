@@ -54,7 +54,7 @@ func test_parse_get_data_pass():
 	assert_true(mc0.parse_string(good_string0).is_ok())
 	assert_true(mc0.other.empty())
 	assert_eq(mc0.get_data("config_name"), "changeme")
-	assert_eq(mc0.find_data("main_light/light_energy"), 0.7)
+	assert_eq(mc0.find_data_get("main_light/light_energy").unwrap(), 0.7)
 
 func test_roundtrip_pass():
 	var mc0 := ModelConfig.new()

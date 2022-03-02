@@ -119,6 +119,9 @@ func set_data(key: String, value) -> void:
 		logger.error("Key %s not found in ModelConfig or Metadata. Declining to set data %s." % [key, str(value)])
 
 func get_data(key: String):
+	"""
+	Wrapper for getting data in ModelConfig or Metadata, in that search order
+	"""
 	var val = model_config.get_data(key)
 	if val != null:
 		return val
@@ -131,15 +134,38 @@ func get_data(key: String):
 
 	return null
 
-func find_data(query: String):
-	var val = model_config.find_data(query)
-	if val != null:
-		return val
+func find_data_get(query: String) -> Result:
+	"""
+	Wrapper for getting KNOWN data in ModelConfig or Metadata, in that search order.
 
-	val = metadata.find_data(query)
-	if val != null:
-		return val
+	Uses the find_data_get(...) method which is very slow
+	"""
+	var result := model_config.find_data_get(query)
+	if result.is_ok():
+		return result
+
+	result = metadata.find_data_get(query)
+	if result.is_ok():
+		return result
 
 	logger.error("Invalid search query %s" % query)
 
-	return null
+	return Result.err(Error.Code.CONFIG_MANAGER_DATA_NOT_FOUND)
+
+func find_data_set(query: String, new_value) -> Result:
+	"""
+	Wrapper for setting KNOWN data in ModelConfig or Metadata, in that search order.
+
+	Uses the find_data_set(...) method which is very slow
+	"""
+	var result := model_config.find_data_set(query, new_value)
+	if result.is_ok():
+		return result
+
+	result = metadata.find_data_set(query, new_value)
+	if result.is_ok():
+		return result
+
+	logger.error("Invalid search query %s" % query)
+
+	return Result.err(Error.Code.CONFIG_MANAGER_DATA_NOT_FOUND)

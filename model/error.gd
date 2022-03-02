@@ -29,7 +29,7 @@ enum Code {
 
 	#region ConfigManager
 
-
+	CONFIG_MANAGER_DATA_NOT_FOUND,
 
 	#endregion
 
@@ -37,6 +37,8 @@ enum Code {
 
 	BASE_CONFIG_PARSE_FAILURE,
 	BASE_CONFIG_UNEXPECTED_DATA,
+	BASE_CONFIG_DATA_NOT_FOUND,
+	BASE_CONFIG_UNHANDLED_FIND_SET_DATA_TYPE,
 
 	#endregion
 

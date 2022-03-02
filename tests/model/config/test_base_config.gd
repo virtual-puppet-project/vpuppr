@@ -120,15 +120,15 @@ func test_parse_get_set_data_pass():
 	
 	assert_ne(bc1.get_data("other_key"), "other_value") # Data stored in "other" is accessed at a lower priority
 	assert_eq(bc1.get_data("other_key"), "not_other_value")
-	assert_null(bc1.find_data("other_key")) # Finding data requires the full path
+	assert_null(bc1.find_data_get("other_key").unwrap()) # Finding data requires the full path
 	
-	assert_eq(bc1.find_data("other/other_key"), "not_other_value")
-	assert_eq(bc1.find_data("other/other_array/0"), "this is a test")
-	assert_eq(bc1.find_data("/other/other_dict/hello/"), "world") # find_data strips leading/ending slashes
+	assert_eq(bc1.find_data_get("other/other_key").unwrap(), "not_other_value")
+	assert_eq(bc1.find_data_get("other/other_array/0").unwrap(), "this is a test")
+	assert_eq(bc1.find_data_get("/other/other_dict/hello/").unwrap(), "world") # find_data_get strips leading/ending slashes
 	
-	assert_null(bc1.find_data("/"))
-	assert_null(bc1.find_data("{"))
-	assert_null(bc1.find_data("{/{"))
+	assert_null(bc1.find_data_get("/").unwrap())
+	assert_null(bc1.find_data_get("{").unwrap())
+	assert_null(bc1.find_data_get("{/{").unwrap())
 
 	# Order of keys is flipped
 	var bc2 := BaseConfig.new()
@@ -138,7 +138,7 @@ func test_parse_get_set_data_pass():
 	assert_eq(bc2.get_data("other_key"), "not_other_value")
 
 	bc2.set_data("other_key", "asdf")
-	bc2.find_data("other/test", "changed")
+	assert_true(bc2.find_data_set("other/test", "changed").is_ok())
 
 	assert_eq(bc2.get_data("other_key"), "asdf")
 	assert_eq(bc2.get_data("test"), "changed")
@@ -157,8 +157,8 @@ func test_parse_get_data_fail():
 	assert_true(bc1.parse_string(good_string0).is_ok())
 	# Gracefully handle bad queries or missing data
 	assert_null(bc1.get_data("asdf"))
-	assert_null(bc1.find_data("other/other_array/asdf"))
-	assert_null(bc1.find_data("other/other_dict/hello/world"))
+	assert_null(bc1.find_data_get("other/other_array/asdf").unwrap())
+	assert_null(bc1.find_data_get("other/other_dict/hello/world").unwrap())
 
 func test_print_pass():
 	var bc := BaseConfig.new()
@@ -224,13 +224,13 @@ func test_roundtrip_pass():
 
 	var dic1 := bc2.get_as_dict()
 
-	assert_eq(dic1.other.other_array[1], bc2.find_data("other/other_array/1"))
+	assert_eq(dic1.other.other_array[1], bc2.find_data_get("other/other_array/1").unwrap())
 	assert_eq(dic1.other.test, bc2.get_data("test"))
 
 	var bc3 := BaseConfig.new()
 
 	assert_true(bc3.parse_string(bc2.get_as_json_string()).is_ok())
 
-	assert_eq(bc3.find_data("other/other_dict/hello"), bc2.get_data("other_dict").hello)
+	assert_eq(bc3.find_data_get("other/other_dict/hello").unwrap(), bc2.get_data("other_dict").hello)
 
 	#endregion
