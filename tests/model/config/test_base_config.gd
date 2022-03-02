@@ -66,6 +66,24 @@ var good_string1 := """
 }
 """
 
+# equal to good_string0 except the order of "other" is flipped
+var good_string2 := """
+{
+	"test": "value",
+	"other_key": "not_other_value",
+	"other": {
+		"other_array": [
+			"this is a test",
+			1
+		],
+		"other_key": "other_value",
+		"other_dict": {
+			"hello": "world"
+		}
+	}
+}
+"""
+
 var bad_string0 := """
 {
 	"other": {},
@@ -73,32 +91,57 @@ var bad_string0 := """
 }
 """
 
-func test_parse_get_data_pass():
+func test_parse_get_set_data_pass():
 	var bc0 := BaseConfig.new()
 
 	assert_true(bc0.parse_dict(good_dict0).is_ok())
+	
 	assert_eq(bc0.other.hello, "world")
 	assert_eq(bc0.get_data("hello"), "world") # get_data should be used instead of direct field access
+	
 	assert_eq(bc0.other.some_key, "some_value")
 	assert_eq(bc0.get_data("some_key"), "some_value")
+	
 	assert_eq(bc0.other.int_key, int(1))
 	assert_eq(bc0.get_data("int_key"), int(1))
+	
 	assert_eq(bc0.other.float_key, 1.0)
 	assert_eq(bc0.get_data("float_key"), 1.0)
 
 	var bc1 := BaseConfig.new()
 
 	assert_true(bc1.parse_string(good_string0).is_ok())
+	
 	assert_eq(bc1.get_data("test"), "value")
 	assert_eq(bc1.get_data("other_array")[0], "this is a test")
 	assert_eq(bc1.get_data("other_array")[1], float(1))
 	assert_eq(typeof(bc1.get_data("other_array")[1]), TYPE_REAL) # Raw number values parsed from a string are always floats
 	assert_eq(bc1.get_data("other_dict")["hello"], "world")
+	
 	assert_ne(bc1.get_data("other_key"), "other_value") # Data stored in "other" is accessed at a lower priority
 	assert_eq(bc1.get_data("other_key"), "not_other_value")
+	assert_null(bc1.find_data("other_key")) # Finding data requires the full path
+	
 	assert_eq(bc1.find_data("other/other_key"), "not_other_value")
 	assert_eq(bc1.find_data("other/other_array/0"), "this is a test")
 	assert_eq(bc1.find_data("/other/other_dict/hello/"), "world") # find_data strips leading/ending slashes
+	
+	assert_null(bc1.find_data("/"))
+	assert_null(bc1.find_data("{"))
+	assert_null(bc1.find_data("{/{"))
+
+	# Order of keys is flipped
+	var bc2 := BaseConfig.new()
+
+	assert_true(bc2.parse_string(good_string2).is_ok())
+
+	assert_eq(bc2.get_data("other_key"), "not_other_value")
+
+	bc2.set_data("other_key", "asdf")
+	bc2.find_data("other/test", "changed")
+
+	assert_eq(bc2.get_data("other_key"), "asdf")
+	assert_eq(bc2.get_data("test"), "changed")
 
 func test_parse_get_data_fail():
 	var bc0 := BaseConfig.new()

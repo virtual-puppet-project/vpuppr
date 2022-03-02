@@ -60,12 +60,23 @@ func _parse_data(data) -> Result:
 			return Result.ok(data)
 
 func parse_dict(data: Dictionary) -> Result:
+	var result: Result
+	if data.has("other"):
+		result = _parse_data(data["other"])
+		if result.is_err():
+			return result
+		other = result.unwrap()
+
 	for key in data.keys():
+		if key == "other":
+			continue
 		var value = data[key]
 
 		match typeof(value):
 			TYPE_DICTIONARY, TYPE_ARRAY:
-				var result := _parse_data(value)
+				result = _parse_data(value)
+				if result.is_err():
+					return result
 				if get(key) != null:
 					set(key, result.unwrap())
 				else:
@@ -115,13 +126,18 @@ func get_data(key: String):
 	
 	return null # Still null but log something
 
-func find_data(query: String):
+func find_data(query: String, new_value = null):
 	"""
-	Grab nested data using Godot-style node path syntax
+	Grab nested data using Godot-style node path syntax.
+	
+	Also optionally change the data if a new_value is provided. The value must already exist
 
 	e.g. other/some_array/0
 	"""
 	var keys := query.lstrip("/").rstrip("/").split("/")
+	if keys.empty():
+		AM.logger.error("Search query was empty %s" % query)
+		return null
 	
 	var r := [self]
 
@@ -142,11 +158,24 @@ func find_data(query: String):
 			r.append(val)
 			continue
 		
-		AM.logger.error("invalid search query %s" % query)
+		AM.logger.error("Invalid search query %s" % query)
 		
 		return null
 
-	return r.pop_back()
+	if new_value != null:
+		var val = r[r.size() - 2]
+		var key = keys[keys.size() - 1]
+		match typeof(val):
+			TYPE_OBJECT:
+				val.set(key, new_value)
+				return null
+			TYPE_ARRAY, TYPE_DICTIONARY:
+				val[key] = new_value
+				return null
+		AM.logger.error("Unable to set nested value %s - %s" % [query, str(new_value)])
+		return null
+	else:
+		return r.pop_back()
 
 func set_data(key: String, value):
 	if get(key) != null:

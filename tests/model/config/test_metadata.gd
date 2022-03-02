@@ -77,3 +77,9 @@ func test_parse_get_data_pass():
 	assert_eq(md1.find_data("other/some_garbage"), "garbage_value")
 	assert_eq(md1.find_data("other/use_lip_sync"), true)
 	assert_eq(md1.get_data("default_model_path"), "eh/path")
+	assert_eq(md1.find_data("default_model_path"), "eh/path")
+
+	md1.find_data("default_model_path", "changed/path")
+
+	assert_eq(md1.find_data("default_model_path"), "changed/path")
+
