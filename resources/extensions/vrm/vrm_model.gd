@@ -26,8 +26,8 @@ class EyeClamps:
 	var left: Vector3
 	var right: Vector3
 
-var left_eye: EyeClamps
-var right_eye: EyeClamps
+var left_eye := EyeClamps.new()
+var right_eye := EyeClamps.new()
 
 #endregion
 
@@ -39,7 +39,7 @@ class MorphData:
 	var values: Array
 
 class ExpressionData:
-	var morphs := {}
+	var morphs := {} # Name: String -> Array[MorphData]
 
 	func add_morph(morph_name: String, morph_data: MorphData) -> void:
 		if not morphs.has(morph_name):
@@ -47,7 +47,7 @@ class ExpressionData:
 		
 			morphs[morph_name].append(morph_data)
 
-	func get_expression(morph_name: String) -> MorphData:
+	func get_expression(morph_name: String) -> Array:
 		return morphs.get(morph_name)
 
 var expression_data := ExpressionData.new()
@@ -77,8 +77,12 @@ var u_shape: MorphData
 ###############################################################################
 
 func _ready() -> void:
-	AM.ps.connect("model_config_data_changed", self, "_on_model_config_data_changed")
-	AM.ps.connect("blend_shape", self, "_on_blend_shape")
+	for i in CONFIG_VALUES:
+		AM.ps.connect(i, self, "_on_model_config_data_changed", [i])
+	# TODO Not really sure how to make sure this signal exists
+	# Maybe connect VRM model to this signal using the gui or the runner?
+	if AM.ps.has_user_signal("blend_shape"):
+		AM.ps.connect("blend_shape", self, "_on_blend_shape")
 
 	has_custom_update = true
 
@@ -118,14 +122,14 @@ func _ready() -> void:
 
 	_fix_additional_bones()
 
-	blink_l = expression_data.get_expression("blink_l") # TODO this is kind of gross?
-	blink_r = expression_data.get_expression("blink_r")
+	blink_l = expression_data.get_expression("blink_l")[0] # TODO this is kind of gross?
+	blink_r = expression_data.get_expression("blink_r")[0]
 
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
 
-func _on_model_config_data_changed(key: String, value) -> void:
+func _on_model_config_data_changed(value, key: String) -> void:
 	match key:
 		"blink_threshold":
 			blink_threshold = value
@@ -169,7 +173,7 @@ func _map_bones_and_eyes() -> void:
 		head_bone = vrm_meta.humanoid_bone_mapping["head"]
 		head_bone_id = skeleton.find_bone(head_bone)
 
-		AM.ps.broadcast_model_config_data_changed("head_bone", head_bone)
+		AM.ps.emit_signal("head_bone", head_bone)
 
 	var left_eye_name: String = vrm_meta.humanoid_bone_mapping.get("leftEye", "eye_L")
 	left_eye_id = skeleton.find_bone(left_eye_name)
@@ -191,7 +195,7 @@ func _map_bones_and_eyes() -> void:
 		if spine_bone_id >= 0:
 			additional_bones.append(spine_bone_id)
 
-	var lookup := expression_data.get_expression("lookup")
+	var lookup: MorphData = expression_data.get_expression("lookup")[0]
 	if lookup != null:
 		var val = lookup.values.pop_back()
 		if val:
@@ -202,7 +206,7 @@ func _map_bones_and_eyes() -> void:
 				right_eye_name:
 					right_eye.up = rot.get_euler()
 	
-	var lookdown := expression_data.get_expression("lookdown")
+	var lookdown: MorphData = expression_data.get_expression("lookdown")[0]
 	if lookdown != null:
 		var val = lookdown.values.pop_back()
 		if val:
@@ -213,7 +217,7 @@ func _map_bones_and_eyes() -> void:
 				right_eye_name:
 					right_eye.down = rot.get_euler()
 
-	var lookleft := expression_data.get_expression("lookleft")
+	var lookleft: MorphData = expression_data.get_expression("lookleft")[0]
 	if lookleft != null:
 		var val = lookleft.values.pop_back()
 		if val:
@@ -224,7 +228,7 @@ func _map_bones_and_eyes() -> void:
 				right_eye_name:
 					right_eye.left = rot.get_euler()
 
-	var lookright := expression_data.get_expression("lookright")
+	var lookright: MorphData = expression_data.get_expression("lookright")[0]
 	if lookright != null:
 		var val = lookright.values.pop_back()
 		if val:

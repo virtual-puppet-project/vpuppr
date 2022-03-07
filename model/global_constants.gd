@@ -7,6 +7,14 @@ const IGNORED_PROPERTIES_REFERENCE := [
 	"Script Variables"
 ]
 
+const ExtensionTypes := {
+	"RUNNER": "runner",
+	"PUPPET": "puppet",
+	"TRACKER": "tracker",
+	"GUI": "gui",
+	"PLUGIN": "plugin"
+}
+
 enum CustomTypes {
 	NONE = 200,
 	
@@ -15,4 +23,4 @@ enum CustomTypes {
 }
 
 const LANDING_SCREEN_PATH := "res://screens/landing_screen.tscn"
-const DEFAULT_MODEL_VIEWER_PATH := "res://screens/default_model_viewer.tscn"
+const DEFAULT_RUNNER_PATH := "res://screens/default_runner.gd"

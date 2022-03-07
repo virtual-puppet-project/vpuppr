@@ -1,8 +1,8 @@
 class_name ExtensionManager
-extends Reference
+extends AbstractManager
 
 const Config := {
-	"DEFAULT_SEARCH_FOLDER": "resources/plugins",
+	"DEFAULT_SEARCH_FOLDER": "resources/extensions",
 
 	"CONFIG_NAME": "config.ini",
 	"GENERAL": "General",
@@ -13,21 +13,12 @@ const Config := {
 	"SECTION_KEYS": {
 		"TYPE": "type",
 		"ENTRYPOINT": "entrypoint"
-	},
-	"EXTENSION_TYPES": {
-		"RUNNER": "runner",
-		"PUPPET": "puppet",
-		"TRACKER": "tracker",
-		"GUI": "gui",
-		"PLUGIN": "plugin"
 	}
 }
 
-var logger := Logger.new("ExtensionManager")
-
 var scan_path := ""
 
-var extensions := {} # Plugin name: String -> Plugin object: RuntimeLoadablePlugin
+var extensions := {} # Extension name: String -> Extension object: Extension
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -40,6 +31,11 @@ func _init() -> void:
 		scan_path = "%s/%s" % [ProjectSettings.globalize_path("res://"), Config.DEFAULT_SEARCH_FOLDER]
 
 	_scan()
+
+	is_setup = true
+
+func _setup_logger() -> void:
+	logger = Logger.new("ExtensionManager")
 
 ###############################################################################
 # Connections                                                                 #
@@ -96,6 +92,8 @@ func _parse_extension(path: String) -> Result:
 	ext.extension_name = extension_name
 	
 	for i in c.get_sections():
+		if i == Config.GENERAL:
+			continue
 		var r := _parse_extension_section(path, c, i, ext)
 		if r.is_err():
 			return r
@@ -112,8 +110,8 @@ func _parse_extension_section(path: String, c: ConfigFile, section_name: String,
 
 	var res := e.add_resource(
 		section_name,
-		c.get_value(section_name, Config.SECTION_KEYS.TYPE),
-		c.get_value(section_name, "%s/%s" % [path, Config.SECTION_KEYS.ENTRYPOINT])
+		c.get_value(section_name, Config.SECTION_KEYS.TYPE).to_lower(),
+		"%s/%s" % [path, c.get_value(section_name, Config.SECTION_KEYS.ENTRYPOINT)]
 	)
 	if res.is_err():
 		return res
@@ -123,3 +121,14 @@ func _parse_extension_section(path: String, c: ConfigFile, section_name: String,
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
+
+func query_extensions_for_type(field: String) -> Array:
+	var r := []
+
+	for key in extensions.keys():
+		var ext_resources: Dictionary = extensions[key].resources
+		for inner_key in ext_resources.keys():
+			if ext_resources[inner_key].resource_type == field:
+				r.append(ext_resources[inner_key])
+
+	return r

@@ -1,5 +1,5 @@
 class_name RunnerTrait
-extends Spatial
+extends Node
 
 const DEFAULT_MODEL := "res://entities/duck/duck.tscn"
 const PUPPET_TRAIT_SCRIPT_PATH := "res://model/runtime-loadables/puppet_trait.gd"
@@ -13,6 +13,7 @@ var logger: Logger
 func _ready() -> void:
 	_setup_logger()
 	_setup_config()
+	_setup_scene()
 
 ###############################################################################
 # Connections                                                                 #
@@ -23,22 +24,28 @@ func _ready() -> void:
 ###############################################################################
 
 func _setup_logger() -> void:
+	"""
+	Virtual function that sets up the local logger
+	"""
 	logger = Logger.new("RunnerTrait")
 	logger.info("Using base logger, this is not recommended")
 
 func _setup_config() -> void:
+	"""
+	Virtual function that sets up commonly used config connections
+	"""
 	for i in ["apply_translation", "apply_rotation", "should_track_eye"]:
 		AM.ps.register(self, i, PubSubPayload.new({
 			"args": [i],
 			"callback": "_on_config_changed"
 		}))
 
-	add_child(MainLight.new())
-	add_child(Sun.new())
+func _setup_scene() -> void:
+	pass
 
 func _try_load_model(path: String) -> Result:
 	var file := File.new()
-	if not file.exists(path):
+	if not file.file_exists(path):
 		return Result.err(Error.Code.RUNNER_FILE_NOT_FOUND)
 
 	var loaders := _find_loaders()
@@ -48,7 +55,7 @@ func _try_load_model(path: String) -> Result:
 	var file_ext := path.get_extension().to_lower()
 
 	if not loaders.has(file_ext):
-		return Result.err(Error.Code.RUNNER_UNHANDLED_FILE_FORMAT)
+		return Result.err(Error.Code.RUNNER_UNHANDLED_FILE_FORMAT, file_ext)
 
 	var method_name: String = loaders[file_ext]
 
@@ -140,3 +147,6 @@ func load_scn(path: String) -> Result:
 		return Result.err(Error.Code.RUNNER_LOAD_FILE_FAILED)
 
 	return Result.ok(model_instance)
+
+func load_tscn(path: String) -> Result:
+	return load_scn(path)

@@ -22,36 +22,6 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="TopBar" type="PanelContainer" parent="RootControl"]
-visible = false
-anchor_right = 1.0
-anchor_bottom = 0.05
-margin_left = 5.0
-margin_top = 5.0
-margin_right = -5.0
-margin_bottom = -5.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="HBoxContainer" type="HBoxContainer" parent="RootControl/TopBar"]
-margin_left = 9.0
-margin_top = 6.0
-margin_right = 1581.0
-margin_bottom = 32.0
-
-[node name="File" type="MenuButton" parent="RootControl/TopBar/HBoxContainer"]
-margin_right = 41.0
-margin_bottom = 26.0
-text = "File"
-
-[node name="MenuButton2" type="MenuButton" parent="RootControl/TopBar/HBoxContainer"]
-margin_left = 47.0
-margin_right = 88.0
-margin_bottom = 26.0
-focus_mode = 2
-text = "File"
-
 [node name="TabContainer" type="TabContainer" parent="RootControl"]
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -80,12 +50,12 @@ margin_top = 6.0
 margin_right = 1556.0
 margin_bottom = 831.0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="RootControl/TabContainer/Runners/ScrollContainer"]
+[node name="RunnersList" type="VBoxContainer" parent="RootControl/TabContainer/Runners/ScrollContainer"]
 margin_right = 1547.0
 margin_bottom = 26.0
 size_flags_horizontal = 3
 
-[node name="DefaultViewer" type="Button" parent="RootControl/TabContainer/Runners/ScrollContainer/VBoxContainer"]
+[node name="DefaultViewer" type="Button" parent="RootControl/TabContainer/Runners/ScrollContainer/RunnersList"]
 margin_right = 1547.0
 margin_bottom = 26.0
 text = "Default Viewer"

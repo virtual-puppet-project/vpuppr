@@ -1,7 +1,11 @@
 class_name PubSub
-extends Reference
+extends AbstractManager
 
-var logger := Logger.new("PubSub")
+func _init() -> void:
+	is_setup = true
+
+func _setup_logger() -> void:
+	logger = Logger.new("PubSub")
 
 class ToggleToggled:
 	"""

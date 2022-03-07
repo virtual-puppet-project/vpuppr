@@ -1,9 +1,7 @@
 class_name ConfigManager
-extends Reference
+extends AbstractManager
 
 const METADATA_FILE_NAME := "metadata.json"
-
-var logger := Logger.new("ConfigManager")
 
 var save_data_path := ""
 
@@ -31,6 +29,11 @@ func _init() -> void:
 		result = _register_all_configs_with_pub_sub()
 		if result.is_err():
 			logger.error(result.unwrap_err().to_string())
+
+	is_setup = true
+
+func _setup_logger() -> void:
+	logger = Logger.new("ConfigManager")
 
 ###############################################################################
 # Connections                                                                 #

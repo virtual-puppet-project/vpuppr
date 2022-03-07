@@ -13,7 +13,13 @@ class ExtensionResource:
 		resource_type = p_type
 		resource_entrypoint = p_entrypoint
 
-var resources := {}
+var resources := {} # Name: String -> ExtensionResource
+
+var runners := [] # Resource name: String
+var puppets := [] # Resources name: String
+var trackers := [] # Resources name: String
+var guis := [] # Resources name: String
+var plugins := [] # Resources name: String
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -35,7 +41,7 @@ func _init() -> void:
 ###############################################################################
 
 func add_resource(res_name: String, res_type: String, res_entrypoint: String) -> Result:
-	if resources.has(res_type):
+	if resources.has(res_name):
 		return Result.err(Error.Code.EXTENSION_RESOURCE_ALREADY_EXISTS)
 
 	resources[res_name] = ExtensionResource.new(
@@ -43,5 +49,19 @@ func add_resource(res_name: String, res_type: String, res_entrypoint: String) ->
 		res_type,
 		res_entrypoint
 	)
+
+	match res_type:
+		GlobalConstants.ExtensionTypes.RUNNER:
+			runners.append(res_name)
+		GlobalConstants.ExtensionTypes.PUPPET:
+			puppets.append(res_name)
+		GlobalConstants.ExtensionTypes.TRACKER:
+			trackers.append(res_name)
+		GlobalConstants.ExtensionTypes.GUI:
+			guis.append(res_name)
+		GlobalConstants.ExtensionTypes.PLUGIN:
+			plugins.append(res_name)
+		_:
+			return Result.err(Error.Code.UNHANDLED_EXTENSION_TYPE)
 
 	return Result.ok()

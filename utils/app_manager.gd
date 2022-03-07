@@ -7,8 +7,8 @@ var env := Env.new()
 
 var ps: PubSub
 var cm: ConfigManager
+var em: ExtensionManager
 var nm
-var rlm: RuntimeLoadableManager
 
 var plugins := {} # Plugin name: String -> Plugin: Object
 
@@ -34,7 +34,7 @@ func _ready() -> void:
 	cm = ConfigManager.new()
 
 	# These must be initialized AFTER ConfigManager because they need to pull config data
-	rlm = RuntimeLoadableManager.new()
+	em = ExtensionManager.new()
 
 	# Initialized here since loggers must connect to the PubSub
 	logger = Logger.new("AppManager")
@@ -78,3 +78,7 @@ func save_config_instant() -> void:
 	should_save = false
 	debounce_counter = 0.0
 	cm.save_data()
+
+func is_manager_ready(manager_name: String) -> bool:
+	var m = get(manager_name)
+	return m != null and m.is_setup
