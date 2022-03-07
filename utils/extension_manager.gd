@@ -49,7 +49,7 @@ func _scan() -> Result:
 	var dir := Directory.new()
 
 	if dir.open(Config.DEFAULT_SEARCH_FOLDER) != OK:
-		return Result.err(Error.Code.RUNTIME_LOADABLE_MANAGER_RESOURCE_PATH_DOES_NOT_EXIST)
+		return Result.err(Error.Code.EXTENSION_MANAGER_RESOURCE_PATH_DOES_NOT_EXIST)
 
 	dir.list_dir_begin(true, true)
 
@@ -75,18 +75,18 @@ func _parse_extension(path: String) -> Result:
 	var file := File.new()
 
 	if file.open("%s/%s" % [path, Config.CONFIG_NAME], File.READ) != OK:
-		return Result.err(Error.Code.RUNTIME_LOADABLE_MANAGER_CONFIG_DOES_NOT_EXIST)
+		return Result.err(Error.Code.EXTENSION_MANAGER_CONFIG_DOES_NOT_EXIST)
 
 	var c := ConfigFile.new()
 	if c.parse(file.get_as_text()) != OK:
-		return Result.err(Error.Code.RUNTIME_LOADABLE_MANAGER_RESOURCE_CONFIG_PARSE_FAILURE)
+		return Result.err(Error.Code.EXTENSION_MANAGER_RESOURCE_CONFIG_PARSE_FAILURE)
 
 	if not c.has_section(Config.GENERAL):
-		return Result.err(Error.Code.RUNTIME_LOADABLE_MANAGER_MISSING_GENERAL_SECTION)
+		return Result.err(Error.Code.EXTENSION_MANAGER_MISSING_GENERAL_SECTION)
 
 	var extension_name: String = c.get_value(Config.GENERAL, Config.GENERAL_KEYS.NAME, "")
 	if extension_name.empty():
-		return Result.err(Error.Code.RUNTIME_LOADABLE_MANAGER_MISSING_EXTENSION_NAME)
+		return Result.err(Error.Code.EXTENSION_MANAGER_MISSING_EXTENSION_NAME)
 
 	var ext = Extension.new()
 	ext.extension_name = extension_name
@@ -105,7 +105,7 @@ func _parse_extension(path: String) -> Result:
 func _parse_extension_section(path: String, c: ConfigFile, section_name: String, e: Extension) -> Result:
 	for key in Config.SECTION_KEYS.keys():
 		if not c.has_section_key(section_name, Config.SECTION_KEYS[key]):
-			return Result.err(Error.Code.RUNTIME_LOADABLE_MANAGER_MISSING_EXTENSION_SECTION_KEY,
+			return Result.err(Error.Code.EXTENSION_MANAGER_MISSING_EXTENSION_SECTION_KEY,
 				Config.SECTION_KEYS[key])
 
 	var res := e.add_resource(
@@ -132,3 +132,32 @@ func query_extensions_for_type(field: String) -> Array:
 				r.append(ext_resources[inner_key])
 
 	return r
+
+func find_in_extensions(query: String) -> Result:
+	var split_query := query.strip_edges().lstrip("/").rstrip("/").split("/")
+
+	if split_query.empty():
+		return Result.err(Error.Code.EXTENSION_MANAGER_EMPTY_QUERY, query)
+
+	var r := [extensions]
+
+	for key_idx in split_query.size():
+		var current_container = r[key_idx]
+		var key: String = split_query[key_idx]
+
+		var val
+
+		match typeof(current_container):
+			TYPE_ARRAY:
+				if key.is_valid_integer():
+					val = current_container[int(key)]
+			TYPE_DICTIONARY, TYPE_OBJECT:
+				val = current_container.get(key)
+		
+		if val != null:
+			r.append(val)
+			continue
+
+		return Result.err(Error.Code.EXTENSION_MANAGER_BAD_QUERY, "%s: %s" % [str(split_query), key])
+	
+	return Result.ok(r.pop_back())
