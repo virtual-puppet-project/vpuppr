@@ -1,4 +1,4 @@
-class_name TrackingData
+class_name TrackingDataInterface
 extends Reference
 
 """

@@ -1,5 +1,5 @@
 class_name VRMModel
-extends BaseModel
+extends PuppetTrait
 
 const VRM_ANIMATION_PLAYER := "anim"
 

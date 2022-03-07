@@ -8,6 +8,7 @@ var env := Env.new()
 var ps: PubSub
 var cm: ConfigManager
 var nm
+var rlm: RuntimeLoadableManager
 
 var plugins := {} # Plugin name: String -> Plugin: Object
 
@@ -19,7 +20,7 @@ var should_save := false
 
 #endregion
 
-var tracker: TrackingBackend
+var tracker: TrackingBackendInterface
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -33,6 +34,7 @@ func _ready() -> void:
 	cm = ConfigManager.new()
 
 	# These must be initialized AFTER ConfigManager because they need to pull config data
+	rlm = RuntimeLoadableManager.new()
 
 	# Initialized here since loggers must connect to the PubSub
 	logger = Logger.new("AppManager")

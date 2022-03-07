@@ -1,4 +1,4 @@
-class_name BaseModel
+class_name PuppetTrait
 extends Spatial
 
 const DEFAULT_CONFIG_VALUES := [
@@ -88,7 +88,7 @@ func _setup_logger() -> void:
 	"""
 	Virtual function, sets the logger name
 	"""
-	logger = Logger.new("BaseModel")
+	logger = Logger.new("PuppetTrait")
 
 func _modify_blend_shape(mesh_instance: MeshInstance, blend_shape: String, value: float) -> void:
 	"""
@@ -108,7 +108,7 @@ func _get_blend_shape_weight(mesh_instance: MeshInstance, blend_shape: String) -
 # Public functions                                                            #
 ###############################################################################
 
-func custom_update(_data: TrackingData, _interpolation_data: InterpolationData) -> void:
+func custom_update(_data: TrackingDataInterface, _interpolation_data: InterpolationData) -> void:
 	logger.error("Model custom update not implemented")
 
 func get_bone_names() -> Array:

@@ -78,7 +78,7 @@ func broadcast_update_label_text(element_name: String, value: String) -> void:
 	emit_signal("update_label_text", element_name, value)
 
 signal model_loaded(model)
-func broadcast_model_loaded(model: BaseModel) -> void:
+func broadcast_model_loaded(model: PuppetTrait) -> void:
 	"""
 	Indicates when it's okay to start applying tracking data
 	"""

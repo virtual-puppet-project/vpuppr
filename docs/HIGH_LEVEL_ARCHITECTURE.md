@@ -5,7 +5,7 @@
 The application is split into two main parts:
 
 1. [Built-ins](#built-ins)
-2. [Runtime-loadables](#runtime-loadables)
+2. [Extensions](#extensions)
 
 With the full table of contents being:
 
@@ -18,7 +18,7 @@ With the full table of contents being:
     - [Metadata](#metadata)
     - [Model Config](#model-config)
   - [Manager Singletons](#manager-singletons)
-- [Runtime-loadables](#runtime-loadables)
+- [Extensions](#extensions)
   - [Runner](#runner)
   - [Model](#model)
   - [Tracker](#tracker)
@@ -73,8 +73,8 @@ singletons.
 These are singletons in the Godot-sense, as in there is nothing stopping a [Plugin](#plugin) from creating
 another instance of the `AppManager`. This is generally a bad idea to do in practice.
 
-# Runtime-loadables
-Changes to any of these do no require a re-export of the application. However, a configuration file will
+# Extensions
+Changes to any of these do not require a re-export of the application. However, a configuration file will
 be required to register any new resource.
 
 ## Runner
@@ -84,7 +84,7 @@ models as well.
 
 ## Model
 A Model represents a trackable entity, which in most cases is a `.glb` or `.vrm` model. Default implementations
-for both are provided in the form of `BaseModel` and `VRMModel`.
+for both are provided in the form of `PuppetTrait` and `VRMModel`.
 
 ## Tracker
 A Tracker represents some sort of external input. In most cases, this will be from a tracking device like
@@ -105,3 +105,17 @@ upon distribution.
 ## Resource Config
 A resource config is an `.ini` file that describes how the runtime-loadable resource should be handled
 by the application.
+
+There is only one required section and field:
+* General
+  * Name
+    * The canonical name of the plugin overall. This is used to refer to the plugin globally
+
+Other sections will be regarded as describing plugin functionality (e.g. Runner, Model, etc).
+
+The required fields for other keys are:
+* Type
+  * The intended type for the resource
+  * e.g. `runner`, `model`, etc
+* Entrypoint
+  * The relative path to the script to use. This must be unique unless the `Type` is `plugin`

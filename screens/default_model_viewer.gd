@@ -1,4 +1,4 @@
-extends Spatial
+extends RunnerTrait
 
 const CONFIG_LISTEN_VALUES := [
 	"apply_translation",
@@ -13,7 +13,7 @@ const VRM_MODEL_SCRIPT_PATH := "res://entities/vrm_model.gd"
 
 const VrmLoader = preload("res://addons/vrm/vrm_loader.gd")
 
-var model: BaseModel
+var model: PuppetTrait
 var model_parent: Spatial
 var props_node: Spatial
 
@@ -56,6 +56,9 @@ func _ready() -> void:
 			"args": [i],
 			"callback": "_on_config_changed"
 		}))
+	
+	add_child(MainLight.new())
+	add_child(Sun.new())
 	
 	var default_model_path: String = AM.cm.get_data("default_model_path")
 

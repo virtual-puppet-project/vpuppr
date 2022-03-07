@@ -1,5 +1,5 @@
 class_name OpenSeeFace
-extends TrackingBackend
+extends TrackingBackendInterface
 
 const PACKET_FRAME_SIZE: int = 8 + 4 + 2 * 4 + 2 * 4 + 1 + 4 + 3 * 4 + 3 * 4 + 4 * 4 + 4 * 68 + 4 * 2 * 68 + 4 * 3 * 70 + 4 * 14
 
@@ -252,5 +252,5 @@ func stop_receiver() -> void:
 			connection = null
 		server.stop()
 
-func get_data(param = 0) -> TrackingData:
+func get_data(param = 0) -> TrackingDataInterface:
 	return data_map.get(param, null)

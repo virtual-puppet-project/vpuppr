@@ -1,4 +1,4 @@
-class_name TrackingBackend
+class_name TrackingBackendInterface
 extends Node
 
 """
@@ -15,6 +15,6 @@ func start_receiver() -> void:
 func stop_receiver() -> void:
 	AM.logger.error("Not yet implemented")
 
-func get_data(_param = null) -> TrackingData:
+func get_data(_param = null) -> TrackingDataInterface:
 	AM.logger.error("Not yet implemented")
 	return null

@@ -1,5 +1,5 @@
 class_name OpenSeeFaceData
-extends TrackingData
+extends TrackingDataInterface
 
 const NUMBER_OF_POINTS: int = 68
 

@@ -1,25 +1,19 @@
-class_name LandingScreen
-extends CanvasLayer
+class_name MainLight
+extends Spatial
+
+var spot_light := SpotLight.new()
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
 func _ready() -> void:
-	$RootControl/TabContainer/Runners/ScrollContainer/VBoxContainer/DefaultViewer.connect(
-		"pressed",
-		self,
-		"_on_default_viewer_pressed"
-	)
-	
-	print("_hello_world".split("_"))
+	add_child(spot_light)
+	spot_light.translate(Vector3(0.0, 0.0, 3))
 
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
-
-func _on_default_viewer_pressed() -> void:
-	get_tree().change_scene(GlobalConstants.DEFAULT_MODEL_VIEWER_PATH)
 
 ###############################################################################
 # Private functions                                                           #
