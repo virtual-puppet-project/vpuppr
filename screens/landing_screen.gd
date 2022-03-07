@@ -11,12 +11,17 @@ func _ready() -> void:
 	while not AM.is_manager_ready("em"):
 		yield(get_tree(), "idle_frame")
 	
-	$RootControl/TabContainer/Runners/ScrollContainer/RunnersList/DefaultViewer.connect(
+	var default_runner_button := Button.new()
+	default_runner_button.name = "DefaultRunner"
+	default_runner_button.text = "Default Runner"
+	default_runner_button.connect(
 		"pressed",
 		self,
 		"_on_runner_button_pressed",
 		[GlobalConstants.DEFAULT_RUNNER_PATH]
 	)
+	
+	runners.add_child(default_runner_button)
 	
 	for i in AM.em.query_extensions_for_type("runner"):
 		var button := Button.new()

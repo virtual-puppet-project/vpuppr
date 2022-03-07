@@ -38,6 +38,8 @@ func _ready() -> void:
 
 	# Initialized here since loggers must connect to the PubSub
 	logger = Logger.new("AppManager")
+	
+	logger.info("Started. おはよう。")
 
 func _process(delta: float) -> void:
 	if should_save:
@@ -50,6 +52,7 @@ func _process(delta: float) -> void:
 ###############################################################################
 
 func _on_tree_exiting() -> void:
+	# TODO this might need to be moved somewhere else
 	if tracker != null:
 		tracker.stop_receiver()
 

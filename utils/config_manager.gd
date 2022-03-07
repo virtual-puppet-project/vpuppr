@@ -13,11 +13,17 @@ var model_config := ModelConfig.new()
 ###############################################################################
 
 func _init() -> void:
+	pass
+
+func _setup_logger() -> void:
+	logger = Logger.new("ConfigManager")
+
+func _setup_class() -> void:
 	if not OS.is_debug_build():
 		save_data_path = "user://"
 	else:
 		save_data_path = "res://export"
-
+	
 	if AM.env.current_env != Env.Envs.TEST:
 		var result := load_metadata()
 		if result.is_err():
@@ -29,11 +35,6 @@ func _init() -> void:
 		result = _register_all_configs_with_pub_sub()
 		if result.is_err():
 			logger.error(result.unwrap_err().to_string())
-
-	is_setup = true
-
-func _setup_logger() -> void:
-	logger = Logger.new("ConfigManager")
 
 ###############################################################################
 # Connections                                                                 #

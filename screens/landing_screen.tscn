@@ -29,7 +29,6 @@ margin_left = 10.0
 margin_top = 10.0
 margin_right = -10.0
 margin_bottom = -10.0
-drag_to_rearrange_enabled = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -52,13 +51,18 @@ margin_bottom = 831.0
 
 [node name="RunnersList" type="VBoxContainer" parent="RootControl/TabContainer/Runners/ScrollContainer"]
 margin_right = 1547.0
-margin_bottom = 26.0
 size_flags_horizontal = 3
 
-[node name="DefaultViewer" type="Button" parent="RootControl/TabContainer/Runners/ScrollContainer/RunnersList"]
-margin_right = 1547.0
-margin_bottom = 26.0
-text = "Default Viewer"
+[node name="Extensions" type="PanelContainer" parent="RootControl/TabContainer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 7.5
+margin_top = 35.5
+margin_right = -7.5
+margin_bottom = -7.5
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
 [node name="Settings" type="PanelContainer" parent="RootControl/TabContainer"]
 visible = false

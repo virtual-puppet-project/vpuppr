@@ -10,7 +10,7 @@ func before_all():
 	.before_all()
 
 func before_each():
-	osf = partial_double("res://trackers/open-see-face/open_see_face.gd").new()
+	osf = partial_double("res://resources/extensions/open_see_face/open_see_face.gd").new()
 	add_child_autoqfree(osf)
 
 func after_each():
@@ -31,6 +31,8 @@ func _disable_threads() -> void:
 ###############################################################################
 # Tests                                                                       #
 ###############################################################################
+
+const OSF_DATA_PATH := "res://resources/extensions/open_see_face/open_see_face_data.gd"
 
 var osf
 
@@ -74,7 +76,7 @@ func test_get_data_pass():
 	add_child_autoqfree(osf)
 	
 	var osfd0: OpenSeeFaceData = create_class(
-		"res://trackers/open-see-face/open_see_face_data.gd",
+		OSF_DATA_PATH,
 		{
 			"time": 10.0,
 			"id": 0,
@@ -86,7 +88,7 @@ func test_get_data_pass():
 	osf.data_map[0] = osfd0
 
 	var osfd1: OpenSeeFaceData = create_class(
-		"res://trackers/open-see-face/open_see_face_data.gd",
+		OSF_DATA_PATH,
 		{
 			"time": 11.0,
 			"id": 1

@@ -19,6 +19,7 @@ func _setup_scene() -> void:
 	camera.translate(Vector3(0.0, 0.0, 3.0))
 	add_child(camera)
 	
+	# TODO this is hardcoded for testing
 	var default_model_path: String = "res://assets/vrm-models/alicia/AliciaSolid_vrm-0.51.vrm"
 
 	var result := _try_load_model(default_model_path if not default_model_path.empty() else DUCK_PATH)

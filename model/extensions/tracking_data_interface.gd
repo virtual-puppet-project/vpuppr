@@ -39,25 +39,25 @@ func get_left_eye_open_amount() -> float:
 	AM.logger.error("Not yet implemented")
 	return -1.0
 
-func get_left_eye_euler() -> Quat:
-	AM.logger.error("Not yet implemented")
-	return Quat.IDENTITY
-
-func get_left_eye_rotation() -> Vector3:
+func get_left_eye_euler() -> Vector3:
 	AM.logger.error("Not yet implemented")
 	return Vector3.ZERO
+
+func get_left_eye_rotation() -> Quat:
+	AM.logger.error("Not yet implemented")
+	return Quat.IDENTITY
 
 func get_right_eye_open_amount() -> float:
 	AM.logger.error("Not yet implemented")
 	return -1.0
 
-func get_right_eye_euler() -> Quat:
-	AM.logger.error("Not yet implemented")
-	return Quat.IDENTITY
-
-func get_right_eye_rotation() -> Vector3:
+func get_right_eye_euler() -> Vector3:
 	AM.logger.error("Not yet implemented")
 	return Vector3.ZERO
+
+func get_right_eye_rotation() -> Quat:
+	AM.logger.error("Not yet implemented")
+	return Quat.IDENTITY
 
 #endregion
 

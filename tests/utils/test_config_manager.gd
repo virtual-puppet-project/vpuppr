@@ -79,10 +79,10 @@ func test_get_set_data_pass():
 
 func test_save_pass():
 	var metadata_file := File.new()
-	assert_eq(metadata_file.open("res://tests/test-resources/test_metadata.json", File.READ), OK)
+	assert_eq(metadata_file.open("res://tests/test_resources/test_metadata.json", File.READ), OK)
 
 	var model_config_file := File.new()
-	assert_eq(model_config_file.open("res://tests/test-resources/test_model_config.json", File.READ), OK)
+	assert_eq(model_config_file.open("res://tests/test_resources/test_model_config.json", File.READ), OK)
 
 	cm.metadata.parse_string(metadata_file.get_as_text())
 	cm.model_config.parse_string(model_config_file.get_as_text())

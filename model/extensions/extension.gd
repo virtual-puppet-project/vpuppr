@@ -3,18 +3,10 @@ extends Reference
 
 var extension_name := ""
 
-class ExtensionResource:
-	var resource_name := ""
-	var resource_type := ""
-	var resource_entrypoint := ""
-
-	func _init(p_resource_name: String, p_type: String, p_entrypoint: String) -> void:
-		resource_name = p_resource_name
-		resource_type = p_type
-		resource_entrypoint = p_entrypoint
-
+var context: ExtensionContext
 var resources := {} # Name: String -> ExtensionResource
 
+# Presort resources
 var runners := [] # Resource name: String
 var puppets := [] # Resources name: String
 var trackers := [] # Resources name: String
@@ -25,8 +17,8 @@ var plugins := [] # Resources name: String
 # Builtin functions                                                           #
 ###############################################################################
 
-func _init() -> void:
-	pass
+func _init(context_path: String) -> void:
+	context = ExtensionContext.new(context_path)
 
 ###############################################################################
 # Connections                                                                 #

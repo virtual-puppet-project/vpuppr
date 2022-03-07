@@ -2,7 +2,7 @@ class_name PubSub
 extends AbstractManager
 
 func _init() -> void:
-	is_setup = true
+	pass
 
 func _setup_logger() -> void:
 	logger = Logger.new("PubSub")
