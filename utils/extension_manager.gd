@@ -12,7 +12,8 @@ const Config := {
 	},
 	"SECTION_KEYS": {
 		"TYPE": "type",
-		"ENTRYPOINT": "entrypoint"
+		"ENTRYPOINT": "entrypoint",
+		"GDNATIVE": "gdnative"
 	}
 }
 
@@ -116,10 +117,17 @@ func _parse_extension(path: String) -> Result:
 	return Result.ok()
 
 func _parse_extension_section(path: String, c: ConfigFile, section_name: String, e: Extension) -> Result:
-	for key in Config.SECTION_KEYS.keys():
-		if not c.has_section_key(section_name, Config.SECTION_KEYS[key]):
-			return Result.err(Error.Code.EXTENSION_MANAGER_MISSING_EXTENSION_SECTION_KEY,
-				Config.SECTION_KEYS[key])
+	if not c.has_section_key(section_name, Config.SECTION_KEYS.TYPE):
+		return Result.err(
+			Error.Code.EXTENSION_MANAGER_MISSING_EXTENSION_SECTION_KEY,
+			Config.SECTION_KEYS.TYPE
+		)
+
+	if not c.has_section_key(section_name, Config.SECTION_KEYS.ENTRYPOINT):
+		return Result.err(
+			Error.Code.EXTENSION_MANAGER_MISSING_EXTENSION_SECTION_KEY,
+			Config.SECTION_KEYS.ENTRYPOINT
+		)
 
 	var res := e.add_resource(
 		section_name,
@@ -128,6 +136,26 @@ func _parse_extension_section(path: String, c: ConfigFile, section_name: String,
 	)
 	if res.is_err():
 		return res
+
+	var ext_resource: ExtensionResource = res.unwrap()
+
+	var is_native = c.get_value(section_name, Config.SECTION_KEYS.GDNATIVE, false)
+	# INI files don't define a boolean type, so just try to assume
+	# NOTE I think Godot parses 'true' (no quotes) as a bool by default
+	if bool(is_native) == true:
+		var dir := Directory.new()
+
+		var native_dir: String = c.get_value(section_name, Config.SECTION_KEYS.ENTRYPOINT)
+		var full_native_dir: String = "%s/%s" % [path, native_dir]
+
+		if not dir.dir_exists(full_native_dir):
+			return Result.err(Error.Code.EXTENSION_MANAGER_BAD_GDNATIVE_ENTRYPOINT, full_native_dir)
+
+		if AM.grl.process_folder(full_native_dir) != OK:
+			return Result.err(Error.Code.EXTENSION_MANAGER_FAILED_PROCESSING_GDNATIVE, full_native_dir)
+
+		ext_resource.is_gdnative = true
+		ext_resource.resource_entrypoint = native_dir
 
 	return Result.ok()
 
@@ -218,3 +246,32 @@ func load_resource(extension_name: String, rel_res_path: String) -> Result:
 		return result
 	
 	return result
+
+func load_gdnative_resource(
+	extension_name: String,
+	resource_name: String,
+	clazz_name: String
+) -> Result:
+	"""
+	Wrapper function for safely creating a class from a GDNative library.
+	
+	This works differently from loading a normal resource, as we need to figure 
+	out the entrypoint from the extension_resource first.
+
+	This is technically not necessary and can be completely bypassed by directly
+	accessing the gdnative_runtime_loader (grl) in AppManager and calling
+	create_class(<your folder name for the gdnative lib>, <your gdnative class>)
+	"""
+	var ext = extensions.get(extension_name)
+	if ext == null:
+		return Result.err(Error.Code.EXTENSION_MANAGER_EXTENSION_DOES_NOT_EXIST, extension_name)
+
+	var ext_res = ext.resources.get(resource_name)
+	if ext_res == null:
+		return Result.err(Error.Code.EXTENSION_MANAGER_EXTENSION_RESOURCE_DOES_NOT_EXIST, resource_name)
+
+	var native_class = AM.grl.create_class(ext_res.resource_entrypoint, clazz_name)
+	if native_class == null:
+		return Result.err(Error.Code.EXTENSION_MANAGER_BAD_GDNATIVE_CLASS, clazz_name)
+
+	return Result.ok(native_class)

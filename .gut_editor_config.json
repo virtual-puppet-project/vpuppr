@@ -20,7 +20,7 @@
  "post_run_script": "",
  "pre_run_script": "",
  "prefix": "test_",
- "selected": "test_extension_manager.gd",
+ "selected": null,
  "should_exit": true,
  "should_exit_on_success": false,
  "should_maximize": false,

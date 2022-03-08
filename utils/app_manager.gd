@@ -9,8 +9,8 @@ var ps: PubSub
 var cm: ConfigManager
 var em: ExtensionManager
 var nm
-
-var plugins := {} # Plugin name: String -> Plugin: Object
+# Not girl, you weirdo
+var grl = preload("res://addons/gdnative-runtime-loader/gdnative_runtime_loader.gd").new()
 
 #region Debounce
 
@@ -56,13 +56,10 @@ func _on_tree_exiting() -> void:
 	if tracker != null:
 		tracker.stop_receiver()
 
-	for key in plugins.keys():
-		var plugin = plugins[key]
-		if plugin.has_method("shutdown"):
-			plugin.shutdown()
-
 	if env.current_env != Env.Envs.TEST:
 		save_config_instant()
+
+	grl.cleanup()
 	
 	logger.info("Exiting. おやすみ。")
 

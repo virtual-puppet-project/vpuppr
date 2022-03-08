@@ -36,11 +36,13 @@ func add_resource(res_name: String, res_type: String, res_entrypoint: String) ->
 	if resources.has(res_name):
 		return Result.err(Error.Code.EXTENSION_RESOURCE_ALREADY_EXISTS)
 
-	resources[res_name] = ExtensionResource.new(
+	var ext_res := ExtensionResource.new(
 		res_name,
 		res_type,
 		res_entrypoint
 	)
+
+	resources[res_name] = ext_res
 
 	match res_type:
 		GlobalConstants.ExtensionTypes.RUNNER:
@@ -56,4 +58,4 @@ func add_resource(res_name: String, res_type: String, res_entrypoint: String) ->
 		_:
 			return Result.err(Error.Code.UNHANDLED_EXTENSION_TYPE)
 
-	return Result.ok()
+	return Result.ok(ext_res)

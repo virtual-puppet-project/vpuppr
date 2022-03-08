@@ -4,6 +4,8 @@ extends Reference
 var resource_name := ""
 var resource_type := ""
 var resource_entrypoint := ""
+# This is set retroactively
+var is_gdnative := false
 
 func _init(p_resource_name: String, p_type: String, p_entrypoint: String) -> void:
 	resource_name = p_resource_name
