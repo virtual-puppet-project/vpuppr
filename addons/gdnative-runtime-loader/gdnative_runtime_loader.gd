@@ -49,8 +49,6 @@ class Library:
 	var native_classes := {}
 	var init_func_name: String
 	var init_args := []
-	
-	var is_initialized := false
 
 	func _init(p_init_func_name: String) -> void:
 		init_func_name = p_init_func_name
@@ -76,30 +74,11 @@ class Library:
 		"""
 		init_args.append_array(arg_array)
 
-	func setup() -> void:
-		"""
-		Initializes the gdnative library using the default initialization params or the
-		custom init func
-		
-		Calling this twice probably crashes the program
-		"""
-		if is_initialized:
-			return
-		is_initialized = true
-		
-		gdnative.library = native_library
-		if init_func_name.empty():
-			gdnative.initialize()
-		else:
-			gdnative.call_native(CALLING_TYPE, init_func_name, init_args)
-
 	func cleanup() -> void:
 		"""
-		Terminates the gdnative library and removes all registered NativeScripts
+		Removes all registered NativeScripts
 		"""
 		native_classes.clear()
-		if is_initialized:
-			gdnative.terminate()
 
 	func create_class(c_name: String) -> Object:
 		"""
@@ -281,16 +260,6 @@ func process_folder(path: String) -> int:
 	libraries[path.get_file()] = library
 
 	return OK
-
-func setup(lib_name: String = "") -> void:
-	"""
-	Initializes the library(ies)
-	"""
-	if lib_name.empty():
-		for key in libraries.keys():
-			libraries[key].setup()
-	else:
-		libraries[lib_name].setup()
 
 func cleanup() -> void:
 	"""

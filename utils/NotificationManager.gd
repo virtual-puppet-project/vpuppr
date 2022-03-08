@@ -1,4 +1,3 @@
-class_name NotificationManager
 extends Node
 
 const MIN_TIME_BETWEEN_DUPLICATE_TOAST: int = 5000 # In milliseconds

@@ -8,7 +8,7 @@ var env := Env.new()
 var ps: PubSub
 var cm: ConfigManager
 var em: ExtensionManager
-var nm
+var nm: NotificationManager
 # Not girl, you weirdo
 var grl = preload("res://addons/gdnative-runtime-loader/gdnative_runtime_loader.gd").new()
 
@@ -32,9 +32,10 @@ func _ready() -> void:
 	ps = PubSub.new()
 	# Must be initialized AFTER the PubSub since it needs to connect to other signals
 	cm = ConfigManager.new()
-
-	# These must be initialized AFTER ConfigManager because they need to pull config data
+	# Must be initialized AFTER ConfigManager because it needs to pull config data
 	em = ExtensionManager.new()
+	# Idk, this could really be anywhere
+	nm = NotificationManager.new()
 
 	# Initialized here since loggers must connect to the PubSub
 	logger = Logger.new("AppManager")
@@ -58,8 +59,6 @@ func _on_tree_exiting() -> void:
 
 	if env.current_env != Env.Envs.TEST:
 		save_config_instant()
-
-	grl.cleanup()
 	
 	logger.info("Exiting. おやすみ。")
 
