@@ -40,6 +40,9 @@ class ExtensionManagerTester extends ExtensionManager:
 # Tests                                                                       #
 ###############################################################################
 
+# NOTE GDNative loading cannot be tested in CI, as the required binaries are not checked
+# into git. We could do this but it's bad practice
+
 func test_scan_pass():
 	AM.em.scan_path = "res://tests/test_resources/extension_resources/good_extensions/"
 	
@@ -112,3 +115,24 @@ func test_scan_pass():
 	assert_true(tracking_data_dummy.get_additional_info())
 
 	#endregion
+
+# TODO I think this test is flaky
+# It crashed the test runner once, which is something that happens when a library is unloaded
+# Hard to reproduce :<
+func test_gdnative_pass():
+	if OS.get_environment("VSS_ENV"):
+		gut.p("Skipping in ci build")
+		return
+	var res := AM.em._parse_extension(
+		"res://tests/test_resources/extension_resources/gdnative_extension/")
+
+	assert_true(res.is_ok())
+
+	var pinger_res = AM.em.load_gdnative_resource("GDNativeExtension", "PingerNative", "Pinger")
+	assert_true(pinger_res.is_ok())
+
+	var pinger = pinger_res.unwrap()
+	assert_has_method(pinger, "ping")
+	assert_has_method(pinger, "count_up_msec")
+	assert_has_method(pinger, "add_int")
+	assert_eq(pinger.add_int(1, 2), 3)
