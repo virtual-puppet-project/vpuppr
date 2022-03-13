@@ -22,11 +22,3 @@ func _import_scene(path: String, flags: int, bake_fps: int):
 		var packed_scene: PackedScene = PackedScene.new()
 		packed_scene.pack(root_node)
 		return packed_scene.instance(PackedScene.GEN_EDIT_STATE_INSTANCE)
-
-
-func import_animation_from_other_importer(path: String, flags: int, bake_fps: int):
-	return self._import_animation(path, flags, bake_fps)
-
-
-func import_scene_from_other_importer(path: String, flags: int, bake_fps: int):
-	return self._import_scene(path, flags, bake_fps)
