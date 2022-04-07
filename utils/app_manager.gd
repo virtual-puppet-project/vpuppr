@@ -27,6 +27,9 @@ var tracker: TrackingBackendInterface
 ###############################################################################
 
 func _ready() -> void:
+	OS.window_size = OS.get_screen_size() * 0.75
+	OS.center_window()
+	
 	connect("tree_exiting", self, "_on_tree_exiting")
 
 	ps = PubSub.new()

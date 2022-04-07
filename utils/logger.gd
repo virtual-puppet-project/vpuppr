@@ -24,7 +24,6 @@ func _init(v = null):
 # Private functions                                                           #
 ###############################################################################
 
-# TODO add support for log levels
 func _log(message: String, log_type: int) -> void:
 	var datetime: Dictionary = OS.get_datetime()
 	message = "%s %s-%s-%s_%s:%s:%s %s" % [
@@ -52,8 +51,6 @@ func _log(message: String, log_type: int) -> void:
 					message, i, data["source"], data["line"], data["function"]]
 		LogType.ERROR:
 			message = "[ERROR] %s" % message
-			if AM.env.current_env != Env.Envs.TEST:
-				assert(false, message)
 
 	print(message)
 	emit_signal("message_logged", message)

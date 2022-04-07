@@ -247,6 +247,7 @@ func load_resource(extension_name: String, rel_res_path: String) -> Result:
 	
 	return result
 
+# TODO this might need to be refactored
 func load_gdnative_resource(
 	extension_name: String,
 	resource_name: String,
