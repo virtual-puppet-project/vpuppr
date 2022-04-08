@@ -7,6 +7,8 @@ var resource_entrypoint := ""
 # This is set retroactively
 var is_gdnative := false
 
+var other := {}
+
 func _init(p_resource_name: String, p_type: String, p_entrypoint: String) -> void:
 	resource_name = p_resource_name
 	resource_type = p_type

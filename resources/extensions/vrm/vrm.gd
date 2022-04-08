@@ -1,13 +1,15 @@
 extends DefaultRunner
 
 const VRM_LOADER_PATH := "res://addons/vrm/vrm_loader.gd"
-const VRM_MODEL_SCRIPT_PATH := "res://entities/vrm_model.gd"
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
 func _ready() -> void:
+	var ext: Extension = AM.em.get_extension("VRM").unwrap()
+	var ext_res: ExtensionResource = ext.resources["VRM Runner"]
+	logger.info(str(ext_res.other))
 	pass
 
 func _setup_logger() -> void:

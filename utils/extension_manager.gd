@@ -149,6 +149,12 @@ func _parse_extension_section(path: String, c: ConfigFile, section_name: String,
 
 	var ext_resource: ExtensionResource = res.unwrap()
 
+	for key in c.get_section_keys(section_name):
+		if key in Config.SECTION_KEYS.values():
+			continue
+
+		ext_resource.other[key] = c.get_value(section_name, key)
+
 	var is_native = c.get_value(section_name, Config.SECTION_KEYS.GDNATIVE, false)
 	# INI files don't define a boolean type, so just try to assume
 	# NOTE I think Godot parses 'true' (no quotes) as a bool by default
@@ -172,6 +178,21 @@ func _parse_extension_section(path: String, c: ConfigFile, section_name: String,
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
+
+func get_extension(extension_name: String) -> Result:
+	"""
+	Null-safe wrapper for getting an Extension
+
+	Params:
+		extension_name: String - The extension to get, corresponds to the name in config.ini
+	
+	Return:
+		Result[Extension] - The Extension
+	"""
+	var extension: Extension = extensions.get(extension_name)
+	if extension == null:
+		return Result.err(Error.Code.EXTENSION_MANAGER_EXTENSION_DOES_NOT_EXIST, extension_name)
+	return Result.ok(extension)
 
 func query_extensions_for_type(ext_type: String) -> Array:
 	"""

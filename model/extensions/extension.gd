@@ -6,7 +6,7 @@ var extension_name := ""
 var context: ExtensionContext
 var resources := {} # Name: String -> ExtensionResource
 
-# Presort resources
+# Presort resources, these all refer to something in the resources dictionary
 var runners := [] # Resource name: String
 var puppets := [] # Resources name: String
 var trackers := [] # Resources name: String
