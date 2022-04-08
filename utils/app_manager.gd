@@ -31,6 +31,9 @@ func _ready() -> void:
 	OS.center_window()
 	
 	connect("tree_exiting", self, "_on_tree_exiting")
+	
+	if ClassDB.class_exists("Redirect"):
+		Engine.get_singleton("Redirect").connect("print_line", self, "_on_stderr")
 
 	ps = PubSub.new()
 	# Must be initialized AFTER the PubSub since it needs to connect to other signals
@@ -64,6 +67,10 @@ func _on_tree_exiting() -> void:
 		save_config_instant()
 	
 	logger.info("Exiting. おやすみ。")
+
+func _on_stderr(text: String, is_error: bool) -> void:
+	if is_error:
+		logger.error(text)
 
 ###############################################################################
 # Private functions                                                           #

@@ -120,10 +120,10 @@ func test_scan_pass():
 # It crashed the test runner once, which is something that happens when a library is unloaded
 # Hard to reproduce :<
 func test_gdnative_pass():
-	if OS.get_environment("VSS_ENV"):
+	if OS.get_environment("VSS_ENV") or OS.has_feature("Server"):
 		gut.p("Skipping in ci build")
 		return
-	var res := AM.em._parse_extension(
+	var res: Result = AM.em._parse_extension(
 		"res://tests/test_resources/extension_resources/gdnative_extension/")
 
 	assert_true(res.is_ok())

@@ -84,6 +84,10 @@ func _scan() -> Result:
 	return Result.ok()
 
 func _parse_extension(path: String) -> Result:
+	"""
+	Checks for necessary metadata and then iterates through every section in the
+	extension's ini file.
+	"""
 	var file := File.new()
 
 	if file.open("%s/%s" % [path, Config.CONFIG_NAME], File.READ) != OK:
@@ -117,6 +121,12 @@ func _parse_extension(path: String) -> Result:
 	return Result.ok()
 
 func _parse_extension_section(path: String, c: ConfigFile, section_name: String, e: Extension) -> Result:
+	"""
+	Parses an extension section and registers the absolute path to the entrypoint.
+
+	The only files known to the ExtensionManager are entrypoint files. After that,
+	files need to be accessed via the context.
+	"""
 	if not c.has_section_key(section_name, Config.SECTION_KEYS.TYPE):
 		return Result.err(
 			Error.Code.EXTENSION_MANAGER_MISSING_EXTENSION_SECTION_KEY,

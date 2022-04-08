@@ -32,9 +32,9 @@ func _setup_class() -> void:
 			logger.info("Using defaults")
 			metadata = Metadata.new()
 		
-		result = _register_all_configs_with_pub_sub()
-		if result.is_err():
-			logger.error(result.unwrap_err().to_string())
+	var result := _register_all_configs_with_pub_sub()
+	if result.is_err():
+		logger.error(result.unwrap_err().to_string())
 
 ###############################################################################
 # Connections                                                                 #

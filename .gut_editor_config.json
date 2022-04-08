@@ -21,9 +21,9 @@
  "pre_run_script": "",
  "prefix": "test_",
  "selected": null,
- "should_exit": true,
- "should_exit_on_success": false,
- "should_maximize": false,
+ "should_exit": false,
+ "should_exit_on_success": true,
+ "should_maximize": true,
  "show_help": false,
  "suffix": ".gd",
  "tests": [

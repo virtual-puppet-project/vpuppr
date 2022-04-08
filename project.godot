@@ -280,7 +280,6 @@ gdscript/warnings/return_value_discarded=false
 
 window/size/width=1600
 window/size/height=900
-window/dpi/allow_hidpi=true
 window/per_pixel_transparency/allowed=true
 window/per_pixel_transparency/enabled=true
 
