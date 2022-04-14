@@ -1,0 +1,46 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://screens/gui/menu_bar.gd" type="Script" id=1]
+
+[sub_resource type="StyleBoxFlat" id=2]
+content_margin_left = 5.0
+content_margin_right = 5.0
+content_margin_top = 5.0
+content_margin_bottom = 5.0
+bg_color = Color( 0.12549, 0.141176, 0.192157, 1 )
+
+[node name="MenuBar" type="PanelContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+custom_styles/panel = SubResource( 2 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 1595.0
+margin_bottom = 895.0
+
+[node name="App" type="MenuButton" parent="HBoxContainer"]
+margin_right = 37.0
+margin_bottom = 890.0
+focus_mode = 2
+text = "App"
+
+[node name="Debug" type="MenuButton" parent="HBoxContainer"]
+margin_left = 41.0
+margin_right = 94.0
+margin_bottom = 890.0
+focus_mode = 2
+text = "Debug"
+
+[node name="Help" type="MenuButton" parent="HBoxContainer"]
+margin_left = 98.0
+margin_right = 140.0
+margin_bottom = 890.0
+focus_mode = 2
+text = "Help"
