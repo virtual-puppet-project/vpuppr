@@ -8,10 +8,13 @@ var screen: Control
 ###############################################################################
 
 func _init(p_name: String, p_screen: PackedScene) -> void:
+	# Node configuration
 	window_title = p_name
 	resizable = true
-#	popup_exclusive = true
+	anchor_bottom = 1.0
+	anchor_right = 1.0
 	
+	# Add all children
 	var panel_container := PanelContainer.new()
 	
 	var stylebox := StyleBoxFlat.new()
@@ -22,16 +25,20 @@ func _init(p_name: String, p_screen: PackedScene) -> void:
 	stylebox.bg_color = Color("333a4f")
 	
 	panel_container.set_indexed("custom_styles/panel", stylebox)
+	panel_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	panel_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	panel_container.anchor_bottom = 1.0
+	panel_container.anchor_right = 1.0
+	
 	add_child(panel_container)
 	
 	screen = p_screen.instance()
 	panel_container.add_child(screen)
 	
-	connect("mouse_entered", self, "_on_mouse_entered")
-	connect("mouse_exited", self, "_on_mouse_exited")
+	# Hook up close button
+	get_close_button().connect("pressed", self, "_on_close")
 
 func _ready() -> void:
-#	popup_centered_ratio()
 	show()
 	
 	var rect := Rect2()
@@ -47,13 +54,8 @@ func _ready() -> void:
 # Connections                                                                 #
 ###############################################################################
 
-func _on_mouse_entered() -> void:
-	print("entered")
-	popup_exclusive = true
-
-func _on_mouse_exited() -> void:
-	print("exited")
-	popup_exclusive = false
+func _on_close() -> void:
+	queue_free()
 
 ###############################################################################
 # Private functions                                                           #

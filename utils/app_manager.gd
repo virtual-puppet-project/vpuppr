@@ -6,6 +6,7 @@ var logger: Logger
 var env := Env.new()
 
 var ps: PubSub
+var lm: LogManager
 var cm: ConfigManager
 var em: ExtensionManager
 var nm: NotificationManager
@@ -37,6 +38,7 @@ func _ready() -> void:
 
 	ps = PubSub.new()
 	# Must be initialized AFTER the PubSub since it needs to connect to other signals
+	lm = LogManager.new()
 	cm = ConfigManager.new()
 	# Must be initialized AFTER ConfigManager because it needs to pull config data
 	em = ExtensionManager.new()
@@ -53,6 +55,9 @@ func _process(delta: float) -> void:
 		debounce_counter += delta
 		if debounce_counter > DEBOUNCE_TIME:
 			save_config_instant()
+	
+	if Input.is_key_pressed(KEY_A):
+		printerr("a")
 
 ###############################################################################
 # Connections                                                                 #

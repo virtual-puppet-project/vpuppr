@@ -4,7 +4,8 @@ extends PanelContainer
 enum ButtonGrouping {
 	NONE = 0,
 
-	APPLICATION,
+	APP,
+	LAYOUT,
 	DEBUG,
 	HELP
 }
@@ -16,6 +17,15 @@ enum AppButtons {
 	SETTINGS,
 	LOGS,
 	QUIT
+}
+
+enum LayoutButtons {
+	NONE = 0,
+	
+	SAVE,
+	LOAD,
+	RESET,
+	DEFAULT
 }
 
 enum DebugButtons {
@@ -35,6 +45,15 @@ enum HelpButtons {
 	LICENSES
 }
 
+const Logs = preload("res://screens/gui/popups/logs.tscn")
+const Settings = preload("res://screens/gui/popups/settings.tscn")
+
+const DebugConsole = preload("res://screens/gui/popups/debug_console.tscn")
+
+const InAppHelp = preload("res://screens/gui/popups/in_app_help.tscn")
+const About = preload("res://screens/gui/popups/about.tscn")
+const Licenses = preload("res://screens/gui/popups/licenses.tscn")
+
 onready var app = $HBoxContainer/App as MenuButton
 onready var debug = $HBoxContainer/Debug as MenuButton
 onready var help = $HBoxContainer/Help as MenuButton
@@ -47,7 +66,8 @@ func _ready() -> void:
 	#region Application setup
 	
 	var popup: PopupMenu = app.get_popup()
-	popup.connect("id_pressed", self, "_on_popup_item_pressed", [ButtonGrouping.APPLICATION])
+	popup.connect("id_pressed", self, "_on_popup_item_pressed", [ButtonGrouping.APP])
+	popup.hide_on_checkable_item_selection = false
 	
 	popup.add_item("Main Menu", AppButtons.MAIN_MENU)
 	
@@ -66,6 +86,7 @@ func _ready() -> void:
 	
 	popup = debug.get_popup()
 	popup.connect("id_pressed", self, "_on_popup_item_pressed", [ButtonGrouping.DEBUG])
+	popup.hide_on_checkable_item_selection = false
 	
 	popup.add_check_item("Show Raw Mesh", DebugButtons.SHOW_RAW_MESH)
 	
@@ -79,6 +100,7 @@ func _ready() -> void:
 	
 	popup = help.get_popup()
 	popup.connect("id_pressed", self, "_on_popup_item_pressed", [ButtonGrouping.HELP])
+	popup.hide_on_checkable_item_selection = false
 	
 	popup.add_item("In-app Help", HelpButtons.IN_APP_HELP)
 	popup.add_item("About", HelpButtons.ABOUT)
@@ -100,7 +122,7 @@ func _ready() -> void:
 
 func _on_popup_item_pressed(id: int, group: int) -> void:
 	match group:
-		ButtonGrouping.APPLICATION:
+		ButtonGrouping.APP:
 			_handle_app_button(id)
 		ButtonGrouping.DEBUG:
 			_handle_debug_button(id)
@@ -116,12 +138,9 @@ func _handle_app_button(id: int) -> void:
 		AppButtons.MAIN_MENU:
 			get_tree().change_scene(GlobalConstants.LANDING_SCREEN_PATH)
 		AppButtons.SETTINGS:
-			# var popup := BasePopup.new("Test", load("res://screens/gui/test.tscn"))
-
-			# get_parent().add_child(popup)
-			pass
+			add_child(BasePopup.new("Settings", Settings))
 		AppButtons.LOGS:
-			pass
+			add_child(BasePopup.new("Logs", Logs))
 		AppButtons.QUIT:
 			get_tree().quit()
 
@@ -133,20 +152,20 @@ func _handle_debug_button(id: int) -> void:
 			popup.set_item_checked(idx, not popup.is_item_checked(idx))
 			# TODO toggle textures somehow?
 		DebugButtons.DEBUG_CONSOLE:
-			pass
+			add_child(BasePopup.new("Debug Console", DebugConsole))
 
 func _handle_help_button(id: int) -> void:
 	match id:
 		HelpButtons.IN_APP_HELP:
-			pass
+			add_child(BasePopup.new("In-app Help", InAppHelp))
 		HelpButtons.ABOUT:
-			pass
+			add_child(BasePopup.new("About", About))
 		HelpButtons.GITHUB:
 			OS.shell_open(GlobalConstants.PROJECT_GITHUB_REPO)
 		HelpButtons.DISCORD:
 			OS.shell_open(GlobalConstants.DISCORD_INVITE)
 		HelpButtons.LICENSES:
-			pass
+			add_child(BasePopup.new("Licenses", Licenses))
 
 func _create_popup(popup_resource: PackedScene) -> void:
 	var popup: Popup = popup_resource.instance()

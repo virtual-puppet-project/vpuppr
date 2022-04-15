@@ -1,0 +1,25 @@
+[gd_scene format=2]
+
+[node name="Presets" type="VBoxContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+margin_right = 1600.0
+
+[node name="HSplitContainer" type="HSplitContainer" parent="."]
+margin_top = 4.0
+margin_right = 1600.0
+margin_bottom = 900.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+split_offset = 300
+
+[node name="Tree" type="Tree" parent="HSplitContainer"]
+margin_right = 301.0
+margin_bottom = 896.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer"]
+margin_left = 313.0
+margin_right = 1600.0
+margin_bottom = 896.0

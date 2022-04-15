@@ -1,0 +1,18 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://screens/gui/popups/licenses.gd" type="Script" id=1]
+
+[sub_resource type="StyleBoxEmpty" id=1]
+
+[sub_resource type="StyleBoxEmpty" id=2]
+
+[sub_resource type="StyleBoxEmpty" id=3]
+
+[node name="Licenses" type="TextEdit"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_styles/focus = SubResource( 1 )
+custom_styles/normal = SubResource( 2 )
+custom_styles/completion = SubResource( 3 )
+wrap_enabled = true
+script = ExtResource( 1 )

@@ -1,7 +1,4 @@
-class_name BaseElement
-extends Control
-
-signal event(args)
+extends HSplitContainer
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -21,13 +18,3 @@ func _ready() -> void:
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
-
-func get_value():
-	AppManager.logger.error("%s.get_value() not yet implemented" % name)
-	return null
-
-func set_value(_value) -> void:
-	AppManager.logger.error("%s.set_value() not yet implemented" % name)
-
-func setup() -> void:
-	pass

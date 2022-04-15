@@ -24,15 +24,10 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://model/config/base_config.gd"
 }, {
-"base": "Control",
-"class": "BaseElement",
-"language": "GDScript",
-"path": "res://screens/gui/base_element.gd"
-}, {
 "base": "WindowDialog",
 "class": "BasePopup",
 "language": "GDScript",
-"path": "res://screens/gui/base_popup.gd"
+"path": "res://screens/gui/popups/base_popup.gd"
 }, {
 "base": "Spatial",
 "class": "BaseProp",
@@ -113,6 +108,11 @@ _global_script_classes=[ {
 "class": "LipSyncManager",
 "language": "GDScript",
 "path": "res://utils/LipSyncManager.gd"
+}, {
+"base": "AbstractManager",
+"class": "LogManager",
+"language": "GDScript",
+"path": "res://utils/log_manager.gd"
 }, {
 "base": "Reference",
 "class": "Logger",
@@ -228,7 +228,6 @@ _global_script_class_icons={
 "AbstractManager": "",
 "AppManager": "",
 "BaseConfig": "",
-"BaseElement": "",
 "BasePopup": "",
 "BaseProp": "",
 "ConfigManager": "",
@@ -246,6 +245,7 @@ _global_script_class_icons={
 "JSONUtil": "",
 "LandingScreen": "",
 "LipSyncManager": "",
+"LogManager": "",
 "Logger": "",
 "MainLight": "",
 "MenuBar": "",

@@ -31,16 +31,23 @@ margin_bottom = 890.0
 focus_mode = 2
 text = "App"
 
-[node name="Debug" type="MenuButton" parent="HBoxContainer"]
+[node name="Layout" type="MenuButton" parent="HBoxContainer"]
 margin_left = 41.0
-margin_right = 94.0
+margin_right = 95.0
+margin_bottom = 890.0
+focus_mode = 2
+text = "Layout"
+
+[node name="Debug" type="MenuButton" parent="HBoxContainer"]
+margin_left = 99.0
+margin_right = 152.0
 margin_bottom = 890.0
 focus_mode = 2
 text = "Debug"
 
 [node name="Help" type="MenuButton" parent="HBoxContainer"]
-margin_left = 98.0
-margin_right = 140.0
+margin_left = 156.0
+margin_right = 198.0
 margin_bottom = 890.0
 focus_mode = 2
 text = "Help"
