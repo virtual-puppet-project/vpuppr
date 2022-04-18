@@ -2,6 +2,7 @@ class_name BasePopup
 extends WindowDialog
 
 var screen: Control
+var runner
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -64,3 +65,7 @@ func _on_close() -> void:
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
+
+func set_runner(p_runner: Node) -> void:
+	runner = p_runner
+	screen.set("runner", runner)

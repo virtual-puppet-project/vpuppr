@@ -2,7 +2,357 @@
 
 [ext_resource path="res://screens/gui/popups/model.gd" type="Script" id=1]
 
-[node name="Model" type="VBoxContainer"]
+[node name="Model" type="HSplitContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+split_offset = 300
 script = ExtResource( 1 )
+
+[node name="Tree" type="Tree" parent="."]
+margin_right = 301.0
+margin_bottom = 900.0
+
+[node name="General" type="ScrollContainer" parent="."]
+visible = false
+margin_left = 313.0
+margin_right = 1600.0
+margin_bottom = 900.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="General"]
+margin_right = 1287.0
+margin_bottom = 900.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="LoadModel" type="Button" parent="General/VBoxContainer"]
+margin_right = 1287.0
+margin_bottom = 20.0
+text = "Load model"
+
+[node name="SetModelDefault" type="Button" parent="General/VBoxContainer"]
+margin_top = 24.0
+margin_right = 1287.0
+margin_bottom = 44.0
+text = "Set model as default"
+
+[node name="HSeparator" type="HSeparator" parent="General/VBoxContainer"]
+margin_top = 48.0
+margin_right = 1287.0
+margin_bottom = 52.0
+
+[node name="MoveModel" type="CheckButton" parent="General/VBoxContainer"]
+margin_top = 56.0
+margin_right = 1287.0
+margin_bottom = 96.0
+text = "Move model"
+
+[node name="RotateModel" type="CheckButton" parent="General/VBoxContainer"]
+margin_top = 100.0
+margin_right = 1287.0
+margin_bottom = 140.0
+text = "Rotate model"
+
+[node name="ScaleModel" type="CheckButton" parent="General/VBoxContainer"]
+margin_top = 144.0
+margin_right = 1287.0
+margin_bottom = 184.0
+text = "Scale model"
+
+[node name="HSeparator2" type="HSeparator" parent="General/VBoxContainer"]
+margin_top = 188.0
+margin_right = 1287.0
+margin_bottom = 192.0
+
+[node name="ResetModelTransform" type="Button" parent="General/VBoxContainer"]
+margin_top = 196.0
+margin_right = 1287.0
+margin_bottom = 216.0
+text = "Reset model transform"
+
+[node name="ResetModelPose" type="Button" parent="General/VBoxContainer"]
+margin_top = 220.0
+margin_right = 1287.0
+margin_bottom = 240.0
+text = "Reset model pose"
+
+[node name="HeadBone" type="HBoxContainer" parent="General/VBoxContainer"]
+margin_top = 244.0
+margin_right = 1287.0
+margin_bottom = 268.0
+
+[node name="Label" type="Label" parent="General/VBoxContainer/HeadBone"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Head bone"
+
+[node name="LineEdit" type="LineEdit" parent="General/VBoxContainer/HeadBone"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="ApplyTranslation" type="CheckButton" parent="General/VBoxContainer"]
+margin_top = 272.0
+margin_right = 1287.0
+margin_bottom = 312.0
+text = "Apply translation"
+
+[node name="ApplyRotation" type="CheckButton" parent="General/VBoxContainer"]
+margin_top = 316.0
+margin_right = 1287.0
+margin_bottom = 356.0
+text = "Apply rotation"
+
+[node name="Looseness" type="ScrollContainer" parent="."]
+visible = false
+margin_left = 313.0
+margin_right = 1600.0
+margin_bottom = 900.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Looseness"]
+margin_right = 1287.0
+margin_bottom = 900.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Translation" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+margin_right = 1287.0
+margin_bottom = 24.0
+
+[node name="Label" type="Label" parent="Looseness/VBoxContainer/Translation"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Translation"
+
+[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/Translation"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="Rotation" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+margin_top = 28.0
+margin_right = 1287.0
+margin_bottom = 52.0
+
+[node name="Label" type="Label" parent="Looseness/VBoxContainer/Rotation"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Rotation"
+
+[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/Rotation"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="AdditionalBones" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+margin_top = 56.0
+margin_right = 1287.0
+margin_bottom = 80.0
+
+[node name="Label" type="Label" parent="Looseness/VBoxContainer/AdditionalBones"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Additional bones"
+
+[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/AdditionalBones"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="InterpolationOptions" type="ScrollContainer" parent="."]
+visible = false
+margin_left = 313.0
+margin_right = 1600.0
+margin_bottom = 900.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="InterpolationOptions"]
+margin_right = 1287.0
+margin_bottom = 900.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Global" type="VBoxContainer" parent="InterpolationOptions/VBoxContainer"]
+margin_right = 1287.0
+margin_bottom = 68.0
+
+[node name="CheckButton" type="CheckButton" parent="InterpolationOptions/VBoxContainer/Global"]
+margin_right = 1287.0
+margin_bottom = 40.0
+text = "Global interpolation"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="InterpolationOptions/VBoxContainer/Global"]
+margin_top = 44.0
+margin_right = 1287.0
+margin_bottom = 68.0
+
+[node name="Label" type="Label" parent="InterpolationOptions/VBoxContainer/Global/HBoxContainer"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Rate"
+
+[node name="LineEdit" type="LineEdit" parent="InterpolationOptions/VBoxContainer/Global/HBoxContainer"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="Gaze" type="VBoxContainer" parent="InterpolationOptions/VBoxContainer"]
+margin_top = 72.0
+margin_right = 1287.0
+margin_bottom = 140.0
+
+[node name="CheckButton" type="CheckButton" parent="InterpolationOptions/VBoxContainer/Gaze"]
+margin_right = 1287.0
+margin_bottom = 40.0
+text = "Gaze interpolation"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="InterpolationOptions/VBoxContainer/Gaze"]
+margin_top = 44.0
+margin_right = 1287.0
+margin_bottom = 68.0
+
+[node name="Label" type="Label" parent="InterpolationOptions/VBoxContainer/Gaze/HBoxContainer"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Rate"
+
+[node name="LineEdit" type="LineEdit" parent="InterpolationOptions/VBoxContainer/Gaze/HBoxContainer"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="Blink" type="VBoxContainer" parent="InterpolationOptions/VBoxContainer"]
+margin_top = 144.0
+margin_right = 1287.0
+margin_bottom = 212.0
+
+[node name="CheckButton" type="CheckButton" parent="InterpolationOptions/VBoxContainer/Blink"]
+margin_right = 1287.0
+margin_bottom = 40.0
+text = "Blink interpolation"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="InterpolationOptions/VBoxContainer/Blink"]
+margin_top = 44.0
+margin_right = 1287.0
+margin_bottom = 68.0
+
+[node name="Label" type="Label" parent="InterpolationOptions/VBoxContainer/Blink/HBoxContainer"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Rate"
+
+[node name="LineEdit" type="LineEdit" parent="InterpolationOptions/VBoxContainer/Blink/HBoxContainer"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="Mouth" type="VBoxContainer" parent="InterpolationOptions/VBoxContainer"]
+margin_top = 216.0
+margin_right = 1287.0
+margin_bottom = 284.0
+
+[node name="CheckButton" type="CheckButton" parent="InterpolationOptions/VBoxContainer/Mouth"]
+margin_right = 1287.0
+margin_bottom = 40.0
+text = "Mouth"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="InterpolationOptions/VBoxContainer/Mouth"]
+margin_top = 44.0
+margin_right = 1287.0
+margin_bottom = 68.0
+
+[node name="Label" type="Label" parent="InterpolationOptions/VBoxContainer/Mouth/HBoxContainer"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Rate"
+
+[node name="LineEdit" type="LineEdit" parent="InterpolationOptions/VBoxContainer/Mouth/HBoxContainer"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="EyeOptions" type="ScrollContainer" parent="."]
+margin_left = 313.0
+margin_right = 1600.0
+margin_bottom = 900.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="EyeOptions"]
+margin_right = 1287.0
+margin_bottom = 900.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ShouldTrackEye" type="CheckButton" parent="EyeOptions/VBoxContainer"]
+margin_right = 1287.0
+margin_bottom = 40.0
+text = "Should track eye"
+
+[node name="GazeStrength" type="HBoxContainer" parent="EyeOptions/VBoxContainer"]
+margin_top = 44.0
+margin_right = 1287.0
+margin_bottom = 68.0
+
+[node name="Label" type="Label" parent="EyeOptions/VBoxContainer/GazeStrength"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Gaze strength"
+
+[node name="LineEdit" type="LineEdit" parent="EyeOptions/VBoxContainer/GazeStrength"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="BlinkThreshold" type="HBoxContainer" parent="EyeOptions/VBoxContainer"]
+margin_top = 72.0
+margin_right = 1287.0
+margin_bottom = 96.0
+
+[node name="Label" type="Label" parent="EyeOptions/VBoxContainer/BlinkThreshold"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Blink threshold"
+
+[node name="LineEdit" type="LineEdit" parent="EyeOptions/VBoxContainer/BlinkThreshold"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="LinkEyeBlinks" type="CheckButton" parent="EyeOptions/VBoxContainer"]
+margin_top = 100.0
+margin_right = 1287.0
+margin_bottom = 140.0
+text = "Link eye blinks"
+
+[node name="RawEyeRotation" type="CheckButton" parent="EyeOptions/VBoxContainer"]
+margin_top = 144.0
+margin_right = 1287.0
+margin_bottom = 184.0
+text = "Use raw eye rotation"

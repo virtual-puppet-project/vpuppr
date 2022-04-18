@@ -23,6 +23,8 @@ onready var tracking = $VBoxContainer/HSplitContainer/PanelContainer/PanelContai
 onready var props = $VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer/HBoxContainer/Props as Button
 onready var presets = $VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer/HBoxContainer/Presets as Button
 
+var runner
+
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
@@ -34,6 +36,13 @@ func _ready() -> void:
 	props.connect("pressed", self, "_on_pressed", [SidebarButtons.PROPS])
 	presets.connect("pressed", self, "_on_pressed", [SidebarButtons.PRESETS])
 
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("toggle_gui"):
+		visible = not visible
+		
+		for child in get_children():
+			child.visible = visible
+
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
@@ -41,19 +50,26 @@ func _ready() -> void:
 func _on_pressed(button_id: int) -> void:
 	match button_id:
 		SidebarButtons.MODEL:
-			add_child(BasePopup.new("Model", Model))
+			add_child(_create_popup("Model", Model))
 		SidebarButtons.BONES:
-			add_child(BasePopup.new("Bones", Bones))
+			add_child(_create_popup("Bones", Bones))
 		SidebarButtons.TRACKING:
-			add_child(BasePopup.new("Tracking", Tracking))
+			add_child(_create_popup("Tracking", Tracking))
 		SidebarButtons.PROPS:
-			add_child(BasePopup.new("Props", Props))
+			add_child(_create_popup("Props", Props))
 		SidebarButtons.PRESETS:
-			add_child(BasePopup.new("Presets", Presets))
+			add_child(_create_popup("Presets", Presets))
 
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
+
+func _create_popup(popup_name: String, scene: PackedScene) -> BasePopup:
+	var popup: BasePopup = BasePopup.new(popup_name, scene)
+
+	popup.set_runner(runner)
+
+	return popup
 
 ###############################################################################
 # Public functions                                                            #

@@ -57,6 +57,9 @@ func _run_runner(path: String, gui: Node) -> void:
 	else:
 		runner = runner.new()
 
+	# Blind set the runner if possible
+	gui.set("runner", runner)
+	
 	runner.add_child(gui)
 	
 	get_tree().root.add_child(runner)
