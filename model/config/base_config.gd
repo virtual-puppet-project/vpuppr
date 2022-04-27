@@ -122,7 +122,7 @@ func get_data(key: String):
 	if r != null:
 		return r
 
-	AM.logger.info("key not found %s" % key)
+	AM.logger.debug("key not found %s" % key)
 	
 	return null # Still null but log something
 
@@ -193,6 +193,8 @@ func find_data_set(query: String, new_value) -> Result:
 		_:
 			return Result.err(Error.Code.BASE_CONFIG_UNHANDLED_FIND_SET_DATA_TYPE)
 
+	AM.ps.emit_signal(key, new_value)
+	
 	return Result.ok()
 
 func set_data(key: String, value):

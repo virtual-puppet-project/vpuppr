@@ -3,6 +3,8 @@ extends Control
 
 const TREE_COLUMN: int = 0
 
+var logger: Logger
+
 onready var tree = $Tree as Tree
 
 var pages := {}
@@ -54,13 +56,10 @@ func _toggle_page(page_name: String) -> void:
 	if page_name.empty():
 		return
 	if current_page != null:
-		print("hiding %s" % current_page.name)
 		current_page.hide()
 	
 	current_page = pages[page_name]
 	current_page.show()
-
-	print("showing %s" % current_page.name)
 
 ###############################################################################
 # Public functions                                                            #

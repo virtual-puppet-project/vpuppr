@@ -42,9 +42,11 @@ func _setup_class() -> void:
 
 func _on_metadata_changed(data, key: String) -> void:
 	metadata.set_data(key, data)
+	AM.save_config()
 
 func _on_model_config_data_changed(data, key: String) -> void:
 	model_config.set_data(key, data)
+	AM.save_config()
 
 ###############################################################################
 # Private functions                                                           #
@@ -60,6 +62,13 @@ func _save_to_file(path: String, data: String) -> Result:
 	return Result.ok()
 
 func _register_all_configs_with_pub_sub() -> Result:
+	"""
+	All config keys are registered with the PubSub. A new signal is created for each key and then
+	the ConfigManager subscribes itself to any changes.
+	
+	Returns:
+		Result - An error from registration or OK
+	"""
 	var result := _register_config_data_with_pub_sub(metadata.get_as_dict(), "_on_metadata_changed")
 	if result.is_err():
 		return result
@@ -142,6 +151,8 @@ func load_model_config_no_set(path: String) -> Result:
 	return Result.ok(mc)
 
 func save_data() -> Result:
+	logger.info("Saving data")
+	
 	var result := _save_to_file(METADATA_FILE_NAME, metadata.get_as_json_string())
 	if result.is_err():
 		return result
@@ -150,6 +161,8 @@ func save_data() -> Result:
 		result = _save_to_file("%s.json" % model_config.config_name, model_config.get_as_json_string())
 		if result.is_err():
 			return result
+	
+	logger.info("Finished saving data")
 
 	return Result.ok()
 

@@ -59,3 +59,14 @@ func add_resource(res_name: String, res_type: String, res_entrypoint: String) ->
 			return Result.err(Error.Code.UNHANDLED_EXTENSION_TYPE)
 
 	return Result.ok(ext_res)
+
+func as_data() -> Dictionary:
+	return {
+		"extension_name": extension_name,
+		"context_path": context.context_path,
+		"runners": runners.duplicate(),
+		"puppets": puppets.duplicate(),
+		"trackers": trackers.duplicate(),
+		"guis": guis.duplicate(),
+		"plugins": plugins.duplicate()
+	}

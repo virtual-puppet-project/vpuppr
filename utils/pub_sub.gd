@@ -47,7 +47,7 @@ func register(o: Object, signal_name: String, payload: PubSubPayload = null) -> 
 
 	An optional RegisterPayload can be defined to customize the connection args
 	"""
-	if not has_signal(signal_name):
+	if not has_user_signal(signal_name):
 		return Result.err(Error.Code.SIGNAL_DOES_NOT_EXIST)
 
 	var args := []

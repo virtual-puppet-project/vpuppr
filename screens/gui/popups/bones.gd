@@ -57,21 +57,59 @@ func _setup() -> void:
 		
 		add_child(bone_page)
 
+		bone_page.connect("is_tracking_set", self, "_on_is_tracking")
+		bone_page.connect("should_pose_set", self, "_on_should_pose")
+		bone_page.connect("should_use_custom_interpolation_set", self, "_on_should_use_custom_interpolation")
+		bone_page.connect("interpolation_rate_set", self, "_on_interpolation_rate")
+
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
 
-# func _on_item_selected() -> void:
-# 	var page_name: String = tree.get_selected().get_text(tree.get_selected_column())
-	
-# 	if current_page == info:
-# 		_toggle_page(page_name)
-# 		return
-	
-# 	# Handle bones
-# 	# current_page.reset_buttons()
+func _on_is_tracking(bone_name: String, state: bool) -> void:
+	var additional_bones = AM.cm.get_data("additional_bones")
+	if additional_bones == null:
+		# TODO might not be an error
+		return
 
-# 	_toggle_page(page_name)
+	var bone_id: int = model.skeleton.find_bone(bone_name)
+	if bone_id < 0:
+		logger.error("Bone %s not found, aborting config modification" % bone_name)
+		return
+	
+	if state:
+		additional_bones[bone_name] = bone_id
+	else:
+		additional_bones[bone_name].erase(bone_id)
+
+func _on_should_pose(bone_name: String, state: bool) -> void:
+	# TODO nothing needs to be set in model config from here, only after posing
+	pass
+
+func _on_should_use_custom_interpolation(bone_name: String, state: bool) -> void:
+	var bones_to_interpolate = AM.cm.get_data("bones_to_interpolate")
+	if bones_to_interpolate == null:
+		# TODO might not be an error
+		return
+
+	var bone_id: int = model.skeleton.find_bone(bone_name)
+	if bone_id < 0:
+		logger.error("Bone %s not found, aborting config modification" % bone_name)
+		return
+	
+	if state and not bones_to_interpolate.has(bone_id):
+		bones_to_interpolate.append(bone_id)
+	else:
+		bones_to_interpolate.erase(bone_id)
+
+func _on_interpolation_rate(bone_name: String, rate: float) -> void:
+	var bone_interpolation_rate_dict = AM.cm.get_data("bone_interpolation_rates")
+	if bone_interpolation_rate_dict == null:
+		# TODO maybe this shouldn't be an error
+		return
+
+	bone_interpolation_rate_dict[bone_name] = rate
+	AM.save_config()
 
 ###############################################################################
 # Private functions                                                           #

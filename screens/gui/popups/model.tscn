@@ -13,7 +13,6 @@ margin_right = 301.0
 margin_bottom = 900.0
 
 [node name="General" type="ScrollContainer" parent="."]
-visible = false
 margin_left = 313.0
 margin_right = 1600.0
 margin_bottom = 900.0
@@ -209,6 +208,33 @@ margin_right = 1287.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
+[node name="Bones" type="VBoxContainer" parent="InterpolationOptions/VBoxContainer"]
+margin_right = 1287.0
+margin_bottom = 68.0
+
+[node name="CheckButton" type="CheckButton" parent="InterpolationOptions/VBoxContainer/Bones"]
+margin_right = 1287.0
+margin_bottom = 40.0
+text = "Bone interpolation"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="InterpolationOptions/VBoxContainer/Bones"]
+margin_top = 44.0
+margin_right = 1287.0
+margin_bottom = 68.0
+
+[node name="Label" type="Label" parent="InterpolationOptions/VBoxContainer/Bones/HBoxContainer"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Rate"
+
+[node name="LineEdit" type="LineEdit" parent="InterpolationOptions/VBoxContainer/Bones/HBoxContainer"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
 [node name="Gaze" type="VBoxContainer" parent="InterpolationOptions/VBoxContainer"]
 margin_top = 72.0
 margin_right = 1287.0
@@ -293,7 +319,36 @@ margin_right = 1287.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
+[node name="Eyebrows" type="VBoxContainer" parent="InterpolationOptions/VBoxContainer"]
+margin_top = 216.0
+margin_right = 1287.0
+margin_bottom = 284.0
+
+[node name="CheckButton" type="CheckButton" parent="InterpolationOptions/VBoxContainer/Eyebrows"]
+margin_right = 1287.0
+margin_bottom = 40.0
+text = "Eyebrows"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="InterpolationOptions/VBoxContainer/Eyebrows"]
+margin_top = 44.0
+margin_right = 1287.0
+margin_bottom = 68.0
+
+[node name="Label" type="Label" parent="InterpolationOptions/VBoxContainer/Eyebrows/HBoxContainer"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Rate"
+
+[node name="LineEdit" type="LineEdit" parent="InterpolationOptions/VBoxContainer/Eyebrows/HBoxContainer"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
 [node name="EyeOptions" type="ScrollContainer" parent="."]
+visible = false
 margin_left = 313.0
 margin_right = 1600.0
 margin_bottom = 900.0

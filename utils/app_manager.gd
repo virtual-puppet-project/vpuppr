@@ -1,6 +1,8 @@
 class_name AppManager
 extends Node
 
+signal debounced()
+
 var logger: Logger
 
 var env := Env.new()
@@ -55,9 +57,7 @@ func _process(delta: float) -> void:
 		debounce_counter += delta
 		if debounce_counter > DEBOUNCE_TIME:
 			save_config_instant()
-	
-	if Input.is_key_pressed(KEY_A):
-		printerr("a")
+			emit_signal("debounced")
 
 ###############################################################################
 # Connections                                                                 #

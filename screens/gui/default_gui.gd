@@ -67,8 +67,6 @@ func _on_pressed(button_id: int) -> void:
 func _create_popup(popup_name: String, scene: PackedScene) -> BasePopup:
 	var popup: BasePopup = BasePopup.new(popup_name, scene)
 
-	popup.set_runner(runner)
-
 	return popup
 
 ###############################################################################

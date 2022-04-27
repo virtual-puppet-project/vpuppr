@@ -29,9 +29,6 @@ margin_left = 10.0
 margin_top = 10.0
 margin_right = -10.0
 margin_bottom = -10.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Runners" type="PanelContainer" parent="RootControl/TabContainer"]
 anchor_right = 1.0
@@ -63,6 +60,16 @@ margin_right = -7.5
 margin_bottom = -7.5
 size_flags_horizontal = 3
 size_flags_vertical = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="RootControl/TabContainer/Extensions"]
+margin_left = 9.0
+margin_top = 6.0
+margin_right = 1556.0
+margin_bottom = 831.0
+
+[node name="ExtensionsList" type="VBoxContainer" parent="RootControl/TabContainer/Extensions/ScrollContainer"]
+margin_right = 1547.0
+size_flags_horizontal = 3
 
 [node name="Settings" type="PanelContainer" parent="RootControl/TabContainer"]
 visible = false

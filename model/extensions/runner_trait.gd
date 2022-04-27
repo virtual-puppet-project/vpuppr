@@ -2,9 +2,11 @@ class_name RunnerTrait
 extends Node
 
 const DEFAULT_MODEL := "res://entities/duck/duck.tscn"
-const PUPPET_TRAIT_SCRIPT_PATH := "res://model/runtime-loadables/puppet_trait.gd"
+const PUPPET_TRAIT_SCRIPT_PATH := "res://model/extensions/puppet_trait.gd"
 
 var logger: Logger
+
+var current_model_path := ""
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -42,26 +44,6 @@ func _setup_config() -> void:
 
 func _setup_scene() -> void:
 	pass
-
-func _try_load_model(path: String) -> Result:
-	var file := File.new()
-	if not file.file_exists(path):
-		return Result.err(Error.Code.RUNNER_FILE_NOT_FOUND)
-
-	var loaders := _find_loaders()
-	if loaders.empty():
-		return Result.err(Error.Code.RUNNER_NO_LOADERS_FOUND)
-
-	var file_ext := path.get_extension().to_lower()
-
-	if not loaders.has(file_ext):
-		return Result.err(Error.Code.RUNNER_UNHANDLED_FILE_FORMAT, file_ext)
-
-	var method_name: String = loaders[file_ext]
-
-	logger.info("Loading %s using %s" % [path, method_name])
-	
-	return(call(method_name, path))
 
 func _find_loaders() -> Dictionary:
 	"""
@@ -118,9 +100,32 @@ func _find_loaders() -> Dictionary:
 	
 	return r
 
+func _try_load_model(path: String) -> Result:
+	var file := File.new()
+	if not file.file_exists(path):
+		return Result.err(Error.Code.RUNNER_FILE_NOT_FOUND)
+
+	var loaders := _find_loaders()
+	if loaders.empty():
+		return Result.err(Error.Code.RUNNER_NO_LOADERS_FOUND)
+
+	var file_ext := path.get_extension().to_lower()
+
+	if not loaders.has(file_ext):
+		return Result.err(Error.Code.RUNNER_UNHANDLED_FILE_FORMAT, file_ext)
+
+	var method_name: String = loaders[file_ext]
+
+	logger.info("Loading %s using %s" % [path, method_name])
+	
+	return(call(method_name, path))
+
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
+
+func load_model(path: String) -> void:
+	current_model_path = path
 
 func load_glb(path: String) -> Result:
 	var gltf_loader := PackedSceneGLTF.new()

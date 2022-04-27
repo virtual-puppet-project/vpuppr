@@ -1,14 +1,17 @@
 class_name BasePopup
 extends WindowDialog
 
+var _logger: Logger
+
 var screen: Control
-var runner
 
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
 
 func _init(p_name: String, p_screen: PackedScene) -> void:
+	_logger = Logger.new(p_name)
+
 	# Node configuration
 	window_title = p_name
 	resizable = true
@@ -19,10 +22,10 @@ func _init(p_name: String, p_screen: PackedScene) -> void:
 	var panel_container := PanelContainer.new()
 	
 	var stylebox := StyleBoxFlat.new()
-	stylebox.content_margin_top = 5
-	stylebox.content_margin_bottom = 5
-	stylebox.content_margin_left = 5
-	stylebox.content_margin_right = 5
+	stylebox.content_margin_top = 10
+	stylebox.content_margin_bottom = 10
+	stylebox.content_margin_left = 10
+	stylebox.content_margin_right = 10
 	stylebox.bg_color = Color("333a4f")
 	
 	panel_container.set_indexed("custom_styles/panel", stylebox)
@@ -34,6 +37,9 @@ func _init(p_name: String, p_screen: PackedScene) -> void:
 	add_child(panel_container)
 	
 	screen = p_screen.instance()
+	screen.name = p_name
+	screen.set("logger", _logger)
+
 	panel_container.add_child(screen)
 	
 	# Hook up close button
@@ -51,6 +57,8 @@ func _ready() -> void:
 	rect_global_position = rect.position
 	rect_size = rect.size
 
+	_logger.info("%s popup setup" % window_title)
+
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
@@ -65,7 +73,3 @@ func _on_close() -> void:
 ###############################################################################
 # Public functions                                                            #
 ###############################################################################
-
-func set_runner(p_runner: Node) -> void:
-	runner = p_runner
-	screen.set("runner", runner)

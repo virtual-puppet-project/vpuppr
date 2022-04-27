@@ -7,10 +7,6 @@ const CONFIG_LISTEN_VALUES := [
 	"should_track_eye"
 ]
 
-const DUCK_PATH := "res://entities/duck/duck.tscn"
-
-const BASE_MODEL_SCRIPT_PATH := "res://entities/base_model.gd"
-
 var model: PuppetTrait
 var model_parent: Spatial
 var props_node: Spatial
@@ -66,20 +62,8 @@ func _setup_scene() -> void:
 	
 	var default_model_path: String = AM.cm.get_data("default_model_path")
 
-	var result := _try_load_model(default_model_path if not default_model_path.empty() else DUCK_PATH)
-	if result == null or result.is_err():
-		logger.error(result.unwrap_err().to_string() if result != null else "Something super broke, please check the logs")
-		# If this fails, something is very wrong
-		result = _try_load_model(DUCK_PATH)
-		if result == null or result.is_err():
-			logger.error(result.unwrap_err().to_string() if result != null else "Something super broke, please check the logs")
-			logger.error("Failed loading the default Duck model")
-			get_tree().change_scene(GlobalConstants.LANDING_SCREEN_PATH)
-
-	model = result.unwrap()
-
 	model_parent = Spatial.new()
-	model_parent.add_child(model)
+	load_model(default_model_path if not default_model_path.empty() else DEFAULT_MODEL)
 
 	call_deferred("add_child", model_parent)
 
@@ -97,6 +81,14 @@ func _setup_scene() -> void:
 			continue
 		model.skeleton.set_bone_pose(bone_idx, bone_transforms[bone_idx])
 
+###############################################################################
+# Connections                                                                 #
+###############################################################################
+
+###############################################################################
+# Private functions                                                           #
+###############################################################################
+
 func _try_load_model(path: String) -> Result:
 	var result := ._try_load_model(path)
 	if result.is_err():
@@ -113,13 +105,28 @@ func _try_load_model(path: String) -> Result:
 	return result
 
 ###############################################################################
-# Connections                                                                 #
-###############################################################################
-
-###############################################################################
-# Private functions                                                           #
-###############################################################################
-
-###############################################################################
 # Public functions                                                            #
 ###############################################################################
+
+func load_model(path: String) -> void:
+	logger.info("Starting load_model for %s" % path)
+
+	.load_model(path)
+
+	var result := _try_load_model(path)
+	if result == null or result.is_err():
+		logger.error(result.unwrap_err().to_string() if result != null else "Something super broke, please check the logs")
+		# If this fails, something is very very wrong
+		result = _try_load_model(DEFAULT_MODEL)
+		if result == null or result.is_err():
+			logger.error(result.unwrap_err().to_string() if result != null else "Something super broke, please check the logs")
+			logger.error("Failed loading the default Duck model")
+			get_tree().change_scene(GlobalConstants.LANDING_SCREEN_PATH)
+			return
+
+	if model != null:
+		model.free()
+	model = result.unwrap()
+	model_parent.add_child(model)
+
+	logger.info("Finished load_model for %s" % path)

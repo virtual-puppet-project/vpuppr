@@ -22,8 +22,12 @@ var model_path := "changeme"
 
 #region Model
 
+# Additional bones to be tracked
 var additional_bones := [] # Bone id: int
+# Bone pose positions
 var bone_transforms := {} # Bone id: int -> Bone transform: Transform
+var bones_to_interpolate := [] # Bone id: int
+var bone_interpolation_rates := {} # Bone id: int -> Interpolation rate: float
 var model_transform := Transform()
 var model_parent_transform := Transform()
 
@@ -81,9 +85,9 @@ var mouth_wide_group_2: float = 0.3
 #region Launch tracker values
 
 var tracker_should_launch := true
-var tracker_fps: int = 12
-var tracker_address := "127.0.0.1"
-var tracker_port: int = 11573
+var tracker_fps: int = 12 # TODO this is specific to OpenSeeFace
+var tracker_address := "127.0.0.1" # TODO this is specific to OpenSeeFace
+var tracker_port: int = 11573 # TODO this is specific to OpenSeeFace
 
 #endregion
 

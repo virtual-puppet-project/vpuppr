@@ -1,7 +1,10 @@
 class_name LandingScreen
 extends CanvasLayer
 
+const ExtensionItem = preload("res://screens/landing_screen_extension_item.tscn")
+
 onready var runners: VBoxContainer = $RootControl/TabContainer/Runners/ScrollContainer/RunnersList
+onready var extensions: VBoxContainer = $RootControl/TabContainer/Extensions/ScrollContainer/ExtensionsList
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -32,6 +35,11 @@ func _ready() -> void:
 		])
 		
 		runners.add_child(button)
+
+	for key in AM.em.extensions.keys():
+		var extension_item := ExtensionItem.instance()
+		extension_item.extension_data = AM.em.extensions[key].as_data()
+		extensions.add_child(extension_item)
 
 ###############################################################################
 # Connections                                                                 #
