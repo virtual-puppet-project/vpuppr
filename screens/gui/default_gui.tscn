@@ -40,6 +40,7 @@ margin_bottom = 36.0
 margin_top = 36.0
 margin_right = 1600.0
 margin_bottom = 900.0
+mouse_filter = 2
 size_flags_vertical = 3
 split_offset = 164
 __meta__ = {
@@ -100,8 +101,20 @@ margin_right = 164.0
 margin_bottom = 154.0
 text = "Presets"
 
+[node name="Anchor" type="Control" parent="VBoxContainer/HSplitContainer/PanelContainer"]
+margin_left = 5.0
+margin_right = 179.0
+margin_bottom = 859.0
+mouse_filter = 2
+
+[node name="Grabber" type="Control" parent="VBoxContainer/HSplitContainer/PanelContainer/Anchor"]
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = 15.0
+
 [node name="Empty" type="Control" parent="VBoxContainer/HSplitContainer"]
 margin_left = 196.0
 margin_right = 1600.0
 margin_bottom = 864.0
-mouse_filter = 1
+mouse_filter = 2

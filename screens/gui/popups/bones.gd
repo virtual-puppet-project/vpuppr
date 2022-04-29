@@ -24,6 +24,7 @@ func _setup() -> void:
 	
 	var info_item: TreeItem = tree.create_item(root)
 	info_item.set_text(TREE_COLUMN, INFO_PAGE)
+	info_item.select(TREE_COLUMN)
 	_toggle_page(INFO_PAGE)
 
 	tree.connect("item_selected", self, "_on_item_selected")
@@ -61,6 +62,11 @@ func _setup() -> void:
 		bone_page.connect("should_pose_set", self, "_on_should_pose")
 		bone_page.connect("should_use_custom_interpolation_set", self, "_on_should_use_custom_interpolation")
 		bone_page.connect("interpolation_rate_set", self, "_on_interpolation_rate")
+
+		_connect_element(bone_page.is_tracking_button)
+		_connect_element(bone_page.should_pose_button)
+		_connect_element(bone_page.should_use_custom_interpolation)
+		_connect_element(bone_page.interpolation_rate)
 
 ###############################################################################
 # Connections                                                                 #

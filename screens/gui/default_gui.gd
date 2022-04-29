@@ -23,7 +23,7 @@ onready var tracking = $VBoxContainer/HSplitContainer/PanelContainer/PanelContai
 onready var props = $VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer/HBoxContainer/Props as Button
 onready var presets = $VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer/HBoxContainer/Presets as Button
 
-var runner
+var grabber_grabbed := false
 
 ###############################################################################
 # Builtin functions                                                           #
@@ -38,9 +38,9 @@ func _ready() -> void:
 	
 	var split_container := $VBoxContainer/HSplitContainer as HSplitContainer
 	
-	var empty := $VBoxContainer/HSplitContainer/Empty as Control
-	empty.connect("mouse_entered", self, "_on_empty_mouse_action", [true, split_container])
-	empty.connect("mouse_exited", self, "_on_empty_mouse_action", [false, split_container])
+	var grabber := $VBoxContainer/HSplitContainer/PanelContainer/Anchor/Grabber as Control
+	grabber.connect("gui_input", self, "_on_grabber_input", [$VBoxContainer/HSplitContainer])
+	grabber.mouse_default_cursor_shape = Control.CURSOR_HSIZE
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_gui"):
@@ -66,10 +66,17 @@ func _on_pressed(button_id: int) -> void:
 		SidebarButtons.PRESETS:
 			add_child(_create_popup("Presets", Presets))
 
-func _on_empty_mouse_action(entered: bool, container: Control) -> void:
-	container.mouse_filter = Control.MOUSE_FILTER_IGNORE if entered else Control.MOUSE_FILTER_STOP
-	mouse_filter = Control.MOUSE_FILTER_IGNORE if entered else Control.MOUSE_FILTER_STOP
-	print_debug(entered)
+func _on_grabber_input(event: InputEvent, split_container: SplitContainer) -> void:
+	if event.is_action_pressed("left_click"):
+		grabber_grabbed = true
+	elif event.is_action_released("left_click"):
+		grabber_grabbed = false
+	
+	if grabber_grabbed and event is InputEventMouseMotion:
+		split_container.split_offset += event.relative.x
+
+func _on_grabber_mouse(entered: bool) -> void:
+	Input.set_default_cursor_shape(Input.CURSOR_HSIZE if entered else Input.CURSOR_ARROW)
 
 ###############################################################################
 # Private functions                                                           #
