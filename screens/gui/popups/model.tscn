@@ -51,11 +51,11 @@ margin_right = 1287.0
 margin_bottom = 140.0
 text = "Rotate model"
 
-[node name="ScaleModel" type="CheckButton" parent="General/VBoxContainer"]
+[node name="ZoomModel" type="CheckButton" parent="General/VBoxContainer"]
 margin_top = 144.0
 margin_right = 1287.0
 margin_bottom = 184.0
-text = "Scale model"
+text = "Zoom model"
 
 [node name="HSeparator2" type="HSeparator" parent="General/VBoxContainer"]
 margin_top = 188.0

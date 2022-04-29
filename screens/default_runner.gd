@@ -7,6 +7,12 @@ const CONFIG_LISTEN_VALUES := [
 	"should_track_eye"
 ]
 
+const SCENE_LISTEN_VALUES := [
+	GlobalConstants.SceneSignals.MOVE_MODEL,
+	GlobalConstants.SceneSignals.ROTATE_MODEL,
+	GlobalConstants.SceneSignals.ZOOM_MODEL
+]
+
 var model: PuppetTrait
 var model_parent: Spatial
 var props_node: Spatial
@@ -35,8 +41,9 @@ var should_move_model := false
 var should_rotate_model := false
 var should_zoom_model := false
 
-var zoom_strength: float = 0.05
-var mouse_move_strength: float = 0.002
+var is_left_clicking := false
+var zoom_strength: float = 0.05 # TODO might want to move this to config
+var mouse_move_strength: float = 0.002 # TODO might want to move this to config
 
 #endregion
 
@@ -48,13 +55,50 @@ func _physics_process(delta: float) -> void:
 	
 	pass
 
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_accept"):
+		# TODO stub
+		pass
+
+	elif event.is_action_pressed("left_click"):
+		is_left_clicking = true
+	elif event.is_action_released("left_click"):
+		is_left_clicking = false
+	
+	if is_left_clicking and event is InputEventMouseMotion:
+		if should_move_model:
+			model_parent.translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
+			get_tree().set_input_as_handled()
+		if should_rotate_model:
+			model.rotate_x(event.relative.y * mouse_move_strength)
+			model.rotate_y(event.relative.x * mouse_move_strength)
+			get_tree().set_input_as_handled()
+	elif should_zoom_model:
+		if event.is_action("scroll_up"):
+			model_parent.translate(Vector3(0.0, 0.0, zoom_strength))
+			get_tree().set_input_as_handled()
+		elif event.is_action("scroll_down"):
+			model_parent.translate(Vector3(0.0, 0.0, -zoom_strength))
+			get_tree().set_input_as_handled()
+
 func _setup_logger() -> void:
 	logger = Logger.new("DefaultRunner")
 
 func _setup_config() -> void:
-	._setup_config()
+	for i in CONFIG_LISTEN_VALUES:
+		AM.ps.register(self, i, PubSubPayload.new({
+			"args": [i],
+			"callback": "_on_config_changed"
+		}))
 
 func _setup_scene() -> void:
+	for i in SCENE_LISTEN_VALUES:
+		AM.ps.create_signal(i)
+		AM.ps.register(self, i, PubSubPayload.new({
+			"args": [i],
+			"callback": "_on_config_changed"
+		}))
+
 	var camera := Camera.new()
 	camera.current = true
 	camera.translate(Vector3(0.0, 0.0, 3.0))
@@ -84,6 +128,33 @@ func _setup_scene() -> void:
 ###############################################################################
 # Connections                                                                 #
 ###############################################################################
+
+func _on_config_changed(value, signal_name: String) -> void:
+	match signal_name:
+		#region Config
+
+		"apply_translation":
+			apply_translation = value
+		"apply_rotation":
+			apply_rotation = value
+		"should_track_eye":
+			should_track_eye = value
+		
+		#endregion
+
+		#region Scene
+
+		GlobalConstants.SceneSignals.MOVE_MODEL:
+			should_move_model = value
+		GlobalConstants.SceneSignals.ROTATE_MODEL:
+			should_rotate_model = value
+		GlobalConstants.SceneSignals.ZOOM_MODEL:
+			should_zoom_model = value
+
+		#endregion
+
+		_:
+			logger.error("Unhandled signal %s with value %s" % [signal_name, str(value)])
 
 ###############################################################################
 # Private functions                                                           #
@@ -128,5 +199,17 @@ func load_model(path: String) -> void:
 		model.free()
 	model = result.unwrap()
 	model_parent.add_child(model)
+
+	var model_name := path.get_file().get_basename()
+	var config_result: Result = AM.cm.load_model_config("%s.%s" % [model_name, ConfigManager.CONFIG_FILE_EXTENSION])
+	if config_result.is_err():
+		logger.info("Config for %s not found. Creating new config" % model_name)
+
+		var mc := ModelConfig.new()
+		mc.config_name = model_name
+		mc.model_name = model_name
+		mc.model_path = path
+
+		AM.cm.model_config = mc
 
 	logger.info("Finished load_model for %s" % path)

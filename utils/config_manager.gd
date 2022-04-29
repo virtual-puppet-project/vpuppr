@@ -2,6 +2,7 @@ class_name ConfigManager
 extends AbstractManager
 
 const METADATA_FILE_NAME := "metadata.json"
+const CONFIG_FILE_EXTENSION := "json"
 
 var save_data_path := ""
 

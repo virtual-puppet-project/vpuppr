@@ -21,6 +21,10 @@ func _ready() -> void:
 # Connections                                                                 #
 ###############################################################################
 
+func _on_config_changed(value, signal_name: String) -> void:
+	logger.error("Signal %s received with value %s\n_on_config_changed not yet implemented" %
+			[signal_name, str(value)])
+
 ###############################################################################
 # Private functions                                                           #
 ###############################################################################
@@ -36,11 +40,7 @@ func _setup_config() -> void:
 	"""
 	Virtual function that sets up commonly used config connections
 	"""
-	for i in ["apply_translation", "apply_rotation", "should_track_eye"]:
-		AM.ps.register(self, i, PubSubPayload.new({
-			"args": [i],
-			"callback": "_on_config_changed"
-		}))
+	pass
 
 func _setup_scene() -> void:
 	pass

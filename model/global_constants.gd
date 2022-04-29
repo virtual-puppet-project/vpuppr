@@ -22,6 +22,12 @@ enum CustomTypes {
 	MAIN_WORLD_ENVIRONMENT
 }
 
+const SceneSignals := {
+	"MOVE_MODEL": "move_model",
+	"ROTATE_MODEL": "rotate_model",
+	"ZOOM_MODEL": "zoom_model"
+}
+
 const LANDING_SCREEN_PATH := "res://screens/landing_screen.tscn"
 const DEFAULT_RUNNER_PATH := "res://screens/default_runner.gd"
 

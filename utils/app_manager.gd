@@ -91,7 +91,9 @@ func save_config() -> void:
 func save_config_instant() -> void:
 	should_save = false
 	debounce_counter = 0.0
-	cm.save_data()
+	var result := cm.save_data()
+	if result.is_err():
+		logger.error("Failed to save config:\n%s" % result.to_string())
 
 func is_manager_ready(manager_name: String) -> bool:
 	var m = get(manager_name)

@@ -35,6 +35,12 @@ func _ready() -> void:
 	tracking.connect("pressed", self, "_on_pressed", [SidebarButtons.TRACKING])
 	props.connect("pressed", self, "_on_pressed", [SidebarButtons.PROPS])
 	presets.connect("pressed", self, "_on_pressed", [SidebarButtons.PRESETS])
+	
+	var split_container := $VBoxContainer/HSplitContainer as HSplitContainer
+	
+	var empty := $VBoxContainer/HSplitContainer/Empty as Control
+	empty.connect("mouse_entered", self, "_on_empty_mouse_action", [true, split_container])
+	empty.connect("mouse_exited", self, "_on_empty_mouse_action", [false, split_container])
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_gui"):
@@ -59,6 +65,11 @@ func _on_pressed(button_id: int) -> void:
 			add_child(_create_popup("Props", Props))
 		SidebarButtons.PRESETS:
 			add_child(_create_popup("Presets", Presets))
+
+func _on_empty_mouse_action(entered: bool, container: Control) -> void:
+	container.mouse_filter = Control.MOUSE_FILTER_IGNORE if entered else Control.MOUSE_FILTER_STOP
+	mouse_filter = Control.MOUSE_FILTER_IGNORE if entered else Control.MOUSE_FILTER_STOP
+	print_debug(entered)
 
 ###############################################################################
 # Private functions                                                           #

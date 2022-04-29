@@ -20,7 +20,7 @@
  "post_run_script": "",
  "pre_run_script": "",
  "prefix": "test_",
- "selected": "test_pub_sub.gd",
+ "selected": null,
  "should_exit": false,
  "should_exit_on_success": true,
  "should_maximize": true,
