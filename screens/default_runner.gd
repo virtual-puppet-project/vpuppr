@@ -10,7 +10,9 @@ const CONFIG_LISTEN_VALUES := [
 const SCENE_LISTEN_VALUES := [
 	GlobalConstants.SceneSignals.MOVE_MODEL,
 	GlobalConstants.SceneSignals.ROTATE_MODEL,
-	GlobalConstants.SceneSignals.ZOOM_MODEL
+	GlobalConstants.SceneSignals.ZOOM_MODEL,
+
+	GlobalConstants.SceneSignals.POSE_MODEL
 ]
 
 var model: PuppetTrait
@@ -41,6 +43,8 @@ var should_move_model := false
 var should_rotate_model := false
 var should_zoom_model := false
 
+var should_pose_model := false
+
 var is_left_clicking := false
 var zoom_strength: float = 0.05 # TODO might want to move this to config
 var mouse_move_strength: float = 0.002 # TODO might want to move this to config
@@ -65,6 +69,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_released("left_click"):
 		is_left_clicking = false
 	
+	# TODO refactor to reuse logic for posing the model
 	if is_left_clicking and event is InputEventMouseMotion:
 		if should_move_model:
 			model_parent.translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
@@ -150,6 +155,9 @@ func _on_config_changed(value, signal_name: String) -> void:
 			should_rotate_model = value
 		GlobalConstants.SceneSignals.ZOOM_MODEL:
 			should_zoom_model = value
+
+		GlobalConstants.SceneSignals.POSE_MODEL:
+			should_pose_model = value
 
 		#endregion
 

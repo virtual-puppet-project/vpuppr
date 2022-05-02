@@ -62,3 +62,11 @@ helper functions for loading in resources based off of the context.
 ## Extension Resource
 
 A struct-style class that holds information from a section in the `config.ini` file.
+
+### Other Keys
+
+* `selectable_gui`
+  * `Runner`: allow a GUI to be selectable when starting
+  * `GUI`: show the GUI as an option when starting a `Runner`
+* `add_gui_as_default`
+  * `GUI`: should the resource should be displayed on the default GUI

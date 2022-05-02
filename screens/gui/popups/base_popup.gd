@@ -9,7 +9,7 @@ var screen: Control
 # Builtin functions                                                           #
 ###############################################################################
 
-func _init(p_name: String, p_screen: PackedScene) -> void:
+func _init(p_name: String, p_screen) -> void:
 	_logger = Logger.new(p_name)
 
 	# Node configuration
@@ -36,7 +36,7 @@ func _init(p_name: String, p_screen: PackedScene) -> void:
 	
 	add_child(panel_container)
 	
-	screen = p_screen.instance()
+	screen = p_screen.instance() if p_screen is PackedScene else p_screen.new()
 	screen.name = p_name
 	screen.set("logger", _logger)
 

@@ -66,40 +66,11 @@ margin_bottom = 854.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="HBoxContainer" type="VBoxContainer" parent="VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer"]
+[node name="MenuList" type="VBoxContainer" parent="VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer"]
 margin_right = 164.0
 margin_bottom = 849.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-
-[node name="Model" type="Button" parent="VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer/HBoxContainer"]
-margin_right = 164.0
-margin_bottom = 26.0
-text = "Model"
-
-[node name="Bones" type="Button" parent="VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer/HBoxContainer"]
-margin_top = 32.0
-margin_right = 164.0
-margin_bottom = 58.0
-text = "Bones"
-
-[node name="Tracking" type="Button" parent="VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer/HBoxContainer"]
-margin_top = 64.0
-margin_right = 164.0
-margin_bottom = 90.0
-text = "Tracking"
-
-[node name="Props" type="Button" parent="VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer/HBoxContainer"]
-margin_top = 96.0
-margin_right = 164.0
-margin_bottom = 122.0
-text = "Props"
-
-[node name="Presets" type="Button" parent="VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer/HBoxContainer"]
-margin_top = 128.0
-margin_right = 164.0
-margin_bottom = 154.0
-text = "Presets"
 
 [node name="Anchor" type="Control" parent="VBoxContainer/HSplitContainer/PanelContainer"]
 margin_left = 5.0

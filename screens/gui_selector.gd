@@ -25,6 +25,9 @@ func _ready() -> void:
 	options_list.add_child(default_gui_button)
 	
 	for i in AM.em.query_extensions_for_type(GlobalConstants.ExtensionTypes.GUI):
+		if not i.other.get(GlobalConstants.ExtensionOtherKeys.SELECTABLE_GUI, false):
+			continue
+		
 		var button := Button.new()
 		button.name = i.resource_name
 		button.text = i.resource_name

@@ -15,6 +15,11 @@ const ExtensionTypes := {
 	"PLUGIN": "plugin"
 }
 
+const ExtensionOtherKeys := {
+	"SELECTABLE_GUI": "selectable_gui",
+	"ADD_GUI_AS_DEFAULT": "add_gui_as_default"
+}
+
 enum CustomTypes {
 	NONE = 200,
 	
@@ -25,7 +30,9 @@ enum CustomTypes {
 const SceneSignals := {
 	"MOVE_MODEL": "move_model",
 	"ROTATE_MODEL": "rotate_model",
-	"ZOOM_MODEL": "zoom_model"
+	"ZOOM_MODEL": "zoom_model",
+
+	"POSE_MODEL": "pose_model"
 }
 
 const LANDING_SCREEN_PATH := "res://screens/landing_screen.tscn"

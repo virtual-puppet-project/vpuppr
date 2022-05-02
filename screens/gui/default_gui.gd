@@ -17,11 +17,13 @@ const Tracking = preload("res://screens/gui/popups/tracking.tscn")
 const Props = preload("res://screens/gui/popups/props.tscn")
 const Presets = preload("res://screens/gui/popups/presets.tscn")
 
-onready var model = $VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer/HBoxContainer/Model as Button
-onready var bones = $VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer/HBoxContainer/Bones as Button
-onready var tracking = $VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer/HBoxContainer/Tracking as Button
-onready var props = $VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer/HBoxContainer/Props as Button
-onready var presets = $VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer/HBoxContainer/Presets as Button
+const BUILTIN_MENUS := [
+	Model,
+	Bones,
+	Tracking,
+	Props,
+	Presets
+]
 
 var grabber_grabbed := false
 
@@ -30,13 +32,24 @@ var grabber_grabbed := false
 ###############################################################################
 
 func _ready() -> void:
-	model.connect("pressed", self, "_on_pressed", [SidebarButtons.MODEL])
-	bones.connect("pressed", self, "_on_pressed", [SidebarButtons.BONES])
-	tracking.connect("pressed", self, "_on_pressed", [SidebarButtons.TRACKING])
-	props.connect("pressed", self, "_on_pressed", [SidebarButtons.PROPS])
-	presets.connect("pressed", self, "_on_pressed", [SidebarButtons.PRESETS])
-	
-	var split_container := $VBoxContainer/HSplitContainer as HSplitContainer
+	var menu_list := $VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer/MenuList as VBoxContainer
+
+	for menu in BUILTIN_MENUS:
+		var button := Button.new()
+		button.text = menu.resource_path.get_file().get_basename().capitalize()
+		button.connect("pressed", self, "_on_pressed", [menu])
+
+		menu_list.add_child(button)
+
+	for ext in AM.em.query_extensions_for_type(GlobalConstants.ExtensionTypes.GUI):
+		if not ext.other.get(GlobalConstants.ExtensionOtherKeys.ADD_GUI_AS_DEFAULT, false):
+			continue
+		
+		var button := Button.new()
+		button.text = ext.resource_name
+		button.connect("pressed", self, "_on_pressed", [load(ext.resource_entrypoint)])
+
+		menu_list.add_child(button)
 	
 	var grabber := $VBoxContainer/HSplitContainer/PanelContainer/Anchor/Grabber as Control
 	grabber.connect("gui_input", self, "_on_grabber_input", [$VBoxContainer/HSplitContainer])
@@ -53,18 +66,8 @@ func _input(event: InputEvent) -> void:
 # Connections                                                                 #
 ###############################################################################
 
-func _on_pressed(button_id: int) -> void:
-	match button_id:
-		SidebarButtons.MODEL:
-			add_child(_create_popup("Model", Model))
-		SidebarButtons.BONES:
-			add_child(_create_popup("Bones", Bones))
-		SidebarButtons.TRACKING:
-			add_child(_create_popup("Tracking", Tracking))
-		SidebarButtons.PROPS:
-			add_child(_create_popup("Props", Props))
-		SidebarButtons.PRESETS:
-			add_child(_create_popup("Presets", Presets))
+func _on_pressed(scene) -> void:
+	add_child(_create_popup(scene.resource_path.get_file().get_basename().capitalize(), scene))
 
 func _on_grabber_input(event: InputEvent, split_container: SplitContainer) -> void:
 	if event.is_action_pressed("left_click"):
@@ -82,7 +85,7 @@ func _on_grabber_mouse(entered: bool) -> void:
 # Private functions                                                           #
 ###############################################################################
 
-func _create_popup(popup_name: String, scene: PackedScene) -> BasePopup:
+func _create_popup(popup_name: String, scene) -> BasePopup:
 	var popup: BasePopup = BasePopup.new(popup_name, scene)
 
 	return popup

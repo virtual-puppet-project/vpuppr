@@ -278,7 +278,7 @@ _global_script_class_icons={
 
 [application]
 
-config/name="OpenSeeFaceGD"
+config/name="Puppeteer"
 run/main_scene="res://screens/landing_screen.tscn"
 config/icon="res://assets/osfgd_icon.png"
 

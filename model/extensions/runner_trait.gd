@@ -103,7 +103,7 @@ func _find_loaders() -> Dictionary:
 func _try_load_model(path: String) -> Result:
 	var file := File.new()
 	if not file.file_exists(path):
-		return Result.err(Error.Code.RUNNER_FILE_NOT_FOUND)
+		return Result.err(Error.Code.RUNNER_FILE_NOT_FOUND, path)
 
 	var loaders := _find_loaders()
 	if loaders.empty():
