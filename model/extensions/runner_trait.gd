@@ -17,17 +17,11 @@ func _ready() -> void:
 	_setup_config()
 	_setup_scene()
 
-###############################################################################
-# Connections                                                                 #
-###############################################################################
+func _process(delta: float) -> void:
+	_process_step(delta)
 
-func _on_config_changed(value, signal_name: String) -> void:
-	logger.error("Signal %s received with value %s\n_on_config_changed not yet implemented" %
-			[signal_name, str(value)])
-
-###############################################################################
-# Private functions                                                           #
-###############################################################################
+func _physics_process(delta: float) -> void:
+	_physics_step(delta)
 
 func _setup_logger() -> void:
 	"""
@@ -44,6 +38,24 @@ func _setup_config() -> void:
 
 func _setup_scene() -> void:
 	pass
+
+func _process_step(delta: float) -> void:
+	pass
+
+func _physics_step(delta: float) -> void:
+	pass
+
+###############################################################################
+# Connections                                                                 #
+###############################################################################
+
+func _on_config_changed(value, signal_name: String) -> void:
+	logger.error("Signal %s received with value %s\n_on_config_changed not yet implemented" %
+			[signal_name, str(value)])
+
+###############################################################################
+# Private functions                                                           #
+###############################################################################
 
 func _find_loaders() -> Dictionary:
 	"""

@@ -1,9 +1,7 @@
 class_name TrackingDataInterface
 extends Reference
 
-"""
-Interface for defining Tracking Data
-"""
+## Interface for defining Tracking Data
 
 #region Metadata
 

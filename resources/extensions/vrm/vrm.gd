@@ -12,6 +12,9 @@ func _ready() -> void:
 	logger.info(str(ext_res.other))
 	pass
 
+func _unhandled_input(event: InputEvent) -> void:
+	pass
+
 func _setup_logger() -> void:
 	logger = Logger.new("VRM Runner")
 
@@ -24,11 +27,11 @@ func _setup_scene() -> void:
 	# TODO this is hardcoded for testing
 	var default_model_path: String = "res://assets/vrm-models/alicia/AliciaSolid_vrm-0.51.vrm"
 
-	var result := _try_load_model(default_model_path if not default_model_path.empty() else DUCK_PATH)
+	var result := _try_load_model(default_model_path if not default_model_path.empty() else DEFAULT_MODEL)
 	if result == null or result.is_err():
 		logger.error(result.unwrap_err().to_string() if result != null else "Something super broke, please check the logs")
 		# If this fails, something is very wrong
-		result = _try_load_model(DUCK_PATH)
+		result = _try_load_model(DEFAULT_MODEL)
 		if result == null or result.is_err():
 			logger.error(result.unwrap_err().to_string() if result != null else "Something super broke, please check the logs")
 			logger.error("Failed loading the default Duck model")

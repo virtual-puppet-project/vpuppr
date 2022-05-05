@@ -23,6 +23,7 @@ var props_node: Spatial
 var model_intitial_transform := Transform()
 var model_parent_initial_transform := Transform()
 
+var updated_time: float = 0.0
 var stored_offsets := StoredOffsets.new()
 var interpolation_data := InterpolationData.new()
 
@@ -51,13 +52,11 @@ var mouse_move_strength: float = 0.002 # TODO might want to move this to config
 
 #endregion
 
+var tracker: TrackingBackendInterface = TrackingBackendDummy.new()
+
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
-
-func _physics_process(delta: float) -> void:
-	
-	pass
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_accept"):
@@ -91,7 +90,7 @@ func _setup_logger() -> void:
 
 func _setup_config() -> void:
 	for i in CONFIG_LISTEN_VALUES:
-		AM.ps.register(self, i, PubSubPayload.new({
+		AM.ps.register(self, i, PubSubRegisterPayload.new({
 			"args": [i],
 			"callback": "_on_config_changed"
 		}))
@@ -99,7 +98,7 @@ func _setup_config() -> void:
 func _setup_scene() -> void:
 	for i in SCENE_LISTEN_VALUES:
 		AM.ps.create_signal(i)
-		AM.ps.register(self, i, PubSubPayload.new({
+		AM.ps.register(self, i, PubSubRegisterPayload.new({
 			"args": [i],
 			"callback": "_on_config_changed"
 		}))
@@ -129,6 +128,54 @@ func _setup_scene() -> void:
 		if not bone_idx in bone_transforms:
 			continue
 		model.skeleton.set_bone_pose(bone_idx, bone_transforms[bone_idx])
+
+func _physics_step(delta: float) -> void:
+	if not tracker.is_listening():
+		return
+
+	# TODO hardcoded for OpenSeeFace
+	var data: OpenSeeFaceData = tracker.get_data()
+	
+	if not data or data.get_confidence() > 100.0: # TODO 100.0 is hardcoded from the osf impl
+		return
+
+	if data.get_updated_time() > updated_time:
+		updated_time = data.get_updated_time()
+		var corrected_euler := data.get_euler()
+		if corrected_euler.x < 0.0:
+			corrected_euler.x = 360.0 + corrected_euler.x
+
+		# TODO hardcoded for osf
+		var osf_features: OpenSeeFaceFeatures = data.get_additional_info()
+
+		interpolation_data.update_values(
+			updated_time,
+			
+			stored_offsets.translation_offset - data.get_translation(),
+			stored_offsets.euler_offset - corrected_euler,
+			
+			stored_offsets.left_eye_gaze_offset - data.get_left_eye_rotation().get_euler(),
+			stored_offsets.right_eye_gaze_offset - data.get_right_eye_rotation().get_euler(),
+			data.get_left_eye_open_amount(),
+			data.get_right_eye_open_amount(),
+			
+			data.get_mouth_open_amount(),
+			data.get_mouth_wide_amount(),
+			
+			osf_features.eyebrow_steepness_left,
+			osf_features.eyebrow_steepness_right,
+			
+			osf_features.eyebrow_up_down_left,
+			osf_features.eyebrow_up_down_right,
+			
+			osf_features.eyebrow_quirk_left,
+			osf_features.eyebrow_quirk_right
+		)
+	
+	model.apply_movement(
+		interpolation_data.bone_translation.interpolate(delta),
+		interpolation_data.bone_rotation.interpolate(delta)
+	)
 
 ###############################################################################
 # Connections                                                                 #

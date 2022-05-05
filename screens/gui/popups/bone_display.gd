@@ -66,12 +66,26 @@ func _init(bone_name: String) -> void:
 # Connections                                                                 #
 ###############################################################################
 
-# TODO stub, this is wrong
-func _on_bone_updated(value, signal_name: String, bone_name: String) -> void:
-	if bone_name != name:
+func _on_bone_updated(value: PubSubWrappedCollection, signal_name: String) -> void:
+	if not value is PubSubWrappedCollection:
+		# logger.error("Unexpected callback value %s" % str(value))
+		printerr("Unexpected callback value %s" % str(value))
 		return
-	
-	
+
+	if name != value.identifier:
+		return
+
+	match signal_name:
+		"additional_bones":
+			is_tracking_button.set_pressed_no_signal(value.identifier in value.collection)
+		"bones_to_interpolate":
+			should_use_custom_interpolation.set_pressed_no_signal(value.identifier in value.collection)
+		"bone_interpolation_rates":
+			var current_text := interpolation_rate.text
+			if current_text.is_valid_float() and current_text.to_float() == value.get_changed():
+				return
+			interpolation_rate.text = str(value.get_changed())
+			interpolation_rate.caret_position = interpolation_rate.text.length()
 
 ###############################################################################
 # Private functions                                                           #

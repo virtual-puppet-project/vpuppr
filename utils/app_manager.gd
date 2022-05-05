@@ -23,8 +23,6 @@ var should_save := false
 
 #endregion
 
-var tracker: TrackingBackendInterface
-
 ###############################################################################
 # Builtin functions                                                           #
 ###############################################################################
@@ -64,10 +62,6 @@ func _process(delta: float) -> void:
 ###############################################################################
 
 func _on_tree_exiting() -> void:
-	# TODO this might need to be moved somewhere else
-	if tracker != null:
-		tracker.stop_receiver()
-
 	if env.current_env != Env.Envs.TEST:
 		save_config_instant()
 	

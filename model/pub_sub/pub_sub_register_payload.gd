@@ -1,4 +1,4 @@
-class_name PubSubPayload
+class_name PubSubRegisterPayload
 extends Reference
 
 var args := []

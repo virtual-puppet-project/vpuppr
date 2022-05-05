@@ -133,7 +133,7 @@ func _connect_check_button(check_button: CheckButton, args = null) -> void:
 	var initial_value = AM.cm.get_data(args)
 	if initial_value != null:
 		check_button.set_pressed_no_signal(initial_value)
-		AM.ps.register(self, args, PubSubPayload.new({
+		AM.ps.register(self, args, PubSubRegisterPayload.new({
 			"args": [check_button],
 			"callback": "_on_config_updated"
 		}))
@@ -153,7 +153,7 @@ func _connect_line_edit(line_edit: LineEdit, args = null) -> void:
 	line_edit.connect("text_entered", self, "_on_line_edit_text_entered", [args, line_edit])
 	
 	line_edit.text = str(AM.cm.get_data(args))
-	AM.ps.register(self, args, PubSubPayload.new({
+	AM.ps.register(self, args, PubSubRegisterPayload.new({
 		"args": [line_edit],
 		"callback": "_on_config_updated"
 	}))

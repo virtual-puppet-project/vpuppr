@@ -78,7 +78,7 @@ var u_shape: MorphData
 
 func _ready() -> void:
 	for i in CONFIG_VALUES:
-		AM.ps.connect(i, self, "_on_model_config_data_changed", [i])
+		AM.ps.connect(i, self, "_on_model_config_changed", [i])
 	# TODO Not really sure how to make sure this signal exists
 	# Maybe connect VRM model to this signal using the gui or the runner?
 	if AM.ps.has_user_signal("blend_shape"):
@@ -129,7 +129,7 @@ func _ready() -> void:
 # Connections                                                                 #
 ###############################################################################
 
-func _on_model_config_data_changed(value, key: String) -> void:
+func _on_model_config_changed(value, key: String) -> void:
 	match key:
 		"blink_threshold":
 			blink_threshold = value

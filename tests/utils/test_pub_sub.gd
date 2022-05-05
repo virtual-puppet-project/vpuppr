@@ -22,7 +22,7 @@ func after_all():
 # Utils                                                                       #
 ###############################################################################
 
-class TestClass:
+class MyClass:
 	var callback_count: int = 0
 
 	func _on_callback() -> void:
@@ -57,11 +57,11 @@ func test_register_for_signal_pass():
 	
 	watch_signals(pub_sub)
 
-	var test_class := TestClass.new()
+	var test_class := MyClass.new()
 	
 	pub_sub.register(test_class, "callback")
-	pub_sub.register(test_class, "other_signal", PubSubPayload.new("_other_callback"))
-	pub_sub.register(test_class, "last_signal", PubSubPayload.new({
+	pub_sub.register(test_class, "other_signal", PubSubRegisterPayload.new("_other_callback"))
+	pub_sub.register(test_class, "last_signal", PubSubRegisterPayload.new({
 		"callback": "_last_callback",
 		"args": ["test_key"]
 	}))

@@ -42,11 +42,11 @@ func _setup_class() -> void:
 ###############################################################################
 
 func _on_metadata_changed(data, key: String) -> void:
-	metadata.set_data(key, data)
+	metadata.set_data(key, data if not data is PubSubWrappedCollection else data.get_data())
 	AM.save_config()
 
-func _on_model_config_data_changed(data, key: String) -> void:
-	model_config.set_data(key, data)
+func _on_model_config_changed(data, key: String) -> void:
+	model_config.set_data(key, data if not data is PubSubWrappedCollection else data.get_data())
 	AM.save_config()
 
 ###############################################################################
@@ -62,19 +62,16 @@ func _save_to_file(path: String, data: String) -> Result:
 
 	return Result.ok()
 
+## All config keys are registered with the PubSub. A new signal is created for each key and then
+## the ConfigManager subscribes itself to any changes.
+##
+## @return: Result - An error from registration or OK
 func _register_all_configs_with_pub_sub() -> Result:
-	"""
-	All config keys are registered with the PubSub. A new signal is created for each key and then
-	the ConfigManager subscribes itself to any changes.
-	
-	Returns:
-		Result - An error from registration or OK
-	"""
 	var result := _register_config_data_with_pub_sub(metadata.get_as_dict(), "_on_metadata_changed")
 	if result.is_err():
 		return result
 
-	result = _register_config_data_with_pub_sub(model_config.get_as_dict(), "_on_model_config_data_changed")
+	result = _register_config_data_with_pub_sub(model_config.get_as_dict(), "_on_model_config_changed")
 	if result.is_err():
 		return result
 	
@@ -89,7 +86,7 @@ func _register_config_data_with_pub_sub(data: Dictionary, callback: String) -> R
 					continue
 				return result
 
-			result = AM.ps.register(self, key, PubSubPayload.new({
+			result = AM.ps.register(self, key, PubSubRegisterPayload.new({
 				"args": [key],
 				"callback": callback
 			}))
@@ -171,13 +168,14 @@ func save_data() -> Result:
 
 #region Data access
 
+## Wrapper for setting KNOWN data in ModelConfig or Metadata, in that search order.
+##
+## Has no effect if the key does not exist. If arbitrary data should be set, the individual config file
+## should be accessed and have set_data(...) called on them directly
+##
+## @param: key: String
+## @param: value: Variant
 func set_data(key: String, value) -> void:
-	"""
-	Wrapper for setting KNOWN data in ModelConfig or Metadata, in that search order.
-
-	Has no effect if the key does not exist. If arbitrary data should be set, the individual config file
-	should be accessed and have set_data(...) called on them directly
-	"""
 	if model_config.get_data(key) != null:
 		model_config.set_data(key, value)
 	elif metadata.get_data(key) != null:
@@ -185,10 +183,8 @@ func set_data(key: String, value) -> void:
 	else:
 		logger.error("Key %s not found in ModelConfig or Metadata. Declining to set data %s." % [key, str(value)])
 
+## Wrapper for getting data in ModelConfig or Metadata, in that search order
 func get_data(key: String):
-	"""
-	Wrapper for getting data in ModelConfig or Metadata, in that search order
-	"""
 	var val = model_config.get_data(key)
 	if val != null:
 		return val
@@ -201,12 +197,10 @@ func get_data(key: String):
 
 	return null
 
+## Wrapper for getting KNOWN data in ModelConfig or Metadata, in that search order.
+##
+## Uses the find_data_get(...) method which is very slow
 func find_data_get(query: String) -> Result:
-	"""
-	Wrapper for getting KNOWN data in ModelConfig or Metadata, in that search order.
-
-	Uses the find_data_get(...) method which is very slow
-	"""
 	var result := model_config.find_data_get(query)
 	if result.is_ok():
 		return result
@@ -219,12 +213,10 @@ func find_data_get(query: String) -> Result:
 
 	return Result.err(Error.Code.CONFIG_MANAGER_DATA_NOT_FOUND)
 
+## Wrapper for setting KNOWN data in ModelConfig or Metadata, in that search order.
+##
+## Uses the find_data_set(...) method which is very slow
 func find_data_set(query: String, new_value) -> Result:
-	"""
-	Wrapper for setting KNOWN data in ModelConfig or Metadata, in that search order.
-
-	Uses the find_data_set(...) method which is very slow
-	"""
 	var result := model_config.find_data_set(query, new_value)
 	if result.is_ok():
 		return result

@@ -40,7 +40,7 @@ func _ready() -> void:
 	_setup_logger()
 
 	# TODO this needs to change
-#	AM.ps.connect("model_config_data_changed", self, "_on_model_config_data_changed")
+#	AM.ps.connect("model_config_data_changed", self, "_on_model_config_changed")
 
 	for i in DEFAULT_CONFIG_VALUES:
 		set(i, AM.cm.model_config.get_data(i))
@@ -64,7 +64,7 @@ func _ready() -> void:
 # Connections                                                                 #
 ###############################################################################
 
-func _on_model_config_data_changed(key: String, data) -> void:
+func _on_model_config_changed(key: String, data) -> void:
 	match key:
 		"head_bone":
 			head_bone = data

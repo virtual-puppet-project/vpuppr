@@ -41,7 +41,7 @@ func create_signal(signal_name: String) -> Result:
 
 	return Result.ok()
 
-func register(o: Object, signal_name: String, payload: PubSubPayload = null) -> Result:
+func register(o: Object, signal_name: String, payload: PubSubRegisterPayload = null) -> Result:
 	"""
 	Wrapper for subscribing (connecting) an object to the PubSub.
 

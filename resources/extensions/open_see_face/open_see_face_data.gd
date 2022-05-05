@@ -160,3 +160,63 @@ func read_from_packet(b: PoolByteArray, regular_int: int) -> void:
 	features.mouth_corner_in_out_right = _read_float(spb, i)
 	features.mouth_open = _read_float(spb, i)
 	features.mouth_wide = _read_float(spb, i)
+
+#region Metadata
+
+func get_updated_time() -> float:
+	return time
+
+func get_confidence() -> float:
+	return fit_3d_error
+
+#endregion
+
+#region General
+
+func get_euler() -> Vector3:
+	return raw_euler
+
+func get_rotation() -> Quat:
+	return raw_quaternion
+
+func get_translation() -> Vector3:
+	return translation
+
+#endregion
+
+#region Eyes
+
+func get_left_eye_open_amount() -> float:
+	return features.eye_left
+
+func get_left_eye_euler() -> Vector3:
+	AM.logger.error("Not yet implemented")
+	return Vector3.ZERO
+
+func get_left_eye_rotation() -> Quat:
+	return left_gaze
+
+func get_right_eye_open_amount() -> float:
+	return features.eye_right
+
+func get_right_eye_euler() -> Vector3:
+	AM.logger.error("Not yet implemented")
+	return Vector3.ZERO
+
+func get_right_eye_rotation() -> Quat:
+	return right_gaze
+
+#endregion
+
+#region Mouth
+
+func get_mouth_open_amount() -> float:
+	return features.mouth_open
+
+func get_mouth_wide_amount() -> float:
+	return features.mouth_wide
+
+#endregion
+
+func get_additional_info():
+	return features
