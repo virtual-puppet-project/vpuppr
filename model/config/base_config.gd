@@ -1,8 +1,8 @@
 class_name BaseConfig
 extends Reference
 
-# Completely generic key/value structure for random values
-# Try and prefer using explicit fields over using this
+## Completely generic key/value structure for random values
+## Try and prefer using explicit fields over using this
 var other := {}
 
 func _to_string() -> String:
@@ -10,6 +10,9 @@ func _to_string() -> String:
 
 #region Export
 
+## Gets all valid properties as a Dictionary
+##
+## @return: Dictionary - The Dictionary of properties from the current config
 func get_as_dict() -> Dictionary:
 	var r := {}
 
@@ -21,6 +24,11 @@ func get_as_dict() -> Dictionary:
 
 	return r
 
+## Gets all valid properties as a JSON String
+##
+## @see: `get_as_dict`
+##
+## @return: String - The JSON String
 func get_as_json_string() -> String:
 	return JSON.print(get_as_dict(), "\t")
 
@@ -126,17 +134,24 @@ func get_data(key: String):
 	
 	return null # Still null but log something
 
-func _split_query(query: String) -> PoolStringArray:
+## Splits a node-path query into a PoolStringArray
+##
+## @example: other/some_array/0 -> ["other", "some_array", "0"]
+##
+## @param: query: String - The node-path query
+##
+## @return: PoolStringArray - The split node-path query
+static func _split_query(query: String) -> PoolStringArray:
 	return query.lstrip("/").rstrip("/").split("/")
 
+## Grabs a nested chain of data following node-path syntax
+##
+## @example: other/some_array/0 - Finds index 0 of some_array of other
+##
+## @param: PoolStringArray - The query in node-path syntax
+##
+## @return: Array - The chain of data
 func _find_data(split_query: PoolStringArray) -> Array:
-	"""
-	Grab nested data using Godot-style node path syntax.
-	
-	Also optionally change the data if a new_value is provided. The value must already exist. Returns OK on success
-
-	e.g. other/some_array/0
-	"""
 	if split_query.empty():
 		AM.logger.error("Search query was empty %s" % split_query)
 		return []
@@ -166,6 +181,13 @@ func _find_data(split_query: PoolStringArray) -> Array:
 
 	return r
 
+## Finds nested data using node-path syntax
+##
+## @see: _find_data
+##
+## @param: query: String - The query in node-path syntax
+##
+## @return: Result<Variant> - The final item in the query
 func find_data_get(query: String) -> Result:
 	var r := _find_data(_split_query(query))
 
@@ -174,6 +196,14 @@ func find_data_get(query: String) -> Result:
 
 	return Result.ok(r.pop_back())
 
+## Finds nested data and replaces it with a new value using node-path syntax
+##
+## @see: _find_data
+##
+## @param: query: String - The query in node-path syntax
+## @param: new_value: Variant - The replacement value
+##
+## @return: Result<int> - The error code
 func find_data_set(query: String, new_value) -> Result:
 	var split := _split_query(query)
 	var r := _find_data(split)
@@ -193,11 +223,17 @@ func find_data_set(query: String, new_value) -> Result:
 		_:
 			return Result.err(Error.Code.BASE_CONFIG_UNHANDLED_FIND_SET_DATA_TYPE)
 
-	AM.ps.emit_signal(key, new_value)
+	# TODO might not need this?
+	# AM.ps.emit_signal(key, new_value)
 	
 	return Result.ok()
 
-func set_data(key: String, value):
+## Set data on the current config
+##
+## @param: key: String - The key that corresponds to a property on the config. Will resolve
+## to the other Dictionary if the property does not exist
+## @param: value: Variant - The new value
+func set_data(key: String, value) -> void:
 	if get(key) != null:
 		set(key, value)
 	else:

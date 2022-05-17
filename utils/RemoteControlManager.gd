@@ -12,9 +12,9 @@ var client_disconnects: int = 0 # Only used during shutdown
 const MAX_SHUTDOWN_RETRY: int = 10
 const DELAY_AMOUNT: int = 500 # Delay for half a second on each shutdown retry
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 func _ready() -> void:
 	AppManager.sb.connect("remote_control_port", self, "_on_remote_control_port")
@@ -23,9 +23,9 @@ func _ready() -> void:
 	if AppManager.cm.metadata_config.use_remote_control:
 		start(AppManager.cm.metadata_config.remote_control_port)
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Connections                                                                 #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 func _on_remote_control_port(_port: int) -> void:
 	"""
@@ -90,9 +90,9 @@ func _on_data_received(id: int) -> void:
 	
 	AppManager.sb.broadcast_remote_control_data_received(json_result.result)
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Private functions                                                           #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 func _run_thread() -> void:
 	while not should_stop_thread:
@@ -109,9 +109,9 @@ func _setup_server() -> WebSocketServer:
 	
 	return s
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Public functions                                                            #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 func start(port: int) -> void:
 	AppManager.logger.debug("Try starting remote control server and thread")

@@ -13,9 +13,9 @@ var should_use_custom_interpolation := CheckButton.new()
 # Interpolation rate to use when applying tracking data
 var interpolation_rate := LineEdit.new()
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 func _init(bone_name: String) -> void:
 	name = bone_name
@@ -62,12 +62,12 @@ func _init(bone_name: String) -> void:
 
 	add_child(options_list)
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Connections                                                                 #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
-func _on_bone_updated(value: PubSubWrappedCollection, signal_name: String) -> void:
-	if not value is PubSubWrappedCollection:
+func _on_bone_updated(value: PubSubWrappedData, signal_name: String) -> void:
+	if not value is PubSubWrappedData:
 		# logger.error("Unexpected callback value %s" % str(value))
 		printerr("Unexpected callback value %s" % str(value))
 		return
@@ -87,10 +87,10 @@ func _on_bone_updated(value: PubSubWrappedCollection, signal_name: String) -> vo
 			interpolation_rate.text = str(value.get_changed())
 			interpolation_rate.caret_position = interpolation_rate.text.length()
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Private functions                                                           #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Public functions                                                            #
-###############################################################################
+#-----------------------------------------------------------------------------#

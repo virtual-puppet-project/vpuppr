@@ -12,9 +12,9 @@ var pages := {}
 var current_page: Control
 var _initial_page := ""
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 func _ready() -> void:
 	_setup()
@@ -39,9 +39,9 @@ func _setup() -> void:
 	
 	tree.connect("item_selected", self, "_on_item_selected")
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Connections                                                                 #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 func _on_item_selected() -> void:
 	var page_name: String = tree.get_selected().get_text(tree.get_selected_column())
@@ -60,7 +60,7 @@ func _on_line_edit_text_changed(_text: String, _signal_name: String, _line_edit:
 	logger.error("_on_text_changed not yet implemented for %s" % name)
 
 func _on_line_edit_text_entered(text: String, signal_name: String, line_edit: LineEdit) -> void:
-	_on_line_edit_text_entered(text, signal_name, line_edit)
+	_on_line_edit_text_changed(text, signal_name, line_edit)
 
 func _on_config_updated(value, control: Control) -> void:
 	match control.get_class():
@@ -69,13 +69,16 @@ func _on_config_updated(value, control: Control) -> void:
 		"CheckButton":
 			control.pressed = bool(value)
 		"LineEdit":
+			if control.text.is_valid_float() and value == control.text.to_float():
+				return
 			control.text = str(value)
+			control.caret_position = control.text.length()
 
 #endregion
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Private functions                                                           #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 func _toggle_page(page_name: String) -> void:
 	if page_name.empty():
@@ -165,6 +168,6 @@ func _set_config_float_amount(signal_name: String, value: String) -> void:
 
 #endregion
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Public functions                                                            #
-###############################################################################
+#-----------------------------------------------------------------------------#

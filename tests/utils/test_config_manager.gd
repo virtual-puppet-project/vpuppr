@@ -2,9 +2,9 @@ extends "res://tests/base_test.gd"
 
 # https://github.com/bitwes/Gut/wiki/Quick-Start
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 func before_all():
 	.before_all()
@@ -22,13 +22,13 @@ func after_each():
 func after_all():
 	pass
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Utils                                                                       #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Tests                                                                       #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 # TODO test other code paths
 
@@ -113,22 +113,26 @@ func test_save_pass():
 
 func test_on_model_config_changed_pass():
 	# Testing the additional bones key
-	var array := [1, 2, 3]
-	cm.model_config.additional_bones = array
+	var dict := {
+		"head": 1,
+		"spine": 2,
+		"blah": 3
+	}
+	cm.model_config.additional_bones = dict
 
 	if not assert_eq(cm.model_config.additional_bones.size(), 3):
 		return
 	if not assert_eq(cm.model_config.additional_bones[1], 2):
 		return
 
-	array[1] = 4
-	var data := PubSubWrappedCollection.new(array, 1, "additional_bones")
+	dict["spine"] = 4
+	var data := PubSubWrappedData.new(dict, 1, "additional_bones")
 
 	cm._on_model_config_changed(data, "additional_bones")
 	var bones = cm.get_data("additional_bones")
 	
 	if not assert_not_null(bones):
 		return
-	assert_eq(bones[1], 4)
+	assert_eq(bones["spine"], 4)
 
 	assert_eq(data.get_changed(), 4)

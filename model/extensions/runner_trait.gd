@@ -8,94 +8,97 @@ var logger: Logger
 
 var current_model_path := ""
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
+## DON'T OVERRIDE THIS
 func _ready() -> void:
 	_setup_logger()
 	_setup_config()
 	_setup_scene()
 
+## DON'T OVERRIDE THIS
 func _process(delta: float) -> void:
 	_process_step(delta)
 
+## DONT'T OVERRIDE THIS
 func _physics_process(delta: float) -> void:
 	_physics_step(delta)
 
+## Virtual function that sets up the local logger
 func _setup_logger() -> void:
-	"""
-	Virtual function that sets up the local logger
-	"""
 	logger = Logger.new("RunnerTrait")
 	logger.info("Using base logger, this is not recommended")
 
+## Virtual function that sets up commonly used config connections
 func _setup_config() -> void:
-	"""
-	Virtual function that sets up commonly used config connections
-	"""
 	pass
 
+## Virtual function that sets up the scene
 func _setup_scene() -> void:
 	pass
 
-func _process_step(delta: float) -> void:
+## Virtual function that should be overridden instead of `_process`
+func _process_step(_delta: float) -> void:
 	pass
 
-func _physics_step(delta: float) -> void:
+## Virtual function that should be overridden instead of `_physics_process`
+func _physics_step(_delta: float) -> void:
 	pass
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Connections                                                                 #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
+## Virtual callback, will not do anything until overridden
+##
+## @param: value: Variant - The changed value
+## @param: signal_name: String - The signal the `value` is associated with
 func _on_config_changed(value, signal_name: String) -> void:
 	logger.error("Signal %s received with value %s\n_on_config_changed not yet implemented" %
 			[signal_name, str(value)])
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Private functions                                                           #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
+## Finds all loaders implemented on the Runner along with loaders from plugins
+##
+## A loader must be in format load_<file_type>(path: String) -> Result. If not,
+## things might break.
+##
+## Implementation note: `get_method_list` returns an array of dicts in format
+## ```
+## [
+##	{
+##		"name": String,
+##		"args: [
+##			{
+##				"name": String,
+##				"class_name": String,
+##				"type": int,
+##				"hint": int,
+##				"hint_string": String,
+##				"usage": int
+##			}
+##		],
+##		"default_args": [
+##			"args"
+##		],
+##		"flags": int,
+##		"id": int,
+##		"return": {
+##			"name": String,
+##			"class_name": String,
+##			"type": int,
+##			"hint_string": String,
+##			"usage": int
+##		}
+##	},
+##	...
+## ```
 func _find_loaders() -> Dictionary:
-	"""
-	Finds all loaders implemented on the Runner along with Loaders from plugins.
-	
-	A loader must be in format load_<file_type>(path: String) -> Result. If not,
-	things might break.
-
-	NOTE: a prepended '_' will cause the loader to be ignored
-	
-	get_method_list returns an Array of Dictionaries in format:
-	[
-		{
-			"name": String,
-			"args": [
-				{
-					"name": String,
-					"class_name": String,
-					"type": int,
-					"hint": int,
-					"hint_string": "",
-					"usage": 7
-				}
-			],
-			"default_args": [
-				<actual args>
-			],
-			"flags": int,
-			"id": int,
-			"return": {
-				"name": String,
-				"class_name": String,
-				"type": int,
-				"hint_string": String,
-				"usage": int
-			}
-		},
-		...
-	]
-	"""
 	var r := {} # File type: String -> Loader method: String
 
 	# Start with Loaders implemented in the current/sub scope
@@ -112,6 +115,13 @@ func _find_loaders() -> Dictionary:
 	
 	return r
 
+## Tries to load a mode from a given path
+##
+## Will try and match the model's file extension to all registered loaders
+##
+## @param: path: String - The absolute path to a model
+##
+## @return: Result<Variant> - The loaded model
 func _try_load_model(path: String) -> Result:
 	var file := File.new()
 	if not file.file_exists(path):
@@ -132,13 +142,21 @@ func _try_load_model(path: String) -> Result:
 	
 	return(call(method_name, path))
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Public functions                                                            #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
-func load_model(path: String) -> void:
-	current_model_path = path
+## Virtual function for loading a model
+##
+## @param: path: String - The absolute path to a model
+func load_model(_path: String) -> void:
+	pass
 
+## Uses the built-in gltf loader to load a `glb` model
+##
+## @param: path: String - The absolute path to a model
+##
+## @return: Result<Spatial> - The loaded model
 func load_glb(path: String) -> Result:
 	var gltf_loader := PackedSceneGLTF.new()
 
@@ -154,6 +172,11 @@ func load_glb(path: String) -> Result:
 	
 	return Result.ok(model)
 
+## Uses the built-in scene loader to load a PackedScene
+##
+## @param: path: String - The absolute path to a PackedScene
+##
+## @return: Result<Variant> - The loaded scene
 func load_scn(path: String) -> Result:
 	var model = load(path)
 	if model == null:
@@ -165,5 +188,8 @@ func load_scn(path: String) -> Result:
 
 	return Result.ok(model_instance)
 
+## Uses the built-in scene loader to load a PackedScene
+##
+## @see: `load_scn`
 func load_tscn(path: String) -> Result:
 	return load_scn(path)

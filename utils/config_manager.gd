@@ -9,9 +9,9 @@ var save_data_path := ""
 var metadata := Metadata.new()
 var model_config := ModelConfig.new()
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 func _init() -> void:
 	pass
@@ -37,21 +37,21 @@ func _setup_class() -> void:
 	if result.is_err():
 		logger.error(result.unwrap_err().to_string())
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Connections                                                                 #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 func _on_metadata_changed(data, key: String) -> void:
-	metadata.set_data(key, data if not data is PubSubWrappedCollection else data.get_data())
+	metadata.set_data(key, data if not data is PubSubWrappedData else data.get_data())
 	AM.save_config()
 
 func _on_model_config_changed(data, key: String) -> void:
-	model_config.set_data(key, data if not data is PubSubWrappedCollection else data.get_data())
+	model_config.set_data(key, data if not data is PubSubWrappedData else data.get_data())
 	AM.save_config()
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Private functions                                                           #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 func _save_to_file(path: String, data: String) -> Result:
 	var file := File.new()
@@ -99,9 +99,9 @@ func _register_config_data_with_pub_sub(data: Dictionary, callback: String) -> R
 
 	return Result.ok()
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Public functions                                                            #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 #region Save/load
 

@@ -27,9 +27,9 @@ const BUILTIN_MENUS := [
 
 var grabber_grabbed := false
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 func _ready() -> void:
 	var menu_list := $VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer/MenuList as VBoxContainer
@@ -62,9 +62,9 @@ func _input(event: InputEvent) -> void:
 		for child in get_children():
 			child.visible = visible
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Connections                                                                 #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 func _on_pressed(scene) -> void:
 	add_child(_create_popup(scene.resource_path.get_file().get_basename().capitalize(), scene))
@@ -81,15 +81,15 @@ func _on_grabber_input(event: InputEvent, split_container: SplitContainer) -> vo
 func _on_grabber_mouse(entered: bool) -> void:
 	Input.set_default_cursor_shape(Input.CURSOR_HSIZE if entered else Input.CURSOR_ARROW)
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Private functions                                                           #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 func _create_popup(popup_name: String, scene) -> BasePopup:
 	var popup: BasePopup = BasePopup.new(popup_name, scene)
 
 	return popup
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Public functions                                                            #
-###############################################################################
+#-----------------------------------------------------------------------------#

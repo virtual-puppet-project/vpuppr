@@ -16,9 +16,9 @@ var info: ScrollContainer
 
 var model: Node
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 func _setup() -> void:
 	info = $Info
@@ -77,9 +77,9 @@ func _setup() -> void:
 				"callback": "_on_bone_updated"
 			}))
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Connections                                                                 #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 func _on_is_tracking(state: bool, bone_name: String) -> void:
 	var additional_bones = AM.cm.get_data("additional_bones")
@@ -97,7 +97,7 @@ func _on_is_tracking(state: bool, bone_name: String) -> void:
 	else:
 		additional_bones.erase(bone_name)
 
-	AM.ps.emit_signal("additional_bones", PubSubWrappedCollection.new(additional_bones, bone_name, "additional_bones"))
+	AM.ps.emit_signal("additional_bones", PubSubWrappedData.new(additional_bones, bone_name, "additional_bones"))
 
 func _on_should_pose(state: bool, bone_name: String) -> void:
 	# TODO nothing needs to be set in model config from here, only after posing
@@ -119,7 +119,7 @@ func _on_should_use_custom_interpolation(state: bool, bone_name: String) -> void
 	else:
 		bones_to_interpolate.erase(bone_name)
 
-	AM.ps.emit_signal("bones_to_interpolate", PubSubWrappedCollection.new(bones_to_interpolate, bone_name, "bones_to_interpolate"))
+	AM.ps.emit_signal("bones_to_interpolate", PubSubWrappedData.new(bones_to_interpolate, bone_name, "bones_to_interpolate"))
 
 func _on_interpolation_rate_entered(text: String, bone_name: String) -> void:
 	_on_interpolation_rate_changed(text, bone_name)
@@ -137,12 +137,13 @@ func _on_interpolation_rate_changed(text: String, bone_name: String) -> void:
 
 	bone_interpolation_rate_dict[bone_name] = rate
 
-	AM.ps.emit_signal("bone_interpolation_rates", PubSubWrappedCollection.new(bone_interpolation_rate_dict, bone_name, "bone_interpolation_rates"))
+	AM.ps.emit_signal("bone_interpolation_rates", PubSubWrappedData.new(bone_interpolation_rate_dict, bone_name, "bone_interpolation_rates"))
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Private functions                                                           #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
+## Creates connection args specifically for bones
 func _generate_connect_args(signal_name: String, bone_name: String) -> Dictionary:
 	return {
 		"signal_name": signal_name,
@@ -188,6 +189,6 @@ func _connect_line_edit(line_edit: LineEdit, args = null) -> void:
 			logger.error("Unhandled signal name: %s" % args.signal_name)
 			return
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Public functions                                                            #
-###############################################################################
+#-----------------------------------------------------------------------------#

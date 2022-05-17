@@ -180,9 +180,9 @@ _global_script_classes=[ {
 "path": "res://model/pub_sub/pub_sub_register_payload.gd"
 }, {
 "base": "Reference",
-"class": "PubSubWrappedCollection",
+"class": "PubSubWrappedData",
 "language": "GDScript",
-"path": "res://model/pub_sub/pub_sub_wrapped_collection.gd"
+"path": "res://model/pub_sub/pub_sub_wrapped_data.gd"
 }, {
 "base": "Spatial",
 "class": "PuppetTrait",
@@ -274,7 +274,7 @@ _global_script_class_icons={
 "Prop": "",
 "PubSub": "",
 "PubSubRegisterPayload": "",
-"PubSubWrappedCollection": "",
+"PubSubWrappedData": "",
 "PuppetTrait": "",
 "RemoteControlManager": "",
 "Result": "",

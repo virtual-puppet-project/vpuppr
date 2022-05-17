@@ -6,9 +6,9 @@ const ExtensionItem = preload("res://screens/landing_screen_extension_item.tscn"
 onready var runners: VBoxContainer = $RootControl/TabContainer/Runners/ScrollContainer/RunnersList
 onready var extensions: VBoxContainer = $RootControl/TabContainer/Extensions/ScrollContainer/ExtensionsList
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 func _ready() -> void:
 	while not AM.is_manager_ready("em"):
@@ -41,9 +41,9 @@ func _ready() -> void:
 		extension_item.extension_data = AM.em.extensions[key].as_data()
 		extensions.add_child(extension_item)
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Connections                                                                 #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 func _on_runner_button_pressed(entrypoint_path: String, use_selectable_gui: bool) -> void:
 	if not use_selectable_gui:
@@ -54,9 +54,9 @@ func _on_runner_button_pressed(entrypoint_path: String, use_selectable_gui: bool
 func _on_gui_selected(scene: Node, path: String) -> void:
 	_run_runner(path, scene)
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Private functions                                                           #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 func _run_runner(path: String, gui: Node) -> void:
 	var runner = load(path)
@@ -82,6 +82,6 @@ func _gui_selection_popup(original_entrypoint_path: String) -> void:
 	add_child(popup)
 	popup.popup_centered_ratio()
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Public functions                                                            #
-###############################################################################
+#-----------------------------------------------------------------------------#

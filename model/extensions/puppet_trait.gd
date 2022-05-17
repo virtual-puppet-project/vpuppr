@@ -32,9 +32,9 @@ var initial_bone_poses: Dictionary # Bone id: int -> Pose: Transform
 
 var has_custom_update := false
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 func _ready() -> void:
 	_setup_logger()
@@ -60,9 +60,9 @@ func _ready() -> void:
 
 	AM.ps.broadcast_model_loaded(self)
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Connections                                                                 #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 func _on_model_config_changed(key: String, data) -> void:
 	match key:
@@ -80,33 +80,38 @@ func _on_model_config_changed(key: String, data) -> void:
 			# Do nothing
 			pass
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Private functions                                                           #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
+## Virtual function, sets the logger name
 func _setup_logger() -> void:
-	"""
-	Virtual function, sets the logger name
-	"""
 	logger = Logger.new("PuppetTrait")
 
+## Blend shapes should map directly back to whatever they are called on the model
+##
+## Blend shapes are generally on a scale from 0 - 1
+##
+## @param: mesh_instance: MeshInstance - The mesh instance to access the blend shape on
+## @param: blend_shape: String - The blend shape name
+## @param: value: float - The blend shape weight
 func _modify_blend_shape(mesh_instance: MeshInstance, blend_shape: String, value: float) -> void:
-	"""
-	Blend shapes should map directly back to whatever they are called on the model
-
-	Blend shapes are generally on a scale from 0 -> 1
-	"""
 	mesh_instance.set(blend_shape, value)
 
+## Gets the weight for a blend shape
+##
+## Blend shapes are generally on a scale from 0 - 1
+##
+## @param: mesh_instance: MeshInstance - The mesh instance to access the blend shape on
+## @param: blend_shape: String - The blend shape name
+##
+## @return: float - The blend shape weight
 func _get_blend_shape_weight(mesh_instance: MeshInstance, blend_shape: String) -> float:
-	"""
-	Blend shapes are generally on a scale from 0 -> 1
-	"""
 	return mesh_instance.get(blend_shape)
 
-###############################################################################
+#-----------------------------------------------------------------------------#
 # Public functions                                                            #
-###############################################################################
+#-----------------------------------------------------------------------------#
 
 func custom_update(_data: TrackingDataInterface, _interpolation_data: InterpolationData) -> void:
 	logger.error("Model custom update not implemented")
@@ -119,17 +124,18 @@ func get_bone_names() -> Array:
 
 	return r
 
+## Resets all bones to their original pose
 func reset_all_bone_poses() -> void:
-	"""
-	Resets all bones to their original pose
-	"""
 	for bone_id in initial_bone_poses.keys():
 		skeleton.set_bone_pose(bone_id, initial_bone_poses[bone_id])
 
+## Applies movement to a model
+##
+## A head bone is always required to exist, even if the model doesn't have a head (e.g. a tank)
+##
+## @param: translation: Vector3 - The translation to apply
+## @param: rotation: Vector3 - The rotation to apply
 func apply_movement(translation: Vector3, rotation: Vector3) -> void:
-	"""
-	A head bone is always required to exist, even if the model doesn't have a head (e.g. a tank)
-	"""
 	if head_bone_id < 0:
 		return
 	

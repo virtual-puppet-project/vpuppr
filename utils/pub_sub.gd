@@ -7,30 +7,11 @@ func _init() -> void:
 func _setup_logger() -> void:
 	logger = Logger.new("PubSub")
 
-class ToggleToggled:
-	"""
-	Base class for toggle element data
-	"""
-
-	var toggle_name := ""
-	var toggle_value := false
-	
-	func _init(p_toggle_name: String, p_toggle_value: bool):
-		toggle_name = p_toggle_name
-		toggle_value = p_toggle_value
-
-class BoneToggled extends ToggleToggled:
-	var toggle_type := ""
-
-	func _init(p_toggle_name: String, p_toggle_type: String, p_toggle_value: bool).(p_toggle_name, p_toggle_value) -> void:
-		toggle_type = p_toggle_type
-
-class PropToggled extends ToggleToggled:
-	pass
-
-class PresetToggled extends ToggleToggled:
-	pass
-
+## Creates a user signal to be stored on the PubSub
+##
+## @param: signal_name: String - The signal to create
+##
+## @return: Result<int> - The error code
 func create_signal(signal_name: String) -> Result:
 	if signal_name.empty():
 		return Result.err(Error.Code.PUB_SUB_INVALID_SIGNAL_NAME)
@@ -41,12 +22,14 @@ func create_signal(signal_name: String) -> Result:
 
 	return Result.ok()
 
+## Wrapper for subscribing (connecting) an object to the PubSub
+##
+## An optional RegisterPayload ca be defined to customize the connection args
+##
+## @param: o: Object - The object that will have its callback called
+## @param: signal_name: String - The signal to subscribe to on the PubSub
+## @param: payload: PubSubRegisterPayload - The register payload to use
 func register(o: Object, signal_name: String, payload: PubSubRegisterPayload = null) -> Result:
-	"""
-	Wrapper for subscribing (connecting) an object to the PubSub.
-
-	An optional RegisterPayload can be defined to customize the connection args
-	"""
 	if not has_user_signal(signal_name):
 		return Result.err(Error.Code.SIGNAL_DOES_NOT_EXIST)
 
@@ -68,22 +51,15 @@ func register(o: Object, signal_name: String, payload: PubSubRegisterPayload = n
 	return Result.ok()
 
 signal logger_rebroadcast(message)
+## Rebroadcasts logger messages
+##
+## @param: message: String - The message
 func broadcast_logger_rebroadcast(message: String) -> void:
 	emit_signal("logger_rebroadcast", message)
 
-signal update_label_text(element_name, value)
-func broadcast_update_label_text(element_name: String, value: String) -> void:
-	"""
-	Usually emitted on a button press.
-	
-	This is received by a GUI element that changes its label text depending whether
-	or not the element_name matches its own.
-	"""
-	emit_signal("update_label_text", element_name, value)
-
 signal model_loaded(model)
+## Indicates when it's okay to start applying tracking data
+##
+## @param: model: PuppetTrait - The model that was loaded
 func broadcast_model_loaded(model: PuppetTrait) -> void:
-	"""
-	Indicates when it's okay to start applying tracking data
-	"""
 	emit_signal("model_loaded", model)

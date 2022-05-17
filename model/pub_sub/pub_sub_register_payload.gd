@@ -1,16 +1,16 @@
 class_name PubSubRegisterPayload
 extends Reference
 
+## The connect args
 var args := []
+## The callback function to use
 var callback := ""
 
+## There are 3 supported arguments for init
+## 1. Dictionary - {"args": [connect, args], "callback": "callback_func"}
+## 2. Array - [connect, args]
+## 3. String - "callback_func"
 func _init(v = null) -> void:
-	"""
-	There are 3 supported arguments for init
-	1. Dictionary - {"args": [connect args], "callback": "value"}
-	2. Array - [connect args]
-	3. String - custom_callback
-	"""
 	if v == null:
 		return
 

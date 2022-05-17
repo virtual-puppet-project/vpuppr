@@ -1,4 +1,4 @@
-class_name PubSubWrappedCollection
+class_name PubSubWrappedData
 extends Reference
 
 ## Used for sending collections over pubsub with an identifier so that the
