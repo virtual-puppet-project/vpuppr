@@ -16,8 +16,16 @@ const ExtensionTypes := {
 }
 
 const ExtensionOtherKeys := {
+	# Whether to show this as a selectable GUI when starting a runner
+	# Defaults to false
 	"SELECTABLE_GUI": "selectable_gui",
-	"ADD_GUI_AS_DEFAULT": "add_gui_as_default"
+	# Whether to show this as a popup in the default GUI
+	# Defaults to false
+	"ADD_GUI_AS_DEFAULT": "add_gui_as_default",
+	# Arbitrary data associated with the extension resource. Must be a relative path
+	# Can optionally define an entrypoint func if the data is a GDScript file delimited by a ":"
+	# e.g. "my_data.gd:my_entrypoint"
+	"DATA": "data"
 }
 
 enum CustomTypes {

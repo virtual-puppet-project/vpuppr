@@ -45,6 +45,7 @@ func add_resource(res_name: String, res_type: String, res_entrypoint: String) ->
 		return Result.err(Error.Code.EXTENSION_RESOURCE_ALREADY_EXISTS)
 
 	var ext_res := ExtensionResource.new(
+		extension_name,
 		res_name,
 		res_type,
 		res_entrypoint

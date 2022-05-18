@@ -22,13 +22,12 @@ var model: Node
 
 func _setup() -> void:
 	info = $Info
+	pages[INFO_PAGE] = info
 	
 	_initial_page = INFO_PAGE
 	
 	tree.hide_root = true
 	var root: TreeItem = tree.create_item()
-	
-	pages[INFO_PAGE] = info
 	
 	var info_item: TreeItem = tree.create_item(root)
 	info_item.set_text(TREE_COLUMN, INFO_PAGE)
@@ -61,7 +60,7 @@ func _setup() -> void:
 
 		known_bones[bone_name] = item
 		
-		var bone_display := BoneDisplay.new(bone_name)
+		var bone_display := BoneDisplay.new(bone_name, logger)
 		pages[bone_name] = bone_display
 		
 		add_child(bone_display)

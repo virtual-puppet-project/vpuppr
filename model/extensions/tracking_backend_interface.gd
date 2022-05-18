@@ -1,9 +1,7 @@
 class_name TrackingBackendInterface
 extends Node
 
-"""
-Interface for defining Tracking Backends
-"""
+## Interface for defining tracking backends
 
 func is_listening() -> bool:
 	AM.logger.error("Not yet implemented")

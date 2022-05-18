@@ -3,6 +3,7 @@ extends Control
 
 const TREE_COLUMN: int = 0
 
+## Set by the base popup
 var logger: Logger
 
 onready var tree = $Tree as Tree

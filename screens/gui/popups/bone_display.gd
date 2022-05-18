@@ -1,8 +1,10 @@
 extends ScrollContainer
 
-"""
-Represents the configuration data for one bone for a given model
-"""
+## Represents the configuration data for one bone for a given model
+##
+## @author: Tim Yuen
+
+var logger: Logger
 
 # Whether or not to apply tracking data to the bone
 var is_tracking_button := CheckButton.new()
@@ -17,9 +19,10 @@ var interpolation_rate := LineEdit.new()
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#
 
-func _init(bone_name: String) -> void:
+func _init(bone_name: String, p_logger: Logger) -> void:
 	name = bone_name
 	visible = false
+	logger = p_logger
 
 	var options_list := VBoxContainer.new()
 	

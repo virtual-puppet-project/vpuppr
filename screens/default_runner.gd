@@ -52,8 +52,6 @@ var mouse_move_strength: float = 0.002 # TODO might want to move this to config
 
 #endregion
 
-var tracker: TrackingBackendInterface = TrackingBackendDummy.new()
-
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#

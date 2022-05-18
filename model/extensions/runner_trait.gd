@@ -8,6 +8,8 @@ var logger: Logger
 
 var current_model_path := ""
 
+var tracker: TrackingBackendInterface = TrackingBackendDummy.new()
+
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#
@@ -17,6 +19,10 @@ func _ready() -> void:
 	_setup_logger()
 	_setup_config()
 	_setup_scene()
+
+## DON'T OVERRIDE THIS
+func _exit_tree() -> void:
+	_teardown()
 
 ## DON'T OVERRIDE THIS
 func _process(delta: float) -> void:
@@ -38,6 +44,10 @@ func _setup_config() -> void:
 ## Virtual function that sets up the scene
 func _setup_scene() -> void:
 	pass
+
+## Virtual function that is run when exiting the SceneTree
+func _teardown() -> void:
+	tracker.queue_free()
 
 ## Virtual function that should be overridden instead of `_process`
 func _process_step(_delta: float) -> void:
