@@ -126,7 +126,7 @@ func test_on_model_config_changed_pass():
 		return
 
 	dict["spine"] = 4
-	var data := PubSubWrappedData.new(dict, 1, "additional_bones")
+	var data := SignalPayload.new("additional_bones", dict, 1)
 
 	cm._on_model_config_changed(data, "additional_bones")
 	var bones = cm.get_data("additional_bones")

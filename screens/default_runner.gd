@@ -90,18 +90,18 @@ func _setup_logger() -> void:
 
 func _setup_config() -> void:
 	for i in CONFIG_LISTEN_VALUES:
-		AM.ps.register(self, i, PubSubRegisterPayload.new({
+		AM.ps.subscribe(self, i, {
 			"args": [i],
 			"callback": "_on_config_changed"
-		}))
+		})
 
 func _setup_scene() -> void:
 	for i in SCENE_LISTEN_VALUES:
 		AM.ps.create_signal(i)
-		AM.ps.register(self, i, PubSubRegisterPayload.new({
+		AM.ps.subscribe(self, i, {
 			"args": [i],
 			"callback": "_on_config_changed"
-		}))
+		})
 
 	var camera := Camera.new()
 	camera.current = true

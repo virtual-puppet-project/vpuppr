@@ -66,8 +66,8 @@ func _init(bone_name: String) -> void:
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#
 
-func _on_bone_updated(value: PubSubWrappedData, signal_name: String) -> void:
-	if not value is PubSubWrappedData:
+func _on_bone_updated(value: SignalPayload, signal_name: String) -> void:
+	if not value is SignalPayload:
 		# logger.error("Unexpected callback value %s" % str(value))
 		printerr("Unexpected callback value %s" % str(value))
 		return

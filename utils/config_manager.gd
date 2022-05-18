@@ -42,11 +42,11 @@ func _setup_class() -> void:
 #-----------------------------------------------------------------------------#
 
 func _on_metadata_changed(data, key: String) -> void:
-	metadata.set_data(key, data if not data is PubSubWrappedData else data.get_data())
+	metadata.set_data(key, data.data if data is SignalPayload else data)
 	AM.save_config()
 
 func _on_model_config_changed(data, key: String) -> void:
-	model_config.set_data(key, data if not data is PubSubWrappedData else data.get_data())
+	model_config.set_data(key, data.data if data is SignalPayload else data)
 	AM.save_config()
 
 #-----------------------------------------------------------------------------#
@@ -86,10 +86,10 @@ func _register_config_data_with_pub_sub(data: Dictionary, callback: String) -> R
 					continue
 				return result
 
-			result = AM.ps.register(self, key, PubSubRegisterPayload.new({
+			result = AM.ps.subscribe(self, key, {
 				"args": [key],
 				"callback": callback
-			}))
+			})
 		else:
 			# This doesn't infinite recurse because we are passing the dictionary
 			# for "other", not the "other" key
@@ -184,6 +184,10 @@ func set_data(key: String, value) -> void:
 		logger.error("Key %s not found in ModelConfig or Metadata. Declining to set data %s." % [key, str(value)])
 
 ## Wrapper for getting data in ModelConfig or Metadata, in that search order
+##
+## @param: key: String - The key to find
+##
+## @return: Variant - The data found at the given key
 func get_data(key: String):
 	var val = model_config.get_data(key)
 	if val != null:

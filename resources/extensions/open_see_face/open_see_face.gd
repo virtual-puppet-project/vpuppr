@@ -66,13 +66,14 @@ func _on_toggle_tracker() -> void:
 		stop_receiver()
 		is_tracking = false
 
-	if was_tracking != is_tracking:
-		if is_tracking:
-			# TODO pull label value from GUI instead?
-			AM.ps.broadcast_update_label_text("Start Tracker", STOP_FACE_TRACKER_TEXT)
-		else:
-			# TODO pull label value from GUI instead?
-			AM.ps.broadcast_update_label_text("Start Tracker", RUN_FACE_TRACKER_TEXT)
+	# TODO
+#	if was_tracking != is_tracking:
+#		if is_tracking:
+#			# TODO pull label value from GUI instead?
+#			AM.ps.broadcast_update_label_text("Start Tracker", STOP_FACE_TRACKER_TEXT)
+#		else:
+#			# TODO pull label value from GUI instead?
+#			AM.ps.broadcast_update_label_text("Start Tracker", RUN_FACE_TRACKER_TEXT)
 
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #

@@ -224,7 +224,7 @@ func find_data_set(query: String, new_value) -> Result:
 			return Result.err(Error.Code.BASE_CONFIG_UNHANDLED_FIND_SET_DATA_TYPE)
 
 	# TODO might not need this?
-	# AM.ps.emit_signal(key, new_value)
+	# AM.ps.publish(key, new_value)
 	
 	return Result.ok()
 

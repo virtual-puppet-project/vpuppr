@@ -37,41 +37,31 @@ class Interpolation:
 			interpolation_rate = new_value
 		last_interpolation_rate = new_value
 
+	## Called when toggling base interpolation
 	func global_rate_changed(new_value: float) -> void:
-		"""
-		Called when toggling base interpolation
-		"""
 		if not should_interpolate:
 			interpolation_rate = new_value
 
+	## Called when setting specific interpolation rates
 	func maybe_reset_rate(global_rate: float) -> void:
-		"""
-		Called when setting specific interpolation rates
-		"""
 		if should_interpolate:
 			interpolation_rate = last_interpolation_rate
 		else:
 			last_interpolation_rate = interpolation_rate
 			interpolation_rate = global_rate
 
+	## Interpolate the value, update the stored floating target, and return the result
 	func interpolate(rate: float = interpolation_rate):
-		"""
-		Interpolate the value, update the stored floating target, and return the result
-		"""
 		last_value = lerp(last_value, target_value * damping, rate)
 
 		return last_value
 
+	## Interpolate the value and return the result. Does not update the stored floating target
 	func interpolate_no_update(rate: float = interpolation_rate):
-		"""
-		Interpolate the value and return the result. Does not update the stored floating target
-		"""
 		return lerp(last_value, target_value * damping, rate)
 
 class InterpolationHelper:
-	"""
-	Wrapper class for applying rates to a group of Interpolation classes
-	"""
+	## Wrapper class for applying rates to a group of Interpolation classes
 	var interpolations: Array
 
 	func _init(p_interpolations: Array) -> void:
@@ -145,14 +135,15 @@ var non_global_interpolations := [
 
 func _init() -> void:
 	for i in LISTEN_VALUES:
-		AM.ps.register(self, i, PubSubRegisterPayload.new({"args": [i], "callback": "_on_model_config_changed"}))
+		AM.ps.subscribe(self, i, {"args": [i], "callback": "_on_model_config_changed"})
 		_on_model_config_changed(AM.cm.model_config.get(i), i)
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#
 
-func _on_model_config_changed(value, key: String) -> void:
+func _on_model_config_changed(data, key: String) -> void:
+	var value = data.data if data is SignalPayload else data
 	match key:
 		"interpolate_global":
 			global.should_interpolate = value

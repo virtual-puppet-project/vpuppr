@@ -72,10 +72,10 @@ func _setup() -> void:
 		_connect_element(bone_display.interpolation_rate, _generate_connect_args("bone_interpolation_rates", bone_name))
 
 		for signal_name in BONE_SIGNALS:
-			AM.ps.register(bone_display, signal_name, PubSubRegisterPayload.new({
+			AM.ps.subscribe(bone_display, signal_name, {
 				"args": [signal_name],
 				"callback": "_on_bone_updated"
-			}))
+			})
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
@@ -97,7 +97,7 @@ func _on_is_tracking(state: bool, bone_name: String) -> void:
 	else:
 		additional_bones.erase(bone_name)
 
-	AM.ps.emit_signal("additional_bones", PubSubWrappedData.new(additional_bones, bone_name, "additional_bones"))
+	AM.ps.publish("additional_bones", additional_bones, bone_name)
 
 func _on_should_pose(state: bool, bone_name: String) -> void:
 	# TODO nothing needs to be set in model config from here, only after posing
@@ -119,7 +119,7 @@ func _on_should_use_custom_interpolation(state: bool, bone_name: String) -> void
 	else:
 		bones_to_interpolate.erase(bone_name)
 
-	AM.ps.emit_signal("bones_to_interpolate", PubSubWrappedData.new(bones_to_interpolate, bone_name, "bones_to_interpolate"))
+	AM.ps.publish("bones_to_interpolate", bones_to_interpolate, bone_name)
 
 func _on_interpolation_rate_entered(text: String, bone_name: String) -> void:
 	_on_interpolation_rate_changed(text, bone_name)
@@ -137,7 +137,7 @@ func _on_interpolation_rate_changed(text: String, bone_name: String) -> void:
 
 	bone_interpolation_rate_dict[bone_name] = rate
 
-	AM.ps.emit_signal("bone_interpolation_rates", PubSubWrappedData.new(bone_interpolation_rate_dict, bone_name, "bone_interpolation_rates"))
+	AM.ps.publish("bone_interpolation_rates", bone_interpolation_rate_dict, bone_name)
 
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #

@@ -91,6 +91,7 @@ func _toggle_page(page_name: String) -> void:
 
 #region Handle UI elements
 
+## Converts a given string to snake case
 static func _to_snake_case(text: String) -> String:
 	var builder := PoolStringArray()
 
@@ -99,67 +100,55 @@ static func _to_snake_case(text: String) -> String:
 
 	return builder.join("_")
 
+## Generic method for connecting all types of Controls
+##
+## @param: control: Control - The Control to be connected
+## @param: args: Variant - By default, is the signal name as a String
 func _connect_element(control: Control, args = null) -> void:
-	"""
-	Generic method for connecting all types of Controls
-
-	Params:
-		control: Control - The Control to be connected
-		args - Duck-typed param. By default, is the signal name as a String
-	"""
 	call("_connect_%s" % _to_snake_case(control.get_class()), control, args)
 
+## Connects a Button to the default callback. Does not listen for config updates by default
+##
+## @param: button: Button - The Button to be connected
+## @param: args: Variant - By default, is the signal name as a String
 func _connect_button(button: Button, args = null) -> void:
-	"""
-	Connects a Button to the default callback. Does not listen for config updates by default
-
-	Params:
-		button: Button - The Button to be connected
-		args - Duck-typed param. By default, is the signal name as a String
-	"""
 	# TODO Most things don't use the button
 	button.connect("pressed", self, "_on_button_pressed", [args, button])
 
+## Connects a CheckButton to the default callback. Listens for config updates by default by
+## subscribing to the given args parameter
+##
+## Also sets its initial value by pulling the args value from the ConfigManager
+##
+## @param: check_button: CheckButton - The CheckButton to be connected
+## @param: args: Variant - By default, is the signal name as a String
 func _connect_check_button(check_button: CheckButton, args = null) -> void:
-	"""
-	Connects a CheckButton to the default callback. Listens for config updates by default by
-	subscribing to the given args parameter.
-
-	Also sets its initial value by pulling the args value from the ConfigManager
-
-	Params:
-		check_button: CheckButton - The CheckButton to be connected
-		args - Duck-typed param. By default, is the signal name as a String
-	"""
 	check_button.connect("toggled", self, "_on_check_button_toggled", [args, check_button])
 	
 	var initial_value = AM.cm.get_data(args)
 	if initial_value != null:
 		check_button.set_pressed_no_signal(initial_value)
-		AM.ps.register(self, args, PubSubRegisterPayload.new({
+		AM.ps.subscribe(self, args, {
 			"args": [check_button],
 			"callback": "_on_config_updated"
-		}))
+		})
 
+## Connects a LineEdit to the default callback. Listens for config updates by default by
+## subscribing to the given args parameter
+##
+## Also sets its initial value by pulling the args value from the ConfigManager
+##
+## @param: line_edit: LineEdit - The LineEdit to be connected
+## @param: args: Variant - By default, is the signal name as a String
 func _connect_line_edit(line_edit: LineEdit, args = null) -> void:
-	"""
-	Connects a LineEdit to the default callback. Listens for config updates by default by
-	subscribing to the given args parameter.
-
-	Also sets its initial value by pulling the args value from the ConfigManager
-
-	Params:
-		line_edit: LineEdit - The LineEdit to be connected
-		args - Duck-typed param. By default, is the signal name as a String
-	"""
 	line_edit.connect("text_changed", self, "_on_line_edit_text_changed", [args, line_edit])
 	line_edit.connect("text_entered", self, "_on_line_edit_text_entered", [args, line_edit])
 	
 	line_edit.text = str(AM.cm.get_data(args))
-	AM.ps.register(self, args, PubSubRegisterPayload.new({
+	AM.ps.subscribe(self, args, {
 		"args": [line_edit],
 		"callback": "_on_config_updated"
-	}))
+	})
 
 func _set_config_float_amount(signal_name: String, value: String) -> void:
 	if not value.is_valid_float():

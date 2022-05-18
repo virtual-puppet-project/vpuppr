@@ -59,12 +59,12 @@ func test_register_for_signal_pass():
 
 	var test_class := MyClass.new()
 	
-	pub_sub.register(test_class, "callback")
-	pub_sub.register(test_class, "other_signal", PubSubRegisterPayload.new("_other_callback"))
-	pub_sub.register(test_class, "last_signal", PubSubRegisterPayload.new({
+	pub_sub.subscribe(test_class, "callback")
+	pub_sub.subscribe(test_class, "other_signal", "_other_callback")
+	pub_sub.subscribe(test_class, "last_signal", {
 		"callback": "_last_callback",
 		"args": ["test_key"]
-	}))
+	})
 
 	pub_sub.emit_signal("callback")
 	
