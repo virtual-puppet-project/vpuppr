@@ -68,36 +68,112 @@ func _setup() -> void:
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#
 
-func _handle_descriptor(context: ExtensionContext, path_and_func: String) -> Result:
+# TODO this needs to change for gdscript files to return a node instead of a dictionary
+## @return: Result<Dictionary<String, Node>> - The UI parsed from the descriptor
+static func _handle_descriptor(context: ExtensionContext, path_and_func: String) -> Result:
 	var r := {}
 
 	var split := path_and_func.split(":", false, 1)
 	var path: String = split[0]
 	var entrypoint := split[1] if split.size() > 1 else ""
+	
+	var file := File.new()
+	if file.open("%s/%s" % [context.context_path, path], File.READ) != OK:
+		return Result.err(Error.Code.GUI_TRACKER_LOAD_FILE_FAILED, path)
+	
+	var file_text: String = file.get_as_text()
+	if file_text.strip_edges().length() < 1:
+		return Result.err(Error.Code.GUI_TRACKER_FILE_EMPTY, path)
 
 	match path.get_extension().to_lower():
 		"gd":
-			var res: Result = context.load_resource(path)
-			if not res or res.is_err():
-				return res if res else Result.err(Error.Code.RUNNER_LOAD_FILE_FAILED, path)
+			var gdscript := GDScript.new()
+			gdscript.source_code = file_text
+			
+			if gdscript.reload() != OK:
+				return Result.err(Error.Code.GUI_TRACKER_INVALID_GDSCRIPT, path)
 
-			# TODO stub
+			var instance: Object = gdscript.new()
+
+			r["name"] = instance.get("name")
+			if r["name"].empty():
+				r["name"] = path.get_basename().get_file()
+
+			# e.g.
+			# func run() -> Dictionary:
+			#	return {
+			#		"my_control": my_func_to_generate_control()
+			#	}
+			if not entrypoint.empty():
+				var data = instance.call(entrypoint)
+				if typeof(data) != TYPE_DICTIONARY:
+					return Result.err(Error.Code.GUI_TRACKER_INVALID_DESCRIPTOR, path)
+
+				r = data
+			# e.g.
+			# var my_control = my_func_to_generate_control()
+			else:
+				if not instance.is_class("Reference") or instance.is_class("Node"):
+					return Result.err(Error.Code.GUI_TRACKER_INVALID_DESCRIPTOR, path)
+				
+				for prop in instance.get_property_list():
+					if prop.name in GlobalConstants.IGNORED_PROPERTIES_REFERENCE:
+						continue
+
+					# This MUST inherit from Node
+					var val = instance.get(prop.name)
+					if not val.is_class("Node"):
+						# Cleanup files first
+						for key in r.keys():
+							r[key].free()
+						r.clear()
+
+						return Result.err(Error.Code.GUI_TRACKER_INVALID_DESCRIPTOR, "%s - %s" %
+							[path, prop.name])
+
+					r[prop.name] = val
 		"json":
-			var file := File.new()
-			if file.open("%s/%s" % [context.context_path, path], File.OPEN) != OK:
-				return Result.err(Error.Code.RUNNER_LOAD_FILE_FAILED, path)
+			var json_parse_result := JSON.parse(file_text)
+			if json_parse_result.error != OK:
+				return Result.err(Error.Code.GUI_TRACKER_INVALID_JSON, "%s\n%s" %
+					[path, json_parse_result.error_description()])
+			
+			var json_data = json_parse_result.result
+			if typeof(json_data) != TYPE_DICTIONARY:
+				return Result.err(Error.Code.GUI_TRACKER_INVALID_JSON, "%s must be a JSON object" % path)
 
-			# TODO stub
+			var res := _handle_json(json_data)
 		"toml":
-			var file := File.new()
-			if file.open("%s/%s" % [context.context_path, path], File.OPEN) != OK:
-				return Result.err(Error.Code.RUNNER_LOAD_FILE_FAILED, path)
-
 			# TODO stub
+			pass
 		_:
-			return Result.err(Error.Code.RUNNER_UNHANDLED_FILE_FORMAT, path)
+			return Result.err(Error.Code.GUI_TRACKER_UNHANDLED_FILE_FORMAT, path)
 	
 	return Result.ok(r)
+
+static func _handle_json(data: Dictionary) -> Result:
+	if not data.has("type") or not ClassDB.class_exists(data["type"]):
+		return Result.err(Error.Code.GUI_TRACKER_INVALID_JSON, str(data))
+
+	var node = ClassDB.instance(data["type"])
+	if data.has("name"):
+		node.name = data["name"]
+
+	var additional_nodes = data.get("nodes", [])
+	if typeof(additional_nodes) != TYPE_ARRAY:
+		return Result.err(Error.Code.GUI_TRACKER_INVALID_JSON, str(data))
+
+	for i in additional_nodes:
+		if typeof(i) != TYPE_DICTIONARY:
+			return Result.err(Error.Code.GUI_TRACKER_INVALID_JSON, str(i))
+
+		var res := _handle_json(i)
+		if res.is_err():
+			return res
+
+		node.add_child(res.unwrap())
+	
+	return Result.ok(node)
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #

@@ -2,10 +2,16 @@ extends Reference
 
 ## Returns data tailored for the default gui
 func run() -> Dictionary:
-	var r := {}
+	var r := {
+		"name": "OpenSeeFaceUI"
+	}
+
+	var nodes := []
 
 	if OS.get_name().to_lower() == "x11":
-		r["python_path"] = _python_path()
+		nodes.append(_python_path())
+
+	r["nodes"] = nodes
 
 	return r
 
