@@ -1,0 +1,6 @@
+[submodule "export/new"]
+	path = export/new
+	url = https://github.com/emilianavt/OpenSeeFace.git
+[submodule "export/OpenSeeFace"]
+	path = export/OpenSeeFace
+	url = https://github.com/emilianavt/OpenSeeFace.git
