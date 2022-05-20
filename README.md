@@ -44,13 +44,11 @@ All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` h
 
 ## Building from source
 1. Download Godot 3.4
-2. Clone this project and load it in the editor
-3. Clone the [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace) face tracker
-4. Move the `OpenSeeFace` repo into `$PROJECT_ROOT/export/OpenSeeFaceFolder`
-5. Run the project from the editor
-6. If running the project on Linux, the facetracker is controlled via shell scripts in `resources/scripts`. If the tracker doesn't start correctly, it is a good idea to start debugging from there
-7. Start face tracking
-8. To export your own release binaries, you will need to use my patched version of Godot 3.4. Precompiled release templates can be downloaded from my [Godot fork](https://github.com/you-win/godot/releases/tag/3.4-gltf-module) (or compiled using `scons platform=<your platform> target=release tools=no module_gltf=yes -j<number of threads, no space between j>`
+2. `git clone --recurse-submodules https://github.com/4cecoder/puppeteer`
+6. Run the project from the Godot editor
+7. If running the project on Linux, the facetracker is controlled via shell scripts in `resources/scripts`. If the tracker doesn't start correctly, it is a good idea to start debugging from there
+8. Start face tracking
+9. To export your own release binaries, you will need to use my patched version of Godot 3.4. Precompiled release templates can be downloaded from my [Godot fork](https://github.com/you-win/godot/releases/tag/3.4-gltf-module) (or compiled using `scons platform=<your platform> target=release tools=no module_gltf=yes -j<number of threads, no space between j>`
 
 ## Discussion
 A Discord server [is available here](https://discord.gg/6mcdWWBkrr) if you need help, like to contribute, or just want to chat.
