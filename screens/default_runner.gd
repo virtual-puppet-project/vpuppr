@@ -101,6 +101,14 @@ func _setup_scene() -> void:
 			"callback": "_on_config_changed"
 		})
 
+	# TODO
+	var open_see_face_res: Result = AM.em.load_resource("OpenSeeFace", "open_see_face.gd")
+	if not open_see_face_res or open_see_face_res.is_err():
+		logger.err(open_see_face_res.unwrap_err().to_string() if open_see_face_res else "Unable to load face tracker")
+		return
+	trackers["OpenSeeFace"] = open_see_face_res.unwrap().new()
+	add_child(trackers["OpenSeeFace"])
+
 	var camera := Camera.new()
 	camera.current = true
 	camera.translate(Vector3(0.0, 0.0, 3.0))
@@ -128,11 +136,12 @@ func _setup_scene() -> void:
 		model.skeleton.set_bone_pose(bone_idx, bone_transforms[bone_idx])
 
 func _physics_step(delta: float) -> void:
-	if not tracker.is_listening():
+	# TODO hardcoded for OpenSeeFace
+	if not trackers["OpenSeeFace"].is_listening():
 		return
 
 	# TODO hardcoded for OpenSeeFace
-	var data: OpenSeeFaceData = tracker.get_data()
+	var data: OpenSeeFaceData = trackers["OpenSeeFace"].get_data()
 	
 	if not data or data.get_confidence() > 100.0: # TODO 100.0 is hardcoded from the osf impl
 		return

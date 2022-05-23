@@ -6,9 +6,11 @@ const PUPPET_TRAIT_SCRIPT_PATH := "res://model/extensions/puppet_trait.gd"
 
 var logger: Logger
 
+# TODO this should be stored on the model
 var current_model_path := ""
 
-var tracker: TrackingBackendInterface = TrackingBackendDummy.new()
+## Dictionary of Tracker name: String -> TrackingBackendInterface
+var trackers := {}
 
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
@@ -47,7 +49,8 @@ func _setup_scene() -> void:
 
 ## Virtual function that is run when exiting the SceneTree
 func _teardown() -> void:
-	tracker.queue_free()
+	for tracker_name in trackers.keys():
+		trackers[tracker_name].queue_free()
 
 ## Virtual function that should be overridden instead of `_process`
 func _process_step(_delta: float) -> void:

@@ -43,7 +43,8 @@ var _tree: SceneTree
 
 func _init() -> void:
 	if AM.env.current_env != Env.Envs.TEST:
-		AM.ps.connect("toggle_tracker", self, "_on_toggle_tracker")
+		# AM.ps.connect("toggle_tracker", self, "_on_toggle_tracker")
+		AM.ps.subscribe(self, "toggle_tracker")
 
 	_tree = Engine.get_main_loop()
 
@@ -54,7 +55,10 @@ func _exit_tree() -> void:
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#
 
-func _on_toggle_tracker() -> void:
+func _on_toggle_tracker(tracker_name: String) -> void:
+	if tracker_name != "OpenSeeFace":
+		return
+
 	var was_tracking: bool = is_tracking
 	if not was_tracking:
 		# Only makes sense to start receiver if tracker was started
@@ -66,46 +70,59 @@ func _on_toggle_tracker() -> void:
 		stop_receiver()
 		is_tracking = false
 
-	# TODO
-#	if was_tracking != is_tracking:
-#		if is_tracking:
-#			# TODO pull label value from GUI instead?
-#			AM.ps.broadcast_update_label_text("Start Tracker", STOP_FACE_TRACKER_TEXT)
-#		else:
-#			# TODO pull label value from GUI instead?
-#			AM.ps.broadcast_update_label_text("Start Tracker", RUN_FACE_TRACKER_TEXT)
-
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#
 
 func _start_tracker() -> bool:
-	# if a tracker should be launched, launch it
-	# otherwise assume that the user launched a tracker manually already
-	if not AM.cm.current_model_config.tracker_should_launch:
-		AM.logger.info("Assuming face tracker was manually launched.")
+	# If the tracker should be launched, launch it
+	# Otherwise assume that the user launched a tracker manually already
+	var should_launch = AM.cm.get_data("open_see_face_should_launch_tracker")
+	if typeof(should_launch) == TYPE_NIL:
+		logger.error("No data found for open_see_face_should_launch_tracker")
+		return false
+
+	var fps = AM.cm.get_data("open_see_face_tracker_fps")
+	if typeof(fps) == TYPE_NIL:
+		logger.error("No data found for open_see_face_tracker_fps")
+		return false
+
+	var address = AM.cm.get_data("open_see_face_address")
+	if typeof(address) == TYPE_NIL:
+		logger.error("No data found for open_see_face_address")
+		return false
+
+	var port = AM.cm.get_data("open_see_face_port")
+	if typeof(port) == TYPE_NIL:
+		logger.error("No data found for open_see_face_port")
+		return false
+
+	var camera_index = AM.cm.get_data("open_see_face_camera_index")
+	if typeof(camera_index) == TYPE_NIL:
+		logger.error("No data found for open_see_face_camera_index")
+	
+	if not should_launch:
+		logger.info("Assuming face tracker was manually launched.")
 		return true
 
-	AM.logger.info("Starting face tracker")
-
-	if AM.cm.get_data("tracker_fps") > MAX_TRACKER_FPS:
-		AM.logger.info("Face tracker fps is greater than %s. This is a bad idea." % MAX_TRACKER_FPS)
-		AM.logger.info("Declining to start face tracker.")
+	logger.info("Starting face tracker")
+	
+	if fps > MAX_TRACKER_FPS:
+		logger.info("Face tracker fps is greater than %s. This is a bad idea." % MAX_TRACKER_FPS)
+		logger.info("Declining to start face tracker.")
 		return false
 
 	var pid: int = -1
 
 	match OS.get_name().to_lower():
 		"windows":
-			var exe_path: String = "%s%s" % [OS.get_executable_path().get_base_dir(), "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe"]
-			if OS.is_debug_build():
-				exe_path = "%s%s" % [ProjectSettings.globalize_path("res://export"), "/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe"]
-				print(exe_path)
+			var exe_path: String = "%s/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe" % \
+				AM.em.get_context("OpenSeeFace").expect("Unable to get context").context_path
 			pid = OS.execute(
 				exe_path,
 				[
-					"-c", AM.cm.get_data("camera_index"),
-					"-F", str(AM.cm.get_data("tracker_fps")),
+					"-c", AM.cm.get_data("open_see_face_camera_index"),
+					"-F", str(fps),
 					"-v", "0",
 					"-s", "1",
 					"-P", "1",
@@ -225,12 +242,19 @@ func is_listening() -> bool:
 	return is_tracking
 
 func start_receiver() -> void:
-	var listen_address: String = AM.cm.get_data("tracker_address")
-	var listen_port: int = AM.cm.get_data("tracker_port")
+	var address = AM.cm.get_data("open_see_face_address")
+	if typeof(address) == TYPE_NIL:
+		logger.error("No data found for open_see_face_address")
+		return
 
-	AM.logger.info("Listening for data at %s:%d" % [listen_address, listen_port])
+	var port = AM.cm.get_data("open_see_face_port")
+	if typeof(port) == TYPE_NIL:
+		logger.error("No data found for open_see_face_port")
+		return
 
-	server.listen(listen_port, listen_address)
+	logger.info("Listening for data at %s:%d" % [address, port])
+
+	server.listen(port, address)
 
 	stop_reception = false
 

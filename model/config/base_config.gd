@@ -129,8 +129,6 @@ func get_data(key: String):
 	r = other.get(key)
 	if r != null:
 		return r
-
-	AM.logger.debug("key not found %s" % key)
 	
 	return null # Still null but log something
 
@@ -153,7 +151,7 @@ static func _split_query(query: String) -> PoolStringArray:
 ## @return: Array - The chain of data
 func _find_data(split_query: PoolStringArray) -> Array:
 	if split_query.empty():
-		AM.logger.error("Search query was empty %s" % split_query)
+		AM.logger.error("base_config: Search query was empty %s" % split_query)
 		return []
 	
 	var r := [self]
@@ -175,7 +173,7 @@ func _find_data(split_query: PoolStringArray) -> Array:
 			r.append(val)
 			continue
 		
-		AM.logger.error("Invalid search query %s" % split_query)
+		AM.logger.error("base_config: Invalid search query %s" % split_query)
 		
 		return []
 

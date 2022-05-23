@@ -29,7 +29,7 @@ func create_signal(signal_name: String) -> Result:
 ## @param: payload: Variant - The payload to use
 ## Can be a: String, Array, or Dictionary
 func subscribe(o: Object, signal_name: String, payload = null) -> Result:
-	if not has_user_signal(signal_name):
+	if not has_user_signal(signal_name) and not has_signal(signal_name):
 		return Result.err(Error.Code.SIGNAL_DOES_NOT_EXIST)
 
 	var args := []
@@ -108,3 +108,14 @@ signal model_loaded(model)
 ## @param: model: PuppetTrait - The model that was loaded
 func broadcast_model_loaded(model: PuppetTrait) -> void:
 	emit_signal("model_loaded", model)
+
+signal toggle_tracker(tracker_name, payload)
+## Indicates which tracker should be started
+##
+## @param: tracker_name: String - The name of the tracker that should be started
+## @param: payload: Variant - An arbitrary payload to be sent to the tracker
+func broadcast_toggle_tracker(tracker_name: String, payload = null) -> void:
+	if payload == null:
+		emit_signal("toggle_tracker", tracker_name)
+	else:
+		emit_signal("toggle_tracker", tracker_name, payload)

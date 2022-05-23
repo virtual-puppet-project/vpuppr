@@ -6,17 +6,10 @@ var logger: Logger
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#
 
-func _init(tracker_name: String, data: Dictionary, p_logger: Logger) -> void:
+func _init(tracker_name: String, node: Node, p_logger: Logger) -> void:
 	name = tracker_name
 	visible = false
 	logger = p_logger
-
-	for key in data.keys():
-		var val = data[key]
-		match typeof(val):
-			TYPE_OBJECT:
-				if not val is Node:
-					pass
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #

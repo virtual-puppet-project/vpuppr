@@ -46,19 +46,21 @@ func _setup() -> void:
 
 		var entrypoint: String = er.other[GlobalConstants.ExtensionOtherKeys.DATA]
 
-		var descriptor_res: Result = _handle_descriptor(context_res.unwrap(), entrypoint)
+		var descriptor_res: Result = _from_descriptor(context_res.unwrap(), entrypoint)
 		if not descriptor_res or descriptor_res.is_err():
-			logger.err(context_res.unwrap_err().to_string() if descriptor_res else
+			logger.error(descriptor_res.unwrap_err().to_string() if descriptor_res else
 				"Unable to process descriptor for %s" % er.resource_name)
 			continue
 
 		var item: TreeItem = tree.create_item(root)
 		item.set_text(TREE_COLUMN, er.resource_name)
 
-		var tracking_display := TrackingDisplay.new(er.resource_name, descriptor_res.unwrap(), logger)
-		pages[er.resource_name] = tracking_display
+		# var tracking_display := TrackingDisplay.new(er.resource_name, descriptor_res.unwrap(), logger)
+		var display = descriptor_res.unwrap()
+		pages[er.resource_name] = display
+		display.hide()
 
-		add_child(tracking_display)
+		add_child(display)
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
@@ -68,90 +70,105 @@ func _setup() -> void:
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#
 
-# TODO this needs to change for gdscript files to return a node instead of a dictionary
-## @return: Result<Dictionary<String, Node>> - The UI parsed from the descriptor
-static func _handle_descriptor(context: ExtensionContext, path_and_func: String) -> Result:
+## Finds all applicable handlers and returns them as a Dictionary
+##
+## @return: Dictionary<String, String> - The file extension -> func name mapping
+func _find_handlers() -> Dictionary:
 	var r := {}
 
+	var object_methods := get_method_list()
+
+	for method_desc in object_methods:
+		var split_name: PoolStringArray = method_desc.name.rsplit("_", true, 1)
+		if split_name.size() != 2:
+			continue
+		if split_name[0] != "_handle":
+			continue
+
+		r[split_name[1]] = method_desc.name
+
+	return r
+
+## @return: Result<Dictionary<String, Node>> - The UI parsed from the descriptor
+func _from_descriptor(context: ExtensionContext, path_and_func: String) -> Result:
 	var split := path_and_func.split(":", false, 1)
 	var path: String = split[0]
 	var entrypoint := split[1] if split.size() > 1 else ""
 	
 	var file := File.new()
 	if file.open("%s/%s" % [context.context_path, path], File.READ) != OK:
-		return Result.err(Error.Code.GUI_TRACKER_LOAD_FILE_FAILED, path)
+		return Result.err(Error.Code.GUI_TRACKER_LOAD_FILE_FAILED,
+			"Unable to open file: %s" % path)
 	
 	var file_text: String = file.get_as_text()
 	if file_text.strip_edges().length() < 1:
-		return Result.err(Error.Code.GUI_TRACKER_FILE_EMPTY, path)
+		return Result.err(Error.Code.GUI_TRACKER_FILE_EMPTY,
+			"File empty: %s" % path)
 
-	match path.get_extension().to_lower():
-		"gd":
-			var gdscript := GDScript.new()
-			gdscript.source_code = file_text
-			
-			if gdscript.reload() != OK:
-				return Result.err(Error.Code.GUI_TRACKER_INVALID_GDSCRIPT, path)
+	var handlers := _find_handlers()
 
-			var instance: Object = gdscript.new()
+	if not handlers.has(path.get_extension().to_lower()):
+		return Result.err(Error.Code.GUI_TRACKER_UNHANDLED_FILE_FORMAT,
+			"No handler found: %s" % path)
 
-			r["name"] = instance.get("name")
-			if r["name"].empty():
-				r["name"] = path.get_basename().get_file()
-
-			# e.g.
-			# func run() -> Dictionary:
-			#	return {
-			#		"my_control": my_func_to_generate_control()
-			#	}
-			if not entrypoint.empty():
-				var data = instance.call(entrypoint)
-				if typeof(data) != TYPE_DICTIONARY:
-					return Result.err(Error.Code.GUI_TRACKER_INVALID_DESCRIPTOR, path)
-
-				r = data
-			# e.g.
-			# var my_control = my_func_to_generate_control()
-			else:
-				if not instance.is_class("Reference") or instance.is_class("Node"):
-					return Result.err(Error.Code.GUI_TRACKER_INVALID_DESCRIPTOR, path)
-				
-				for prop in instance.get_property_list():
-					if prop.name in GlobalConstants.IGNORED_PROPERTIES_REFERENCE:
-						continue
-
-					# This MUST inherit from Node
-					var val = instance.get(prop.name)
-					if not val.is_class("Node"):
-						# Cleanup files first
-						for key in r.keys():
-							r[key].free()
-						r.clear()
-
-						return Result.err(Error.Code.GUI_TRACKER_INVALID_DESCRIPTOR, "%s - %s" %
-							[path, prop.name])
-
-					r[prop.name] = val
-		"json":
-			var json_parse_result := JSON.parse(file_text)
-			if json_parse_result.error != OK:
-				return Result.err(Error.Code.GUI_TRACKER_INVALID_JSON, "%s\n%s" %
-					[path, json_parse_result.error_description()])
-			
-			var json_data = json_parse_result.result
-			if typeof(json_data) != TYPE_DICTIONARY:
-				return Result.err(Error.Code.GUI_TRACKER_INVALID_JSON, "%s must be a JSON object" % path)
-
-			var res := _handle_json(json_data)
-		"toml":
-			# TODO stub
-			pass
-		_:
-			return Result.err(Error.Code.GUI_TRACKER_UNHANDLED_FILE_FORMAT, path)
+	var args := [path, file_text]
+	if path.get_extension().to_lower() == "gd":
+		args.append(entrypoint)
 	
-	return Result.ok(r)
+	return callv(handlers[path.get_extension().to_lower()], args)
 
-static func _handle_json(data: Dictionary) -> Result:
+## Handles gdscript files.
+##
+## There are 2 types of gdscript files that are handled
+## 1. Entrypoint - An entrypoint func is provided that, when called, will return a Node
+## 2. No Entrypoint - The entire file describes the node that should be added to the scene
+##
+## @param: path: String - The file path of the gdscript file
+## @param: text: String - The contents of the gdscript file
+## @param: entrypoint: String - The entrypoint of the gdscript file, if it exists
+## If no entrypoint is given, each property in the script will be parsed instead
+##
+## @return: Result<Node> - The Node constructed from the data in the file
+func _handle_gd(path: String, text: String, entrypoint: String) -> Result:
+	var gdscript := GDScript.new()
+	gdscript.source_code = text
+
+	if gdscript.reload() != OK:
+		return Result.err(Error.Code.GUI_TRACKER_INVALID_GDSCRIPT)
+
+	var instance: Object = gdscript.new()
+	
+	# e.g.
+	# func run() -> Node:
+	#	return {
+	#		"my_control": my_func_to_generate_control()
+	#	}
+	if not entrypoint.empty():
+		var data = instance.call(entrypoint)
+		if typeof(data) == TYPE_NIL or not data is Node:
+			return Result.err(Error.Code.GUI_TRACKER_INVALID_DESCRIPTOR,
+				"Invalid data type received while handling GDScript: %s - %s" % [str(data), path])
+
+		return Result.ok(data)
+	# The file is the actual node
+	else:
+		if not instance.is_class("Node"):
+			return Result.err(Error.Code.GUI_TRACKER_INVALID_GDSCRIPT,
+				"Invalid data type received while handling GDScript: %s - %s" % [str(instance), path])
+
+		return Result.ok(instance)
+
+func _handle_json(path: String, text: String) -> Result:
+	var json_parse_result := JSON.parse(text)
+	if json_parse_result.error != OK:
+		return Result.err(Error.Code.GUI_TRACKER_INVALID_JSON, "%s\n%s" %
+			[path, json_parse_result.error_description()])
+
+	var data = json_parse_result.result
+	if typeof(data) != TYPE_DICTIONARY:
+		return Result.err(Error.Code.GUI_TRACKER_INVALID_JSON,
+			"%s must be a JSON object" % path)
+
 	if not data.has("type") or not ClassDB.class_exists(data["type"]):
 		return Result.err(Error.Code.GUI_TRACKER_INVALID_JSON, str(data))
 
@@ -167,7 +184,7 @@ static func _handle_json(data: Dictionary) -> Result:
 		if typeof(i) != TYPE_DICTIONARY:
 			return Result.err(Error.Code.GUI_TRACKER_INVALID_JSON, str(i))
 
-		var res := _handle_json(i)
+		var res := _handle_json(path, str(i))
 		if res.is_err():
 			return res
 

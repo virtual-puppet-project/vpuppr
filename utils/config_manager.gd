@@ -168,6 +168,7 @@ func save_data() -> Result:
 
 #region Data access
 
+# TODO this logic is wrong since set
 ## Wrapper for setting KNOWN data in ModelConfig or Metadata, in that search order.
 ##
 ## Has no effect if the key does not exist. If arbitrary data should be set, the individual config file
@@ -181,7 +182,8 @@ func set_data(key: String, value) -> void:
 	elif metadata.get_data(key) != null:
 		metadata.set_data(key, value)
 	else:
-		logger.error("Key %s not found in ModelConfig or Metadata. Declining to set data %s." % [key, str(value)])
+		logger.info("Data %s not found in any config file. Storing in metadata." % key)
+		metadata.set_data(key, value)
 
 ## Wrapper for getting data in ModelConfig or Metadata, in that search order
 ##
