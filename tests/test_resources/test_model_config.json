@@ -1,0 +1,256 @@
+{
+	"other": {
+		"type": 18,
+		"value": {
+
+		}
+	},
+	"config_name": {
+		"type": 4,
+		"value": "changeme"
+	},
+	"description": {
+		"type": 4,
+		"value": "changeme"
+	},
+	"hotkey": {
+		"type": 4,
+		"value": ""
+	},
+	"notes": {
+		"type": 4,
+		"value": ""
+	},
+	"is_default_for_model": {
+		"type": 1,
+		"value": false
+	},
+	"is_default_dirty": {
+		"type": 1,
+		"value": false
+	},
+	"model_name": {
+		"type": 4,
+		"value": "changeme"
+	},
+	"model_path": {
+		"type": 4,
+		"value": "changeme"
+	},
+	"additional_bones": {
+		"type": 19,
+		"value": [
+
+		]
+	},
+	"bone_transforms": {
+		"type": 18,
+		"value": {
+
+		}
+	},
+	"model_transform": {
+		"type": 13,
+		"value": {
+			"basis": {
+				"x": {
+					"x": 1,
+					"y": 0,
+					"z": 0
+				},
+				"y": {
+					"x": 0,
+					"y": 1,
+					"z": 0
+				},
+				"z": {
+					"x": 0,
+					"y": 0,
+					"z": 1
+				}
+			},
+			"origin": {
+				"x": 0,
+				"y": 0,
+				"z": 0
+			}
+		}
+	},
+	"model_parent_transform": {
+		"type": 13,
+		"value": {
+			"basis": {
+				"x": {
+					"x": 1,
+					"y": 0,
+					"z": 0
+				},
+				"y": {
+					"x": 0,
+					"y": 1,
+					"z": 0
+				},
+				"z": {
+					"x": 0,
+					"y": 0,
+					"z": 1
+				}
+			},
+			"origin": {
+				"x": 0,
+				"y": 0,
+				"z": 0
+			}
+		}
+	},
+	"translation_damp": {
+		"type": 3,
+		"value": 0.3
+	},
+	"rotation_damp": {
+		"type": 3,
+		"value": 0.02
+	},
+	"additional_bone_damp": {
+		"type": 3,
+		"value": 0.3
+	},
+	"head_bone": {
+		"type": 4,
+		"value": "head"
+	},
+	"apply_translation": {
+		"type": 1,
+		"value": false
+	},
+	"apply_rotation": {
+		"type": 1,
+		"value": true
+	},
+	"interpolate_global": {
+		"type": 1,
+		"value": true
+	},
+	"base_interpolation_rate": {
+		"type": 3,
+		"value": 0.1
+	},
+	"interpolate_bones": {
+		"type": 1,
+		"value": false
+	},
+	"bone_interpolation_rate": {
+		"type": 3,
+		"value": 0.1
+	},
+	"interpolate_gaze": {
+		"type": 1,
+		"value": false
+	},
+	"gaze_interpolation_rate": {
+		"type": 3,
+		"value": 0.1
+	},
+	"interpolate_blinks": {
+		"type": 1,
+		"value": false
+	},
+	"blinks_interpolation_rate": {
+		"type": 3,
+		"value": 0.1
+	},
+	"interpolate_mouth": {
+		"type": 1,
+		"value": true
+	},
+	"mouth_interpolation_rate": {
+		"type": 3,
+		"value": 0.8
+	},
+	"interpolate_eyebrows": {
+		"type": 1,
+		"value": false
+	},
+	"eyebrow_interpolation_rate": {
+		"type": 3,
+		"value": 0.1
+	},
+	"should_track_eye": {
+		"type": 1,
+		"value": true
+	},
+	"gaze_strength": {
+		"type": 3,
+		"value": 0.5
+	},
+	"blink_threshold": {
+		"type": 3,
+		"value": 0.2
+	},
+	"link_eye_blinks": {
+		"type": 1,
+		"value": false
+	},
+	"use_raw_eye_rotation": {
+		"type": 1,
+		"value": false
+	},
+	"mouth_open_max": {
+		"type": 3,
+		"value": 2
+	},
+	"mouth_open_group_1": {
+		"type": 3,
+		"value": 0.25
+	},
+	"mouth_open_group_2": {
+		"type": 3,
+		"value": 0.3
+	},
+	"mouth_wide_max": {
+		"type": 3,
+		"value": 2
+	},
+	"mouth_wide_group_1": {
+		"type": 3,
+		"value": 0.25
+	},
+	"mouth_wide_group_2": {
+		"type": 3,
+		"value": 0.3
+	},
+	"tracker_should_launch": {
+		"type": 1,
+		"value": true
+	},
+	"tracker_fps": {
+		"type": 2,
+		"value": 12
+	},
+	"tracker_address": {
+		"type": 4,
+		"value": "127.0.0.1"
+	},
+	"tracker_port": {
+		"type": 2,
+		"value": 11573
+	},
+	"main_light": {
+		"type": 18,
+		"value": {
+
+		}
+	},
+	"main_world_environment": {
+		"type": 18,
+		"value": {
+
+		}
+	},
+	"instanced_props": {
+		"type": 18,
+		"value": {
+
+		}
+	}
+}

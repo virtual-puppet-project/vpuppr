@@ -14,10 +14,9 @@ Cargo.lock
 
 # Godot
 .import/
-export.cfg
-export_presets.cfg
 .mono/
 data_*/
-export/
-export_templates/
+export/**
 
+**/temp
+**/OpenSeeFaceFolder
