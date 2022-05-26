@@ -1,7 +1,7 @@
 class_name LogManager
 extends AbstractManager
 
-const LOG_MAX: int = 100000
+const LOG_MAX: int = 1_000_000
 
 var logs := []
 
@@ -23,14 +23,17 @@ func _setup_class() -> void:
 	_timer.one_shot = false
 	AM.add_child(_timer)
 
-	AM.ps.connect("logger_rebroadcast", self, "_on_log_received")
+	AM.ps.subscribe(self, GlobalConstants.EVENT_PUBLISHED)
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#
 
-func _on_log_received(text: String) -> void:
-	logs.append(text)
+func _on_event_published(payload: SignalPayload) -> void:
+	if payload.signal_name != GlobalConstants.MESSAGE_LOGGED:
+		return
+	
+	logs.append(payload.data)
 
 func _on_timeout() -> void:
 	if logs.size() > LOG_MAX:

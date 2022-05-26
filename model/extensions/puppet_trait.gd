@@ -58,7 +58,7 @@ func _ready() -> void:
 	for i in skeleton.get_bone_count():
 		initial_bone_poses[i] = skeleton.get_bone_pose(i)
 
-	AM.ps.broadcast_model_loaded(self)
+	AM.ps.publish(GlobalConstants.MODEL_LOADED, self)
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #

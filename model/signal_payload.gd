@@ -13,7 +13,7 @@ extends Reference
 ## and the collection is changed to [1, 4, 3]
 ## then the identifer will be 1
 
-var data 
+var data
 var id
 var signal_name := ""
 
@@ -35,11 +35,15 @@ func _init(p_signal_name: String, p_data, p_id = null) -> void:
 
 func _to_string() -> String:
 	return JSON.print({
-		"data": str(data),
-		"id": str(id) if id != null else "null",
+		"data": data,
+		"id": id if id != null else "null",
 		"signal_name": signal_name
 	}, "\t")
 
+## Returns the data that was changed. Only takes effect if the contained value
+## is some sort of collection
+##
+## @return: Variant - The value that was changed
 func get_changed():
 	match typeof(data):
 		TYPE_ARRAY, TYPE_DICTIONARY:

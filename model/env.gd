@@ -1,13 +1,16 @@
 class_name Env
 extends Reference
 
+## The default environment variable name
 const ENV_VAR_NAME := "VSS_ENV"
 
+## The list of recognized environments
 const Envs := {
 	"DEFAULT": "default",
 	"TEST": "test"
 }
 
+## The current environment in use
 var current_env: String
 
 func _init(p_current_env: String = "") -> void:

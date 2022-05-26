@@ -109,11 +109,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://screens/landing_screen.gd"
 }, {
-"base": "Node",
-"class": "LipSyncManager",
-"language": "GDScript",
-"path": "res://utils/LipSyncManager.gd"
-}, {
 "base": "AbstractManager",
 "class": "LogManager",
 "language": "GDScript",
@@ -178,11 +173,6 @@ _global_script_classes=[ {
 "class": "PuppetTrait",
 "language": "GDScript",
 "path": "res://model/extensions/puppet_trait.gd"
-}, {
-"base": "Node",
-"class": "RemoteControlManager",
-"language": "GDScript",
-"path": "res://utils/RemoteControlManager.gd"
 }, {
 "base": "Reference",
 "class": "Result",
@@ -255,7 +245,6 @@ _global_script_class_icons={
 "InterpolationData": "",
 "JSONUtil": "",
 "LandingScreen": "",
-"LipSyncManager": "",
 "LogManager": "",
 "Logger": "",
 "MainLight": "",
@@ -269,7 +258,6 @@ _global_script_class_icons={
 "Prop": "",
 "PubSub": "",
 "PuppetTrait": "",
-"RemoteControlManager": "",
 "Result": "",
 "RunnerTrait": "",
 "SignalPayload": "",

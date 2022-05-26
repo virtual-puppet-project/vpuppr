@@ -130,11 +130,20 @@ func _init(error: int, description: String = "") -> void:
 func _to_string() -> String:
 	return "Code: %d\nName: %s\nDescription: %s" % [_error, error_name(), _description]
 
+## The error code contained by the Error
+##
+## @return: int - The error code
 func error_code() -> int:
 	return _error
 
-func error_name() -> int:
+## The name of the error code contained by the Error
+##
+## @return: String - The name of the error code currently contained by the Error
+func error_name() -> String:
 	return Code.keys()[_error]
 
+## The description of the error
+##
+## @return: String - The description of the error
 func error_description() -> String:
 	return _description

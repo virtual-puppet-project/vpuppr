@@ -7,6 +7,8 @@ const IGNORED_PROPERTIES_REFERENCE := [
 	"Script Variables"
 ]
 
+#region Extensions
+
 const ExtensionTypes := {
 	"RUNNER": "runner",
 	"PUPPET": "puppet",
@@ -27,6 +29,18 @@ const ExtensionOtherKeys := {
 	# e.g. "my_data.gd:my_entrypoint"
 	"DATA": "data"
 }
+
+#endregion
+
+#region Signals
+
+const EVENT_PUBLISHED := "event_published"
+
+const MESSAGE_LOGGED := "message_logged"
+const TRACKER_TOGGLED := "tracker_toggled"
+const MODEL_LOADED := "model_loaded"
+
+#endregion
 
 enum CustomTypes {
 	NONE = 200,

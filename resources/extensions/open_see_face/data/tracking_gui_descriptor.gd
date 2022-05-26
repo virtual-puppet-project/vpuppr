@@ -96,30 +96,40 @@ The camera to use for tracking.
 	for option in results:
 		popup.add_check_item(option)
 
-	var initial_data = AM.cm.get_data("open_see_face_camera_index")
-	if typeof(initial_data) == TYPE_NIL:
-		initial_data = int(0)
-		AM.cm.set_data("open_see_face_camera_index", initial_data)
+	var camera_name = AM.cm.get_data("open_see_face_camera_name")
+	if typeof(camera_name) == TYPE_NIL:
+		camera_name = ""
+		AM.cm.set_data("open_see_face_camera_name", camera_name)
+
+	var camera_index = AM.cm.get_data("open_see_face_camera_index")
+	if typeof(camera_index) == TYPE_NIL:
+		camera_index = 0
+		AM.cm.set_data("open_see_face_camera_index", camera_index)
 
 	# TODO compare the camera index to the actual camera name
 
 	var found := false
-	if not initial_data.empty():
+	if not camera_name.empty():
 		for i in popup.get_item_count():
 			var item_text: String = popup.get_item_text(i)
 			
-			if item_text == initial_data:
+			if item_text == camera_name:
+				camera_index = i
 				popup.set_item_check(i, true)
 				ob.text = item_text
 				found = true
 				break
 
 	if not found:
-		popup.set_item_checked(0, true)
-
 		var item_text: String = popup.get_item_text(0)
+
+		camera_index = 0
+		popup.set_item_checked(0, true)
 		ob.text = item_text
 		AM.cm.set_data("open_see_face_camera", item_text)
+	
+	# Update the camera index every time since camera order can change between computer reboots
+	AM.cm.set_data("open_see_face_camera_index", camera_index)
 
 	return ob
 
@@ -237,6 +247,7 @@ func _toggle_tracking() -> Button:
 
 	return r
 
+# TODO refactor this. This looks to be far too complicated
 func _on_toggle_tracking(button: Button) -> void:
 	var current: Node = get_tree().current_scene
 	
@@ -258,7 +269,7 @@ func _on_toggle_tracking(button: Button) -> void:
 	else:
 		button.text = "Stop"
 
-	AM.ps.broadcast_toggle_tracker("OpenSeeFace")
+	AM.ps.publish(GlobalConstants.TRACKER_TOGGLED, not osf.is_listening(), "OpenSeeFace")
 
 func _python_path() -> HBoxContainer:
 	var r := HBoxContainer.new()

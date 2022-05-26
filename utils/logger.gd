@@ -1,8 +1,6 @@
 class_name Logger
 extends Reference
 
-signal message_logged(message)
-
 enum LogType { NONE, NOTIFY, INFO, DEBUG, TRACE, ERROR }
 enum NotifyType { NONE, TOAST, POPUP }
 
@@ -53,18 +51,13 @@ func _log(message: String, log_type: int) -> void:
 			message = "[ERROR] %s" % message
 
 	print(message)
-	emit_signal("message_logged", message)
+	AM.ps.publish(GlobalConstants.MESSAGE_LOGGED, message)
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #
 #-----------------------------------------------------------------------------#
 
 func setup(n) -> void:
-	# Sometimes we initialize too quickly
-	while AM.ps == null:
-		yield(AM.get_tree(), "idle_frame")
-	connect("message_logged", AM.ps, "broadcast_logger_rebroadcast")
-
 	if typeof(n) == TYPE_STRING:
 		parent_name = n
 	elif n.get_script():

@@ -1,6 +1,12 @@
 class_name PubSub
 extends AbstractManager
 
+## PubSub (Publish Subscribe) handler
+##
+## Signals can pass data in 2 ways
+## 1. Directly emitting a signal
+## 2. Call `publish` which will wrap data in a `SignalPayload`
+
 func _init() -> void:
 	pass
 
@@ -77,8 +83,8 @@ func _parse_register_payload(data) -> Dictionary:
 
 	return r
 
-## Emits a signal with the given data with an optional data id if the data
-## is a collection
+## Emits a signal with the given data with an optional data id. Falls back to calling
+## `publish_generic` if the signal is not recognized by the PubSub
 ##
 ## @see: `SignalPayload`
 ##
@@ -89,33 +95,23 @@ func _parse_register_payload(data) -> Dictionary:
 ## @return: Result<int> - The error code
 func publish(signal_name: String, data, id = null) -> Result:
 	if not has_user_signal(signal_name) or not has_signal(signal_name):
-		return Result.err(Error.Code.PUB_SUB_SIGNAL_NOT_FOUND, signal_name)
+		return publish_generic(signal_name, data, id)
 
 	emit_signal(signal_name, SignalPayload.new(signal_name, data, id))
 	
 	return Result.ok()
 
-signal logger_rebroadcast(message)
-## Rebroadcasts logger messages
+signal event_published(data)
+## Emits a generic `event_published` signal with the given data
 ##
-## @param: message: String - The message
-func broadcast_logger_rebroadcast(message: String) -> void:
-	emit_signal("logger_rebroadcast", message)
-
-signal model_loaded(model)
-## Indicates when it's okay to start applying tracking data
+## @see: `SignalPayload`
 ##
-## @param: model: PuppetTrait - The model that was loaded
-func broadcast_model_loaded(model: PuppetTrait) -> void:
-	emit_signal("model_loaded", model)
-
-signal toggle_tracker(tracker_name, payload)
-## Indicates which tracker should be started
+## @param: signal_name: String - The name of the signal to pass along with the payload
+## @param: data: Variant - The data to pass along with the payload
+## @param: id: Variant - The id to be used with the `SignalPayload`
 ##
-## @param: tracker_name: String - The name of the tracker that should be started
-## @param: payload: Variant - An arbitrary payload to be sent to the tracker
-func broadcast_toggle_tracker(tracker_name: String, payload = null) -> void:
-	if payload == null:
-		emit_signal("toggle_tracker", tracker_name)
-	else:
-		emit_signal("toggle_tracker", tracker_name, payload)
+## @return: Result<int> - The error code
+func publish_generic(signal_name: String, data, id = null) -> Result:
+	emit_signal("event_published", SignalPayload.new(signal_name, data, id))
+	
+	return Result.ok()

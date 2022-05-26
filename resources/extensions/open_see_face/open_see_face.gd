@@ -43,8 +43,7 @@ var _tree: SceneTree
 
 func _init() -> void:
 	if AM.env.current_env != Env.Envs.TEST:
-		# AM.ps.connect("toggle_tracker", self, "_on_toggle_tracker")
-		AM.ps.subscribe(self, "toggle_tracker")
+		AM.ps.subscribe(self, "event_published")
 
 	_tree = Engine.get_main_loop()
 
@@ -55,10 +54,10 @@ func _exit_tree() -> void:
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#
 
-func _on_toggle_tracker(tracker_name: String) -> void:
-	if tracker_name != "OpenSeeFace":
+func _on_event_published(payload: SignalPayload) -> void:
+	if payload.signal_name != GlobalConstants.TRACKER_TOGGLED or payload.id != "OpenSeeFace":
 		return
-
+	
 	var was_tracking: bool = is_tracking
 	if not was_tracking:
 		# Only makes sense to start receiver if tracker was started
@@ -100,6 +99,7 @@ func _start_tracker() -> bool:
 	var camera_index = AM.cm.get_data("open_see_face_camera_index")
 	if typeof(camera_index) == TYPE_NIL:
 		logger.error("No data found for open_see_face_camera_index")
+		return false
 	
 	if not should_launch:
 		logger.info("Assuming face tracker was manually launched.")
@@ -121,7 +121,7 @@ func _start_tracker() -> bool:
 			pid = OS.execute(
 				exe_path,
 				[
-					"-c", AM.cm.get_data("open_see_face_camera_index"),
+					"-c", camera_index,
 					"-F", str(fps),
 					"-v", "0",
 					"-s", "1",
@@ -130,9 +130,10 @@ func _start_tracker() -> bool:
 					"--scan-every", "0",
 					"--no-3d-adapt", "1",
 					"--max-feature-updates", "900",
-					"--ip", AM.cm.get_data("tracker_address"),
-					"--port", str(AM.cm.get_data("tracker_port")),
-				]
+					"--ip", address,
+					"--port", str(port),
+				],
+				false
 			)
 		"osx", "x11":
 			var user_data_path: String = ProjectSettings.globalize_path("user://")
@@ -143,7 +144,7 @@ func _start_tracker() -> bool:
 			var dir := Directory.new()
 			if not dir.dir_exists("%s%s" % [user_data_path, "venv"]):
 				# TODO add in logger popup notification
-				# AM.logger.notify("First time setup: creating venv", AM.logger.NotifyType.POPUP)
+				# logger.notify("First time setup: creating venv", logger.NotifyType.POPUP)
 
 				var create_venv_script: String = "%s%s" % [OS.get_executable_path().get_base_dir(), "/resources/scripts/create_venv.sh"]
 				if OS.is_debug_build():
@@ -169,31 +170,31 @@ func _start_tracker() -> bool:
 				[
 					user_data_path,
 					exe_path,
-					AM.cm.get_data("camera_index"),
-					str(AM.cm.get_data("tracker_fps")),
-					AM.cm.get_data("tracker_address"),
-					str(AM.cm.get_data("tracker_port"))
+					str(camera_index),
+					str(fps),
+					address,
+					str(port)
 				],
 				false
 			)
 		_:
-			AM.logger.error("Unhandled os type: %s" % OS.get_name())
+			logger.error("Unhandled os type: %s" % OS.get_name())
 			return false
 
 	if pid <= 0:
-		AM.logger.error("Failed to start tracker")
+		logger.error("Failed to start tracker")
 		return false
 
 	face_tracker_pid = pid
 
-	AM.logger.info("Face tracker started, PID is %s." % face_tracker_pid)
+	logger.info("Face tracker started, PID is %s." % face_tracker_pid)
 	# TODO add in logger toast notification
-	# AM.logger.notify("Press spacebar to recenter the model if it's not looking correct!")
+	# logger.notify("Press spacebar to recenter the model if it's not looking correct!")
 
 	return true
 
 func _stop_tracker() -> void:
-	AM.logger.info("Stopping face tracker")
+	logger.info("Stopping face tracker")
 
 	if face_tracker_pid >= 0:
 		match OS.get_name().to_lower():
@@ -204,13 +205,13 @@ func _stop_tracker() -> void:
 				# Thus, we call pkill to kill the process group
 				OS.execute("pkill", ["-15", "-P", face_tracker_pid])
 			_:
-				AM.logger.info("Unhandled os type %s" % OS.get_name())
+				logger.info("Unhandled os type %s" % OS.get_name())
 				return
 		
-		AM.logger.info("Face tracker stopped, PID was %s." % face_tracker_pid)
+		logger.info("Face tracker stopped, PID was %s." % face_tracker_pid)
 		face_tracker_pid = -1
 	else:
-		AM.logger.info("Tracker is not started")
+		logger.info("Tracker is not started")
 
 func _receive() -> void:
 	server.poll()

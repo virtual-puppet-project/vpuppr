@@ -44,7 +44,7 @@ func test_toggle_tracker_pass():
 	_disable_threads()
 	stub(osf, "_start_tracker").to_return(true)
 
-	osf._on_toggle_tracker()
+	osf._on_event_published(SignalPayload.new(GlobalConstants.TRACKER_TOGGLED, true, "OpenSeeFace"))
 
 	assert_true(osf.is_tracking)
 	assert_true(osf.is_listening())
@@ -58,7 +58,7 @@ func test_toggle_tracker_pass():
 	assert_not_called(osf, "stop_receiver")
 	assert_call_count(osf, "stop_receiver", 0)
 
-	osf._on_toggle_tracker()
+	osf._on_event_published(SignalPayload.new(GlobalConstants.TRACKER_TOGGLED, false, "OpenSeeFace"))
 
 	assert_false(osf.is_tracking)
 	assert_false(osf.is_listening())

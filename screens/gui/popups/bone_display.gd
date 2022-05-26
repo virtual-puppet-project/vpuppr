@@ -69,25 +69,23 @@ func _init(bone_name: String, p_logger: Logger) -> void:
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#
 
-func _on_bone_updated(value: SignalPayload, signal_name: String) -> void:
-	if not value is SignalPayload:
-		# logger.error("Unexpected callback value %s" % str(value))
-		printerr("Unexpected callback value %s" % str(value))
+func _on_bone_updated(payload: SignalPayload, signal_name: String) -> void:
+	if name != payload.id:
 		return
-
-	if name != value.identifier:
+	if not payload is SignalPayload:
+		logger.error("Unexpected callback value %s" % str(payload))
 		return
 
 	match signal_name:
 		"additional_bones":
-			is_tracking_button.set_pressed_no_signal(value.identifier in value.collection)
+			is_tracking_button.set_pressed_no_signal(payload.id in payload.data)
 		"bones_to_interpolate":
-			should_use_custom_interpolation.set_pressed_no_signal(value.identifier in value.collection)
+			should_use_custom_interpolation.set_pressed_no_signal(payload.id in payload.data)
 		"bone_interpolation_rates":
 			var current_text := interpolation_rate.text
-			if current_text.is_valid_float() and current_text.to_float() == value.get_changed():
+			if current_text.is_valid_float() and current_text.to_float() == payload.get_changed():
 				return
-			interpolation_rate.text = str(value.get_changed())
+			interpolation_rate.text = str(payload.get_changed())
 			interpolation_rate.caret_position = interpolation_rate.text.length()
 
 #-----------------------------------------------------------------------------#

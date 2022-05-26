@@ -11,9 +11,9 @@ onready var logs = $Logs as TextEdit
 
 func _ready() -> void:
 	for i in AM.lm.logs:
-		_on_log(i)
+		_add_log(i)
 	
-	AM.ps.connect("logger_rebroadcast", self, "_on_log")
+	AM.ps.subscribe(self, GlobalConstants.EVENT_PUBLISHED)
 	
 	logs.add_keyword_color("INFO", Color.aquamarine)
 	logs.add_keyword_color("DEBUG", Color.gold)
@@ -27,11 +27,11 @@ func _ready() -> void:
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#
 
-## Logger callback
-##
-## @param: text: String - The log text
-func _on_log(text: String) -> void:
-	logs.text += "%s\n" % text
+func _on_event_published(payload: SignalPayload) -> void:
+	if payload.signal_name != GlobalConstants.MESSAGE_LOGGED:
+		return
+	
+	_add_log(payload.data)
 
 ## Copies the logs to the system clipboard
 func _on_copy() -> void:
@@ -44,6 +44,9 @@ func _on_open() -> void:
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#
+
+func _add_log(text: String) -> void:
+	logs.text += "%s\n" % text
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #

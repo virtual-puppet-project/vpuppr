@@ -1,9 +1,13 @@
 class_name RunnerTrait
 extends Node
 
+## The default model to load when an error occurs or there is no default
+## model set
 const DEFAULT_MODEL := "res://entities/duck/duck.tscn"
+## The default script to be applied to models
 const PUPPET_TRAIT_SCRIPT_PATH := "res://model/extensions/puppet_trait.gd"
 
+## The logger assigned for this class
 var logger: Logger
 
 # TODO this should be stored on the model

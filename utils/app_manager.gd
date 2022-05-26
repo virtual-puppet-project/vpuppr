@@ -79,9 +79,11 @@ func _on_stderr(text: String, is_error: bool) -> void:
 # Public functions                                                            #
 #-----------------------------------------------------------------------------#
 
+## Initiates saving the config on a given debounce time
 func save_config() -> void:
 	should_save = true
 
+## Initiates saving the config immediately, ignoring the debounce time
 func save_config_instant() -> void:
 	should_save = false
 	debounce_counter = 0.0
@@ -89,6 +91,7 @@ func save_config_instant() -> void:
 	if result.is_err():
 		logger.error("Failed to save config:\n%s" % result.to_string())
 
+## Utility function for checking if a singleton that is managed by the AppManager is ready
 func is_manager_ready(manager_name: String) -> bool:
 	var m = get(manager_name)
 	return m != null and m.is_setup
