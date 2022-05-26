@@ -1,0 +1,18 @@
+{
+	"other": {
+
+	},
+	"default_model_path": "",
+	"default_search_path": "",
+	"use_transparent_background": true,
+	"use_fxaa": false,
+	"msaa_value": false,
+	"model_configs": {
+
+	},
+	"model_defaults": {
+
+	},
+	"camera_index": "0",
+	"python_path": ""
+}
