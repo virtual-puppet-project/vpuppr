@@ -282,19 +282,22 @@ func custom_update(data, interpolation_data: InterpolationData) -> void:
 
 	# TODO add way to lock blinking for a certain expression
 
-	if link_eye_blinks:
-		var average_eye_open = (data.left_eye_open + data.right_eye_open) / 2
-		data.left_eye_open = average_eye_open
-		data.right_eye_open = average_eye_open
+	var left_eye_open = data.get_left_eye_open_amount()
+	var right_eye_open = data.get_right_eye_open_amount()
 
-	if data.left_eye_open >= blink_threshold:
+	if link_eye_blinks:
+		var average_eye_open = (left_eye_open + right_eye_open) / 2
+		left_eye_open = average_eye_open
+		right_eye_open= average_eye_open
+
+	if left_eye_open >= blink_threshold:
 		for x in expression_data.get_expression("blink_r"):
 			_modify_blend_shape(x.mesh, x.morph, x.values[1] - interpolation_data.left_blink.interpolate(1.0))
 	else:
 		for x in expression_data.get_expression("blink_r"):
 			_modify_blend_shape(x.mesh, x.morph, x.values[1])
 
-	if data.right_eye_open >= blink_threshold:
+	if right_eye_open >= blink_threshold:
 		for x in expression_data.get_expression("blink_l"):
 			_modify_blend_shape(x.mesh, x.morph, x.values[1] - interpolation_data.right_blink.interpolate(1.0))
 	else:
@@ -350,57 +353,57 @@ func custom_update(data, interpolation_data: InterpolationData) -> void:
 
 	#region Mouth tracking
 		
-	var mouth_open: float = interpolation_data.interpolate(InterpolationData.InterpolationDataType.MOUTH_OPEN, 2.0)
+	# var mouth_open: float = interpolation_data.interpolate(InterpolationData.InterpolationDataType.MOUTH_OPEN, 2.0)
 
-	var mouth_wide: float = interpolation_data.interpolate(InterpolationData.InterpolationDataType.MOUTH_WIDE, 2.0)
+	# var mouth_wide: float = interpolation_data.interpolate(InterpolationData.InterpolationDataType.MOUTH_WIDE, 2.0)
 
-	var mouth_scale_x: int = 0
-	var mouth_scale_y: int = 0
+	# var mouth_scale_x: int = 0
+	# var mouth_scale_y: int = 0
 	
-	if mouth_open < AM.cm.model_config.mouth_open_max * AM.cm.model_config.mouth_open_group_1:
-		mouth_scale_x = 1
-	elif mouth_open <= AM.cm.model_config.mouth_open_max * AM.cm.model_config.mouth_open_group_2:
-		mouth_scale_x = 2
-	else:
-		mouth_scale_x = 3
+	# if mouth_open < AM.cm.model_config.mouth_open_max * AM.cm.model_config.mouth_open_group_1:
+	# 	mouth_scale_x = 1
+	# elif mouth_open <= AM.cm.model_config.mouth_open_max * AM.cm.model_config.mouth_open_group_2:
+	# 	mouth_scale_x = 2
+	# else:
+	# 	mouth_scale_x = 3
 
-	if mouth_wide < AM.cm.model_config.mouth_wide_max * AM.cm.model_config.mouth_wide_group_1:
-		mouth_scale_y = 1
-	elif mouth_wide <= AM.cm.model_config.mouth_wide_max * AM.cm.model_config.mouth_wide_group_2:
-		mouth_scale_y = 2
-	else:
-		mouth_scale_y = 3
+	# if mouth_wide < AM.cm.model_config.mouth_wide_max * AM.cm.model_config.mouth_wide_group_1:
+	# 	mouth_scale_y = 1
+	# elif mouth_wide <= AM.cm.model_config.mouth_wide_max * AM.cm.model_config.mouth_wide_group_2:
+	# 	mouth_scale_y = 2
+	# else:
+	# 	mouth_scale_y = 3
 
-	var last_shape = current_mouth_shape
+	# var last_shape = current_mouth_shape
 
-	match mouth_scale_x:
-		1:
-			match mouth_scale_y:
-				1:
-					current_mouth_shape = u_shape
-				2:
-					# current_mouth_shape = e
-					pass
-				3:
-					current_mouth_shape = i_shape
-		2:
-			current_mouth_shape = e_shape
-		3:
-			match mouth_scale_y:
-				1:
-					current_mouth_shape = o_shape
-				2:
-					# current_mouth_shape = e
-					pass
-				3:
-					current_mouth_shape = a_shape
+	# match mouth_scale_x:
+	# 	1:
+	# 		match mouth_scale_y:
+	# 			1:
+	# 				current_mouth_shape = u_shape
+	# 			2:
+	# 				# current_mouth_shape = e
+	# 				pass
+	# 			3:
+	# 				current_mouth_shape = i_shape
+	# 	2:
+	# 		current_mouth_shape = e_shape
+	# 	3:
+	# 		match mouth_scale_y:
+	# 			1:
+	# 				current_mouth_shape = o_shape
+	# 			2:
+	# 				# current_mouth_shape = e
+	# 				pass
+	# 			3:
+	# 				current_mouth_shape = a_shape
 
-	if current_mouth_shape != last_shape:
-		for x in last_shape.morphs:
-			_modify_blend_shape(x.mesh, x.morph, 0)
+	# if current_mouth_shape != last_shape:
+	# 	for x in last_shape.morphs:
+	# 		_modify_blend_shape(x.mesh, x.morph, 0)
 
-	for x in current_mouth_shape.morphs:
-		_modify_blend_shape(x.mesh, x.morph, min(max(x.values[0], mouth_open), x.values[1]))
+	# for x in current_mouth_shape.morphs:
+	# 	_modify_blend_shape(x.mesh, x.morph, min(max(x.values[0], mouth_open), x.values[1]))
 
 	#endregion
 

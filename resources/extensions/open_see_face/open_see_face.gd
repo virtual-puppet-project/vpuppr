@@ -1,4 +1,3 @@
-class_name OpenSeeFace
 extends TrackingBackendInterface
 
 const PACKET_FRAME_SIZE: int = 8 + 4 + 2 * 4 + 2 * 4 + 1 + 4 + 3 * 4 + 3 * 4 + 4 * 4 + 4 * 68 + 4 * 2 * 68 + 4 * 3 * 70 + 4 * 14
@@ -37,6 +36,8 @@ var data_map := {} # Face id: int -> OpenSeeFaceData
 
 var _tree: SceneTree
 
+var open_see_face_data: GDScript
+
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#
@@ -46,6 +47,16 @@ func _init() -> void:
 		AM.ps.subscribe(self, "event_published")
 
 	_tree = Engine.get_main_loop()
+	
+	var res: Result = AM.em.get_extension("OpenSeeFace")
+	if res.is_err():
+		logger.error(res.to_string())
+		return
+	res = res.unwrap().context.load_resource("open_see_face_data.gd")
+	if res.is_err():
+		logger.error(res.to_string())
+		return
+	open_see_face_data = res.unwrap()
 
 func _exit_tree() -> void:
 	stop_receiver()
@@ -221,7 +232,7 @@ func _receive() -> void:
 			return
 		var offset: int = 0
 		while offset < packet.size():
-			var new_data := OpenSeeFaceData.new()
+			var new_data = open_see_face_data.new()
 			new_data.read_from_packet(packet, offset)
 			data_map[new_data.id] = new_data
 			offset += PACKET_FRAME_SIZE

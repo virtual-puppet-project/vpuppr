@@ -129,28 +129,29 @@ func reset_all_bone_poses() -> void:
 	for bone_id in initial_bone_poses.keys():
 		skeleton.set_bone_pose(bone_id, initial_bone_poses[bone_id])
 
+# TODO looseness values should be pre-applied
 ## Applies movement to a model
 ##
 ## A head bone is always required to exist, even if the model doesn't have a head (e.g. a tank)
 ##
-## @param: translation: Vector3 - The translation to apply
-## @param: rotation: Vector3 - The rotation to apply
-func apply_movement(translation: Vector3, rotation: Vector3) -> void:
+## @param: tx: Vector3 - The translation to apply
+## @param: rt: Vector3 - The rotation to apply
+func apply_movement(tx: Vector3, rt: Vector3) -> void:
 	if head_bone_id < 0:
 		return
 	
 	var head_transform := Transform()
-	head_transform = head_transform.translated(translation)
-	head_transform = head_transform.rotated(Vector3.RIGHT, rotation.x)
-	head_transform = head_transform.rotated(Vector3.UP, rotation.y)
-	head_transform = head_transform.rotated(Vector3.BACK, rotation.z)
+	head_transform = head_transform.translated(tx)
+	head_transform = head_transform.rotated(Vector3.RIGHT, rt.x)
+	head_transform = head_transform.rotated(Vector3.UP, rt.y)
+	head_transform = head_transform.rotated(Vector3.BACK, rt.z)
 	skeleton.set_bone_pose(head_bone_id, head_transform)
 	if not additional_bones.empty():
 		var additional_transform = Transform()
-		additional_transform = additional_transform.translated(translation * additional_bone_damp)
-		additional_transform = additional_transform.rotated(Vector3.RIGHT, rotation.x * additional_bone_damp)
-		additional_transform = additional_transform.rotated(Vector3.UP, rotation.y * additional_bone_damp)
-		additional_transform = additional_transform.rotated(Vector3.BACK, rotation.z * additional_bone_damp)
+		additional_transform = additional_transform.translated(tx * additional_bone_damp)
+		additional_transform = additional_transform.rotated(Vector3.RIGHT, rt.x * additional_bone_damp)
+		additional_transform = additional_transform.rotated(Vector3.UP, rt.y * additional_bone_damp)
+		additional_transform = additional_transform.rotated(Vector3.BACK, rt.z * additional_bone_damp)
 
 		for bone in additional_bones:
 			skeleton.set_bone_pose(bone, additional_transform)

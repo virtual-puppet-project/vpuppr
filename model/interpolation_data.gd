@@ -1,20 +1,45 @@
 class_name InterpolationData
 extends Reference
 
-const LISTEN_VALUES := [
+const INTERPOLATE_FLAGS := [
 	"interpolate_global",
-	"base_interpolation_rate",
-	
+
 	"interpolate_bones",
-	"bone_interpolation_rate",
 	"interpolate_gaze",
-	"gaze_interpolation_rate",
 	"interpolate_blinks",
-	"blinks_interpolation_rate",
 	"interpolate_mouth",
+	"interpolate_eyebrows"
+]
+
+const INTERPOLATE_RATES := [
+	"base_interpolation_rate",
+
+	"bone_interpolation_rate",
+	"gaze_interpolation_rate",
+	"blinks_interpolation_rate",
 	"mouth_interpolation_rate",
-	"interpolate_eyebrows",
 	"eyebrow_interpolation_rate"
+]
+
+const DAMPS := [
+	"bone_translation_damping",
+	"bone_rotation_damping",
+
+	"left_gaze_damping",
+	"right_gaze_damping",
+
+	"left_blink_damping",
+	"right_blink_damping",
+
+	"mouth_open_damping",
+	"mouth_wide_damping",
+
+	"eyebrow_steepness_left_damping",
+	"eyebrow_up_down_left_damping",
+	"eyebrow_quirk_left_damping",
+	"eyebrow_steepness_right_damping",
+	"eyebrow_up_down_right_damping",
+	"eyebrow_quirk_right_damping"
 ]
 
 class Interpolation:
@@ -62,6 +87,7 @@ class Interpolation:
 
 class InterpolationHelper:
 	## Wrapper class for applying rates to a group of Interpolation classes
+
 	var interpolations: Array
 
 	func _init(p_interpolations: Array) -> void:
@@ -134,7 +160,15 @@ var non_global_interpolations := [
 #-----------------------------------------------------------------------------#
 
 func _init() -> void:
-	for i in LISTEN_VALUES:
+	for i in INTERPOLATE_RATES:
+		AM.ps.subscribe(self, i, {"args": [i], "callback": "_on_model_config_changed"})
+		_on_model_config_changed(AM.cm.model_config.get(i), i)
+	
+	for i in DAMPS:
+		AM.ps.subscribe(self, i, {"args": [i], "callback": "_on_model_config_changed"})
+		_on_model_config_changed(AM.cm.model_config.get(i), i)
+
+	for i in INTERPOLATE_FLAGS:
 		AM.ps.subscribe(self, i, {"args": [i], "callback": "_on_model_config_changed"})
 		_on_model_config_changed(AM.cm.model_config.get(i), i)
 
@@ -161,36 +195,69 @@ func _on_model_config_changed(data, key: String) -> void:
 				# Toggle off other options if they are already toggled off
 				for i in non_global_interpolations:
 					i.global_rate_changed(1.0)
-		"interpolate_rate":
+		"base_interpolation_rate":
 			global.set_both_rates(value)
 
 			for i in non_global_interpolations:
 				i.global_rate_changed(value)
+		
 		"interpolate_bones":
 			bone_helper.set_should_interpolate(value)
 			bone_helper.maybe_reset_rate(global.interpolation_rate)
 		"bone_interpolation_rate":
 			bone_helper.set_both_rates(value)
+		"bone_translation_damping":
+			bone_translation.damping = value
+		"bone_rotation_damping":
+			bone_rotation.damping = value
+		
 		"interpolate_gaze":
 			gaze_helper.set_should_interpolate(value)
 			gaze_helper.maybe_reset_rate(global.interpolation_rate)
 		"gaze_interpolation_rate":
 			gaze_helper.set_both_rates(value)
+		"left_gaze_damping":
+			left_gaze.damping = value
+		"right_gaze_damping":
+			right_gaze.damping = value
+
 		"interpolate_blinks":
 			blink_helper.set_should_interpolate(value)
 			blink_helper.maybe_reset_rate(global.interpolation_rate)
 		"blinks_interpolation_rate":
 			blink_helper.set_both_rates(value)
+		"left_blink_damping":
+			left_blink.damping = value
+		"right_blink_damping":
+			right_blink.damping = value
+		
 		"interpolate_mouth":
 			mouth_helper.set_should_interpolate(value)
 			mouth_helper.maybe_reset_rate(global.interpolation_rate)
 		"mouth_interpolation_rate":
 			mouth_helper.set_both_rates(value)
+		"mouth_open_damping":
+			mouth_open.damping = value
+		"mouth_wide_damping":
+			mouth_wide.damping = value
+
 		"interpolate_eyebrows":
 			eyebrow_helper.set_should_interpolate(value)
 			eyebrow_helper.maybe_reset_rate(global.interpolation_rate)
 		"eyebrow_interpolation_rate":
 			eyebrow_helper.set_both_rates(value)
+		"eyebrow_steepness_left_damping":
+			eyebrow_steepness_left.damping = value
+		"eyebrow_up_down_left_damping":
+			eyebrow_up_down_left.damping = value
+		"eyebrow_quirk_left_damping":
+			eyebrow_quirk_left.damping = value
+		"eyebrow_steepness_right_damping":
+			eyebrow_steepness_right.damping = value
+		"eyebrow_up_down_right_damping":
+			eyebrow_up_down_right.damping = value
+		"eyebrow_quirk_right_damping":
+			eyebrow_quirk_right.damping = value
 
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #

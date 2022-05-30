@@ -35,10 +35,28 @@ var model_parent_transform := Transform()
 
 #region Tracking
 
-# Damping values for various tracker values
-var translation_damp: float = 0.3
-var rotation_damp: float = 0.02
-var additional_bone_damp: float = 0.3
+## Not applied to any interpolation data but instead directly on the model
+var additional_bone_damping: float = 0.3
+
+var bone_translation_damping: float = 0.3
+var bone_rotation_damping: float = 0.02
+
+var left_gaze_damping: float = 1.0
+var right_gaze_damping: float = 1.0
+
+var left_blink_damping: float = 1.0
+var right_blink_damping: float = 1.0
+
+var mouth_open_damping: float = 1.0
+var mouth_wide_damping: float = 1.0
+
+var eyebrow_steepness_left_damping: float = 1.0
+var eyebrow_up_down_left_damping: float = 1.0
+var eyebrow_quirk_left_damping: float = 1.0
+
+var eyebrow_steepness_right_damping: float = 1.0
+var eyebrow_up_down_right_damping: float = 1.0
+var eyebrow_quirk_right_damping: float = 1.0
 
 # This is always overridden when loading a VRM file
 var head_bone := "head"
