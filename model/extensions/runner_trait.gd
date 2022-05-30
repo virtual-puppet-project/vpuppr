@@ -24,7 +24,10 @@ var trackers := {}
 func _ready() -> void:
 	_setup_logger()
 	_setup_config()
+
+	_pre_setup_scene()
 	_setup_scene()
+	_post_setup_scene()
 
 ## DON'T OVERRIDE THIS
 func _exit_tree() -> void:
@@ -48,7 +51,15 @@ func _setup_config() -> void:
 	pass
 
 ## Virtual function that sets up the scene
+func _pre_setup_scene() -> void:
+	pass
+
+## Virtual function that sets up the scene
 func _setup_scene() -> void:
+	pass
+
+## Virtual function that sets up the scene
+func _post_setup_scene() -> void:
 	pass
 
 ## Virtual function that is run when exiting the SceneTree
@@ -79,6 +90,15 @@ func _on_config_changed(value, signal_name: String) -> void:
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#
+
+static func _normalize_euler(vector: Vector3, position: int) -> Vector3:
+	var new_value = vector[position]
+	if new_value < 0.0:
+		new_value += 360
+	
+	vector[position] = new_value
+
+	return vector
 
 ## Finds all loaders implemented on the Runner along with loaders from plugins
 ##
@@ -175,6 +195,8 @@ func load_model(_path: String) -> void:
 ##
 ## @return: Result<Spatial> - The loaded model
 func load_glb(path: String) -> Result:
+	logger.info("Using glb loader")
+
 	var gltf_loader := PackedSceneGLTF.new()
 
 	var model = gltf_loader.import_gltf_scene(path)
@@ -195,6 +217,8 @@ func load_glb(path: String) -> Result:
 ##
 ## @return: Result<Variant> - The loaded scene
 func load_scn(path: String) -> Result:
+	logger.info("Using scn loader")
+
 	var model = load(path)
 	if model == null:
 		return Result.err(Error.Code.RUNNER_LOAD_FILE_FAILED)

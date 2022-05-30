@@ -6,48 +6,21 @@ const VRM_LOADER_PATH := "res://addons/vrm/vrm_loader.gd"
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#
 
-func _ready() -> void:
-	var ext: Extension = AM.em.get_extension("VRM").unwrap()
-	var ext_res: ExtensionResource = ext.resources["VRM Runner"]
-	logger.info(str(ext_res.other))
-	pass
-
-func _unhandled_input(event: InputEvent) -> void:
-	pass
-
 func _setup_logger() -> void:
 	logger = Logger.new("VRM Runner")
 
 func _setup_scene() -> void:
-	var camera := Camera.new()
-	camera.current = true
-	camera.translate(Vector3(0.0, 0.0, 3.0))
-	add_child(camera)
-	
 	# TODO this is hardcoded for testing
 	var default_model_path: String = "res://assets/vrm-models/alicia/AliciaSolid_vrm-0.51.vrm"
 
-	var result := _try_load_model(default_model_path if not default_model_path.empty() else DEFAULT_MODEL)
-	if result == null or result.is_err():
-		logger.error(result.unwrap_err().to_string() if result != null else "Something super broke, please check the logs")
-		# If this fails, something is very wrong
-		result = _try_load_model(DEFAULT_MODEL)
-		if result == null or result.is_err():
-			logger.error(result.unwrap_err().to_string() if result != null else "Something super broke, please check the logs")
-			logger.error("Failed loading the default Duck model")
-			get_tree().change_scene(GlobalConstants.LANDING_SCREEN_PATH)
-
-	model = result.unwrap()
-
 	model_parent = Spatial.new()
-	model_parent.add_child(model)
+	load_model(default_model_path if not default_model_path.empty() else DEFAULT_MODEL)
 
 	call_deferred("add_child", model_parent)
 
 	yield(model, "ready")
 
 	# Set initial values from config
-	# TODO add flag for vrm models to check and see if we should use the default model spin
 	model_intitial_transform = AM.cm.get_data("model_transform")
 	model_parent_initial_transform = AM.cm.get_data("model_parent_transform")
 	model.transform = model_intitial_transform
@@ -59,24 +32,18 @@ func _setup_scene() -> void:
 			continue
 		model.skeleton.set_bone_pose(bone_idx, bone_transforms[bone_idx])
 
-func _try_load_model(path: String) -> Result:
-	logger.info("using vrm try load")
-	var result := ._try_load_model(path)
-	if result.is_err():
-		return result
+func _physics_step(delta: float) -> void:
+	._physics_step(delta)
+	
+	if not trackers["OpenSeeFace"].is_listening():
+		return
+	
+	var data = trackers["OpenSeeFace"].get_data()
+	if data == null:
+		return
 
-	if path.get_extension().to_lower() != "vrm":
-		return result
-
-	logger.info("spinning the model")
-
-	var model: PuppetTrait = result.unwrap()
-	# model.transform = model.transform.rotated(Vector3.UP, PI)
-
-	translation_adjustment = Vector3(-1, -1, -1)
-	rotation_adjustment = Vector3(1, -1, -1)
-
-	return Result.ok(model)
+	# TODO hardcoded for osf
+	model.custom_update(trackers["OpenSeeFace"].get_data(), interpolation_data)
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
@@ -91,6 +58,8 @@ func _try_load_model(path: String) -> Result:
 #-----------------------------------------------------------------------------#
 
 func load_vrm(path: String) -> Result:
+	logger.info("Using vrm loader")
+
 	var vrm_loader = load(VRM_LOADER_PATH).new()
 
 	var m = vrm_loader.import_scene(path, 1, 1000)
@@ -111,5 +80,8 @@ func load_vrm(path: String) -> Result:
 
 	m.vrm_meta = vrm_meta
 	m.transform = m.transform.rotated(Vector3.UP, PI)
+
+	translation_adjustment = Vector3(-1, 1, -1)
+	rotation_adjustment = Vector3(1, -1, -1)
 
 	return Result.ok(m)

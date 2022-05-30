@@ -24,7 +24,7 @@ var model_intitial_transform := Transform()
 var model_parent_initial_transform := Transform()
 
 var updated_time: float = 0.0
-var stored_offsets := StoredOffsets.new()
+var stored_offsets: StoredOffsets
 var interpolation_data := InterpolationData.new()
 
 var translation_adjustment := Vector3.ONE
@@ -58,8 +58,7 @@ var mouse_move_strength: float = 0.002 # TODO might want to move this to config
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_accept"):
-		# TODO stub
-		pass
+		_save_offsets()
 
 	elif event.is_action_pressed("left_click"):
 		is_left_clicking = true
@@ -93,7 +92,7 @@ func _setup_config() -> void:
 			"callback": "_on_config_changed"
 		})
 
-func _setup_scene() -> void:
+func _pre_setup_scene() -> void:
 	for i in SCENE_LISTEN_VALUES:
 		AM.ps.create_signal(i)
 		AM.ps.subscribe(self, i, {
@@ -101,7 +100,12 @@ func _setup_scene() -> void:
 			"callback": "_on_config_changed"
 		})
 
-	# TODO
+	var camera := Camera.new()
+	camera.current = true
+	camera.translate(Vector3(0.0, 0.0, 3.0))
+	add_child(camera)
+
+	# TODO this shouldn't be done like this
 	var open_see_face_res: Result = AM.em.load_resource("OpenSeeFace", "open_see_face.gd")
 	if not open_see_face_res or open_see_face_res.is_err():
 		logger.err(open_see_face_res.unwrap_err().to_string() if open_see_face_res else "Unable to load face tracker")
@@ -109,11 +113,7 @@ func _setup_scene() -> void:
 	trackers["OpenSeeFace"] = open_see_face_res.unwrap().new()
 	add_child(trackers["OpenSeeFace"])
 
-	var camera := Camera.new()
-	camera.current = true
-	camera.translate(Vector3(0.0, 0.0, 3.0))
-	add_child(camera)
-	
+func _setup_scene() -> void:
 	var default_model_path: String = AM.cm.get_data("default_model_path")
 
 	model_parent = Spatial.new()
@@ -135,31 +135,32 @@ func _setup_scene() -> void:
 			continue
 		model.skeleton.set_bone_pose(bone_idx, bone_transforms[bone_idx])
 
-func _physics_step(delta: float) -> void:
+func _physics_step(_delta: float) -> void:
 	# TODO hardcoded for OpenSeeFace
 	if not trackers["OpenSeeFace"].is_listening():
 		return
 
 	# TODO hardcoded for OpenSeeFace
-	var data: OpenSeeFaceData = trackers["OpenSeeFace"].get_data()
+	var data: TrackingDataInterface = trackers["OpenSeeFace"].get_data()
 	
 	if not data or data.get_confidence() > 100.0: # TODO 100.0 is hardcoded from the osf impl
 		return
 
+	if stored_offsets == null:
+		_save_offsets()
+
 	if data.get_updated_time() > updated_time:
 		updated_time = data.get_updated_time()
-		var corrected_euler := data.get_euler()
-		if corrected_euler.x < 0.0:
-			corrected_euler.x = 360.0 + corrected_euler.x
+		var corrected_euler = data.get_euler()
 
 		# TODO hardcoded for osf
-		var osf_features: OpenSeeFaceFeatures = data.get_additional_info()
+		var osf_features = data.get_additional_info()
 
 		interpolation_data.update_values(
 			updated_time,
 			
 			stored_offsets.translation_offset - data.get_translation(),
-			stored_offsets.euler_offset - corrected_euler,
+			stored_offsets.rotation_offset - corrected_euler,
 			
 			stored_offsets.left_eye_gaze_offset - data.get_left_eye_rotation().get_euler(),
 			stored_offsets.right_eye_gaze_offset - data.get_right_eye_rotation().get_euler(),
@@ -179,9 +180,12 @@ func _physics_step(delta: float) -> void:
 			osf_features.eyebrow_quirk_right
 		)
 	
+	# TODO apply model modifiers here?
 	model.apply_movement(
-		interpolation_data.bone_translation.interpolate(delta),
-		interpolation_data.bone_rotation.interpolate(delta)
+		interpolation_data.bone_translation.interpolate() * translation_adjustment if apply_translation 
+			else Vector3.ZERO,
+		interpolation_data.bone_rotation.interpolate() * rotation_adjustment if apply_rotation
+			else Vector3.ZERO
 	)
 
 #-----------------------------------------------------------------------------#
@@ -222,20 +226,22 @@ func _on_config_changed(value, signal_name: String) -> void:
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#
 
-func _try_load_model(path: String) -> Result:
-	var result := ._try_load_model(path)
-	if result.is_err():
-		return result
+func _save_offsets() -> void:
+	# TODO hardcoded for OpenSeeFace
+	if not trackers["OpenSeeFace"].is_listening():
+		return
 
-	match path.get_extension().to_lower():
-		"glb":
-			translation_adjustment = Vector3(1, -1, 1)
-			rotation_adjustment = Vector3(-1, -1, 1)
-		"tscn", "scn":
-			translation_adjustment = Vector3(1, -1, 1)
-			rotation_adjustment = Vector3(-1, -1, 1)
+	if stored_offsets == null:
+		stored_offsets = StoredOffsets.new()
 
-	return result
+	# TODO hardcoded for osf
+	var data: TrackingDataInterface = trackers["OpenSeeFace"].get_data()
+
+	stored_offsets.translation_offset = data.get_translation()
+	stored_offsets.rotation_offset = data.get_euler()
+	stored_offsets.quat_offset = data.get_rotation()
+	stored_offsets.left_eye_gaze_offset = data.get_left_eye_euler()
+	stored_offsets.right_eye_gaze_offset = data.get_right_eye_euler()
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #
@@ -243,8 +249,6 @@ func _try_load_model(path: String) -> Result:
 
 func load_model(path: String) -> void:
 	logger.info("Starting load_model for %s" % path)
-
-	.load_model(path)
 
 	var result := _try_load_model(path)
 	if result == null or result.is_err():
@@ -275,3 +279,26 @@ func load_model(path: String) -> void:
 		AM.cm.model_config = mc
 
 	logger.info("Finished load_model for %s" % path)
+
+func load_glb(path: String) -> Result:
+	var res := .load_glb(path)
+	if res.is_err():
+		return res
+
+	translation_adjustment = Vector3.ONE
+	rotation_adjustment = Vector3(-1, -1, 1)
+
+	return res
+
+func load_scn(path: String) -> Result:
+	var res := .load_scn(path)
+	if res.is_err():
+		return res
+
+	translation_adjustment = Vector3.ONE
+	rotation_adjustment = Vector3(-1, -1, 1)
+
+	return res
+
+func load_tscn(path: String) -> Result:
+	return .load_tscn(path)

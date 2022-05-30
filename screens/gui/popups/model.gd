@@ -31,9 +31,12 @@ func _setup() -> void:
 
 	#region Looseness
 
-	_connect_element($Looseness/VBoxContainer/Translation/LineEdit, "translation_damp")
-	_connect_element($Looseness/VBoxContainer/Rotation/LineEdit, "rotation_damp")
 	_connect_element($Looseness/VBoxContainer/AdditionalBones/LineEdit , "additional_bone_damp")
+
+	_connect_element($Looseness/VBoxContainer/Translation/LineEdit, "bone_translation_damp")
+	_connect_element($Looseness/VBoxContainer/Rotation/LineEdit, "bone_rotation_damp")
+
+	# TODO add the rest of the damps
 
 	#endregion
 

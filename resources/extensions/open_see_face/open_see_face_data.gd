@@ -1,4 +1,3 @@
-class_name OpenSeeFaceData
 extends TrackingDataInterface
 
 const NUMBER_OF_POINTS: int = 68
@@ -39,8 +38,29 @@ var points := PoolVector2Array()
 # There are 70 points with guess for the eyeball center positions
 # being added at the end of 68 2D points
 var points_3d := PoolVector3Array()
+
+class Features:
+	var eye_left: float
+	var eye_right: float
+
+	var eyebrow_steepness_left: float
+	var eyebrow_up_down_left: float
+	var eyebrow_quirk_left: float
+
+	var eyebrow_steepness_right: float
+	var eyebrow_up_down_right: float
+	var eyebrow_quirk_right: float
+
+	var mouth_corner_up_down_left: float
+	var mouth_corner_in_out_left: float
+
+	var mouth_corner_up_down_right: float
+	var mouth_corner_in_out_right: float
+
+	var mouth_open: float
+	var mouth_wide: float
 # The number of action unit-like features
-var features := OpenSeeFaceFeatures.new()
+var features := Features.new()
 
 # We need to pass ints by reference
 class Integer:
@@ -124,14 +144,14 @@ func read_from_packet(b: PoolByteArray, regular_int: int) -> void:
 	raw_euler = _read_vector3(spb, i)
 
 	rotation = raw_euler
-	rotation.z = fmod(rotation.z - 90, 360)
-	rotation.x = -fmod(rotation.x + 180, 360)
+	# rotation.z = fmod(rotation.z - 90, 360)
+	rotation.x = rotation.x if rotation.x > 0.0 else rotation.x + 360.0
 
 	var x := _read_float(spb, i)
 	var y := _read_float(spb, i)
 	var z := _read_float(spb, i)
-	# TODO this might be converting to a Unity vector3
-	translation = Vector3(-y, x, -z)
+	
+	translation = Vector3(-y, -x, -z)
 
 	for point_idx in NUMBER_OF_POINTS:
 		confidence.set(point_idx, _read_float(spb, i))
@@ -174,7 +194,8 @@ func get_confidence() -> float:
 #region General
 
 func get_euler() -> Vector3:
-	return raw_euler
+	# return raw_euler
+	return rotation
 
 func get_rotation() -> Quat:
 	return raw_quaternion
@@ -190,8 +211,7 @@ func get_left_eye_open_amount() -> float:
 	return features.eye_left
 
 func get_left_eye_euler() -> Vector3:
-	AM.logger.error("Not yet implemented")
-	return Vector3.ZERO
+	return left_gaze.get_euler()
 
 func get_left_eye_rotation() -> Quat:
 	return left_gaze
@@ -200,8 +220,7 @@ func get_right_eye_open_amount() -> float:
 	return features.eye_right
 
 func get_right_eye_euler() -> Vector3:
-	AM.logger.error("Not yet implemented")
-	return Vector3.ZERO
+	return right_gaze.get_euler()
 
 func get_right_eye_rotation() -> Quat:
 	return right_gaze
