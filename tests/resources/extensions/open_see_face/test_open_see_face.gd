@@ -72,10 +72,10 @@ func test_toggle_tracker_pass():
 func test_get_data_pass():
 	# We must use the non-doubled instance here since doubling strips out default func params
 	osf.free()
-	osf = OpenSeeFace.new()
+	osf = load("res://resources/extensions/open_see_face/open_see_face.gd").new()
 	add_child_autoqfree(osf)
 	
-	var osfd0: OpenSeeFaceData = create_class(
+	var osfd0 = create_class(
 		OSF_DATA_PATH,
 		{
 			"time": 10.0,
@@ -87,7 +87,7 @@ func test_get_data_pass():
 	)
 	osf.data_map[0] = osfd0
 
-	var osfd1: OpenSeeFaceData = create_class(
+	var osfd1 = create_class(
 		OSF_DATA_PATH,
 		{
 			"time": 11.0,
