@@ -29,8 +29,8 @@ func _create_buffer() -> StreamPeerBuffer:
 
 	return b
 
-func _create_integer() -> OpenSeeFaceData.Integer:
-	return OpenSeeFaceData.Integer.new(0)
+func _create_integer():
+	return load("res://resources/extensions/open_see_face/open_see_face_data.gd").Integer.new(0)
 
 #-----------------------------------------------------------------------------#
 # Tests                                                                       #
@@ -47,11 +47,11 @@ var bytes := PoolByteArray(
 # This will require actual tracking data OR very tediously-put-together test data
 
 func test_init_pass():
-	var d := OpenSeeFaceData.new()
+	var d = load("res://resources/extensions/open_see_face/open_see_face_data.gd").new()
 
-	assert_eq(d.confidence.size(), OpenSeeFaceData.NUMBER_OF_POINTS)
-	assert_eq(d.points.size(), OpenSeeFaceData.NUMBER_OF_POINTS)
-	assert_eq(d.points_3d.size(), OpenSeeFaceData.NUMBER_OF_POINTS + 2)
+	assert_eq(d.confidence.size(), d.NUMBER_OF_POINTS)
+	assert_eq(d.points.size(), d.NUMBER_OF_POINTS)
+	assert_eq(d.points_3d.size(), d.NUMBER_OF_POINTS + 2)
 	
 	# All fields have garbage default values
 	assert_eq(d.time, -1.0)
@@ -59,16 +59,16 @@ func test_init_pass():
 	assert_eq(d.camera_resolution, Vector2.ZERO)
 
 func test_swap_x_pass():
-	var d := OpenSeeFaceData.new()
+	var d = load("res://resources/extensions/open_see_face/open_see_face_data.gd").new()
 
 	var input := Vector3.ONE
 
 	assert_eq(d._swap_x(input), Vector3(-1.0, 1.0, 1.0))
 
 func test_read_float_pass():
-	var d := OpenSeeFaceData.new()
-	var b := _create_buffer()
-	var i := _create_integer()
+	var d = load("res://resources/extensions/open_see_face/open_see_face_data.gd").new()
+	var b = _create_buffer()
+	var i = _create_integer()
 
 	# Round to the nearest tenths and make sure this method is correct
 	assert_true(stepify(0.6, 0.1) != 1.0)
@@ -79,9 +79,9 @@ func test_read_float_pass():
 	assert_eq(stepify(d._read_float(b, i), 0.1), 0.0)
 
 func test_read_vector2_pass():
-	var d := OpenSeeFaceData.new()
-	var b := _create_buffer()
-	var i := _create_integer()
+	var d = load("res://resources/extensions/open_see_face/open_see_face_data.gd").new()
+	var b = _create_buffer()
+	var i = _create_integer()
 
 	var res: Vector2 = d._read_vector2(b, i)
 
@@ -91,9 +91,9 @@ func test_read_vector2_pass():
 	assert_eq(d._read_vector2(b, i), Vector2.ZERO)
 
 func test_read_vector3_pass():
-	var d := OpenSeeFaceData.new()
-	var b := _create_buffer()
-	var i := _create_integer()
+	var d = load("res://resources/extensions/open_see_face/open_see_face_data.gd").new()
+	var b = _create_buffer()
+	var i = _create_integer()
 
 	var res: Vector3 = d._read_vector3(b, i)
 
@@ -103,9 +103,9 @@ func test_read_vector3_pass():
 	assert_eq(d._read_vector3(b, i), Vector3.ZERO)
 
 func test_read_quat_pass():
-	var d := OpenSeeFaceData.new()
-	var b := _create_buffer()
-	var i := _create_integer()
+	var d = load("res://resources/extensions/open_see_face/open_see_face_data.gd").new()
+	var b = _create_buffer()
+	var i = _create_integer()
 
 	var res: Quat = d._read_quaternion(b, i)
 
