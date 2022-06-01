@@ -4,7 +4,10 @@ extends RunnerTrait
 const CONFIG_LISTEN_VALUES := [
 	"apply_translation",
 	"apply_rotation",
-	"should_track_eye"
+	"should_track_eye",
+
+	"use_transparent_background",
+	"use_fxaa"
 ]
 
 const SCENE_LISTEN_VALUES := [
@@ -45,6 +48,7 @@ var should_rotate_model := false
 var should_zoom_model := false
 
 var should_pose_model := false
+var bone_to_pose: int = -1
 
 var is_left_clicking := false
 var zoom_strength: float = 0.05 # TODO might want to move this to config
@@ -65,22 +69,50 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_released("left_click"):
 		is_left_clicking = false
 	
-	# TODO refactor to reuse logic for posing the model
 	if is_left_clicking and event is InputEventMouseMotion:
 		if should_move_model:
 			model_parent.translate(Vector3(event.relative.x, -event.relative.y, 0.0) * mouse_move_strength)
+			AM.ps.publish("model_parent_transform", model_parent.transform)
 			get_tree().set_input_as_handled()
 		if should_rotate_model:
 			model.rotate_x(event.relative.y * mouse_move_strength)
 			model.rotate_y(event.relative.x * mouse_move_strength)
+			AM.ps.publish("model_transform", model.transform)
 			get_tree().set_input_as_handled()
 	elif should_zoom_model:
 		if event.is_action("scroll_up"):
 			model_parent.translate(Vector3(0.0, 0.0, zoom_strength))
+			AM.ps.publish("model_parent_transform", model_parent.transform)
 			get_tree().set_input_as_handled()
 		elif event.is_action("scroll_down"):
 			model_parent.translate(Vector3(0.0, 0.0, -zoom_strength))
+			AM.ps.publish("model_transform", model.transform)
 			get_tree().set_input_as_handled()
+
+	# TODO how data is published here is pretty gross
+	if should_pose_model and bone_to_pose > 0:
+		var config_data = AM.cm.get_data(GlobalConstants.BONE_TRANSFORMS)
+		var transform: Transform = model.skeleton.get_bone_pose(bone_to_pose)
+
+		if is_left_clicking and event is InputEventMouseMotion:
+			transform = transform.rotated(Vector3.UP, event.relative.x * mouse_move_strength)
+			transform = transform.rotated(Vector3.RIGHT, event.relative.y * mouse_move_strength)
+
+			model.skeleton.set_bone_pose(bone_to_pose, transform)
+			
+			get_tree().set_input_as_handled()
+		
+		if event.is_action("scroll_up"):
+			transform = transform.rotated(Vector3.FORWARD, zoom_strength)
+			model.skeleton.set_bone_pose(bone_to_pose, transform)
+			get_tree().set_input_as_handled()
+		elif event.is_action("scroll_down"):
+			transform = transform.rotated(Vector3.FORWARD, -zoom_strength)
+			model.skeleton.set_bone_pose(bone_to_pose, transform)
+			get_tree().set_input_as_handled()
+
+		config_data[model.skeleton.get_bone_name(bone_to_pose)] = transform
+		AM.ps.publish(GlobalConstants.BONE_TRANSFORMS, config_data, model.skeleton.get_bone_name(bone_to_pose))
 
 func _setup_logger() -> void:
 	logger = Logger.new("DefaultRunner")
@@ -93,6 +125,7 @@ func _setup_config() -> void:
 		})
 
 func _pre_setup_scene() -> void:
+	AM.ps.subscribe(self, GlobalConstants.EVENT_PUBLISHED)
 	for i in SCENE_LISTEN_VALUES:
 		AM.ps.create_signal(i)
 		AM.ps.subscribe(self, i, {
@@ -104,6 +137,10 @@ func _pre_setup_scene() -> void:
 	camera.current = true
 	camera.translate(Vector3(0.0, 0.0, 3.0))
 	add_child(camera)
+
+	var world_environment := WorldEnvironment.new()
+	world_environment.environment = load("res://assets/default_env.tres")
+	add_child(world_environment)
 
 	# TODO this shouldn't be done like this
 	var open_see_face_res: Result = AM.em.load_resource("OpenSeeFace", "open_see_face.gd")
@@ -180,7 +217,6 @@ func _physics_step(_delta: float) -> void:
 			osf_features.eyebrow_quirk_right
 		)
 	
-	# TODO apply model modifiers here?
 	model.apply_movement(
 		interpolation_data.bone_translation.interpolate() * translation_adjustment if apply_translation 
 			else Vector3.ZERO,
@@ -202,6 +238,14 @@ func _on_config_changed(value, signal_name: String) -> void:
 			apply_rotation = value
 		"should_track_eye":
 			should_track_eye = value
+
+		"use_transparent_background":
+			ProjectSettings.set_setting("display/window/per_pixel_transparency/allowed", value)
+			ProjectSettings.set_setting("display/window/per_pixel_transparency/enabled", value)
+			get_viewport().transparent_bg = value
+		"use_fxaa":
+			ProjectSettings.set_setting("rendering/quality/filters/use_fxaa", value)
+			get_viewport().fxaa = value
 		
 		#endregion
 
@@ -221,6 +265,12 @@ func _on_config_changed(value, signal_name: String) -> void:
 
 		_:
 			logger.error("Unhandled signal %s with value %s" % [signal_name, str(value)])
+
+func _on_event_published(payload: SignalPayload) -> void:
+	match payload.signal_name:
+		GlobalConstants.POSE_BONE:
+			should_pose_model = payload.data
+			bone_to_pose = model.skeleton.find_bone(payload.id)
 
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #

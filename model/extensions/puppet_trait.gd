@@ -9,6 +9,7 @@ const DEFAULT_CONFIG_VALUES := [
 	"gaze_strength",
 	"additional_bones"
 ]
+const BONE_TRANSFORMS := GlobalConstants.BONE_TRANSFORMS
 
 const SKELETON_NODE = "Skeleton"
 
@@ -43,7 +44,7 @@ func _ready() -> void:
 #	AM.ps.connect("model_config_data_changed", self, "_on_model_config_changed")
 
 	for i in DEFAULT_CONFIG_VALUES:
-		set(i, AM.cm.model_config.get_data(i))
+		set(i, AM.cm.get_data(i))
 
 	skeleton = find_node(SKELETON_NODE)
 	if skeleton == null:
@@ -54,6 +55,10 @@ func _ready() -> void:
 	head_bone_id = skeleton.find_bone(head_bone)
 	if head_bone_id < 0:
 		logger.info("No head bone found")
+
+	var bone_transforms: Dictionary = AM.cm.get_data(BONE_TRANSFORMS)
+	for bone_name in bone_transforms.keys():
+		skeleton.set_bone_pose(skeleton.find_bone(bone_name), bone_transforms[bone_name])
 
 	for i in skeleton.get_bone_count():
 		initial_bone_poses[i] = skeleton.get_bone_pose(i)

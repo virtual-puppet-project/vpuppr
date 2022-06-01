@@ -25,7 +25,7 @@ var model_path := "changeme"
 # Additional bones to be tracked
 var additional_bones := {} # Bone name: String -> Bone id: int
 # Bone pose positions
-var bone_transforms := {} # Bone id: int -> Bone transform: Transform
+var bone_transforms := {} # Bone name: String -> Bone transform: Transform
 var bones_to_interpolate := {} # Bone name: String -> Bones id: int
 var bone_interpolation_rates := {} # Bone id: int -> Interpolation rate: float
 var model_transform := Transform()
