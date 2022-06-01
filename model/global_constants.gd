@@ -40,6 +40,9 @@ const MESSAGE_LOGGED := "message_logged"
 const TRACKER_TOGGLED := "tracker_toggled"
 const MODEL_LOADED := "model_loaded"
 
+const POSE_BONE := "pose_bone"
+const BONE_TRANSFORMS := "bone_transforms"
+
 #endregion
 
 enum CustomTypes {

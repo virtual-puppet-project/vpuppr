@@ -88,6 +88,12 @@ func _on_bone_updated(payload: SignalPayload, signal_name: String) -> void:
 			interpolation_rate.text = str(payload.get_changed())
 			interpolation_rate.caret_position = interpolation_rate.text.length()
 
+func _on_event_published(payload: SignalPayload) -> void:
+	if payload.signal_name != GlobalConstants.POSE_BONE or payload.id != self.name:
+		return
+
+	should_pose_button.set_pressed_no_signal(payload.data)
+
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#

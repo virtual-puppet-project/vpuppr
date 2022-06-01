@@ -76,6 +76,8 @@ func _setup() -> void:
 				"callback": "_on_bone_updated"
 			})
 
+		AM.ps.subscribe(bone_display, GlobalConstants.EVENT_PUBLISHED)
+
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#
@@ -99,8 +101,7 @@ func _on_is_tracking(state: bool, bone_name: String) -> void:
 	AM.ps.publish("additional_bones", additional_bones, bone_name)
 
 func _on_should_pose(state: bool, bone_name: String) -> void:
-	# TODO nothing needs to be set in model config from here, only after posing
-	pass
+	AM.ps.publish(GlobalConstants.POSE_BONE, state, bone_name)
 
 func _on_should_use_custom_interpolation(state: bool, bone_name: String) -> void:
 	var bones_to_interpolate = AM.cm.get_data("bones_to_interpolate")
