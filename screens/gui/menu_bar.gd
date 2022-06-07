@@ -46,7 +46,7 @@ enum HelpButtons {
 }
 
 const Logs = preload("res://screens/gui/popups/logs.tscn")
-const Settings = preload("res://screens/gui/popups/settings.tscn")
+const Settings = preload("res://screens/gui/settings.tscn")
 
 const DebugConsole = preload("res://screens/gui/popups/debug_console.tscn")
 

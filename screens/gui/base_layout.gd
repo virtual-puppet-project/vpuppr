@@ -1,64 +1,53 @@
-class_name BasePopupTreeLayout
+class_name BaseLayout
 extends Control
 
-const TREE_COLUMN: int = 0
-
-## Set by the base popup
 var logger: Logger
-
-onready var tree = $Tree as Tree
-
-var pages := {}
-
-var current_page: Control
-var _initial_page := ""
 
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#
 
+## DO NOT OVERRIDE
 func _ready() -> void:
+	_setup_logger()
+
+	_pre_setup()
 	_setup()
+	_post_setup()
+
+func _setup_logger() -> void:
+	pass
+
+func _pre_setup() -> void:
+	pass
 
 func _setup() -> void:
-	for child in get_children():
-		if child == tree:
-			continue
-		pages[child.name] = child
-		child.hide()
-	
-	tree.hide_root = true
-	var root: TreeItem = tree.create_item()
-	
-	for page_name in pages.keys():
-		var item: TreeItem = tree.create_item(root)
-		item.set_text(TREE_COLUMN, page_name)
-		
-		if page_name == _initial_page:
-			item.select(TREE_COLUMN)
-			_toggle_page(page_name)
-	
-	tree.connect("item_selected", self, "_on_item_selected")
+	pass
+
+func _post_setup() -> void:
+	pass
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#
 
-func _on_item_selected() -> void:
-	var page_name: String = tree.get_selected().get_text(tree.get_selected_column())
-	
-	_toggle_page(page_name)
-
 #region UI element callbacks
 
-func _on_button_pressed(_signal_name: String, _button: Button) -> void:
-	logger.error("_on_pressed not yet implemented for %s" % name)
+func _on_button_pressed(signal_name: String, _button: Button) -> void:
+	match signal_name:
+		_:
+			_log_unhandled_signal(signal_name)
 
-func _on_check_button_toggled(_state: bool, _signal_name: String, _check_button: CheckButton) -> void:
-	logger.error("_on_toggled not yet implemented for %s" % name)
+func _on_check_button_toggled(state: bool, signal_name: String, _check_button: CheckButton) -> void:
+	AM.ps.emit_signal(signal_name, state)
 
-func _on_line_edit_text_changed(_text: String, _signal_name: String, _line_edit: LineEdit) -> void:
-	logger.error("_on_text_changed not yet implemented for %s" % name)
+func _on_line_edit_text_changed(text: String, signal_name: String, _line_edit: LineEdit) -> void:
+	if text.empty():
+		return
+	
+	match signal_name:
+		_:
+			_log_unhandled_signal(signal_name)
 
 func _on_line_edit_text_entered(text: String, signal_name: String, line_edit: LineEdit) -> void:
 	_on_line_edit_text_changed(text, signal_name, line_edit)
@@ -80,15 +69,6 @@ func _on_config_updated(value, control: Control) -> void:
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#
-
-func _toggle_page(page_name: String) -> void:
-	if page_name.empty():
-		return
-	if current_page != null:
-		current_page.hide()
-	
-	current_page = pages[page_name]
-	current_page.show()
 
 #region Handle UI elements
 
@@ -157,6 +137,9 @@ func _set_config_float_amount(signal_name: String, value: String) -> void:
 	AM.ps.emit_signal(signal_name, value.to_float())
 
 #endregion
+
+func _log_unhandled_signal(signal_name: String) -> void:
+	logger.error("Unhandled signal %s for %s" % [signal_name, name])
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #

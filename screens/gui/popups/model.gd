@@ -1,4 +1,4 @@
-extends BasePopupTreeLayout
+extends BaseTreeLayout
 
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
@@ -6,9 +6,6 @@ extends BasePopupTreeLayout
 
 func _setup() -> void:
 	_initial_page = "General"
-	._setup()
-	
-	yield(self, "ready")
 
 	#region General
 	
@@ -31,12 +28,27 @@ func _setup() -> void:
 
 	#region Looseness
 
-	_connect_element($Looseness/VBoxContainer/AdditionalBones/LineEdit , "additional_bone_damp")
+	_connect_element($Looseness/VBoxContainer/AdditionalBones/LineEdit , "additional_bone_damping")
 
-	_connect_element($Looseness/VBoxContainer/Translation/LineEdit, "bone_translation_damp")
-	_connect_element($Looseness/VBoxContainer/Rotation/LineEdit, "bone_rotation_damp")
+	_connect_element($Looseness/VBoxContainer/BoneTranslation/LineEdit, "bone_translation_damping")
+	_connect_element($Looseness/VBoxContainer/BoneRotation/LineEdit, "bone_rotation_damping")
 
-	# TODO add the rest of the damps
+	_connect_element($Looseness/VBoxContainer/LeftGaze/LineEdit, "left_gaze_damping")
+	_connect_element($Looseness/VBoxContainer/RightGaze/LineEdit, "right_gaze_damping")
+
+	_connect_element($Looseness/VBoxContainer/LeftBlink/LineEdit, "left_blink_damping")
+	_connect_element($Looseness/VBoxContainer/RightBlink/LineEdit, "right_blink_damping")
+
+	_connect_element($Looseness/VBoxContainer/MouthOpen/LineEdit, "mouth_open_damping")
+	_connect_element($Looseness/VBoxContainer/MouthWide/LineEdit, "mouth_wide_damping")
+
+	_connect_element($Looseness/VBoxContainer/EyebrowSteepnessLeft/LineEdit, "eyebrow_steepness_left_damping")
+	_connect_element($Looseness/VBoxContainer/EyebrowUpDownLeft/LineEdit, "eyebrow_up_down_left_damping")
+	_connect_element($Looseness/VBoxContainer/EyebrowQuirkLeft/LineEdit, "eyebrow_quirk_left_damping")
+
+	_connect_element($Looseness/VBoxContainer/EyebrowSteepnessRight/LineEdit, "eyebrow_steepness_right_damping")
+	_connect_element($Looseness/VBoxContainer/EyebrowUpDownRight/LineEdit, "eyebrow_up_down_right_damping")
+	_connect_element($Looseness/VBoxContainer/EyebrowQuirkRight/LineEdit, "eyebrow_quirk_right_damping")
 
 	#endregion
 
@@ -71,6 +83,8 @@ func _setup() -> void:
 
 	#endregion
 
+	._setup()
+
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#
@@ -100,14 +114,13 @@ func _on_button_pressed(signal_name: String, _button: Button) -> void:
 			scene.model_parent.transform = scene.model_parent_initial_transform
 		"reset_model_pose":
 			get_tree().current_scene.model.reset_all_bone_poses()
+		_:
+			_log_unhandled_signal(signal_name)
 
 func _on_model_selected(path: String) -> void:
 	get_tree().current_scene.load_model(path)
 
 #endregion
-
-func _on_check_button_toggled(state: bool, signal_name: String, _check_button: CheckButton) -> void:
-	AM.ps.emit_signal(signal_name, state)
 
 # TODO 04/26/2022 these values do not match up 1-1 with the config
 func _on_line_edit_text_changed(text: String, signal_name: String, _line_edit: LineEdit) -> void:

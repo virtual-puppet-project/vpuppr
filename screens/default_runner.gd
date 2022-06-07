@@ -1,6 +1,7 @@
 class_name DefaultRunner
 extends RunnerTrait
 
+## Config-specific pubsub values to listen for
 const CONFIG_LISTEN_VALUES := [
 	"apply_translation",
 	"apply_rotation",
@@ -10,6 +11,7 @@ const CONFIG_LISTEN_VALUES := [
 	"use_fxaa"
 ]
 
+## Scene-specific pubsub values to listen for
 const SCENE_LISTEN_VALUES := [
 	GlobalConstants.SceneSignals.MOVE_MODEL,
 	GlobalConstants.SceneSignals.ROTATE_MODEL,
@@ -123,6 +125,12 @@ func _setup_config() -> void:
 			"args": [i],
 			"callback": "_on_config_changed"
 		})
+
+		var val = AM.cm.get_data(i)
+		if typeof(val) == TYPE_NIL:
+			logger.error("Config value %s is null" % i)
+			continue
+		_on_config_changed(val, i)
 
 func _pre_setup_scene() -> void:
 	AM.ps.subscribe(self, GlobalConstants.EVENT_PUBLISHED)

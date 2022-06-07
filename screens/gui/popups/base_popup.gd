@@ -3,7 +3,7 @@ extends WindowDialog
 
 var _logger: Logger
 
-var screen: Control
+var screen: Node
 
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
