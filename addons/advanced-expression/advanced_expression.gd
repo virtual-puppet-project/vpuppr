@@ -123,60 +123,60 @@ class Runner extends AbstractFunction:
 
 const RUN_FUNC := "__runner__"
 
+var raw := []
 var variables := []
 var functions := []
 var runner := Runner.new()
 
 var gdscript: GDScript
+var instance: Reference
 
-#-----------------------------------------------------------------------------#
+###############################################################################
 # Builtin functions                                                           #
-#-----------------------------------------------------------------------------#
+###############################################################################
 
 func _to_string() -> String:
-	return _build_source(variables, functions, runner)
+	return _build_source(raw, variables, functions, runner)
 
-#-----------------------------------------------------------------------------#
+###############################################################################
 # Connections                                                                 #
-#-----------------------------------------------------------------------------#
+###############################################################################
 
-#-----------------------------------------------------------------------------#
+###############################################################################
 # Private functions                                                           #
-#-----------------------------------------------------------------------------#
+###############################################################################
 
-static func _build_source(v: Array, f: Array, r: Runner) -> String:
+static func _build_source(raw: Array, variables: Array, functions: Array, runner: Runner) -> String:
 	var source := ""
 	
-	for i in v:
+	for i in variables:
 		source += i.output()
 	
-	for i in f:
+	for i in functions:
 		source += i.output()
 	
-	source += r.output()
+	for i in raw:
+		source += "\n%s\n" % i
+	
+	source += runner.output()
 	
 	return source
 
-static func _create_script(v: Array, f: Array, r: Runner) -> GDScript:
+static func _create_script(raw: Array, variables: Array, functions: Array, runner: Runner) -> GDScript:
 	var s := GDScript.new()
 	
-	var source := ""
-	
-	for i in v:
-		source += i.output()
-	
-	for i in f:
-		source += i.output()
-	
-	source += r.output()
-	
-	s.source_code = source
+	s.source_code = _build_source(raw, variables, functions, runner)
 	
 	return s
 
-#-----------------------------------------------------------------------------#
+func _get_instance() -> Reference:
+	if instance == null:
+		instance = gdscript.new()
+	return instance
+
+###############################################################################
 # Public functions                                                            #
-#-----------------------------------------------------------------------------#
+###############################################################################
 
 func add_variable(variable_name: String, variable_value: String = "") -> Variable:
 	var variable := Variable.new(variable_name, variable_value)
@@ -198,12 +198,15 @@ func add(text: String = "") -> Runner:
 	
 	return runner
 
-func add_raw(text: String) -> Runner:
-	var split := text.split(";")
+func add_delimited(text: String, delimiter: String = ";") -> Runner:
+	var split := text.split(delimiter)
 	for i in split:
 		runner.add(i)
 	
 	return runner
+
+func add_raw(text: String) -> void:
+	raw.append(text)
 
 func tab(amount: int = 1) -> Runner:
 	runner.tab(amount)
@@ -215,16 +218,27 @@ func newline() -> Runner:
 	
 	return runner
 
-func compile() -> int:
-	gdscript = _create_script(variables, functions, runner)
+func compile(text: String = "") -> int:
+	if not text.empty():
+		runner.add(text)
+	gdscript = _create_script(raw, variables, functions, runner)
 	
 	return gdscript.reload()
 
+func inject_variables(data: Dictionary) -> int:
+	var script_instance = _get_instance()
+	
+	for key in data.keys():
+		script_instance.set(key, data[key])
+	
+	return OK
+
 func execute(params: Array = []):
-	return gdscript.new().callv(RUN_FUNC, params)
+	return _get_instance().callv(RUN_FUNC, params)
 
 func clear() -> void:
 	gdscript = null
+	instance = null
 	
 	variables.clear()
 	functions.clear()

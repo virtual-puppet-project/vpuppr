@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://addons/repl_gd/repl.tscn" type="PackedScene" id=1]
+[ext_resource path="res://addons/repl_gd/debug_console.theme" type="Theme" id=2]
+[ext_resource path="res://addons/repl_gd/debug_console.gd" type="Script" id=3]
+
+[node name="DebugConsole" type="CanvasLayer"]
+layer = 100
+script = ExtResource( 3 )
+
+[node name="Background" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 2 )
+color = Color( 0.2, 0.231373, 0.309804, 1 )
+
+[node name="Repl" parent="Background" instance=ExtResource( 1 )]

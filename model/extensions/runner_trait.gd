@@ -23,11 +23,12 @@ var trackers := {}
 ## DON'T OVERRIDE THIS
 func _ready() -> void:
 	_setup_logger()
-	_setup_config()
 
 	_pre_setup_scene()
 	_setup_scene()
 	_post_setup_scene()
+
+	_setup_config()
 
 ## DON'T OVERRIDE THIS
 func _exit_tree() -> void:

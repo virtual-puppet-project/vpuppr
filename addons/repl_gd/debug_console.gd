@@ -1,11 +1,13 @@
-extends PanelContainer
+extends CanvasLayer
+
+onready var repl := $Background/Repl
 
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#
 
 func _ready() -> void:
-	$Repl.configure_scene_tree(get_tree())
+	repl.configure_scene_tree(get_tree())
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #

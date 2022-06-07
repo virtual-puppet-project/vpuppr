@@ -1,0 +1,23 @@
+{
+  "name": "@sometimes_youwin/advanced-expression",
+  "version": "1.0.0",
+  "description": "More powerful Expressions for Godot",
+  "main": "advanced_expression.gd",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/you-win/advanced-expression-gd.git"
+  },
+  "keywords": [
+    "godot",
+    "godot-engine"
+  ],
+  "author": "Tim Yuen",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/you-win/advanced-expression-gd/issues"
+  },
+  "homepage": "https://github.com/you-win/advanced-expression-gd#readme"
+}

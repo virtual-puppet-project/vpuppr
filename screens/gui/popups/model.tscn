@@ -13,6 +13,7 @@ margin_right = 301.0
 margin_bottom = 900.0
 
 [node name="General" type="ScrollContainer" parent="."]
+visible = false
 margin_left = 313.0
 margin_right = 1600.0
 margin_bottom = 900.0
@@ -105,7 +106,6 @@ margin_bottom = 356.0
 text = "Apply rotation"
 
 [node name="Looseness" type="ScrollContainer" parent="."]
-visible = false
 margin_left = 313.0
 margin_right = 1600.0
 margin_bottom = 900.0
@@ -116,36 +116,36 @@ margin_bottom = 900.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Translation" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+[node name="BoneTranslation" type="HBoxContainer" parent="Looseness/VBoxContainer"]
 margin_right = 1287.0
 margin_bottom = 24.0
 
-[node name="Label" type="Label" parent="Looseness/VBoxContainer/Translation"]
+[node name="Label" type="Label" parent="Looseness/VBoxContainer/BoneTranslation"]
 margin_top = 5.0
 margin_right = 641.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Translation"
+text = "Bone translation"
 
-[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/Translation"]
+[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/BoneTranslation"]
 margin_left = 645.0
 margin_right = 1287.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="Rotation" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+[node name="BoneRotation" type="HBoxContainer" parent="Looseness/VBoxContainer"]
 margin_top = 28.0
 margin_right = 1287.0
 margin_bottom = 52.0
 
-[node name="Label" type="Label" parent="Looseness/VBoxContainer/Rotation"]
+[node name="Label" type="Label" parent="Looseness/VBoxContainer/BoneRotation"]
 margin_top = 5.0
 margin_right = 641.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Rotation"
+text = "Bone rotation"
 
-[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/Rotation"]
+[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/BoneRotation"]
 margin_left = 645.0
 margin_right = 1287.0
 margin_bottom = 24.0
@@ -164,6 +164,247 @@ size_flags_horizontal = 3
 text = "Additional bones"
 
 [node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/AdditionalBones"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="HSeparator" type="HSeparator" parent="Looseness/VBoxContainer"]
+margin_top = 84.0
+margin_right = 1287.0
+margin_bottom = 88.0
+
+[node name="LeftGaze" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+margin_top = 92.0
+margin_right = 1287.0
+margin_bottom = 116.0
+
+[node name="Label" type="Label" parent="Looseness/VBoxContainer/LeftGaze"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Left gaze"
+
+[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/LeftGaze"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="RightGaze" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+margin_top = 120.0
+margin_right = 1287.0
+margin_bottom = 144.0
+
+[node name="Label" type="Label" parent="Looseness/VBoxContainer/RightGaze"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Right gaze"
+
+[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/RightGaze"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="HSeparator2" type="HSeparator" parent="Looseness/VBoxContainer"]
+margin_top = 148.0
+margin_right = 1287.0
+margin_bottom = 152.0
+
+[node name="LeftBlink" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+margin_top = 156.0
+margin_right = 1287.0
+margin_bottom = 180.0
+
+[node name="Label" type="Label" parent="Looseness/VBoxContainer/LeftBlink"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Left blink"
+
+[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/LeftBlink"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="RightBlink" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+margin_top = 184.0
+margin_right = 1287.0
+margin_bottom = 208.0
+
+[node name="Label" type="Label" parent="Looseness/VBoxContainer/RightBlink"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Right blink"
+
+[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/RightBlink"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="HSeparator3" type="HSeparator" parent="Looseness/VBoxContainer"]
+margin_top = 212.0
+margin_right = 1287.0
+margin_bottom = 216.0
+
+[node name="MouthOpen" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+margin_top = 220.0
+margin_right = 1287.0
+margin_bottom = 244.0
+
+[node name="Label" type="Label" parent="Looseness/VBoxContainer/MouthOpen"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Mouth open"
+
+[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/MouthOpen"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="MouthWide" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+margin_top = 248.0
+margin_right = 1287.0
+margin_bottom = 272.0
+
+[node name="Label" type="Label" parent="Looseness/VBoxContainer/MouthWide"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Mouth wide"
+
+[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/MouthWide"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="HSeparator4" type="HSeparator" parent="Looseness/VBoxContainer"]
+margin_top = 276.0
+margin_right = 1287.0
+margin_bottom = 280.0
+
+[node name="EyebrowSteepnessLeft" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+margin_top = 284.0
+margin_right = 1287.0
+margin_bottom = 308.0
+
+[node name="Label" type="Label" parent="Looseness/VBoxContainer/EyebrowSteepnessLeft"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Eyebrow steepness left"
+
+[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/EyebrowSteepnessLeft"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="EyebrowUpDownLeft" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+margin_top = 312.0
+margin_right = 1287.0
+margin_bottom = 336.0
+
+[node name="Label" type="Label" parent="Looseness/VBoxContainer/EyebrowUpDownLeft"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Eyebrow up down left"
+
+[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/EyebrowUpDownLeft"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="EyebrowQuirkLeft" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+margin_top = 340.0
+margin_right = 1287.0
+margin_bottom = 364.0
+
+[node name="Label" type="Label" parent="Looseness/VBoxContainer/EyebrowQuirkLeft"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Eyebrow quirk left"
+
+[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/EyebrowQuirkLeft"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="HSeparator5" type="HSeparator" parent="Looseness/VBoxContainer"]
+margin_top = 368.0
+margin_right = 1287.0
+margin_bottom = 372.0
+
+[node name="EyebrowSteepnessRight" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+margin_top = 376.0
+margin_right = 1287.0
+margin_bottom = 400.0
+
+[node name="Label" type="Label" parent="Looseness/VBoxContainer/EyebrowSteepnessRight"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Eyebrow steepness right"
+
+[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/EyebrowSteepnessRight"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="EyebrowUpDownRight" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+margin_top = 404.0
+margin_right = 1287.0
+margin_bottom = 428.0
+
+[node name="Label" type="Label" parent="Looseness/VBoxContainer/EyebrowUpDownRight"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Eyebrow up down right"
+
+[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/EyebrowUpDownRight"]
+margin_left = 645.0
+margin_right = 1287.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="EyebrowQuirkRight" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+margin_top = 432.0
+margin_right = 1287.0
+margin_bottom = 456.0
+
+[node name="Label" type="Label" parent="Looseness/VBoxContainer/EyebrowQuirkRight"]
+margin_top = 5.0
+margin_right = 641.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "Eyebrow quirk right"
+
+[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/EyebrowQuirkRight"]
 margin_left = 645.0
 margin_right = 1287.0
 margin_bottom = 24.0

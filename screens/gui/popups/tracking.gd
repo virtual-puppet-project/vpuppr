@@ -1,4 +1,4 @@
-extends BasePopupTreeLayout
+extends BaseTreeLayout
 
 const TrackingDisplay := preload("res://screens/gui/popups/tracking_display.gd")
 
@@ -15,6 +15,7 @@ func _setup_logger() -> void:
 
 func _setup() -> void:
 	info = $Info
+	tree = $Tree
 	pages[INFO_PAGE] = info
 
 	_initial_page = INFO_PAGE

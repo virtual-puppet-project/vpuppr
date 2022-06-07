@@ -1,0 +1,227 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://addons/repl_gd/repl.gd" type="Script" id=1]
+
+[sub_resource type="StyleBoxEmpty" id=1]
+
+[node name="Repl" type="VBoxContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 10.0
+margin_top = 10.0
+margin_right = -10.0
+margin_bottom = -10.0
+rect_min_size = Vector2( 0, 400 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource( 1 )
+
+[node name="Options" type="HBoxContainer" parent="."]
+margin_right = 1004.0
+margin_bottom = 20.0
+
+[node name="File" type="MenuButton" parent="Options"]
+margin_right = 35.0
+margin_bottom = 20.0
+text = "File"
+
+[node name="Help" type="MenuButton" parent="Options"]
+margin_left = 39.0
+margin_right = 81.0
+margin_bottom = 20.0
+focus_mode = 2
+text = "Help"
+
+[node name="Body" type="HSplitContainer" parent="."]
+margin_top = 24.0
+margin_right = 1004.0
+margin_bottom = 580.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+split_offset = 409
+
+[node name="State" type="VSplitContainer" parent="Body"]
+margin_right = 410.0
+margin_bottom = 556.0
+split_offset = 228
+
+[node name="Tree" type="Tree" parent="Body/State"]
+margin_right = 410.0
+margin_bottom = 229.0
+hide_root = true
+
+[node name="General" type="ScrollContainer" parent="Body/State"]
+margin_top = 241.0
+margin_right = 410.0
+margin_bottom = 556.0
+
+[node name="List" type="VBoxContainer" parent="Body/State/General"]
+margin_right = 410.0
+margin_bottom = 50.0
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="Body/State/General/List"]
+margin_right = 410.0
+margin_bottom = 14.0
+text = "General"
+align = 1
+
+[node name="VarCount" type="HBoxContainer" parent="Body/State/General/List"]
+margin_top = 18.0
+margin_right = 410.0
+margin_bottom = 32.0
+
+[node name="Label" type="Label" parent="Body/State/General/List/VarCount"]
+margin_right = 203.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+text = "Var count:"
+
+[node name="Value" type="Label" parent="Body/State/General/List/VarCount"]
+margin_left = 207.0
+margin_right = 410.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+text = "0"
+
+[node name="FuncCount" type="HBoxContainer" parent="Body/State/General/List"]
+margin_top = 36.0
+margin_right = 410.0
+margin_bottom = 50.0
+
+[node name="Label" type="Label" parent="Body/State/General/List/FuncCount"]
+margin_right = 203.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+text = "Func count:"
+
+[node name="Value" type="Label" parent="Body/State/General/List/FuncCount"]
+margin_left = 207.0
+margin_right = 410.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+text = "0"
+
+[node name="Variables" type="VBoxContainer" parent="Body/State"]
+visible = false
+margin_top = 241.0
+margin_right = 467.0
+margin_bottom = 556.0
+
+[node name="Label" type="Label" parent="Body/State/Variables"]
+margin_right = 467.0
+margin_bottom = 14.0
+text = "Variables"
+align = 1
+
+[node name="HSeparator" type="HSeparator" parent="Body/State/Variables"]
+margin_top = 18.0
+margin_right = 467.0
+margin_bottom = 22.0
+
+[node name="List" type="ScrollContainer" parent="Body/State/Variables"]
+margin_top = 26.0
+margin_right = 467.0
+margin_bottom = 26.0
+size_flags_vertical = 3
+
+[node name="VarList" type="VBoxContainer" parent="Body/State/Variables/List"]
+margin_right = 467.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Functions" type="VBoxContainer" parent="Body/State"]
+visible = false
+margin_top = 241.0
+margin_right = 471.0
+margin_bottom = 556.0
+
+[node name="Label" type="Label" parent="Body/State/Functions"]
+margin_right = 471.0
+margin_bottom = 14.0
+text = "Functions"
+align = 1
+
+[node name="HSeparator" type="HSeparator" parent="Body/State/Functions"]
+margin_top = 18.0
+margin_right = 471.0
+margin_bottom = 22.0
+
+[node name="List" type="ScrollContainer" parent="Body/State/Functions"]
+margin_top = 26.0
+margin_right = 471.0
+margin_bottom = 315.0
+size_flags_vertical = 3
+
+[node name="FuncList" type="VBoxContainer" parent="Body/State/Functions/List"]
+margin_right = 471.0
+margin_bottom = 289.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Scene" type="MarginContainer" parent="Body/State"]
+visible = false
+margin_top = 241.0
+margin_right = 410.0
+margin_bottom = 556.0
+
+[node name="Scene" type="Tree" parent="Body/State/Scene"]
+margin_right = 410.0
+margin_bottom = 315.0
+
+[node name="Notes" type="VBoxContainer" parent="Body/State"]
+visible = false
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="Options" type="HBoxContainer" parent="Body/State/Notes"]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="Save" type="Button" parent="Body/State/Notes/Options"]
+margin_right = 12.0
+margin_bottom = 20.0
+text = "Save"
+
+[node name="Notes" type="TextEdit" parent="Body/State/Notes"]
+margin_right = 40.0
+margin_bottom = 40.0
+size_flags_vertical = 3
+syntax_highlighting = true
+show_line_numbers = true
+
+[node name="IO" type="VSplitContainer" parent="Body"]
+margin_left = 422.0
+margin_right = 1004.0
+margin_bottom = 556.0
+split_offset = 297
+
+[node name="Output" type="TextEdit" parent="Body/IO"]
+margin_right = 582.0
+margin_bottom = 297.0
+custom_colors/font_color_readonly = Color( 1, 1, 1, 1 )
+custom_styles/read_only = SubResource( 1 )
+readonly = true
+syntax_highlighting = true
+show_line_numbers = true
+
+[node name="Inputs" type="HBoxContainer" parent="Body/IO"]
+margin_top = 309.0
+margin_right = 582.0
+margin_bottom = 556.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Input" type="TextEdit" parent="Body/IO/Inputs"]
+margin_right = 535.0
+margin_bottom = 247.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+syntax_highlighting = true
+show_line_numbers = true
+
+[node name="Send" type="Button" parent="Body/IO/Inputs"]
+margin_left = 539.0
+margin_right = 582.0
+margin_bottom = 247.0
+text = "Send"
