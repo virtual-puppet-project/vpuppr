@@ -20,6 +20,9 @@ const SCENE_LISTEN_VALUES := [
 	GlobalConstants.SceneSignals.POSE_MODEL
 ]
 
+# TODO this might be bad?
+var model_viewport := Viewport.new()
+
 var model: PuppetTrait
 var model_parent: Spatial
 var props_node: Spatial
@@ -141,14 +144,28 @@ func _pre_setup_scene() -> void:
 			"callback": "_on_config_changed"
 		})
 
+	var viewport_container := ViewportContainer.new()
+	viewport_container.anchor_bottom = 1.0
+	viewport_container.anchor_right = 1.0
+	viewport_container.stretch = true
+	viewport_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	add_child(viewport_container)
+	move_child(viewport_container, 0)
+
+	model_viewport.size = viewport_container.rect_size
+	model_viewport.own_world = true
+
+	viewport_container.add_child(model_viewport)
+
 	var camera := Camera.new()
 	camera.current = true
 	camera.translate(Vector3(0.0, 0.0, 3.0))
-	add_child(camera)
+	model_viewport.add_child(camera)
 
-	var world_environment := WorldEnvironment.new()
-	world_environment.environment = load("res://assets/default_env.tres")
-	add_child(world_environment)
+	var world := World.new()
+	world.environment = load("res://assets/default_env.tres")
+	model_viewport.world = world
 
 	# TODO this shouldn't be done like this
 	var open_see_face_res: Result = AM.em.load_resource("OpenSeeFace", "open_see_face.gd")
@@ -164,7 +181,7 @@ func _setup_scene() -> void:
 	model_parent = Spatial.new()
 	load_model(default_model_path if not default_model_path.empty() else DEFAULT_MODEL)
 
-	call_deferred("add_child", model_parent)
+	model_viewport.call_deferred("add_child", model_parent)
 
 	yield(model, "ready")
 
@@ -233,9 +250,7 @@ func _physics_step(_delta: float) -> void:
 	)
 
 func _generate_preview() -> void:
-	
-
-	var image := get_viewport().get_texture().get_data()
+	var image := model_viewport.get_texture().get_data()
 	image.flip_y()
 
 	if image.save_png("user://%s.png" % name) != OK:
@@ -260,9 +275,11 @@ func _on_config_changed(value, signal_name: String) -> void:
 			ProjectSettings.set_setting("display/window/per_pixel_transparency/allowed", value)
 			ProjectSettings.set_setting("display/window/per_pixel_transparency/enabled", value)
 			get_viewport().transparent_bg = value
+			model_viewport.transparent_bg = value
 		"use_fxaa":
 			ProjectSettings.set_setting("rendering/quality/filters/use_fxaa", value)
 			get_viewport().fxaa = value
+			model_viewport.fxaa = value
 		
 		#endregion
 
