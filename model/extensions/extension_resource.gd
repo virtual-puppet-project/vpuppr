@@ -4,6 +4,7 @@ extends Reference
 var extension_name := ""
 var resource_name := ""
 var resource_type := ""
+## Absolute path to the entrypoint
 var resource_entrypoint := ""
 # This is set retroactively
 var is_gdnative := false

@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://screens/landing_screen.gd" type="Script" id=1]
 [ext_resource path="res://assets/default.theme" type="Theme" id=2]
 [ext_resource path="res://screens/gui/settings.tscn" type="PackedScene" id=3]
+[ext_resource path="res://screens/gui/runner.tscn" type="PackedScene" id=4]
 
 [node name="LandingScreen" type="CanvasLayer"]
 script = ExtResource( 1 )
@@ -28,25 +29,11 @@ margin_top = 10.0
 margin_right = -10.0
 margin_bottom = -10.0
 
-[node name="Runners" type="PanelContainer" parent="RootControl/TabContainer"]
-anchor_right = 1.0
-anchor_bottom = 1.0
+[node name="Runners" parent="RootControl/TabContainer" instance=ExtResource( 4 )]
 margin_left = 7.5
 margin_top = 35.5
 margin_right = -7.5
 margin_bottom = -7.5
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="ScrollContainer" type="ScrollContainer" parent="RootControl/TabContainer/Runners"]
-margin_left = 9.0
-margin_top = 6.0
-margin_right = 1556.0
-margin_bottom = 831.0
-
-[node name="RunnersList" type="VBoxContainer" parent="RootControl/TabContainer/Runners/ScrollContainer"]
-margin_right = 1547.0
-size_flags_horizontal = 3
 
 [node name="Extensions" type="PanelContainer" parent="RootControl/TabContainer"]
 visible = false

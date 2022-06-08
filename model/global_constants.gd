@@ -63,7 +63,6 @@ const SceneSignals := {
 const LANDING_SCREEN_PATH := "res://screens/landing_screen.tscn"
 const DEFAULT_RUNNER_PATH := "res://screens/default_runner.gd"
 
-const SELECTABLE_GUI := "selectable_gui"
 const DEFAULT_GUI_PATH := "res://screens/gui/default_gui.tscn"
 
 const PROJECT_GITHUB_REPO := "https://github.com/you-win/openseeface-gd"

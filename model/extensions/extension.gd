@@ -36,7 +36,7 @@ func _init(context_path: String) -> void:
 ##
 ## @param: res_name: String - The name of the resource from the config file
 ## @param: res_type: String - The type of the resource from the config file
-## @param: res_entrypoint: String - The relative path for the entrypoint for the resource
+## @param: res_entrypoint: String - The absolute path for the entrypoint for the resource
 ##
 ## @return: Result<ExtensionResource> - The new ExtensionResource that's implicitly added
 ## to the Extension
