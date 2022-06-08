@@ -232,6 +232,15 @@ func _physics_step(_delta: float) -> void:
 			else Vector3.ZERO
 	)
 
+func _generate_preview() -> void:
+	
+
+	var image := get_viewport().get_texture().get_data()
+	image.flip_y()
+
+	if image.save_png("user://%s.png" % name) != OK:
+		logger.error("Unable to save image preview")
+
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#

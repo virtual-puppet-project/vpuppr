@@ -20,7 +20,7 @@ func _setup() -> void:
 	for child in get_children():
 		if child == tree:
 			continue
-		pages[child.name] = child
+		pages[child.name.capitalize()] = child
 		child.hide()
 	
 	tree.hide_root = true

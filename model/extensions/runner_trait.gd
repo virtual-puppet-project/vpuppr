@@ -65,6 +65,8 @@ func _post_setup_scene() -> void:
 
 ## Virtual function that is run when exiting the SceneTree
 func _teardown() -> void:
+	_generate_preview()
+
 	for tracker_name in trackers.keys():
 		trackers[tracker_name].queue_free()
 
@@ -75,6 +77,13 @@ func _process_step(_delta: float) -> void:
 ## Virtual function that should be overridden instead of `_physics_process`
 func _physics_step(_delta: float) -> void:
 	pass
+
+func _generate_preview() -> void:
+	var image := get_viewport().get_texture().get_data()
+	image.flip_y()
+
+	if image.save_png("user://%s.png" % name) != OK:
+		logger.error("Unable to save image preview")
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
