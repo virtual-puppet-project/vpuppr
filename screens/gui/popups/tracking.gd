@@ -1,7 +1,5 @@
 extends BaseTreeLayout
 
-const TrackingDisplay := preload("res://screens/gui/popups/tracking_display.gd")
-
 const INFO_PAGE := "Info"
 
 var info: ScrollContainer
@@ -14,6 +12,8 @@ func _setup_logger() -> void:
 	logger = Logger.new("Tracking")
 
 func _setup() -> void:
+	AM.ps.subscribe(self, GlobalConstants.EVENT_PUBLISHED)
+
 	info = $Info
 	tree = $Tree
 	pages[INFO_PAGE] = info
@@ -53,7 +53,6 @@ func _setup() -> void:
 		var item: TreeItem = tree.create_item(root)
 		item.set_text(TREE_COLUMN, er.resource_name)
 
-		# var tracking_display := TrackingDisplay.new(er.resource_name, descriptor_res.unwrap(), logger)
 		var display = descriptor_res.unwrap()
 		pages[er.resource_name] = display
 		display.hide()
@@ -63,6 +62,12 @@ func _setup() -> void:
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#
+
+func _on_event_published(payload: SignalPayload) -> void:
+	match payload.signal_name:
+		GlobalConstants.TRACKER_TOGGLED:
+		
+			pass
 
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
