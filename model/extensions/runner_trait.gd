@@ -68,9 +68,6 @@ func _post_setup_scene() -> void:
 func _teardown() -> void:
 	_generate_preview()
 
-	# for tracker in trackers.values():
-	# 	tracker.queue_free()
-	# trackers.clear()
 	main_tracker = null
 	for tracker in trackers:
 		if not tracker is TrackingBackendInterface:
@@ -92,7 +89,18 @@ func _generate_preview() -> void:
 	var image := get_viewport().get_texture().get_data()
 	image.flip_y()
 
-	if image.save_png("user://%s.png" % name) != OK:
+	var dir := Directory.new()
+	if not dir.dir_exists(GlobalConstants.RUNNER_PREVIEW_DIR_PATH):
+		if dir.make_dir_recursive(GlobalConstants.RUNNER_PREVIEW_DIR_PATH) != OK:
+			logger.error("Unable to create %s, declining to create runner preview" %
+				GlobalConstants.RUNNER_PREVIEW_DIR_PATH)
+			return
+
+	if image.save_png("%s/%s.%s" % [
+		GlobalConstants.RUNNER_PREVIEW_DIR_PATH,
+		name,
+		GlobalConstants.RUNNER_PREVIEW_FILE_EXT
+	]) != OK:
 		logger.error("Unable to save image preview")
 
 #-----------------------------------------------------------------------------#

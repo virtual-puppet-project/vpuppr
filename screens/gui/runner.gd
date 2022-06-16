@@ -67,9 +67,12 @@ static func _v_fill_expand(control: Control) -> void:
 	control.size_flags_vertical = Control.SIZE_EXPAND_FILL
 
 func _create_view(data: Dictionary) -> ScrollContainer:
+	# TODO this is kind of gross
+	var view_name: String = data.run_args.front().get_basename().get_file()
+	
 	var sc := ScrollContainer.new()
 	_h_fill_expand(sc)
-	sc.name = data.name.replace(" ", "")
+	sc.name = view_name
 	sc.scroll_horizontal_enabled = false
 
 	var list := VBoxContainer.new()
@@ -90,7 +93,14 @@ func _create_view(data: Dictionary) -> ScrollContainer:
 	_v_fill_expand(preview)
 	preview.expand = true
 	preview.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT
-	preview.texture = load("res://assets/NoPreview.png")
+
+	var preview_image_res: Result = _find_runner_preview(view_name)
+	if not preview_image_res or preview_image_res.is_err():
+		preview.texture = load("res://assets/NoPreview.png")
+	else:
+		var image_texture := ImageTexture.new()
+		image_texture.create_from_image(preview_image_res.unwrap())
+		preview.texture = image_texture
 
 	list.add_child(preview)
 
@@ -110,6 +120,23 @@ func _create_view(data: Dictionary) -> ScrollContainer:
 	list.add_child(run_button)
 
 	return sc
+
+func _find_runner_preview(view_name: String) -> Result:
+	var expected_path := "%s/%s.%s" % [
+		GlobalConstants.RUNNER_PREVIEW_DIR_PATH,
+		view_name,
+		GlobalConstants.RUNNER_PREVIEW_FILE_EXT
+	]
+
+	var file := File.new()
+
+	if file.file_exists(expected_path):
+		var image := Image.new()
+		if image.load(expected_path) != OK:
+			return Result.err(Error.Code.RUNNER_NO_PREVIEW_IMAGE_FOUND, expected_path)
+		return Result.ok(image)
+
+	return Result.err(Error.Code.RUNNER_NO_PREVIEW_IMAGE_FOUND, expected_path)
 
 func _create_gui_select(runner_path: String) -> WindowDialog:
 	var wd := WindowDialog.new()
