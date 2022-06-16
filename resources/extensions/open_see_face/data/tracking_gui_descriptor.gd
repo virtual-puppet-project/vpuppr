@@ -281,7 +281,7 @@ func _on_toggle_tracking(button: Button) -> void:
 
 		button.text = "Stop"
 
-	# AM.ps.publish(GlobalConstants.TRACKER_TOGGLED, not found, "OpenSeeFace")
+	AM.ps.publish(GlobalConstants.TRACKER_TOGGLED, not found, "OpenSeeFace")
 
 func _python_path() -> HBoxContainer:
 	var r := HBoxContainer.new()

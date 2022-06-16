@@ -272,8 +272,8 @@ func _save_offsets() -> void:
 	# if not trackers["OpenSeeFace"].is_listening():
 	# 	return
 
-	if stored_offsets == null:
-		stored_offsets = StoredOffsets.new()
+	# if stored_offsets == null:
+	# 	stored_offsets = StoredOffsets.new()
 
 	# TODO hardcoded for osf
 	# var data: TrackingDataInterface = trackers["OpenSeeFace"].get_data()
@@ -283,6 +283,11 @@ func _save_offsets() -> void:
 	# stored_offsets.quat_offset = data.get_rotation()
 	# stored_offsets.left_eye_gaze_offset = data.get_left_eye_euler()
 	# stored_offsets.right_eye_gaze_offset = data.get_right_eye_euler()
+
+	stored_offsets.translation_offset = interpolation_data.bone_translation.target_value
+	stored_offsets.rotation_offset = interpolation_data.bone_rotation.target_value
+	stored_offsets.left_eye_gaze_offset = interpolation_data.left_gaze.target_value
+	stored_offsets.right_eye_gaze_offset = interpolation_data.right_gaze.target_value
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #

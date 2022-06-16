@@ -186,7 +186,7 @@ var server_poll_interval: float = 1.0 / MAX_TRACKER_FPS
 
 var max_fit_3d_error: float = 100.0
 
-var server := UDPServer.new()
+var server: UDPServer
 var connection: PacketPeerUDP # Must be taken when running the server
 
 var receive_thread: Thread # Must be created when starting tracking
@@ -199,8 +199,6 @@ var face_tracker_pid: int = -1
 
 var data_map := {} # Face id: int -> OpenSeeFaceData
 
-var _tree: SceneTree
-
 # var open_see_face_data: GDScript
 
 var updated_time: float = 0.0
@@ -212,8 +210,6 @@ var updated_time: float = 0.0
 func _init() -> void:
 	if _start_tracker():
 		start_receiver()
-
-	_tree = Engine.get_main_loop()
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
@@ -301,8 +297,8 @@ func _start_tracker() -> bool:
 					create_venv_script = ProjectSettings.globalize_path("res://resources/scripts/create_venv.sh")
 				
 				# Give the popup time to actually popup/display
-				yield(_tree, "idle_frame")
-				yield(_tree, "idle_frame")
+				yield(Engine.get_main_loop(), "idle_frame")
+				yield(Engine.get_main_loop(), "idle_frame")
 
 				OS.execute(create_venv_script, [python_path, user_data_path])
 
@@ -382,7 +378,7 @@ func _receive() -> void:
 func _perform_reception() -> void:
 	while not stop_reception:
 		_receive()
-		yield(_tree.create_timer(server_poll_interval), "timeout")
+		yield(Engine.get_main_loop().create_timer(server_poll_interval), "timeout")
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #
@@ -404,6 +400,7 @@ func start_receiver() -> void:
 
 	logger.info("Listening for data at %s:%d" % [address, port])
 
+	server = UDPServer.new()
 	server.listen(port, address)
 
 	stop_reception = false
@@ -420,12 +417,14 @@ func stop_receiver() -> void:
 
 	if receive_thread != null and receive_thread.is_active():
 		receive_thread.wait_to_finish()
+		receive_thread = null
 	
 	if server.is_listening():
 		if connection != null and connection.is_connected_to_host():
 			connection.close()
 			connection = null
 		server.stop()
+		server = null
 
 func apply(_model: PuppetTrait, interpolation_data: InterpolationData, extra: Dictionary) -> void:
 	var data: OSFData = data_map.get(0, null)
