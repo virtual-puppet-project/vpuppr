@@ -2,7 +2,8 @@ extends BaseTreeLayout
 
 const INFO_PAGE := "Info"
 
-var info: ScrollContainer
+var running_trackers: VBoxContainer
+var running_trackers_button_group := ButtonGroup.new()
 
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
@@ -14,7 +15,9 @@ func _setup_logger() -> void:
 func _setup() -> void:
 	AM.ps.subscribe(self, GlobalConstants.EVENT_PUBLISHED)
 
-	info = $Info
+	running_trackers = $Info/VBoxContainer/RunningTrackers
+
+	var info := $Info as ScrollContainer
 	tree = $Tree
 	pages[INFO_PAGE] = info
 
@@ -66,8 +69,47 @@ func _setup() -> void:
 func _on_event_published(payload: SignalPayload) -> void:
 	match payload.signal_name:
 		GlobalConstants.TRACKER_TOGGLED:
-		
-			pass
+			if payload.data == true:
+				var tracker_info := _create_tracker_info(payload.id, running_trackers.get_child_count() < 1)
+
+				running_trackers.add_child(tracker_info)
+			else:
+				for child in running_trackers.get_children():
+					if child.name == payload.id:
+						child.queue_free()
+
+#region Tracker info
+
+func _on_tracker_info_main_tracker_toggled(state: bool, tracker_name: String) -> void:
+	if state == false:
+		return
+	AM.ps.publish(GlobalConstants.TRACKER_USE_AS_MAIN_TRACKER, tracker_name)
+
+func _on_tracker_info_reordered(tracker_name: String, is_up: bool) -> void:
+	var child_count := running_trackers.get_child_count()
+
+	var node: Node
+	var current_position: int = -1
+	for idx in child_count:
+		var child: Node = running_trackers.get_child(idx)
+		if child.name == tracker_name:
+			node = child
+			current_position = idx
+			break
+
+	if current_position < 0:
+		logger.error("Unable to find tracker %s to reorder" % tracker_name)
+		return
+
+	var new_position: int = current_position - 1 if is_up else current_position + 1
+	if new_position < 0 or new_position >= child_count:
+		logger.info("Cannot move tracker to position %d" % new_position)
+		return
+
+	running_trackers.move_child(node, new_position)
+	AM.ps.publish(GlobalConstants.TRACKER_INFO_REORDERED, new_position, tracker_name)
+
+#endregion
 
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
@@ -194,6 +236,42 @@ func _handle_json(path: String, text: String) -> Result:
 		node.add_child(res.unwrap())
 	
 	return Result.ok(node)
+
+func _create_tracker_info(tracker_name: String, use_for_offsets: bool) -> HBoxContainer:
+	var hbox := HBoxContainer.new()
+	hbox.name = tracker_name
+
+	var label := Label.new()
+	label.text = tracker_name
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	hbox.add_child(label)
+
+	var toggle_button := CheckButton.new()
+	toggle_button.text = "Main tracker"
+	toggle_button.group = running_trackers_button_group
+	toggle_button.connect("toggled", self, "_on_tracker_info_main_tracker_toggled", [tracker_name])
+	toggle_button.pressed = use_for_offsets
+
+	hbox.add_child(toggle_button)
+
+	var vbox := VBoxContainer.new()
+
+	hbox.add_child(vbox)
+
+	var up_button := Button.new()
+	up_button.text = "^"
+	up_button.connect("pressed", self, "_on_tracker_info_reordered", [tracker_name, true])
+
+	vbox.add_child(up_button)
+
+	var down_button := Button.new()
+	down_button.text = "v"
+	down_button.connect("pressed", self, "_on_tracker_info_reordered", [tracker_name, false])
+
+	vbox.add_child(down_button)
+
+	return hbox
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #

@@ -426,6 +426,16 @@ func stop_receiver() -> void:
 		server.stop()
 		server = null
 
+func set_offsets(offsets: StoredOffsets) -> void:
+	var data: OSFData = data_map.get(0, null)
+	if data == null:
+		return
+
+	offsets.translation_offset = data.translation
+	offsets.rotation_offset = data.rotation
+	offsets.left_eye_gaze_offset = data.left_gaze.get_euler()
+	offsets.right_eye_gaze_offset = data.right_gaze.get_euler()
+
 func apply(_model: PuppetTrait, interpolation_data: InterpolationData, extra: Dictionary) -> void:
 	var data: OSFData = data_map.get(0, null)
 	if data == null or data.fit_3d_error > 100.0:
@@ -462,5 +472,3 @@ func apply(_model: PuppetTrait, interpolation_data: InterpolationData, extra: Di
 			features.eyebrow_quirk_left,
 			features.eyebrow_quirk_right
 		)
-
-	
