@@ -194,15 +194,10 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://model/dummies/tracking_backend_dummy.gd"
 }, {
-"base": "Node",
+"base": "Reference",
 "class": "TrackingBackendInterface",
 "language": "GDScript",
 "path": "res://model/extensions/tracking_backend_interface.gd"
-}, {
-"base": "Reference",
-"class": "TrackingDataInterface",
-"language": "GDScript",
-"path": "res://model/extensions/tracking_data_interface.gd"
 }, {
 "base": "PuppetTrait",
 "class": "VRMModel",
@@ -253,7 +248,6 @@ _global_script_class_icons={
 "Sun": "",
 "TrackingBackendDummy": "",
 "TrackingBackendInterface": "",
-"TrackingDataInterface": "",
 "VRMModel": "",
 "VRMTopLevel": ""
 }

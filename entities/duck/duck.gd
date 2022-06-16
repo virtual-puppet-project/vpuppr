@@ -43,7 +43,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 # Public functions                                                            #
 #-----------------------------------------------------------------------------#
 
-func custom_update(data: TrackingDataInterface, _interpolation_data: InterpolationData) -> void:
+func custom_update(data, _interpolation_data: InterpolationData) -> void:
 	if not is_blinking:
 		if(data.get_left_eye_open_amount() < blink_threshold and data.get_right_eye_open_amount() < blink_threshold):
 			blink()

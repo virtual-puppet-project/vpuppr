@@ -118,7 +118,7 @@ func _get_blend_shape_weight(mesh_instance: MeshInstance, blend_shape: String) -
 # Public functions                                                            #
 #-----------------------------------------------------------------------------#
 
-func custom_update(_data: TrackingDataInterface, _interpolation_data: InterpolationData) -> void:
+func custom_update(_data, _interpolation_data: InterpolationData) -> void:
 	logger.error("Model custom update not implemented")
 
 func get_bone_names() -> Array:

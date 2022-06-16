@@ -14,7 +14,12 @@ var logger: Logger
 var current_model_path := ""
 
 ## Dictionary of Tracker name: String -> TrackingBackendInterface
-var trackers := {}
+# var trackers := {}
+## Array of TrackingBackendInterfaces
+var trackers := []
+
+## Array of ConnectorTraits
+# var connectors := []
 
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
@@ -67,8 +72,16 @@ func _post_setup_scene() -> void:
 func _teardown() -> void:
 	_generate_preview()
 
-	for tracker_name in trackers.keys():
-		trackers[tracker_name].queue_free()
+	# for tracker in trackers.values():
+	# 	tracker.queue_free()
+	# trackers.clear()
+	for tracker in trackers:
+		if not tracker is TrackingBackendInterface:
+			continue
+		tracker.stop_receiver()
+	trackers.clear()
+
+	# connectors.clear()
 
 ## Virtual function that should be overridden instead of `_process`
 func _process_step(_delta: float) -> void:

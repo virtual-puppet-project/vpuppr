@@ -90,6 +90,9 @@ for both are provided in the form of `PuppetTrait` and `VRMModel`.
 A Tracker represents some sort of external input. In most cases, this will be from a tracking device like
 a webcam.
 
+Needs to have a `data` field that contains a path to a `data_descriptor`. This will be used to display the tracker
+options in the default UI.
+
 ## GUI
 The GUI (Graphical User Interface) is used to manipulate a [Runner](#runner) and may or may not be local to
 a given Runner. This allows for Runners to define their own GUIs or reuse and existing one.
