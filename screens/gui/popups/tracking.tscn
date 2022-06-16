@@ -26,4 +26,10 @@ size_flags_vertical = 3
 [node name="Label" type="Label" parent="Info/VBoxContainer"]
 margin_right = 1287.0
 margin_bottom = 14.0
-text = "TODO current running trackers"
+text = "Running trackers"
+align = 1
+
+[node name="RunningTrackers" type="VBoxContainer" parent="Info/VBoxContainer"]
+margin_top = 18.0
+margin_right = 1287.0
+margin_bottom = 18.0

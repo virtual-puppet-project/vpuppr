@@ -262,32 +262,22 @@ func _on_event_published(payload: SignalPayload) -> void:
 		GlobalConstants.POSE_BONE:
 			should_pose_model = payload.data
 			bone_to_pose = model.skeleton.find_bone(payload.id)
+		GlobalConstants.TRACKER_USE_AS_MAIN_TRACKER:
+			for tracker in trackers:
+				if tracker.get_name() == payload.data:
+					main_tracker = tracker
+					return
 
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#
 
 func _save_offsets() -> void:
-	# TODO hardcoded for OpenSeeFace
-	# if not trackers["OpenSeeFace"].is_listening():
-	# 	return
+	if main_tracker == null:
+		logger.error("No main tracker defined")
+		return
 
-	# if stored_offsets == null:
-	# 	stored_offsets = StoredOffsets.new()
-
-	# TODO hardcoded for osf
-	# var data: TrackingDataInterface = trackers["OpenSeeFace"].get_data()
-
-	# stored_offsets.translation_offset = data.get_translation()
-	# stored_offsets.rotation_offset = data.get_euler()
-	# stored_offsets.quat_offset = data.get_rotation()
-	# stored_offsets.left_eye_gaze_offset = data.get_left_eye_euler()
-	# stored_offsets.right_eye_gaze_offset = data.get_right_eye_euler()
-
-	stored_offsets.translation_offset = interpolation_data.bone_translation.target_value
-	stored_offsets.rotation_offset = interpolation_data.bone_rotation.target_value
-	stored_offsets.left_eye_gaze_offset = interpolation_data.left_gaze.target_value
-	stored_offsets.right_eye_gaze_offset = interpolation_data.right_gaze.target_value
+	main_tracker.set_offsets(stored_offsets)
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #

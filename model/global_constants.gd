@@ -37,7 +37,11 @@ const ExtensionOtherKeys := {
 const EVENT_PUBLISHED := "event_published"
 
 const MESSAGE_LOGGED := "message_logged"
+
 const TRACKER_TOGGLED := "tracker_toggled"
+const TRACKER_INFO_REORDERED := "tracker_info_reordered"
+const TRACKER_USE_AS_MAIN_TRACKER := "tracker_use_as_main"
+
 const MODEL_LOADED := "model_loaded"
 
 const POSE_BONE := "pose_bone"

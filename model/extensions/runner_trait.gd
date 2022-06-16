@@ -13,13 +13,9 @@ var logger: Logger
 # TODO this should be stored on the model
 var current_model_path := ""
 
-## Dictionary of Tracker name: String -> TrackingBackendInterface
-# var trackers := {}
 ## Array of TrackingBackendInterfaces
 var trackers := []
-
-## Array of ConnectorTraits
-# var connectors := []
+var main_tracker: TrackingBackendInterface
 
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
@@ -75,6 +71,7 @@ func _teardown() -> void:
 	# for tracker in trackers.values():
 	# 	tracker.queue_free()
 	# trackers.clear()
+	main_tracker = null
 	for tracker in trackers:
 		if not tracker is TrackingBackendInterface:
 			continue
@@ -109,6 +106,9 @@ func _generate_preview() -> void:
 func _on_config_changed(value, signal_name: String) -> void:
 	logger.error("Signal %s received with value %s\n_on_config_changed not yet implemented" %
 			[signal_name, str(value)])
+
+func _on_event_published(payload: SignalPayload) -> void:
+	logger.error("Event published with signal_name %s, not yet implemented" % payload.signal_name)
 
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
