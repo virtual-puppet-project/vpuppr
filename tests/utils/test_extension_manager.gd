@@ -95,25 +95,6 @@ func test_scan_pass():
 	assert_true(tracking_backend_dummy.is_listening())
 	assert_eq(tracking_backend_dummy.test_func(), 10)
 
-	var tracking_data_dummy_from_backend = tracking_backend_dummy.get_data()
-
-	assert_true(tracking_data_dummy_from_backend != null)
-
-	assert_eq(tracking_data_dummy_from_backend.get_updated_time(), 100.0)
-	assert_eq(tracking_data_dummy_from_backend.get_confidence(), 69.0)
-
-	# tracking_backend_dummy is a Node, so make sure to clean it up
-	tracking_backend_dummy.free()
-
-	var tracking_data_dummy = tracking_dummy.get_tracking_data()
-
-	assert_true(tracking_data_dummy != null)
-	
-	assert_eq(tracking_data_dummy.get_updated_time(), 100.0)
-	assert_eq(tracking_data_dummy.get_confidence(), 69.0)
-	assert_eq(tracking_data_dummy.get_euler(), Vector3.ONE)
-	assert_true(tracking_data_dummy.get_additional_info())
-
 	#endregion
 
 # TODO I think this test is flaky
