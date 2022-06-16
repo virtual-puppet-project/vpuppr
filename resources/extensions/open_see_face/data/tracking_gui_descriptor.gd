@@ -99,12 +99,12 @@ The camera to use for tracking.
 	var camera_name = AM.cm.get_data("open_see_face_camera_name")
 	if typeof(camera_name) == TYPE_NIL:
 		camera_name = ""
-		AM.cm.set_data("open_see_face_camera_name", camera_name)
+		AM.ps.publish("open_see_face_camera_name", camera_name)
 
 	var camera_index = AM.cm.get_data("open_see_face_camera_index")
 	if typeof(camera_index) == TYPE_NIL:
 		camera_index = 0
-		AM.cm.set_data("open_see_face_camera_index", camera_index)
+		AM.ps.publish("open_see_face_camera_index", camera_index)
 
 	# TODO compare the camera index to the actual camera name
 
@@ -126,10 +126,10 @@ The camera to use for tracking.
 		camera_index = 0
 		popup.set_item_checked(0, true)
 		ob.text = item_text
-		AM.cm.set_data("open_see_face_camera", item_text)
+		AM.ps.publish("open_see_face_camera", item_text)
 	
 	# Update the camera index every time since camera order can change between computer reboots
-	AM.cm.set_data("open_see_face_camera_index", camera_index)
+	AM.ps.publish("open_see_face_camera_index", camera_index)
 
 	return ob
 
@@ -156,7 +156,7 @@ more CPU usage.
 	var initial_value = AM.cm.get_data("open_see_face_tracker_fps")
 	if typeof(initial_value) == TYPE_NIL:
 		initial_value = int(12)
-		AM.cm.set_data("open_see_face_tracker_fps", initial_value)
+		AM.ps.publish("open_see_face_tracker_fps", initial_value)
 
 	line_edit.text = str(initial_value)
 
@@ -180,7 +180,7 @@ you will need to start OpenSeeFace from a terminal.
 	var initial_value = AM.cm.get_data("open_see_face_should_launch_tracker")
 	if typeof(initial_value) == TYPE_NIL:
 		initial_value = true
-		AM.cm.set_data("open_see_face_should_launch_tracker", initial_value)
+		AM.ps.publish("open_see_face_should_launch_tracker", initial_value)
 
 	r.pressed = initial_value
 
@@ -203,7 +203,7 @@ The ip address to listen at. Do not change this unless you know what you are doi
 	var initial_value = AM.cm.get_data("open_see_face_address")
 	if typeof(initial_value) == TYPE_NIL:
 		initial_value = "127.0.0.1"
-		AM.cm.set_data("open_see_face_address", initial_value)
+		AM.ps.publish("open_see_face_address", initial_value)
 
 	line_edit.text = str(initial_value)
 
@@ -229,7 +229,7 @@ The port to listen on. Do not change this unless you know what you are doing.
 	var initial_value = AM.cm.get_data("open_see_face_port")
 	if typeof(initial_value) == TYPE_NIL:
 		initial_value = int(11573)
-		AM.cm.set_data("open_see_face_port", initial_value)
+		AM.ps.publish("open_see_face_port", initial_value)
 
 	line_edit.text = str(initial_value)
 
@@ -247,29 +247,41 @@ func _toggle_tracking() -> Button:
 
 	return r
 
-# TODO refactor this. This looks to be far too complicated
 func _on_toggle_tracking(button: Button) -> void:
-	var current: Node = get_tree().current_scene
-	
-	var trackers = current.get("trackers")
-	if typeof(trackers) == TYPE_NIL:
-		AM.logger.error("OpenSeeFace: No trackers found in the current runner")
+	var trackers = get_tree().current_scene.get("trackers")
+	if typeof(trackers) != TYPE_ARRAY:
+		AM.logger.error("OpenSeeFace: Incompatible runner, no trackers property found")
 		return
 
-	var osf = trackers.get("OpenSeeFace")
-	if typeof(trackers) == TYPE_NIL or not osf.has_method("is_listening"):
-		AM.logger.error("OpenSeeFace: OSF tracker not found in the current runner")
-		return
+	var tracker: TrackingBackendInterface
+	var found := false
+	for i in trackers:
+		if i.get_name() == "OpenSeeFace" and i is TrackingBackendInterface:
+			tracker = i
+			found = true
+			break
 
 	# When this callback is triggered and tracking is already started, then the tracker
 	# is being turned off. Thus if the button were to be pressed again, it would be for
 	# starting the tracker
-	if osf.is_listening():
+	if found:
+		tracker.stop_receiver()
+		trackers.erase(tracker)
+
 		button.text = "Start"
 	else:
+		var osf_res: Result = AM.em.load_resource("OpenSeeFace", "open_see_face.gd")
+		if not osf_res or osf_res.is_err():
+			AM.logger.error("OpenSeeFace: Unable to load tracker")
+			return
+
+		var osf = osf_res.unwrap().new()
+
+		trackers.append(osf)
+
 		button.text = "Stop"
 
-	AM.ps.publish(GlobalConstants.TRACKER_TOGGLED, not osf.is_listening(), "OpenSeeFace")
+	# AM.ps.publish(GlobalConstants.TRACKER_TOGGLED, not found, "OpenSeeFace")
 
 func _python_path() -> HBoxContainer:
 	var r := HBoxContainer.new()

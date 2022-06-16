@@ -35,15 +35,15 @@ func _setup_scene() -> void:
 func _physics_step(delta: float) -> void:
 	._physics_step(delta)
 	
-	if not trackers["OpenSeeFace"].is_listening():
-		return
+	# if not trackers["OpenSeeFace"].is_listening():
+	# 	return
 	
-	var data = trackers["OpenSeeFace"].get_data()
-	if data == null:
-		return
+	# var data = trackers["OpenSeeFace"].get_data()
+	# if data == null:
+	# 	return
 
 	# TODO hardcoded for osf
-	model.custom_update(trackers["OpenSeeFace"].get_data(), interpolation_data)
+	# model.custom_update(trackers["OpenSeeFace"].get_data(), interpolation_data)
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #

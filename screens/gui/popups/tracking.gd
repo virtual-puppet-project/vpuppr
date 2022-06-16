@@ -30,9 +30,6 @@ func _setup() -> void:
 
 	tree.connect("item_selected", self, "_on_item_selected")
 
-	# All running trackers are managed by the current runner
-	var runner: RunnerTrait = get_tree().current_scene
-
 	for er in AM.em.query_extensions_for_type(GlobalConstants.ExtensionTypes.TRACKER):
 		er = er as ExtensionResource
 		if not er.other.has(GlobalConstants.ExtensionOtherKeys.DATA):
