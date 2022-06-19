@@ -11,7 +11,7 @@ All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` h
 * Python 3.6 - Python 3.9 (at time of writing, `onnxruntime` isn't compatible with Python 3.10)
 * If your distro doesn't supply older versions of python, use `ort-nightly` for the time being.
 * `python3-pip` and `python3-venv` are installed
-## Installing dependencies, creating env. (Linux only)
+## Installing dependencies, creating env. (Linux only, Manual install step)
 * Python 3.6 - 3.9: 
 * `pip install onnxruntime opencv-python pillow numpy`
 * Python 3.10 and above:
