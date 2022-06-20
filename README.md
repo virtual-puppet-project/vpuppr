@@ -14,13 +14,13 @@ All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` h
 ## Installing dependencies, creating env. (Linux only, Manual install step)
 ### Python 3.6 - 3.9: 
 * Create the virtual environment and install dependencies inside of it.
-* `cd ~/.local/share/godot/app_userdata/OpenSeeFaceGD`
+* `cd ~/.local/share/godot/app_userdata/vpuppr`
 * `python -m venv venv`
 * `source venv/bin/activate`
 * `pip install onnxruntime opencv-python pillow numpy`
 ### Python 3.10 and above:
 * Create the virtual environment and install dependencies inside of it.
-* `cd ~/.local/share/godot/app_userdata/OpenSeeFaceGD`
+* `cd ~/.local/share/godot/app_userdata/vpuppr`
 * `python -m venv venv`
 * `source venv/bin/activate`
 * `python -m pip install ort-nightly opencv-python pillow numpy`
