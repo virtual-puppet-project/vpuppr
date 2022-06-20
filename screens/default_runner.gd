@@ -27,10 +27,6 @@ var model: PuppetTrait
 var model_parent: Spatial
 var props_node: Spatial
 
-# Store transforms se we can easily reset
-var model_intitial_transform := Transform()
-var model_parent_initial_transform := Transform()
-
 var updated_time: float = 0.0
 var stored_offsets := StoredOffsets.new()
 var interpolation_data := InterpolationData.new()
@@ -177,17 +173,8 @@ func _setup_scene() -> void:
 
 	yield(model, "ready")
 
-	# Set initial values from config
-	model_intitial_transform = AM.cm.get_data("model_transform")
-	model_parent_initial_transform = AM.cm.get_data("model_parent_transform")
-	model.transform = model_intitial_transform
-	model_parent.transform = model_parent_initial_transform
-
-	var bone_transforms: Dictionary = AM.cm.get_data("bone_transforms")
-	for bone_idx in model.skeleton.get_bone_count():
-		if not bone_idx in bone_transforms:
-			continue
-		model.skeleton.set_bone_pose(bone_idx, bone_transforms[bone_idx])
+	model.transform = AM.cm.get_data("model_transform")
+	model_parent.transform = AM.cm.get_data("model_parent_transform")
 
 func _physics_step(_delta: float) -> void:
 	if trackers.empty():

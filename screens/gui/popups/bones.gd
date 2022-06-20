@@ -70,6 +70,7 @@ func _setup() -> void:
 		bone_display.should_pose_button.connect("toggled", self, "_on_should_pose", [bone_name])
 		_connect_element(bone_display.should_use_custom_interpolation, _generate_connect_args("bones_to_interpolate", bone_name))
 		_connect_element(bone_display.interpolation_rate, _generate_connect_args("bone_interpolation_rates", bone_name))
+		bone_display.reset_bone.connect("pressed", self, "_on_reset_bone", [bone_name])
 
 		for signal_name in BONE_SIGNALS:
 			AM.ps.subscribe(bone_display, signal_name, {
@@ -139,6 +140,12 @@ func _on_interpolation_rate_changed(text: String, bone_name: String) -> void:
 	bone_interpolation_rate_dict[bone_name] = rate
 
 	AM.ps.publish("bone_interpolation_rates", bone_interpolation_rate_dict, bone_name)
+
+func _on_reset_bone(bone_name: String) -> void:
+	var bone_transforms: Dictionary = AM.cm.get_data(GlobalConstants.BONE_TRANSFORMS)
+	bone_transforms[bone_name] = Transform.IDENTITY
+
+	AM.ps.publish(GlobalConstants.BONE_TRANSFORMS, bone_transforms, bone_name)
 
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #

@@ -75,8 +75,6 @@ func _teardown() -> void:
 		tracker.stop_receiver()
 	trackers.clear()
 
-	# connectors.clear()
-
 ## Virtual function that should be overridden instead of `_process`
 func _process_step(_delta: float) -> void:
 	pass
