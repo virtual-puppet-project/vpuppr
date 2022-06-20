@@ -12,10 +12,14 @@ All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` h
 * If your distro doesn't supply older versions of python, use `ort-nightly` for the time being.
 * `python3-pip` and `python3-venv` are installed
 ## Installing dependencies, creating env. (Linux only, Manual install step)
-* Python 3.6 - 3.9: 
+### Python 3.6 - 3.9: 
+* Create the virtual environment and install dependencies inside of it.
+* `cd ~/.local/share/godot/app_userdata/OpenSeeFaceGD`
+* `python -m venv venv`
+* `source venv/bin/activate`
 * `pip install onnxruntime opencv-python pillow numpy`
-* Python 3.10 and above:
-* Create the virtual environment
+### Python 3.10 and above:
+* Create the virtual environment and install dependencies inside of it.
 * `cd ~/.local/share/godot/app_userdata/OpenSeeFaceGD`
 * `python -m venv venv`
 * `source venv/bin/activate`
