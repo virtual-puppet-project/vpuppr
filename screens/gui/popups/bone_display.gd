@@ -6,14 +6,16 @@ extends ScrollContainer
 
 var logger: Logger
 
-# Whether or not to apply tracking data to the bone
+## Whether or not to apply tracking data to the bone
 var is_tracking_button := CheckButton.new()
-# Whether or not to consider user input as bone-pose input
+## Whether or not to consider user input as bone-pose input
 var should_pose_button := CheckButton.new()
-# When tracking the bone, whether or not to use the global interpolation rate
+## When tracking the bone, whether or not to use the global interpolation rate
 var should_use_custom_interpolation := CheckButton.new()
-# Interpolation rate to use when applying tracking data
+## Interpolation rate to use when applying tracking data
 var interpolation_rate := LineEdit.new()
+## Reset the pose of the bone
+var reset_bone := Button.new()
 
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
@@ -60,6 +62,10 @@ func _init(bone_name: String, p_logger: Logger) -> void:
 	hbox.add_child(interpolation_rate)
 
 	options_list.add_child(hbox)
+
+	reset_bone.text = "Reset bone pose"
+
+	options_list.add_child(reset_bone)
 
 	#endregion
 
