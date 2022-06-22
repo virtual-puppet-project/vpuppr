@@ -1,5 +1,7 @@
 extends BaseTreeLayout
 
+var _selectable_gui_count: int = 0
+
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#
@@ -10,7 +12,9 @@ func _init() -> void:
 func _setup_logger() -> void:
 	logger = Logger.new(self)
 
-func _pre_setup() -> void:
+func _setup() -> Result:
+	_selectable_gui_count = _get_selectable_gui_count()
+
 	_initial_page = "Default Runner"
 	var default_runner := _create_view({
 		"name": _initial_page,
@@ -31,6 +35,8 @@ func _pre_setup() -> void:
 		})
 
 		add_child(view)
+	
+	return ._setup()
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
@@ -65,6 +71,18 @@ static func _h_fill_expand(control: Control) -> void:
 
 static func _v_fill_expand(control: Control) -> void:
 	control.size_flags_vertical = Control.SIZE_EXPAND_FILL
+
+static func _get_selectable_gui_count() -> int:
+	var r: int = 1
+
+	for ext in AM.em.query_extensions_for_type(GlobalConstants.ExtensionTypes.GUI):
+		# TODO this might not be a great solution
+		if not ext.other.get(GlobalConstants.ExtensionOtherKeys.SELECTABLE_GUI, false):
+			continue
+
+		r += 1
+
+	return r
 
 func _create_view(data: Dictionary) -> ScrollContainer:
 	# TODO this is kind of gross
@@ -106,7 +124,7 @@ func _create_view(data: Dictionary) -> ScrollContainer:
 
 	var select_gui_toggle := CheckButton.new()
 	select_gui_toggle.text = "Show GUI selector"
-	select_gui_toggle.set_pressed_no_signal(true)
+	select_gui_toggle.set_pressed_no_signal(true if _selectable_gui_count > 1 else false)
 
 	list.add_child(select_gui_toggle)
 

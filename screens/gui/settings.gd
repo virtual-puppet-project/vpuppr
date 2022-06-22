@@ -4,11 +4,12 @@ extends BaseTreeLayout
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#
 
-func _pre_setup() -> void:
+func _setup_logger() -> void:
 	logger = Logger.new(self)
-	_initial_page = "General"
 
-func _setup() -> void:
+func _setup() -> Result:
+	_initial_page = "General"
+	
 	#region Rendering
 
 	_connect_element($Rendering/VBoxContainer/TransparentBackground, "use_transparent_background")
@@ -25,7 +26,7 @@ func _setup() -> void:
 
 	#endregion
 
-	._setup()
+	return ._setup()
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #

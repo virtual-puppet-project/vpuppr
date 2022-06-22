@@ -12,13 +12,13 @@ var running_trackers_button_group := ButtonGroup.new()
 func _setup_logger() -> void:
 	logger = Logger.new("Tracking")
 
-func _setup() -> void:
+func _setup() -> Result:
 	AM.ps.subscribe(self, GlobalConstants.EVENT_PUBLISHED)
 
 	running_trackers = $Info/VBoxContainer/RunningTrackers
 
 	var info := $Info as ScrollContainer
-	tree = $Tree
+	_set_tree($Tree)
 	pages[INFO_PAGE] = info
 
 	_initial_page = INFO_PAGE
@@ -61,6 +61,8 @@ func _setup() -> void:
 		display.hide()
 
 		add_child(display)
+	
+	return Result.ok()
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #

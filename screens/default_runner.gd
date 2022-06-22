@@ -304,13 +304,14 @@ func load_model(path: String) -> void:
 	var config_result: Result = AM.cm.load_model_config("%s.%s" % [model_name, ConfigManager.CONFIG_FILE_EXTENSION])
 	if config_result.is_err():
 		logger.info("Config for %s not found. Creating new config" % model_name)
+		
+		var config_res: Result = AM.cm.create_new_model_config(model_name, path, model_name)
+		if config_res == null or config_res.is_err():
+			logger.error(config_res.unwrap_err().to_string() if config_res != null else "Something super broke, please check the logs")
+			logger.error("Failed creating a new config, be aware things might be broken")
+			return
 
-		var mc := ModelConfig.new()
-		mc.config_name = model_name
-		mc.model_name = model_name
-		mc.model_path = path
-
-		AM.cm.model_config = mc
+		AM.cm.model_config = config_res.unwrap()
 
 	logger.info("Finished load_model for %s" % path)
 

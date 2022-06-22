@@ -69,7 +69,7 @@ const DEFAULT_RUNNER_PATH := "res://screens/default_runner.gd"
 
 const DEFAULT_GUI_PATH := "res://screens/gui/default_gui.tscn"
 
-const PROJECT_GITHUB_REPO := "https://github.com/you-win/openseeface-gd"
+const PROJECT_GITHUB_REPO := "https://github.com/virtual-puppet-project/vpuppr"
 const DISCORD_INVITE := "https://discord.com/invite/6mcdWWBkrr"
 
 const RUNNER_PREVIEW_DIR_PATH := "user://runner-previews/"
