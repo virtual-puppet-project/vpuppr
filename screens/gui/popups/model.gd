@@ -4,7 +4,7 @@ extends BaseTreeLayout
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#
 
-func _setup() -> void:
+func _setup() -> Result:
 	_initial_page = "General"
 
 	#region General
@@ -83,7 +83,7 @@ func _setup() -> void:
 
 	#endregion
 
-	._setup()
+	return ._setup()
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #

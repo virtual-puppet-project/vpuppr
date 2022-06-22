@@ -4,6 +4,9 @@ extends AbstractManager
 const METADATA_FILE_NAME := "metadata.json"
 const CONFIG_FILE_EXTENSION := "json"
 
+const METADATA_CALLBACK := "_on_metadata_changed"
+const MODEL_CONFIG_CALLBACK := "_on_model_config_changed"
+
 var save_data_path := ""
 
 var metadata := Metadata.new()
@@ -53,25 +56,30 @@ func _on_model_config_changed(data, key: String) -> void:
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#
 
+## Save a string to a given path
+##
+## @return: Result<String> - The path the String was saved at
 func _save_to_file(path: String, data: String) -> Result:
+	path = "%s/%s" % [save_data_path, path]
+	
 	var file := File.new()
-	if file.open("%s/%s" % [save_data_path, path], File.WRITE) != OK:
+	if file.open(path, File.WRITE) != OK:
 		return Result.err(Error.Code.FILE_WRITE_FAILURE)
 
 	file.store_string(data)
 
-	return Result.ok()
+	return Result.ok(path)
 
 ## All config keys are registered with the PubSub. A new signal is created for each key and then
 ## the ConfigManager subscribes itself to any changes.
 ##
 ## @return: Result - An error from registration or OK
 func _register_all_configs_with_pub_sub() -> Result:
-	var result := _register_config_data_with_pub_sub(metadata.get_as_dict(), "_on_metadata_changed")
+	var result := _register_config_data_with_pub_sub(metadata.get_as_dict(), METADATA_CALLBACK)
 	if result.is_err():
 		return result
 
-	result = _register_config_data_with_pub_sub(model_config.get_as_dict(), "_on_model_config_changed")
+	result = _register_config_data_with_pub_sub(model_config.get_as_dict(), MODEL_CONFIG_CALLBACK)
 	if result.is_err():
 		return result
 	
@@ -103,6 +111,18 @@ func _register_config_data_with_pub_sub(data: Dictionary, callback: String) -> R
 # Public functions                                                            #
 #-----------------------------------------------------------------------------#
 
+func runtime_subscribe_to_signal(signal_name: String, is_metadata: bool = false) -> Result:
+	var res: Result = AM.ps.create_signal(signal_name)
+	if res == null or res.is_err():
+		return res
+
+	res = AM.ps.subscribe(self, signal_name, {
+		"args": [signal_name],
+		"callback": METADATA_CALLBACK if is_metadata else MODEL_CONFIG_CALLBACK
+	})
+
+	return res
+
 #region Save/load
 
 func load_metadata() -> Result:
@@ -120,6 +140,26 @@ func load_metadata() -> Result:
 	
 	return Result.ok()
 
+func create_new_model_config(model_name: String, model_path: String, config_name: String = "") -> Result:
+	if config_name.empty():
+		config_name = model_name
+	
+	if metadata.model_configs.has(config_name):
+		return Result.err(Error.Code.METADATA_CONFIG_ALREADY_EXISTS, config_name)
+	
+	var mc := ModelConfig.new()
+	mc.config_name = config_name
+	mc.model_name = model_name
+	mc.model_path = model_path
+	
+	var res := _save_to_file("%s.json" % config_name, mc.get_as_json_string())
+	if res.is_err():
+		return res
+	
+	metadata.model_configs[config_name] = res.unwrap()
+	
+	return Result.ok(mc)
+
 func load_model_config(path: String) -> Result:
 	var result := load_model_config_no_set(path)
 	if result.is_err():
@@ -129,7 +169,7 @@ func load_model_config(path: String) -> Result:
 
 	logger.info("Successfully set ModelConfig %s" % path)
 
-	return Result.ok()
+	return result
 
 func load_model_config_no_set(path: String) -> Result:
 	logger.info("Loading model config: %s" % path)
@@ -155,7 +195,7 @@ func save_data() -> Result:
 	if result.is_err():
 		return result
 
-	if model_config.config_name != ModelConfig.DEFAULT_NAME:
+	if model_config.config_name != ModelConfig.CHANGE_ME:
 		result = _save_to_file("%s.json" % model_config.config_name, model_config.get_as_json_string())
 		if result.is_err():
 			return result
@@ -190,7 +230,7 @@ func set_data(key: String, value) -> void:
 ## @param: key: String - The key to find
 ##
 ## @return: Variant - The data found at the given key
-func get_data(key: String):
+func get_data(key: String, default_value = null, use_metadata: bool = false):
 	var val = model_config.get_data(key)
 	if val != null:
 		return val
@@ -199,9 +239,14 @@ func get_data(key: String):
 	if val != null:
 		return val
 
-	logger.error("Key %s not found in ModelConfig and Metadata" % key)
+	logger.debug("Key %s not found in ModelConfig and Metadata, creating and using default value" % key)
 
-	return null
+	if use_metadata:
+		metadata.set_data(key, default_value)
+	else:
+		model_config.set_data(key, default_value)
+
+	return default_value
 
 ## Wrapper for getting KNOWN data in ModelConfig or Metadata, in that search order.
 ##

@@ -1,6 +1,21 @@
 extends PanelContainer
 
+const CONFIG_KEYS := {
+	"OPEN_SEE_FACE_CAMERA_NAME": "open_see_face_camera_name",
+	"OPEN_SEE_FACE_CAMERA_INDEX": "open_see_face_camera_index",
+	"OPEN_SEE_FACE_TRACKER_FPS": "open_see_face_tracker_fps",
+	"OPEN_SEE_FACE_SHOULD_LAUNCH_TRACKER": "open_see_face_should_launch_tracker",
+	"OPEN_SEE_FACE_ADDRESS": "open_see_face_address",
+	"OPEN_SEE_FACE_PORT": "open_see_face_port"
+}
+
 func _init() -> void:
+	for val in CONFIG_KEYS.values():
+		var res: Result = AM.cm.runtime_subscribe_to_signal(val)
+		if res == null or res.is_err():
+			AM.logger.error("OpenSeeFace %s" % (res.to_string() if res != null else "Something is super broken"))
+			return
+
 	_hv_fill_expand(self)
 	
 	var scroll_container := ScrollContainer.new()

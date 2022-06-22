@@ -20,9 +20,10 @@ var model: Node
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#
 
-func _setup() -> void:
+func _setup() -> Result:
 	info = $Info
-	tree = $Tree
+	_set_tree($Tree)
+
 	pages[INFO_PAGE] = info
 	
 	_initial_page = INFO_PAGE
@@ -39,13 +40,12 @@ func _setup() -> void:
 
 	model = get_tree().current_scene.get("model")
 	if model == null:
-		printerr("No model found, no bone functionality will be available")
-		return
+		return Result.err(Error.Code.GUI_SETUP_ERROR, "No model found, no bone functionality will be available")
 
 	var model_skeleton = model.get("skeleton")
 	if model_skeleton == null:
 		printerr("No model skeleton found, no bone functionality will be available")
-		return
+		return Result.err(Error.Code.GUI_SETUP_ERROR, "No model skeleton found, no bone functionality will be available")
 
 	# Store all references to TreeItems, discard afterwards
 	var known_bones := {}
@@ -79,6 +79,8 @@ func _setup() -> void:
 			})
 
 		AM.ps.subscribe(bone_display, GlobalConstants.EVENT_PUBLISHED)
+
+	return Result.ok()
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #

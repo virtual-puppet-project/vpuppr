@@ -10,22 +10,47 @@ var logger: Logger
 ## DO NOT OVERRIDE
 func _ready() -> void:
 	_setup_logger()
+	
+	var ret
 
-	_pre_setup()
-	_setup()
-	_post_setup()
+	ret = _pre_setup()
+	if ret is GDScriptFunctionState:
+		ret = yield(ret, "completed")
+	if ret == null or ret.is_err():
+		logger.error(ret.to_string() if ret != null else "Something is super wrong")
+		return
+
+	ret = _setup()
+	if ret is GDScriptFunctionState:
+		ret = yield(ret, "completed")
+	if ret == null or ret.is_err():
+		logger.error(ret.to_string() if ret != null else "Something is super wrong")
+		return
+	
+	ret = _post_setup()
+	if ret is GDScriptFunctionState:
+		ret = yield(ret, "completed")
+	if ret == null or ret.is_err():
+		logger.error(ret.to_string() if ret != null else "Something is super wrong")
+		return
 
 func _setup_logger() -> void:
 	pass
 
-func _pre_setup() -> void:
-	pass
+func _pre_setup() -> Result:
+	yield(get_tree(), "idle_frame")
 
-func _setup() -> void:
-	pass
+	return Result.ok()
 
-func _post_setup() -> void:
-	pass
+func _setup() -> Result:
+	yield(get_tree(), "idle_frame")
+
+	return Result.ok()
+
+func _post_setup() -> Result:
+	yield(get_tree(), "idle_frame")
+
+	return Result.ok()
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #

@@ -2,7 +2,8 @@
  "background_color": "ff262626",
  "config_file": "res://.gutconfig.json",
  "dirs": [
-  "res://tests"
+  "res://tests",
+  "res://resources"
  ],
  "disable_colors": false,
  "double_strategy": "partial",
