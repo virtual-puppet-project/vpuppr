@@ -76,10 +76,10 @@ func _init(bone_name: String, p_logger: Logger) -> void:
 #-----------------------------------------------------------------------------#
 
 func _on_bone_updated(payload: SignalPayload, signal_name: String) -> void:
-	if name != payload.id:
-		return
 	if not payload is SignalPayload:
 		logger.error("Unexpected callback value %s" % str(payload))
+		return
+	if name != payload.id:
 		return
 
 	match signal_name:

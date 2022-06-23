@@ -12,6 +12,7 @@ var lm: LogManager
 var cm: ConfigManager
 var em: ExtensionManager
 var nm: NotificationManager
+var tcm: TempCacheManager
 # Not girl, you weirdo
 var grl = preload("res://addons/gdnative-runtime-loader/gdnative_runtime_loader.gd").new()
 
@@ -44,6 +45,7 @@ func _ready() -> void:
 	em = ExtensionManager.new()
 	# Idk, this could really be anywhere
 	nm = NotificationManager.new()
+	tcm = TempCacheManager.new()
 
 	# Initialized here since loggers must connect to the PubSub
 	logger = Logger.new("AppManager")
@@ -64,6 +66,8 @@ func _process(delta: float) -> void:
 func _on_tree_exiting() -> void:
 	if env.current_env != Env.Envs.TEST:
 		save_config_instant()
+
+	AbstractManager.teardown()
 	
 	logger.info("Exiting. おやすみ。")
 

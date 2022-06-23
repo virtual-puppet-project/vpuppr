@@ -22,6 +22,10 @@ var main_tracker: TrackingBackendInterface
 #-----------------------------------------------------------------------------#
 
 ## DON'T OVERRIDE THIS
+func _init(args: Dictionary = {}) -> void:
+	_initialize(args)
+
+## DON'T OVERRIDE THIS
 func _ready() -> void:
 	_setup_logger()
 
@@ -42,6 +46,9 @@ func _process(delta: float) -> void:
 ## DONT'T OVERRIDE THIS
 func _physics_process(delta: float) -> void:
 	_physics_step(delta)
+
+func _initialize(_args: Dictionary) -> void:
+	pass
 
 ## Virtual function that sets up the local logger
 func _setup_logger() -> void:

@@ -1,5 +1,142 @@
 extends BaseTreeLayout
 
+const LISTEN_SIGNALS := [
+	"config_name",
+	"description",
+	"hotkey",
+	"notes",
+	"is_default_for_model"
+]
+
+class PresetsPage extends ScrollContainer:
+	class PageElement extends HBoxContainer:
+		var element: Control
+		
+		func _init(element_name: String, initial_value, data: Dictionary = {
+			"element_type": "LineEdit",
+			"set_property": "text",
+			"expand_vertically": false
+		}) -> void:
+			ControlUtil.h_expand_fill(self)
+
+			var label := Label.new()
+			ControlUtil.h_expand_fill(label)
+			label.text = element_name
+
+			add_child(label)
+
+			element = ClassDB.instance(data.element_type)
+			ControlUtil.h_expand_fill(element)
+			element.set(data.set_property, initial_value)
+			if data.get("expand_vertically", false):
+				ControlUtil.v_expand_fill(self)
+				ControlUtil.v_expand_fill(element)
+
+			add_child(element)
+
+	enum Actions {
+		NONE = 0,
+
+		LOAD,
+		DELETE
+	}
+
+	var logger: Logger
+
+	var name_element: PageElement
+	var description_element: PageElement
+	var hotkey_element: PageElement
+	var notes_element: PageElement
+	var default_for_model_element: PageElement
+	
+	var load_button: Button
+	var delete_button: Button
+
+	func _init(page_name: String, config_string: String, p_logger: Logger) -> void:
+		logger = p_logger
+
+		var config := ModelConfig.new()
+		config.parse_string(config_string)
+
+		ControlUtil.h_expand_fill(self)
+		name = page_name
+
+		var list := VBoxContainer.new()
+		ControlUtil.all_expand_fill(list)
+
+		add_child(list)
+
+		#region Config values
+
+		name_element = PageElement.new("Config name", config.config_name)
+		list.add_child(name_element)
+
+		description_element = PageElement.new("Description", config.description)
+		list.add_child(description_element)
+
+		hotkey_element = PageElement.new("Hotkey", config.hotkey)
+		list.add_child(hotkey_element)
+
+		notes_element = PageElement.new("Notes", config.notes, {
+			"element_type": "TextEdit",
+			"set_property": "text",
+			"expand_vertically": true
+		})
+		list.add_child(notes_element)
+
+		default_for_model_element = PageElement.new("Is default for model", config.is_default_for_model, {
+			"element_type": "CheckButton",
+			"set_property": "pressed"
+		})
+		list.add_child(default_for_model_element)
+
+		#endregion
+		
+		var button_container := HBoxContainer.new()
+		
+		load_button = Button.new()
+		ControlUtil.h_expand_fill(load_button)
+		load_button.text = "Load"
+		button_container.add_child(load_button)
+		load_button.connect("pressed", self, "_on_button_pressed", [Actions.LOAD])
+		
+		delete_button = Button.new()
+		ControlUtil.h_expand_fill(delete_button)
+		delete_button.text = "Delete"
+		button_container.add_child(delete_button)
+		delete_button.connect("pressed", self, "_on_button_pressed", [Actions.DELETE])
+		
+		list.add_child(button_container)
+
+	func _on_config_updated(payload: SignalPayload) -> void:
+		if not payload is SignalPayload:
+			logger.error("Unexpected callback value %s" % str(payload))
+			return
+		if payload.id != name:
+			return
+
+		match payload.signal_name:
+			"config_name":
+				pass
+			"description":
+				pass
+			"hotkey":
+				pass
+			"notes":
+				pass
+			"is_default_for_model":
+				pass
+
+	func _on_button_pressed(action_type: int) -> void:
+		match action_type:
+			Actions.LOAD:
+				logger.debug(TempCacheManager.get_singleton().pull("runner_path"))
+			Actions.DELETE:
+				pass
+			_:
+				logger.error("Unhandled action %s" % action_type)
+				return
+
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#
@@ -111,7 +248,7 @@ static func _create_input_box(text: String, initial_value: String) -> HBoxContai
 	return r
 
 func _add_page(root: TreeItem, page_name: String, config_string: String, should_select: bool = false) -> Result:
-	var page := _create_page(page_name, config_string)
+	var page := PresetsPage.new(page_name, config_string, logger)
 
 	add_child(page)
 
