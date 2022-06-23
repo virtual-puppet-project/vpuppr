@@ -66,12 +66,6 @@ func _terminate(node: Node) -> void:
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#
 
-static func _h_fill_expand(control: Control) -> void:
-	control.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-
-static func _v_fill_expand(control: Control) -> void:
-	control.size_flags_vertical = Control.SIZE_EXPAND_FILL
-
 static func _get_selectable_gui_count() -> int:
 	var r: int = 1
 
@@ -89,26 +83,26 @@ func _create_view(data: Dictionary) -> ScrollContainer:
 	var view_name: String = data.run_args.front().get_basename().get_file()
 	
 	var sc := ScrollContainer.new()
-	_h_fill_expand(sc)
+	ControlUtil.h_expand_fill(sc)
 	sc.name = view_name
 	sc.scroll_horizontal_enabled = false
 
 	var list := VBoxContainer.new()
-	_h_fill_expand(list)
-	_v_fill_expand(list)
+	ControlUtil.h_expand_fill(list)
+	ControlUtil.v_expand_fill(list)
 
 	sc.add_child(list)
 
 	var title := Label.new()
-	_h_fill_expand(title)
+	ControlUtil.h_expand_fill(title)
 	title.align = Label.ALIGN_CENTER
 	title.text = data.name
 
 	list.add_child(title)
 
 	var preview := TextureRect.new()
-	_h_fill_expand(preview)
-	_v_fill_expand(preview)
+	ControlUtil.h_expand_fill(preview)
+	ControlUtil.v_expand_fill(preview)
 	preview.expand = true
 	preview.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT
 
@@ -160,8 +154,7 @@ func _create_gui_select(runner_path: String) -> WindowDialog:
 	var wd := WindowDialog.new()
 
 	var pc := PanelContainer.new()
-	_h_fill_expand(pc)
-	_v_fill_expand(pc)
+	ControlUtil.all_expand_fill(pc)
 	pc.anchor_bottom = 1.0
 	pc.anchor_right = 1.0
 
@@ -172,8 +165,7 @@ func _create_gui_select(runner_path: String) -> WindowDialog:
 	pc.add_child(sc)
 
 	var list := VBoxContainer.new()
-	_h_fill_expand(list)
-	_v_fill_expand(list)
+	ControlUtil.all_expand_fill(list)
 
 	sc.add_child(list)
 
@@ -224,6 +216,10 @@ func _run_runner(runner_path: String, gui_path: String) -> void:
 	get_tree().current_scene = runner
 	root.remove_child(current_scene)
 	current_scene.queue_free()
+
+	var tcm := TempCacheManager.get_singleton()
+	tcm.push("runner_path", runner_path)
+	tcm.push("gui_path", gui_path)
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #

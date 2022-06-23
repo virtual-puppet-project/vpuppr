@@ -50,6 +50,11 @@ _global_script_classes=[ {
 "path": "res://utils/config_manager.gd"
 }, {
 "base": "Reference",
+"class": "ControlUtil",
+"language": "GDScript",
+"path": "res://utils/control_util.gd"
+}, {
+"base": "Reference",
 "class": "DataPoint",
 "language": "GDScript",
 "path": "res://model/config/data_point.gd"
@@ -189,6 +194,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://entities/sun.gd"
 }, {
+"base": "AbstractManager",
+"class": "TempCacheManager",
+"language": "GDScript",
+"path": "res://utils/temp_cache_manager.gd"
+}, {
 "base": "TrackingBackendInterface",
 "class": "TrackingBackendDummy",
 "language": "GDScript",
@@ -218,6 +228,7 @@ _global_script_class_icons={
 "BaseProp": "",
 "BaseTreeLayout": "",
 "ConfigManager": "",
+"ControlUtil": "",
 "DataPoint": "",
 "DefaultGui": "",
 "DefaultRunner": "",
@@ -246,6 +257,7 @@ _global_script_class_icons={
 "SignalPayload": "",
 "StoredOffsets": "",
 "Sun": "",
+"TempCacheManager": "",
 "TrackingBackendDummy": "",
 "TrackingBackendInterface": "",
 "VRMModel": "",

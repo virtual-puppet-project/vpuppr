@@ -2,7 +2,7 @@ class_name BaseTreeLayout
 extends BaseLayout
 
 const TREE_COLUMN: int = 0
-const SPLIT_OFFSET_RATIO: float = 0.3
+const TREE_MIN_X: int = 200
 
 var tree: Tree setget _set_tree
 
@@ -67,17 +67,7 @@ func _wait_for_parent() -> int:
 
 func _set_tree(p_tree: Tree) -> void:
 	tree = p_tree
-
-	if not self.is_class("SplitContainer"):
-		logger.debug("Tried to set split_offset, but %s was not a SplitContainer" % name)
-		return
-
-	var parent: Node = get_parent()
-	if not parent.is_class("Control"):
-		logger.debug("%s's parent was not a Control, using window size for split_offset comparison" % name)
-		set("split_offset", OS.window_size * SPLIT_OFFSET_RATIO)
-	else:
-		set("split_offset", parent.rect_size.x * SPLIT_OFFSET_RATIO)
+	tree.rect_min_size.x = TREE_MIN_X
 
 func _toggle_page(page_name: String) -> void:
 	if page_name.empty():

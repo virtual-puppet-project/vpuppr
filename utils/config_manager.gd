@@ -40,6 +40,12 @@ func _setup_class() -> void:
 	if result.is_err():
 		logger.error(result.unwrap_err().to_string())
 
+func _setup_singleton() -> void:
+	__SELF__["ConfigManager"] = self
+
+static func get_singleton(_x = "") -> AbstractManager:
+	return .get_singleton("ConfigManager")
+
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#

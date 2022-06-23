@@ -3,9 +3,9 @@ extends Spatial
 
 const DEFAULT_CONFIG_VALUES := [
 	"head_bone",
-	"translation_damp",
-	"rotation_damp",
-	"additional_bone_damp",
+	"bone_translation_damping",
+	"bone_rotation_damping",
+	"additional_bone_damping",
 	"gaze_strength",
 	"additional_bones",
 	"bone_transforms"
@@ -17,9 +17,9 @@ var logger: Logger
 
 var head_bone: String
 
-var translation_damp: float
-var rotation_damp: float
-var additional_bone_damp: float
+var bone_translation_damping: float
+var bone_rotation_damping: float
+var additional_bone_damping: float
 
 var gaze_strength: float
 
@@ -100,12 +100,12 @@ func _on_config_changed(value, signal_name: String) -> void:
 	match signal_name:
 		"head_bone":
 			head_bone = value
-		"translation_damp":
-			translation_damp = value
-		"rotation_damp":
-			rotation_damp = value
-		"additional_bone_damp":
-			additional_bone_damp = value
+		"bone_translation_damping":
+			bone_translation_damping = value
+		"bone_rotation_damping":
+			bone_rotation_damping = value
+		"additional_bone_damping":
+			additional_bone_damping = value
 		"gaze_strength":
 			gaze_strength = value
 		"additional_bones":
@@ -188,10 +188,10 @@ func apply_movement(tx: Vector3, rt: Vector3) -> void:
 	skeleton.set_bone_pose(head_bone_id, head_transform)
 	if not additional_bones.empty():
 		var additional_transform = Transform()
-		additional_transform = additional_transform.translated(tx * additional_bone_damp)
-		additional_transform = additional_transform.rotated(Vector3.RIGHT, rt.x * additional_bone_damp)
-		additional_transform = additional_transform.rotated(Vector3.UP, rt.y * additional_bone_damp)
-		additional_transform = additional_transform.rotated(Vector3.BACK, rt.z * additional_bone_damp)
+		additional_transform = additional_transform.translated(tx * additional_bone_damping)
+		additional_transform = additional_transform.rotated(Vector3.RIGHT, rt.x * additional_bone_damping)
+		additional_transform = additional_transform.rotated(Vector3.UP, rt.y * additional_bone_damping)
+		additional_transform = additional_transform.rotated(Vector3.BACK, rt.z * additional_bone_damping)
 
 		for bone in additional_bones:
 			skeleton.set_bone_pose(bone, additional_transform)
