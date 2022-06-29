@@ -10,13 +10,13 @@ func before_all():
 	.before_all()
 
 func before_each():
-	pass
+	tcm = TempCacheManager.new()
 
 func after_each():
-	pass
+	tcm.clear()
 
 func after_all():
-	pass
+	tcm = null
 
 #-----------------------------------------------------------------------------#
 # Utils                                                                       #
@@ -26,16 +26,53 @@ func after_all():
 # Tests                                                                       #
 #-----------------------------------------------------------------------------#
 
-func test_init_pass():
-	var am = partial_double("res://utils/abstract_manager.gd").new()
+var tcm: TempCacheManager
 
-	assert_called(am, "_setup_logger")
-	assert_call_count(am, "_setup_logger", 1)
-	assert_called(am, "_setup_class")
-	assert_call_count(am, "_setup_class", 1)
-	assert_eq(am.is_setup, true)
+func test_push_pull_erase_string_pass():
+	var key := "my_key"
+	var val := "my_value"
 
-	am._init()
+	var res: Result = tcm.pull(key)
+	
+	if not assert_result_is_err(res):
+		return
+	
+	tcm.push(key, val)
 
-	assert_call_count(am, "_setup_logger", 2)
-	assert_call_count(am, "_setup_class", 2)
+	res = tcm.pull(key)
+
+	if not assert_result_is_ok(res):
+		return
+	
+	assert_eq(res.unwrap(), val)
+	assert_ne(res.unwrap(), key)
+
+	tcm.erase(key)
+
+	res = tcm.pull(key)
+
+	assert_result_is_err(res)
+
+func test_push_pull_string_overwrite_pass():
+	var key := "my_key"
+	var val := "my_value"
+	var val_alt := "my_other_value"
+
+	tcm.push(key, val)
+
+	var res: Result = tcm.pull(key)
+
+	if not assert_result_is_ok(res):
+		return
+
+	assert_eq(res.unwrap(), val)
+
+	tcm.push(key, val_alt)
+
+	res = tcm.pull(key)
+
+	if not assert_result_is_ok(res):
+		return
+
+	assert_eq(res.unwrap(), val_alt)
+	assert_ne(res.unwrap(), val)

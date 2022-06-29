@@ -18,6 +18,5 @@ func stop_receiver() -> void:
 func set_offsets(_offsets: StoredOffsets) -> void:
 	AM.logger.error("set_offsets not yet implemented")
 
-## 
 func apply(_model: PuppetTrait, _interpolation_data: InterpolationData, _extra: Dictionary) -> void:
 	AM.logger.error("apply not yet implemented")

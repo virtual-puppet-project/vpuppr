@@ -1,10 +1,14 @@
 class_name GlobalConstants
 extends Reference
 
-const IGNORED_PROPERTIES_REFERENCE := [
+const IGNORED_PROPERTIES := [
 	"Reference",
+	"Resource",
 	"script",
-	"Script Variables"
+	"Script Variables",
+	"resource_local_to_scene",
+	"resource_path",
+	"resource_name"
 ]
 
 #region Extensions
@@ -47,6 +51,8 @@ const MODEL_LOADED := "model_loaded"
 const POSE_BONE := "pose_bone"
 const BONE_TRANSFORMS := "bone_transforms"
 
+const RELOAD_RUNNER := "reload_runner"
+
 #endregion
 
 enum CustomTypes {
@@ -66,8 +72,8 @@ const SceneSignals := {
 
 const LANDING_SCREEN_PATH := "res://screens/landing_screen.tscn"
 const DEFAULT_RUNNER_PATH := "res://screens/default_runner.gd"
-
 const DEFAULT_GUI_PATH := "res://screens/gui/default_gui.tscn"
+const DEFAULT_MODEL_PATH := "res://entities/duck/duck.tscn"
 
 const PROJECT_GITHUB_REPO := "https://github.com/virtual-puppet-project/vpuppr"
 const DISCORD_INVITE := "https://discord.com/invite/6mcdWWBkrr"

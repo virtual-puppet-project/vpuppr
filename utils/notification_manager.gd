@@ -1,6 +1,8 @@
 class_name NotificationManager
 extends AbstractManager
 
+const NOTIFICATION_MANAGER_NAME := "NotificationManagerName"
+
 const MIN_TIME_BETWEEN_DUPLICATE_TOAST: int = 5000 # In milliseconds
 
 var popup_queue: Array = []
@@ -22,7 +24,7 @@ func _init() -> void:
 	pass
 
 func _setup_logger() -> void:
-	logger = Logger.new("NotificationManager")
+	logger = Logger.new(NOTIFICATION_MANAGER_NAME)
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #

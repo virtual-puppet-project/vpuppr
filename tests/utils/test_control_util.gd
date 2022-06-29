@@ -10,10 +10,10 @@ func before_all():
 	.before_all()
 
 func before_each():
-	pass
+	control = Control.new()
 
 func after_each():
-	pass
+	control.free()
 
 func after_all():
 	pass
@@ -26,16 +26,27 @@ func after_all():
 # Tests                                                                       #
 #-----------------------------------------------------------------------------#
 
-func test_init_pass():
-	var am = partial_double("res://utils/abstract_manager.gd").new()
+var control: Control
 
-	assert_called(am, "_setup_logger")
-	assert_call_count(am, "_setup_logger", 1)
-	assert_called(am, "_setup_class")
-	assert_call_count(am, "_setup_class", 1)
-	assert_eq(am.is_setup, true)
+func test_h_expand_fill():
+	assert_eq(control.size_flags_horizontal, Control.SIZE_FILL)
 
-	am._init()
+	ControlUtil.h_expand_fill(control)
 
-	assert_call_count(am, "_setup_logger", 2)
-	assert_call_count(am, "_setup_class", 2)
+	assert_eq(control.size_flags_horizontal, Control.SIZE_EXPAND_FILL)
+
+func test_v_expand_fill():
+	assert_eq(control.size_flags_vertical, Control.SIZE_FILL)
+
+	ControlUtil.v_expand_fill(control)
+
+	assert_eq(control.size_flags_vertical, Control.SIZE_EXPAND_FILL)
+
+func test_all_expand_fill():
+	assert_eq(control.size_flags_horizontal, Control.SIZE_FILL)
+	assert_eq(control.size_flags_vertical, Control.SIZE_FILL)
+
+	ControlUtil.all_expand_fill(control)
+
+	assert_eq(control.size_flags_horizontal, Control.SIZE_EXPAND_FILL)
+	assert_eq(control.size_flags_vertical, Control.SIZE_EXPAND_FILL)

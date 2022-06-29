@@ -14,6 +14,7 @@ enum Code {
 	FILE_PARSE_FAILURE,
 	FILE_WRITE_FAILURE,
 	FILE_UNEXPECTED_DATA,
+	FILE_DELETE_FAILED,
 	
 	#endregion
 
@@ -64,6 +65,12 @@ enum Code {
 	#region ExtensionContext
 
 	EXTENSION_CONTEXT_RESOURCE_NOT_FOUND,
+
+	#endregion
+
+	#region TempCacheManager
+
+	TEMP_CACHE_MANAGER_KEY_NOT_FOUND,
 
 	#endregion
 

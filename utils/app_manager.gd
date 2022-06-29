@@ -66,8 +66,6 @@ func _process(delta: float) -> void:
 func _on_tree_exiting() -> void:
 	if env.current_env != Env.Envs.TEST:
 		save_config_instant()
-
-	AbstractManager.teardown()
 	
 	logger.info("Exiting. おやすみ。")
 

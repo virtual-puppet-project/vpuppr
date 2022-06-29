@@ -20,6 +20,11 @@ const SCENE_LISTEN_VALUES := [
 	GlobalConstants.SceneSignals.POSE_MODEL
 ]
 
+## The default script to be applied to models
+const PUPPET_TRAIT_SCRIPT_PATH := "res://model/extensions/puppet_trait.gd"
+
+const MODEL_TO_LOAD := "model_to_load"
+
 # TODO this might be bad?
 var model_viewport := Viewport.new()
 
@@ -164,10 +169,20 @@ func _pre_setup_scene() -> void:
 	model_viewport.world = world
 
 func _setup_scene() -> void:
-	var default_model_path: String = AM.cm.get_data("default_model_path")
+	var model_to_load_path := ""
+	var model_to_load_res = AM.tcm.pull(MODEL_TO_LOAD, AM.cm.get_data("default_model_path"))
+	if not model_to_load_res or model_to_load_res.is_err():
+		logger.error("Unable to find a model to load")
+		model_to_load_path = GlobalConstants.DEFAULT_MODEL_PATH
+	else:
+		model_to_load_path = model_to_load_res.unwrap()
+	
+	if model_to_load_path.empty():
+		logger.error("Tried to load a model at an empty path")
+		model_to_load_path = GlobalConstants.DEFAULT_MODEL_PATH
 
 	model_parent = Spatial.new()
-	load_model(default_model_path if not default_model_path.empty() else DEFAULT_MODEL)
+	load_model(model_to_load_path)
 
 	model_viewport.call_deferred("add_child", model_parent)
 
@@ -265,6 +280,27 @@ func _on_event_published(payload: SignalPayload) -> void:
 				if tracker.get_name() == payload.data:
 					main_tracker = tracker
 					return
+		GlobalConstants.RELOAD_RUNNER:
+			var tcm: TempCacheManager = AM.tcm
+			tcm.push(MODEL_TO_LOAD, payload.data)
+			
+			var runner_path := ""
+			var res: Result = tcm.pull("runner_path")
+			if res == null or res.is_err():
+				logger.error(res.to_string())
+				return
+			runner_path = res.unwrap()
+
+			var gui_path := ""
+			res = tcm.pull("gui_path")
+			if Result.failed(res):
+				logger.error(Result.to_log_string(res))
+				return
+			gui_path = res.unwrap()
+
+			res = FileUtil.switch_to_runner(runner_path, gui_path)
+			if Result.failed(res):
+				logger.error(Result.to_log_string(res))
 
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
@@ -288,7 +324,7 @@ func load_model(path: String) -> void:
 	if result == null or result.is_err():
 		logger.error(result.unwrap_err().to_string() if result != null else "Something super broke, please check the logs")
 		# If this fails, something is very very wrong
-		result = _try_load_model(DEFAULT_MODEL)
+		result = _try_load_model(GlobalConstants.DEFAULT_MODEL_PATH)
 		if result == null or result.is_err():
 			logger.error(result.unwrap_err().to_string() if result != null else "Something super broke, please check the logs")
 			logger.error("Failed loading the default Duck model")
@@ -319,6 +355,12 @@ func load_glb(path: String) -> Result:
 	var res := .load_glb(path)
 	if res.is_err():
 		return res
+
+	var script: GDScript = load(PUPPET_TRAIT_SCRIPT_PATH)
+	if script == null:
+		return Result.err(Error.Code.RUNNER_LOAD_FILE_FAILED, "Unable to load puppet trait script")
+	
+	res.unwrap().set_script(script)
 
 	translation_adjustment = Vector3.ONE
 	rotation_adjustment = Vector3(-1, -1, 1)

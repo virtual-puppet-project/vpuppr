@@ -219,7 +219,7 @@ func get_as_dict() -> Dictionary:
 	var r := {}
 
 	for i in get_property_list():
-		if i.name in GlobalConstants.IGNORED_PROPERTIES_REFERENCE:
+		if i.name in GlobalConstants.IGNORED_PROPERTIES:
 			continue
 
 		var data_value = get(i.name)

@@ -76,3 +76,25 @@ static func ok(v = null) -> Result:
 ## @return: Result<Error> - The failed Result
 static func err(error_code: int, description: String = "") -> Result:
 	return load("res://model/result.gd").new(Error.new(error_code, description))
+
+## Checks if the Result is invalid or contains an error
+##
+## @param: result: Result - The Result to check
+##
+## @return: bool - True if the result is null or is an error
+static func failed(result: Result) -> bool:
+	return result == null or result.is_err()
+
+static func to_log_string(result: Result) -> String:
+	if result != null:
+		return result.to_string()
+	
+	var message := "Stack trace:\n"
+	var stack := get_stack()
+	for i in stack.size() - 1:
+		var data: Dictionary = stack[i + 1]
+		message += "---\nfunc: %s\nline: %d\nsource_file: %s\n\n" % [
+			data.function, data.line, data.source
+		]
+	
+	return "Function failure, please report\n%s" % message
