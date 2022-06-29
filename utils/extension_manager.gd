@@ -1,6 +1,8 @@
 class_name ExtensionManager
 extends AbstractManager
 
+const EXTENSION_MANAGER_NAME := "ExtensionManager"
+
 const Config := {
 	"DEFAULT_SEARCH_FOLDER": "resources/extensions",
 
@@ -34,7 +36,7 @@ func _init() -> void:
 	pass
 
 func _setup_logger() -> void:
-	logger = Logger.new("ExtensionManager")
+	logger = Logger.new(EXTENSION_MANAGER_NAME)
 
 func _setup_class() -> void:
 	if not OS.is_debug_build():

@@ -192,34 +192,10 @@ func _create_gui_select(runner_path: String) -> WindowDialog:
 	return wd
 
 func _run_runner(runner_path: String, gui_path: String) -> void:
-	var file := File.new()
-	if not file.file_exists(runner_path):
-		logger.error("Runner does not exist at %s" % runner_path)
-		return
-	if not file.file_exists(gui_path):
-		logger.error("Gui does not exist at %s" % gui_path)
-		return
+	var res: Result = FileUtil.switch_to_runner(runner_path, gui_path)
 
-	var runner = load(runner_path)
-	runner = runner.instance() if runner is PackedScene else runner.new()
-	runner.name = runner_path.get_basename().get_file()
-
-	var gui = load(gui_path)
-	gui = gui.instance() if gui is PackedScene else gui.new()
-
-	runner.add_child(gui)
-
-	var root := get_tree().root
-	var current_scene: Node = get_tree().current_scene
-
-	root.add_child(runner)
-	get_tree().current_scene = runner
-	root.remove_child(current_scene)
-	current_scene.queue_free()
-
-	var tcm := TempCacheManager.get_singleton()
-	tcm.push("runner_path", runner_path)
-	tcm.push("gui_path", gui_path)
+	if Result.failed(res):
+		logger.error(Result.to_log_string(res))
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #

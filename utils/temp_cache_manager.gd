@@ -1,6 +1,8 @@
 class_name TempCacheManager
 extends AbstractManager
 
+const TEMP_CACHE_MANAGER_NAME := "TempCacheManagerName"
+
 var _cache := {}
 
 #-----------------------------------------------------------------------------#
@@ -11,13 +13,7 @@ func _init() -> void:
 	pass
 
 func _setup_logger() -> void:
-	logger = Logger.new("TempCacheManager")
-
-func _setup_singleton() -> void:
-	__SELF__["TempCacheManager"] = self
-
-static func get_singleton(_x = "") -> AbstractManager:
-	return .get_singleton("TempCacheManager")
+	logger = Logger.new(TEMP_CACHE_MANAGER_NAME)
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
@@ -39,10 +35,16 @@ func clear() -> void:
 	for key in _cache:
 		var val = _cache[key]
 
-		if val.is_class("Node") and is_instance_valid(val) and not val.is_queued_for_deletion():
+		if val is Object and val.is_class("Node") and is_instance_valid(val) and not val.is_queued_for_deletion():
 			val.queue_free()
 
 	_cache.clear()
+
+## Erases a given key from the cache
+##
+## @param: key: String - The key to erase
+func erase(key: String) -> void:
+	_cache.erase(key)
 
 ## Push a value to the cache under the given key
 ##
@@ -51,14 +53,17 @@ func clear() -> void:
 func push(key: String, value) -> void:
 	_cache[key] = value
 
-## Pull a value from the cache, null-safe
+## Pull a value from the cache, null-safe. Null is returned if no value is found
+## for the given key.
+##
+## @note: Does _not_ return Error.Code.NULL_VALUE if no key is found
 ##
 ## @param: key: String - The key to grab a value from
 ##
 ## @return: Variant - The cached value, if it exists
-func pull(key: String):
-	var val = _cache.get(key, null)
-	if val == null:
-		logger.error("No value found in cache for key %s" % key)
-
-	return val
+func pull(key: String, default_value = null) -> Result:
+	var ret = _cache.get(key, default_value)
+	if ret != null:
+		return Result.ok(ret)
+	else:
+		return Result.err(Error.Code.TEMP_CACHE_MANAGER_KEY_NOT_FOUND, key)

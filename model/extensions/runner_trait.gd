@@ -1,12 +1,6 @@
 class_name RunnerTrait
 extends Node
 
-## The default model to load when an error occurs or there is no default
-## model set
-const DEFAULT_MODEL := "res://entities/duck/duck.tscn"
-## The default script to be applied to models
-const PUPPET_TRAIT_SCRIPT_PATH := "res://model/extensions/puppet_trait.gd"
-
 ## The logger assigned for this class
 var logger: Logger
 
@@ -90,6 +84,7 @@ func _process_step(_delta: float) -> void:
 func _physics_step(_delta: float) -> void:
 	pass
 
+## Virtual function that takes a screenshot to be used on the runner preview screen
 func _generate_preview() -> void:
 	var image := get_viewport().get_texture().get_data()
 	image.flip_y()
@@ -183,6 +178,8 @@ func _find_loaders() -> Dictionary:
 			continue
 		if split_name[0] != "load":
 			continue
+		if method_desc.name == "load_model":
+			continue
 		
 		r[split_name[1]] = method_desc.name
 	
@@ -238,12 +235,6 @@ func load_glb(path: String) -> Result:
 	var model = gltf_loader.import_gltf_scene(path)
 	if model == null:
 		return Result.err(Error.Code.RUNNER_LOAD_FILE_FAILED)
-
-	var script: GDScript = load(PUPPET_TRAIT_SCRIPT_PATH)
-	if script == null:
-		return Result.err(Error.Code.RUNNER_LOAD_FILE_FAILED)
-
-	model.set_script(script)
 	
 	return Result.ok(model)
 

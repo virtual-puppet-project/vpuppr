@@ -1,6 +1,8 @@
 class_name LogManager
 extends AbstractManager
 
+const LOG_MANAGER_NAME := "LogManager"
+
 const LOG_MAX: int = 1_000_000
 
 var logs := []
@@ -15,7 +17,7 @@ func _init() -> void:
 	pass
 
 func _setup_logger() -> void:
-	logger = Logger.new("LogManager")
+	logger = Logger.new(LOG_MANAGER_NAME)
 
 func _setup_class() -> void:
 	_timer.connect("timeout", self, "_on_timeout")

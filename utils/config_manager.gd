@@ -40,12 +40,6 @@ func _setup_class() -> void:
 	if result.is_err():
 		logger.error(result.unwrap_err().to_string())
 
-func _setup_singleton() -> void:
-	__SELF__["ConfigManager"] = self
-
-static func get_singleton(_x = "") -> AbstractManager:
-	return .get_singleton("ConfigManager")
-
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#
@@ -66,15 +60,7 @@ func _on_model_config_changed(data, key: String) -> void:
 ##
 ## @return: Result<String> - The path the String was saved at
 func _save_to_file(path: String, data: String) -> Result:
-	path = "%s/%s" % [save_data_path, path]
-	
-	var file := File.new()
-	if file.open(path, File.WRITE) != OK:
-		return Result.err(Error.Code.FILE_WRITE_FAILURE)
-
-	file.store_string(data)
-
-	return Result.ok(path)
+	return FileUtil.save_file_at_path("%s/%s" % [save_data_path, path], data)
 
 ## All config keys are registered with the PubSub. A new signal is created for each key and then
 ## the ConfigManager subscribes itself to any changes.
@@ -194,7 +180,7 @@ func load_model_config_no_set(path: String) -> Result:
 
 	return Result.ok(mc)
 
-func save_data() -> Result:
+func save_data(data_name: String = "", data: String = "") -> Result:
 	logger.info("Saving data")
 	
 	var result := _save_to_file(METADATA_FILE_NAME, metadata.get_as_json_string())
@@ -202,13 +188,16 @@ func save_data() -> Result:
 		return result
 
 	if model_config.config_name != ModelConfig.CHANGE_ME:
-		result = _save_to_file("%s.json" % model_config.config_name, model_config.get_as_json_string())
+		result = _save_to_file(
+			"%s.json" % (data_name if not data_name.empty() else model_config.config_name),
+			data if not data.empty() else model_config.get_as_json_string()
+		)
 		if result.is_err():
 			return result
 	
 	logger.info("Finished saving data")
 
-	return Result.ok()
+	return result
 
 #endregion
 

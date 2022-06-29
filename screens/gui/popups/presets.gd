@@ -43,6 +43,8 @@ class PresetsPage extends ScrollContainer:
 
 	var logger: Logger
 
+	var path := ""
+
 	var name_element: PageElement
 	var description_element: PageElement
 	var hotkey_element: PageElement
@@ -56,7 +58,12 @@ class PresetsPage extends ScrollContainer:
 		logger = p_logger
 
 		var config := ModelConfig.new()
-		config.parse_string(config_string)
+		var res: Result = config.parse_string(config_string)
+		if Result.failed(res):
+			logger.error(Result.to_log_string(res))
+			return
+
+		path = config.model_path
 
 		ControlUtil.h_expand_fill(self)
 		name = page_name
@@ -130,9 +137,16 @@ class PresetsPage extends ScrollContainer:
 	func _on_button_pressed(action_type: int) -> void:
 		match action_type:
 			Actions.LOAD:
-				logger.debug(TempCacheManager.get_singleton().pull("runner_path"))
+				AM.ps.publish(GlobalConstants.RELOAD_RUNNER, path)
 			Actions.DELETE:
-				pass
+				var config_name = AM.cm.get_data("config_name")
+				if config_name == name:
+					logger.error("Config is currently in use")
+					return
+				
+				var model_configs: Dictionary = AM.cm.get_data("model_configs")
+				model_configs.erase(name)
+				AM.ps.publish("model_configs", model_configs, name)
 			_:
 				logger.error("Unhandled action %s" % action_type)
 				return
@@ -173,12 +187,44 @@ func _setup() -> Result:
 			continue
 
 	_toggle_page(_initial_page)
+
+	var new_preset_line_edit: LineEdit = $Left/HBoxContainer/LineEdit
+	var new_preset_button: Button = $Left/HBoxContainer/Save
+
+	new_preset_line_edit.connect("text_changed", self, "_on_new_preset_text_changed", [
+		new_preset_button
+	])
+	new_preset_button.connect("pressed", self, "_on_new_preset_button_pressed", [
+		new_preset_line_edit
+	])
+	_on_new_preset_text_changed(new_preset_line_edit.text, new_preset_button)
 	
 	return Result.ok()
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#
+
+func _on_new_preset_text_changed(text: String, button: Button) -> void:
+	var model_configs: Dictionary = AM.cm.get_data("model_configs")
+
+	var is_disabled := text.empty() or text in model_configs.keys()
+
+	button.disabled = is_disabled
+
+func _on_new_preset_button_pressed(line_edit: LineEdit) -> void:
+	var new_model_config := AM.cm.model_config.duplicate(true)
+	new_model_config.config_name = line_edit.text
+
+	var res := AM.cm.save_data(new_model_config.config_name, new_model_config.get_as_json_string())
+	if Result.failed(res):
+		logger.error(Result.to_log_string(res))
+		return
+
+	var model_configs: Dictionary = AM.cm.get_data("model_configs")
+	model_configs[line_edit.text] = res.unwrap()
+
+	AM.ps.publish("model_configs", model_configs, new_model_config.config_name)
 
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #

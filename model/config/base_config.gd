@@ -1,5 +1,5 @@
 class_name BaseConfig
-extends Reference
+extends Resource
 
 ## Completely generic key/value structure for random values
 ## Try and prefer using explicit fields over using this
@@ -17,7 +17,7 @@ func get_as_dict() -> Dictionary:
 	var r := {}
 
 	for i in get_property_list():
-		if i.name in GlobalConstants.IGNORED_PROPERTIES_REFERENCE:
+		if i.name in GlobalConstants.IGNORED_PROPERTIES:
 			continue
 
 		r[i.name] = get(i.name)

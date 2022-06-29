@@ -19,7 +19,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://utils/app_manager.gd"
 }, {
-"base": "Reference",
+"base": "Resource",
 "class": "BaseConfig",
 "language": "GDScript",
 "path": "res://model/config/base_config.gd"
@@ -98,6 +98,11 @@ _global_script_classes=[ {
 "class": "ExtensionResource",
 "language": "GDScript",
 "path": "res://model/extensions/extension_resource.gd"
+}, {
+"base": "Reference",
+"class": "FileUtil",
+"language": "GDScript",
+"path": "res://utils/file_util.gd"
 }, {
 "base": "Reference",
 "class": "GlobalConstants",
@@ -238,6 +243,7 @@ _global_script_class_icons={
 "ExtensionContext": "",
 "ExtensionManager": "",
 "ExtensionResource": "",
+"FileUtil": "",
 "GlobalConstants": "",
 "InterpolationData": "",
 "JSONUtil": "",
