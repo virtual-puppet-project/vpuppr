@@ -3,9 +3,11 @@ extends AbstractManager
 
 ## PubSub (Publish Subscribe) handler
 ##
-## Signals can pass data in 2 ways
-## 1. Directly emitting a signal
-## 2. Call `publish` which will wrap data in a `SignalPayload`
+## Data can be published in 2 ways
+## 1. Calling `publish` which will either emit the signal directly or wrap data in a `SignalPayload`
+## 2. Directly emitting a signal
+##
+## Option 1 should be preferred
 
 func _init() -> void:
 	pass

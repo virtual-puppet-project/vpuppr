@@ -103,6 +103,21 @@ func _register_config_data_with_pub_sub(data: Dictionary, callback: String) -> R
 # Public functions                                                            #
 #-----------------------------------------------------------------------------#
 
+## Takes an absolute or relative path and returns the filename without an extension
+##
+## @param: path: String - The path to strip
+##
+## @return: String - The stripped name
+static func path_to_stripped_name(path: String) -> String:
+	return path.get_basename().get_file()
+
+## Add signals at runtime and subscribe to them. Meant for extension to hook the
+## ConfigManager up to new config values
+##
+## @param: signal_name: String - The name of the config value to listen for
+## @param: is_metadata: bool - Whether the metadata should be used
+##
+## @return: Result<Error> - The error code
 func runtime_subscribe_to_signal(signal_name: String, is_metadata: bool = false) -> Result:
 	var res: Result = AM.ps.create_signal(signal_name)
 	if res == null or res.is_err():
@@ -202,6 +217,12 @@ func save_data(data_name: String = "", data: String = "") -> Result:
 #endregion
 
 #region Data access
+
+## Checks if the metadata or model config contains some key
+##
+## @param: key: String - The key to check
+func has_data(key: String) -> bool:
+	return metadata.has_data(key) or model_config.has_data(key)
 
 # TODO this logic is wrong since set
 ## Wrapper for setting KNOWN data in ModelConfig or Metadata, in that search order.
