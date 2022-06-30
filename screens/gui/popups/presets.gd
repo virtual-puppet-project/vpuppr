@@ -41,9 +41,17 @@ class PresetsPage extends ScrollContainer:
 		DELETE
 	}
 
+	const LISTEN_SIGNALS := [
+		"config_name",
+		"description",
+		"hotkey",
+		"notes",
+		"is_default_for_model"
+	]
+
 	var logger: Logger
 
-	var path := ""
+	var model_config: ModelConfig
 
 	var name_element: PageElement
 	var description_element: PageElement
@@ -57,13 +65,11 @@ class PresetsPage extends ScrollContainer:
 	func _init(page_name: String, config_string: String, p_logger: Logger) -> void:
 		logger = p_logger
 
-		var config := ModelConfig.new()
-		var res: Result = config.parse_string(config_string)
+		model_config = ModelConfig.new()
+		var res: Result = model_config.parse_string(config_string)
 		if Result.failed(res):
 			logger.error(Result.to_log_string(res))
 			return
-
-		path = config.model_path
 
 		ControlUtil.h_expand_fill(self)
 		name = page_name
@@ -75,23 +81,23 @@ class PresetsPage extends ScrollContainer:
 
 		#region Config values
 
-		name_element = PageElement.new("Config name", config.config_name)
+		name_element = PageElement.new("Config name", model_config.config_name)
 		list.add_child(name_element)
 
-		description_element = PageElement.new("Description", config.description)
+		description_element = PageElement.new("Description", model_config.description)
 		list.add_child(description_element)
 
-		hotkey_element = PageElement.new("Hotkey", config.hotkey)
+		hotkey_element = PageElement.new("Hotkey", model_config.hotkey)
 		list.add_child(hotkey_element)
 
-		notes_element = PageElement.new("Notes", config.notes, {
+		notes_element = PageElement.new("Notes", model_config.notes, {
 			"element_type": "TextEdit",
 			"set_property": "text",
 			"expand_vertically": true
 		})
 		list.add_child(notes_element)
 
-		default_for_model_element = PageElement.new("Is default for model", config.is_default_for_model, {
+		default_for_model_element = PageElement.new("Is default for model", model_config.is_default_for_model, {
 			"element_type": "CheckButton",
 			"set_property": "pressed"
 		})
@@ -115,6 +121,12 @@ class PresetsPage extends ScrollContainer:
 		
 		list.add_child(button_container)
 
+		# for i in LISTEN_SIGNALS:
+		# 	res = AM.ps.subscribe(self, i, "_on_config_updated")
+		# 	if Result.failed(res):
+		# 		logger.error(Result.to_log_string(res))
+		AM.ps.subscribe(self, GlobalConstants.EVENT_PUBLISHED)
+
 	func _on_config_updated(payload: SignalPayload) -> void:
 		if not payload is SignalPayload:
 			logger.error("Unexpected callback value %s" % str(payload))
@@ -137,7 +149,7 @@ class PresetsPage extends ScrollContainer:
 	func _on_button_pressed(action_type: int) -> void:
 		match action_type:
 			Actions.LOAD:
-				AM.ps.publish(GlobalConstants.RELOAD_RUNNER, path)
+				AM.ps.publish(GlobalConstants.RELOAD_RUNNER, model_config.model_path)
 			Actions.DELETE:
 				var config_name = AM.cm.get_data("config_name")
 				if config_name == name:

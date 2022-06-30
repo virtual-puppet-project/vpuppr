@@ -64,7 +64,8 @@ func _on_button_pressed(signal_name: String, _button: Button) -> void:
 			_log_unhandled_signal(signal_name)
 
 func _on_check_button_toggled(state: bool, signal_name: String, _check_button: CheckButton) -> void:
-	AM.ps.emit_signal(signal_name, state)
+	# AM.ps.emit_signal(signal_name, state)
+	AM.ps.publish(signal_name, state)
 
 func _on_line_edit_text_changed(text: String, signal_name: String, _line_edit: LineEdit) -> void:
 	if text.empty():
@@ -131,9 +132,8 @@ func _connect_button(button: Button, args = null) -> void:
 func _connect_check_button(check_button: CheckButton, args = null) -> void:
 	check_button.connect("toggled", self, "_on_check_button_toggled", [args, check_button])
 	
-	var initial_value = AM.cm.get_data(args)
-	if initial_value != null:
-		check_button.set_pressed_no_signal(initial_value)
+	if AM.cm.has_data(args):
+		check_button.set_pressed_no_signal(AM.cm.get_data(args))
 		AM.ps.subscribe(self, args, {
 			"args": [check_button],
 			"callback": "_on_config_updated"
@@ -150,11 +150,12 @@ func _connect_line_edit(line_edit: LineEdit, args = null) -> void:
 	line_edit.connect("text_changed", self, "_on_line_edit_text_changed", [args, line_edit])
 	line_edit.connect("text_entered", self, "_on_line_edit_text_entered", [args, line_edit])
 	
-	line_edit.text = str(AM.cm.get_data(args))
-	AM.ps.subscribe(self, args, {
-		"args": [line_edit],
-		"callback": "_on_config_updated"
-	})
+	if AM.cm.has_data(args):
+		line_edit.text = str(AM.cm.get_data(args))
+		AM.ps.subscribe(self, args, {
+			"args": [line_edit],
+			"callback": "_on_config_updated"
+		})
 
 func _set_config_float_amount(signal_name: String, value: String) -> void:
 	if not value.is_valid_float():

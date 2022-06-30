@@ -1,5 +1,9 @@
 extends BaseTreeLayout
 
+var move_model: CheckButton
+var rotate_model: CheckButton
+var zoom_model: CheckButton
+
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#
@@ -12,9 +16,14 @@ func _setup() -> Result:
 	_connect_element($General/VBoxContainer/LoadModel, "load_model")
 	_connect_element($General/VBoxContainer/SetModelDefault, "set_model_default")
 
-	_connect_element($General/VBoxContainer/MoveModel, GlobalConstants.SceneSignals.MOVE_MODEL)
-	_connect_element($General/VBoxContainer/RotateModel, GlobalConstants.SceneSignals.ROTATE_MODEL)
-	_connect_element($General/VBoxContainer/ZoomModel, GlobalConstants.SceneSignals.ZOOM_MODEL)
+	# TODO need a way to pull the global state of this element
+	# e.g. other "Model" popups might already have "move" turned on
+	move_model = $General/VBoxContainer/MoveModel
+	_connect_element(move_model, GlobalConstants.SceneSignals.MOVE_MODEL)
+	rotate_model = $General/VBoxContainer/RotateModel
+	_connect_element(rotate_model, GlobalConstants.SceneSignals.ROTATE_MODEL)
+	zoom_model = $General/VBoxContainer/ZoomModel
+	_connect_element(zoom_model, GlobalConstants.SceneSignals.ZOOM_MODEL)
 
 	_connect_element($General/VBoxContainer/ResetModelTransform, "reset_model_transform")
 	_connect_element($General/VBoxContainer/ResetModelPose, "reset_model_pose")
@@ -83,6 +92,8 @@ func _setup() -> Result:
 
 	#endregion
 
+	AM.ps.subscribe(self, GlobalConstants.EVENT_PUBLISHED)
+
 	return ._setup()
 
 #-----------------------------------------------------------------------------#
@@ -103,6 +114,7 @@ func _on_button_pressed(signal_name: String, _button: Button) -> void:
 			fd.add_filter("*")
 			
 			fd.connect("file_selected", self, "_on_model_selected")
+			fd.connect("popup_hide", self, "_delete", [fd])
 			
 			add_child(fd)
 			fd.popup_centered_ratio()
@@ -118,7 +130,8 @@ func _on_button_pressed(signal_name: String, _button: Button) -> void:
 			_log_unhandled_signal(signal_name)
 
 func _on_model_selected(path: String) -> void:
-	get_tree().current_scene.load_model(path)
+	# get_tree().current_scene.load_model(path)
+	AM.ps.publish(GlobalConstants.RELOAD_RUNNER, path)
 
 #endregion
 
@@ -133,9 +146,21 @@ func _on_line_edit_text_changed(text: String, signal_name: String, _line_edit: L
 		_:
 			_set_config_float_amount(signal_name, text)
 
+func _on_event_published(payload: SignalPayload) -> void:
+	match payload.signal_name:
+		GlobalConstants.SceneSignals.MOVE_MODEL:
+			move_model.set_pressed_no_signal(payload.data)
+		GlobalConstants.SceneSignals.ROTATE_MODEL:
+			rotate_model.set_pressed_no_signal(payload.data)
+		GlobalConstants.SceneSignals.ZOOM_MODEL:
+			zoom_model.set_pressed_no_signal(payload.data)
+
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#
+
+func _delete(node: Node) -> void:
+	node.queue_free()
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #

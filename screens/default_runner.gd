@@ -12,13 +12,13 @@ const CONFIG_LISTEN_VALUES := [
 ]
 
 ## Scene-specific pubsub values to listen for
-const SCENE_LISTEN_VALUES := [
-	GlobalConstants.SceneSignals.MOVE_MODEL,
-	GlobalConstants.SceneSignals.ROTATE_MODEL,
-	GlobalConstants.SceneSignals.ZOOM_MODEL,
+# const SCENE_LISTEN_VALUES := [
+# 	GlobalConstants.SceneSignals.MOVE_MODEL,
+# 	GlobalConstants.SceneSignals.ROTATE_MODEL,
+# 	GlobalConstants.SceneSignals.ZOOM_MODEL,
 
-	GlobalConstants.SceneSignals.POSE_MODEL
-]
+# 	GlobalConstants.SceneSignals.POSE_MODEL
+# ]
 
 ## The default script to be applied to models
 const PUPPET_TRAIT_SCRIPT_PATH := "res://model/extensions/puppet_trait.gd"
@@ -138,12 +138,12 @@ func _setup_config() -> void:
 
 func _pre_setup_scene() -> void:
 	AM.ps.subscribe(self, GlobalConstants.EVENT_PUBLISHED)
-	for i in SCENE_LISTEN_VALUES:
-		AM.ps.create_signal(i)
-		AM.ps.subscribe(self, i, {
-			"args": [i],
-			"callback": "_on_config_changed"
-		})
+	# for i in SCENE_LISTEN_VALUES:
+	# 	AM.ps.create_signal(i)
+	# 	AM.ps.subscribe(self, i, {
+	# 		"args": [i],
+	# 		"callback": "_on_config_changed"
+	# 	})
 
 	var viewport_container := ViewportContainer.new()
 	viewport_container.anchor_bottom = 1.0
@@ -255,12 +255,12 @@ func _on_config_changed(value, signal_name: String) -> void:
 
 		#region Scene
 
-		GlobalConstants.SceneSignals.MOVE_MODEL:
-			should_move_model = value
-		GlobalConstants.SceneSignals.ROTATE_MODEL:
-			should_rotate_model = value
-		GlobalConstants.SceneSignals.ZOOM_MODEL:
-			should_zoom_model = value
+		# GlobalConstants.SceneSignals.MOVE_MODEL:
+		# 	should_move_model = value
+		# GlobalConstants.SceneSignals.ROTATE_MODEL:
+		# 	should_rotate_model = value
+		# GlobalConstants.SceneSignals.ZOOM_MODEL:
+		# 	should_zoom_model = value
 
 		GlobalConstants.SceneSignals.POSE_MODEL:
 			should_pose_model = value
@@ -272,6 +272,12 @@ func _on_config_changed(value, signal_name: String) -> void:
 
 func _on_event_published(payload: SignalPayload) -> void:
 	match payload.signal_name:
+		GlobalConstants.SceneSignals.MOVE_MODEL:
+			should_move_model = payload.data
+		GlobalConstants.SceneSignals.ROTATE_MODEL:
+			should_rotate_model = payload.data
+		GlobalConstants.SceneSignals.ZOOM_MODEL:
+			should_zoom_model = payload.data
 		GlobalConstants.POSE_BONE:
 			should_pose_model = payload.data
 			bone_to_pose = model.skeleton.find_bone(payload.id)
@@ -336,18 +342,22 @@ func load_model(path: String) -> void:
 	model = result.unwrap()
 	model_parent.add_child(model)
 
-	var model_name := path.get_file().get_basename()
+	var model_name := ConfigManager.path_to_stripped_name(path)
+	# TODO this needs to pull the default config from metadata
 	var config_result: Result = AM.cm.load_model_config("%s.%s" % [model_name, ConfigManager.CONFIG_FILE_EXTENSION])
 	if config_result.is_err():
 		logger.info("Config for %s not found. Creating new config" % model_name)
 		
 		var config_res: Result = AM.cm.create_new_model_config(model_name, path, model_name)
-		if config_res == null or config_res.is_err():
-			logger.error(config_res.unwrap_err().to_string() if config_res != null else "Something super broke, please check the logs")
+		if Result.failed(config_res):
+			logger.error(Result.to_log_string(config_res))
 			logger.error("Failed creating a new config, be aware things might be broken")
 			return
 
-		AM.cm.model_config = config_res.unwrap()
+		var model_config = config_res.unwrap()
+		model_config.is_default_for_model = true # Must be default since we didn't find any default configs
+
+		AM.cm.model_config = model_config
 
 	logger.info("Finished load_model for %s" % path)
 

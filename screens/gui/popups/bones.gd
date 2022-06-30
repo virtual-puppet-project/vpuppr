@@ -2,13 +2,99 @@ extends BaseTreeLayout
 
 # TODO this needs to be reworked
 
+class View extends ScrollContainer:
+	var logger: Logger
+
+	## Whether or not to apply tracking data to the bone
+	var is_tracking := CheckButton.new()
+	## Whether or not to consider user input as bone-pose input
+	var should_pose := CheckButton.new()
+	## When tracking the bone, whether or not to use the global interpolation rate
+	var should_use_custom_interpolation := CheckButton.new()
+	## Interpolation rate to use when applying tracking data
+	var interpolation_rate := LineEdit.new()
+	## Resets the pose of the bone
+	var reset_bone := Button.new()
+
+	func _init(bone_name: String, p_logger: Logger) -> void:
+		name = bone_name
+		visible = false
+		logger = p_logger
+
+		var options_list := VBoxContainer.new()
+		ControlUtil.all_expand_fill(options_list)
+
+		var bone_name_label := Label.new()
+		bone_name_label.text = bone_name
+		bone_name_label.align = Label.ALIGN_CENTER
+
+		options_list.add_child(bone_name_label)
+
+		is_tracking.text = "Is tracking"
+		options_list.add_child(is_tracking)
+
+		should_pose.text = "Should pose"
+		options_list.add_child(should_pose)
+
+		#region Interpolation rate
+
+		should_use_custom_interpolation.text = "Use custom interpolation"
+		options_list.add_child(should_use_custom_interpolation)
+
+		var hbox := HBoxContainer.new()
+		ControlUtil.h_expand_fill(hbox)
+
+		var interpolation_label := Label.new()
+		interpolation_label.text = "Interpolation rate"
+		ControlUtil.h_expand_fill(interpolation_label)
+
+		hbox.add_child(interpolation_label)
+
+		ControlUtil.h_expand_fill(interpolation_rate)
+
+		hbox.add_child(interpolation_rate)
+
+		options_list.add_child(hbox)
+
+		#endregion
+
+		reset_bone.text = "Reset bone pose"
+
+		options_list.add_child(reset_bone)
+
+		add_child(options_list)
+
+	func _on_bone_updated(payload: SignalPayload) -> void:
+		if not payload is SignalPayload:
+			logger.error("Unexpected callback value %s" % str(payload))
+			return
+		if name != payload.id:
+			return
+
+		match payload.signal_name:
+			"additional_bones":
+				is_tracking.set_pressed_no_signal(payload.id in payload.data)
+			"bones_to_interpolate":
+				should_use_custom_interpolation.set_pressed_no_signal(payload.id in payload.data)
+			"bone_interpolation_rates":
+				var current_text := interpolation_rate.text
+				# TODO we might be comparing floats here, so will need to fuzzy compare instead
+				if current_text.is_valid_float() and current_text.to_float() == payload.get_changed():
+					return
+				interpolation_rate.text = str(payload.get_changed())
+				interpolation_rate.caret_position = interpolation_rate.text.length()
+
+	func _on_event_published(payload: SignalPayload) -> void:
+		if payload.signal_name != GlobalConstants.POSE_BONE or payload.id != name:
+			return
+
+		should_pose.set_pressed_no_signal(payload.data)
+
 const BONE_SIGNALS := [
 	"additional_bones",
 	"bones_to_interpolate",
 	"bone_interpolation_rates"
 ]
-
-const BoneDisplay = preload("res://screens/gui/popups/bone_display.gd")
 
 const INFO_PAGE := "Info"
 
@@ -61,22 +147,19 @@ func _setup() -> Result:
 
 		known_bones[bone_name] = item
 		
-		var bone_display := BoneDisplay.new(bone_name, logger)
+		var bone_display := View.new(bone_name, logger)
 		pages[bone_name] = bone_display
 		
 		add_child(bone_display)
 
-		_connect_element(bone_display.is_tracking_button, _generate_connect_args("additional_bones", bone_name))
-		bone_display.should_pose_button.connect("toggled", self, "_on_should_pose", [bone_name])
+		_connect_element(bone_display.is_tracking, _generate_connect_args("additional_bones", bone_name))
+		bone_display.should_pose.connect("toggled", self, "_on_should_pose", [bone_name])
 		_connect_element(bone_display.should_use_custom_interpolation, _generate_connect_args("bones_to_interpolate", bone_name))
 		_connect_element(bone_display.interpolation_rate, _generate_connect_args("bone_interpolation_rates", bone_name))
 		bone_display.reset_bone.connect("pressed", self, "_on_reset_bone", [bone_name])
 
 		for signal_name in BONE_SIGNALS:
-			AM.ps.subscribe(bone_display, signal_name, {
-				"args": [signal_name],
-				"callback": "_on_bone_updated"
-			})
+			AM.ps.subscribe(bone_display, signal_name, "_on_bone_updated")
 
 		AM.ps.subscribe(bone_display, GlobalConstants.EVENT_PUBLISHED)
 
