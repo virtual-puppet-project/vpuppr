@@ -23,11 +23,15 @@ extends Reference
 ##
 ## @return: Result<Object> - The loaded resource
 static func load_godot_resource_from_path(path: String) -> Result:
-	var file := File.new()
-	if not file.file_exists(path):
-		return Result.err(Error.Code.FILE_NOT_FOUND, path)
+	if not path.begins_with("res"):
+		var file := File.new()
+		if not file.file_exists(path):
+			return Result.err(Error.Code.FILE_NOT_FOUND, path)
 
 	var resource = load(path)
+	if resource == null:
+		return Result.err(Error.Code.FILE_NOT_FOUND, path)
+
 	var object = resource.instance() if resource is PackedScene else resource.new()
 	object.set("name", path.get_basename().get_file())
 

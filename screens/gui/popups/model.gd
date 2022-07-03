@@ -114,7 +114,7 @@ func _on_button_pressed(signal_name: String, _button: Button) -> void:
 			fd.add_filter("*")
 			
 			fd.connect("file_selected", self, "_on_model_selected")
-			fd.connect("popup_hide", self, "_delete", [fd])
+			fd.connect("popup_hide", NodeUtil, "queue_free", [fd])
 			
 			add_child(fd)
 			fd.popup_centered_ratio()
@@ -130,7 +130,6 @@ func _on_button_pressed(signal_name: String, _button: Button) -> void:
 			_log_unhandled_signal(signal_name)
 
 func _on_model_selected(path: String) -> void:
-	# get_tree().current_scene.load_model(path)
 	AM.ps.publish(GlobalConstants.RELOAD_RUNNER, path)
 
 #endregion
@@ -142,7 +141,8 @@ func _on_line_edit_text_changed(text: String, signal_name: String, _line_edit: L
 	
 	match signal_name:
 		"head_bone":
-			AM.ps.emit_signal(signal_name, text)
+#			AM.ps.emit_signal(signal_name, text)
+			AM.ps.publish(signal_name, text)
 		_:
 			_set_config_float_amount(signal_name, text)
 

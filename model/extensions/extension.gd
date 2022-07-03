@@ -76,9 +76,9 @@ func as_data() -> Dictionary:
 	return {
 		"extension_name": extension_name,
 		"context_path": context.context_path,
-		"runners": runners.duplicate(),
-		"puppets": puppets.duplicate(),
-		"trackers": trackers.duplicate(),
-		"guis": guis.duplicate(),
-		"plugins": plugins.duplicate()
+		"runner": runners.duplicate(),
+		"puppet": puppets.duplicate(),
+		"tracker": trackers.duplicate(),
+		"gui": guis.duplicate(),
+		"plugin": plugins.duplicate()
 	}
