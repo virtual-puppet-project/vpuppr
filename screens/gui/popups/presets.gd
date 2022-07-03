@@ -1,13 +1,5 @@
 extends BaseTreeLayout
 
-const LISTEN_SIGNALS := [
-	"config_name",
-	"description",
-	"hotkey",
-	"notes",
-	"is_default_for_model"
-]
-
 class PresetsPage extends ScrollContainer:
 	class PageElement extends HBoxContainer:
 		var element: Control
@@ -41,7 +33,7 @@ class PresetsPage extends ScrollContainer:
 		DELETE
 	}
 
-	const LISTEN_SIGNALS := [
+	const LISTEN_VALUES := [
 		"config_name",
 		"description",
 		"hotkey",
@@ -121,30 +113,52 @@ class PresetsPage extends ScrollContainer:
 		
 		list.add_child(button_container)
 
-		# for i in LISTEN_SIGNALS:
-		# 	res = AM.ps.subscribe(self, i, "_on_config_updated")
-		# 	if Result.failed(res):
-		# 		logger.error(Result.to_log_string(res))
-		AM.ps.subscribe(self, GlobalConstants.EVENT_PUBLISHED)
+		for i in LISTEN_VALUES:
+			AM.ps.subscribe(self, i, "_on_config_updated")
 
-	func _on_config_updated(payload: SignalPayload) -> void:
-		if not payload is SignalPayload:
-			logger.error("Unexpected callback value %s" % str(payload))
-			return
-		if payload.id != name:
+	func _on_line_edit_text_entered(text: String, signal_name: String) -> void:
+		_on_line_edit_text_changed(text, signal_name)
+
+	func _on_line_edit_text_changed(text: String, signal_name: String) -> void:
+		if text.empty():
 			return
 
-		match payload.signal_name:
+		match signal_name:
 			"config_name":
 				pass
 			"description":
 				pass
 			"hotkey":
 				pass
+
+	func _on_text_edit_text_changed(text: String, signal_name: String) -> void:
+		if text.empty():
+			return
+
+		match signal_name:
 			"notes":
 				pass
+
+	func _on_check_button_toggled(value: bool, signal_name: String) -> void:
+		pass
+
+	func _on_config_updated(payload: SignalPayload) -> void:
+		if not payload is SignalPayload:
+			return
+		if payload.id != name:
+			return
+
+		match payload.signal_name:
+			"config_name":
+				name_element.element.text = payload.data
+			"description":
+				description_element.element.text = payload.data
+			"hotkey":
+				hotkey_element.element.text = payload.data
+			"notes":
+				notes_element.element.text = payload.data
 			"is_default_for_model":
-				pass
+				default_for_model_element.element.set_pressed_no_signal(payload.data)
 
 	func _on_button_pressed(action_type: int) -> void:
 		match action_type:

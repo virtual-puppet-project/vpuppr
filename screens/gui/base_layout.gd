@@ -78,16 +78,24 @@ func _on_line_edit_text_changed(text: String, signal_name: String, _line_edit: L
 func _on_line_edit_text_entered(text: String, signal_name: String, line_edit: LineEdit) -> void:
 	_on_line_edit_text_changed(text, signal_name, line_edit)
 
-func _on_config_updated(value, control: Control) -> void:
+func _on_text_edit_text_changed(text: String, signal_name: String, _text_edit: TextEdit) -> void:
+	if text.empty():
+		return
+	
+	match signal_name:
+		_:
+			_log_unhandled_signal(signal_name)
+
+func _on_config_updated(payload: SignalPayload, control: Control) -> void:
 	match control.get_class():
 		"Button":
 			logger.debug("_on_config_updated for Button not yet implemented")
 		"CheckButton":
-			control.pressed = bool(value)
+			control.pressed = bool(payload.data)
 		"LineEdit":
-			if control.text.is_valid_float() and value == control.text.to_float():
+			if control.text.is_valid_float() and payload.data == control.text.to_float():
 				return
-			control.text = str(value)
+			control.text = str(payload.data)
 			control.caret_position = control.text.length()
 
 #endregion
@@ -154,6 +162,23 @@ func _connect_line_edit(line_edit: LineEdit, args = null) -> void:
 		line_edit.text = str(AM.cm.get_data(args))
 		AM.ps.subscribe(self, args, {
 			"args": [line_edit],
+			"callback": "_on_config_updated"
+		})
+
+## Connects a TextEdit to the default callback. Listens for config updates by default by
+## subscribing to the given args parameter
+##
+## Also sets its initial value by pulling the args value from the ConfigManager
+##
+## @param: text_edit: TextEdit - The TextEdit to be connected
+## @param: args: Variant - By default, is the signal name as a String
+func _connect_text_edit(text_edit: TextEdit, args = null) -> void:
+	text_edit.connect("text_changed", self, "_on_text_edit_text_changed", [args, text_edit])
+
+	if AM.cm.has_data(args):
+		text_edit.text = str(AM.cm.get_data(args))
+		AM.ps.subscribe(self, args, {
+			"args": [text_edit],
 			"callback": "_on_config_updated"
 		})
 

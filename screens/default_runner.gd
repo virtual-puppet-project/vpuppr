@@ -134,7 +134,7 @@ func _setup_config() -> void:
 		if typeof(val) == TYPE_NIL:
 			logger.error("Config value %s is null" % i)
 			continue
-		_on_config_changed(val, i)
+		_on_config_changed(SignalPayload.new(i, val), i)
 
 func _pre_setup_scene() -> void:
 	AM.ps.subscribe(self, GlobalConstants.EVENT_PUBLISHED)
@@ -230,45 +230,38 @@ func _generate_preview() -> void:
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#
 
-func _on_config_changed(value, signal_name: String) -> void:
+func _on_config_changed(payload: SignalPayload, signal_name: String) -> void:
 	match signal_name:
 		#region Config
 
 		"apply_translation":
-			apply_translation = value
+			apply_translation = payload.data
 		"apply_rotation":
-			apply_rotation = value
+			apply_rotation = payload.data
 		"should_track_eye":
-			should_track_eye = value
+			should_track_eye = payload.data
 
 		"use_transparent_background":
-			ProjectSettings.set_setting("display/window/per_pixel_transparency/allowed", value)
-			ProjectSettings.set_setting("display/window/per_pixel_transparency/enabled", value)
-			get_viewport().transparent_bg = value
-			model_viewport.transparent_bg = value
+			ProjectSettings.set_setting("display/window/per_pixel_transparency/allowed", payload.data)
+			ProjectSettings.set_setting("display/window/per_pixel_transparency/enabled", payload.data)
+			get_viewport().transparent_bg = payload.data
+			model_viewport.transparent_bg = payload.data
 		"use_fxaa":
-			ProjectSettings.set_setting("rendering/quality/filters/use_fxaa", value)
-			get_viewport().fxaa = value
-			model_viewport.fxaa = value
+			ProjectSettings.set_setting("rendering/quality/filters/use_fxaa", payload.data)
+			get_viewport().fxaa = payload.data
+			model_viewport.fxaa = payload.data
 		
 		#endregion
 
 		#region Scene
 
-		# GlobalConstants.SceneSignals.MOVE_MODEL:
-		# 	should_move_model = value
-		# GlobalConstants.SceneSignals.ROTATE_MODEL:
-		# 	should_rotate_model = value
-		# GlobalConstants.SceneSignals.ZOOM_MODEL:
-		# 	should_zoom_model = value
-
 		GlobalConstants.SceneSignals.POSE_MODEL:
-			should_pose_model = value
+			should_pose_model = payload.data
 
 		#endregion
 
 		_:
-			logger.error("Unhandled signal %s with value %s" % [signal_name, str(value)])
+			logger.error("Unhandled signal %s with value %s" % [signal_name, str(payload)])
 
 func _on_event_published(payload: SignalPayload) -> void:
 	match payload.signal_name:
