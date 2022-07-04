@@ -6,7 +6,21 @@ const TREE_MIN_X: int = 200
 
 var tree: Tree setget _set_tree
 
-## Page name: String -> Control
+class Page extends Reference:
+	var control: Control
+	var tree_item: TreeItem
+
+	func _init(p_control: Control, p_tree_item: TreeItem) -> void:
+		control = p_control
+		tree_item = p_tree_item
+
+	## Deletes the contained objects. Only needs to be called when modifying objects
+	## without changing the current_scene
+	func delete() -> void:
+		control.queue_free()
+		tree_item.free()
+
+## Page name: String -> Page
 var pages := {}
 
 var current_page: Control
@@ -24,26 +38,30 @@ func _pre_setup() -> Result:
 func _setup() -> Result:
 	_set_tree($Tree)
 
+	tree.hide_root = true
+	var root: TreeItem = tree.create_item()
+
 	for child in get_children():
 		if child == tree:
 			continue
-		pages[child.name.capitalize()] = child
-		child.hide()
-	
-	tree.hide_root = true
-	var root: TreeItem = tree.create_item()
-	
-	for page_name in pages.keys():
-		var item: TreeItem = tree.create_item(root)
-		item.set_text(TREE_COLUMN, page_name)
 		
-		if page_name == _initial_page:
-			item.select(TREE_COLUMN)
-			_toggle_page(page_name)
+		var page_name: String = child.name.capitalize()
+
+		var item := tree.create_item(root)
+		item.set_text(TREE_COLUMN, page_name)
+
+		pages[page_name] = Page.new(child, item)
+		child.hide()
+
+	pages[_initial_page].tree_item.select(TREE_COLUMN)
+	_toggle_page(_initial_page)
 	
 	tree.connect("item_selected", self, "_on_item_selected")
 
 	return Result.ok()
+
+func _teardown() -> void:
+	pages.clear()
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
@@ -75,7 +93,7 @@ func _toggle_page(page_name: String) -> void:
 	if current_page != null:
 		current_page.hide()
 	
-	current_page = pages[page_name]
+	current_page = pages[page_name].control
 	current_page.show()
 
 #-----------------------------------------------------------------------------#

@@ -120,8 +120,9 @@ static func path_to_stripped_name(path: String) -> String:
 ## @return: Result<Error> - The error code
 func runtime_subscribe_to_signal(signal_name: String, is_metadata: bool = false) -> Result:
 	var res: Result = AM.ps.create_signal(signal_name)
-	if res == null or res.is_err():
-		return res
+	if Result.failed(res):
+		if res == null or res.unwrap_err().error_code() != Error.Code.PUB_SUB_USER_SIGNAL_ALREADY_EXISTS:
+			return res
 
 	res = AM.ps.subscribe(self, signal_name, {
 		"args": [signal_name],

@@ -34,6 +34,10 @@ func _ready() -> void:
 		logger.error(ret.to_string() if ret != null else "Something is super wrong")
 		return
 
+## DO NOT OVERRIDE
+func _exit_tree() -> void:
+	_teardown()
+
 func _setup_logger() -> void:
 	pass
 
@@ -51,6 +55,9 @@ func _post_setup() -> Result:
 	yield(get_tree(), "idle_frame")
 
 	return Result.ok()
+
+func _teardown() -> void:
+	pass
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
