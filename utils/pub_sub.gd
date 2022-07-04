@@ -49,12 +49,20 @@ func subscribe(o: Object, signal_name: String, payload = null) -> Result:
 		args.append_array(parsed_payload.get("args", []))
 		callback = parsed_payload.get("callback", "")
 
-	if connect(
+	if is_connected(signal_name, o, "_on_%s" % signal_name if callback.empty() else callback):
+		return Result.ok()
+
+	var err: int = connect(
 		signal_name,
 		o,
 		"_on_%s" % signal_name if callback.empty() else callback,
 		args
-	) != OK:
+	)
+
+	if err == ERR_INVALID_PARAMETER:
+		return Result.err(Error.Code.PUB_SUB_ALREADY_CONNECTED, signal_name)
+
+	if err != OK:
 		return Result.err(Error.Code.CONNECT_FAILED)
 
 	return Result.ok()

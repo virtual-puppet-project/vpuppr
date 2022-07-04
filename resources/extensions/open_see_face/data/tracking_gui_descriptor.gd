@@ -12,8 +12,9 @@ const CONFIG_KEYS := {
 func _init() -> void:
 	for val in CONFIG_KEYS.values():
 		var res: Result = AM.cm.runtime_subscribe_to_signal(val)
-		if res == null or res.is_err():
-			AM.logger.error("OpenSeeFace %s" % (res.to_string() if res != null else "Something is super broken"))
+		if Result.failed(res) and \
+				(res == null or res.unwrap_err().error_code() != Error.Code.PUB_SUB_ALREADY_CONNECTED):
+			AM.logger.error(Result.to_log_string(res))
 			return
 
 	_hv_fill_expand(self)

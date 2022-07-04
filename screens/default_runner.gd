@@ -169,6 +169,7 @@ func _pre_setup_scene() -> void:
 	model_viewport.world = world
 
 func _setup_scene() -> void:
+	# TODO this needs to accept either a model path or a config path
 	var model_to_load_path := ""
 	var model_to_load_res = AM.tcm.pull(MODEL_TO_LOAD, AM.cm.get_data("default_model_path"))
 	if not model_to_load_res or model_to_load_res.is_err():

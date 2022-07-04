@@ -110,16 +110,17 @@ func _setup() -> Result:
 	info = $Info
 	_set_tree($Tree)
 
-	pages[INFO_PAGE] = info
-	
-	_initial_page = INFO_PAGE
-	
 	tree.hide_root = true
 	var root: TreeItem = tree.create_item()
-	
+
 	var info_item: TreeItem = tree.create_item(root)
 	info_item.set_text(TREE_COLUMN, INFO_PAGE)
 	info_item.select(TREE_COLUMN)
+
+	pages[INFO_PAGE] = Page.new(info, info_item)
+	
+	_initial_page = INFO_PAGE
+	
 	_toggle_page(INFO_PAGE)
 
 	tree.connect("item_selected", self, "_on_item_selected")
@@ -148,7 +149,7 @@ func _setup() -> Result:
 		known_bones[bone_name] = item
 		
 		var bone_display := View.new(bone_name, logger)
-		pages[bone_name] = bone_display
+		pages[bone_name] = Page.new(bone_display, item)
 		
 		add_child(bone_display)
 

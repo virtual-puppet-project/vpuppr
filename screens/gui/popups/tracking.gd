@@ -19,9 +19,6 @@ func _setup() -> Result:
 
 	var info := $Info as ScrollContainer
 	_set_tree($Tree)
-	pages[INFO_PAGE] = info
-
-	_initial_page = INFO_PAGE
 
 	tree.hide_root = true
 	var root: TreeItem = tree.create_item()
@@ -29,6 +26,11 @@ func _setup() -> Result:
 	var info_item: TreeItem = tree.create_item(root)
 	info_item.set_text(TREE_COLUMN, INFO_PAGE)
 	info_item.select(TREE_COLUMN)
+
+	pages[INFO_PAGE] = Page.new(info, info_item)
+
+	_initial_page = INFO_PAGE
+	
 	_toggle_page(INFO_PAGE)
 
 	tree.connect("item_selected", self, "_on_item_selected")
@@ -57,7 +59,7 @@ func _setup() -> Result:
 		item.set_text(TREE_COLUMN, er.resource_name)
 
 		var display = descriptor_res.unwrap()
-		pages[er.resource_name] = display
+		pages[er.resource_name] = Page.new(display, item)
 		display.hide()
 
 		add_child(display)
