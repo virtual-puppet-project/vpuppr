@@ -142,13 +142,13 @@ func _marshal_data(data) -> Result:
 	if data is Result:
 		return data
 	if data == null:
-		return Result.err(Error.Code.NULL_VALUE)
+		return Safely.err(Error.Code.NULL_VALUE)
 
 	match typeof(data):
 		TYPE_COLOR:
-			return Result.ok(JSONUtil.color_to_dict(data))
+			return Safely.ok(JSONUtil.color_to_dict(data))
 		TYPE_TRANSFORM:
-			return Result.ok(JSONUtil.transform_to_dict(data))
+			return Safely.ok(JSONUtil.transform_to_dict(data))
 		TYPE_DICTIONARY:
 			var r := {}
 
@@ -159,7 +159,7 @@ func _marshal_data(data) -> Result:
 				# r[key] = result.unwrap()
 				r[key] = DataPoint.new(typeof(data[key]), result.unwrap()).get_as_dict()
 
-			return Result.ok(r)
+			return Safely.ok(r)
 		TYPE_ARRAY:
 			var r := []
 
@@ -170,21 +170,21 @@ func _marshal_data(data) -> Result:
 				# r.append(result.unwrap())
 				r.append(DataPoint.new(typeof(v), result.unwrap()).get_as_dict())
 
-			return Result.ok(r)
+			return Safely.ok(r)
 		_:
-			return Result.ok(data)
+			return Safely.ok(data)
 
 func _unmarshal_data(data_type: int, data_value) -> Result:
 	if data_value is Result:
 		return data_value
 	if data_value == null:
-		return Result.err(Error.Code.NULL_VALUE)
+		return Safely.err(Error.Code.NULL_VALUE)
 
 	match data_type:
 		TYPE_COLOR:
-			return Result.ok(JSONUtil.dict_to_color(data_value))
+			return Safely.ok(JSONUtil.dict_to_color(data_value))
 		TYPE_TRANSFORM:
-			return Result.ok(JSONUtil.dict_to_transform(data_value))
+			return Safely.ok(JSONUtil.dict_to_transform(data_value))
 		TYPE_DICTIONARY:
 			var r := {}
 
@@ -196,7 +196,7 @@ func _unmarshal_data(data_type: int, data_value) -> Result:
 
 				r[key] = result.unwrap()
 
-			return Result.ok(r)
+			return Safely.ok(r)
 		TYPE_ARRAY:
 			var r := []
 
@@ -207,9 +207,9 @@ func _unmarshal_data(data_type: int, data_value) -> Result:
 
 				r.append(result.unwrap())
 
-			return Result.ok(r)
+			return Safely.ok(r)
 		_:
-			return Result.ok(data_value)
+			return Safely.ok(data_value)
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #
@@ -239,7 +239,7 @@ func parse_dict(data: Dictionary) -> Result:
 
 		if typeof(data_point) != TYPE_DICTIONARY:
 			AM.logger.error("Invalid data point loaded: %s, bailing out" % str(data_point))
-			return Result.err(Error.Code.MODEL_CONFIG_UNEXPECTED_DATA)
+			return Safely.err(Error.Code.MODEL_CONFIG_UNEXPECTED_DATA)
 
 		var result := _unmarshal_data(data_point[DataPoint.TYPE_KEY], data_point[DataPoint.VALUE_KEY])
 		if result.is_err():
@@ -247,4 +247,4 @@ func parse_dict(data: Dictionary) -> Result:
 
 		set(key, result.unwrap())
 
-	return Result.ok()
+	return Safely.ok()

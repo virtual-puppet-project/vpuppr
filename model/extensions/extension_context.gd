@@ -34,9 +34,9 @@ func _init(path: String) -> void:
 func load_resource(path: String) -> Result:
 	var resource = load("%s/%s" % [context_path, path])
 	if resource == null:
-		return Result.err(Error.Code.EXTENSION_CONTEXT_RESOURCE_NOT_FOUND, path)
+		return Safely.err(Error.Code.EXTENSION_CONTEXT_RESOURCE_NOT_FOUND, path)
 	
-	return Result.ok(resource)
+	return Safely.ok(resource)
 
 ## Reconstructs the absolute paths to an array of resources and loads them
 ##

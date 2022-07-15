@@ -50,7 +50,7 @@ func _parse_data(data) -> Result:
 					return result
 				r[key] = result.unwrap()
 			
-			return Result.ok(r)
+			return Safely.ok(r)
 		TYPE_ARRAY:
 			var r := []
 			
@@ -61,11 +61,11 @@ func _parse_data(data) -> Result:
 				
 				r.append(result.unwrap())
 			
-			return Result.ok(r)
+			return Safely.ok(r)
 		TYPE_OBJECT:
-			return Result.ok(data.get_as_dict())
+			return Safely.ok(data.get_as_dict())
 		_:
-			return Result.ok(data)
+			return Safely.ok(data)
 
 func parse_dict(data: Dictionary) -> Result:
 	var result: Result
@@ -97,16 +97,16 @@ func parse_dict(data: Dictionary) -> Result:
 				else:
 					other[key] = value
 	
-	return Result.ok()
+	return Safely.ok()
 
 func parse_string(data: String) -> Result:
 	var json_result := JSON.parse(data)
 	if json_result.error != OK:
-		return Result.err(Error.Code.BASE_CONFIG_PARSE_FAILURE, json_result.error_string)
+		return Safely.err(Error.Code.BASE_CONFIG_PARSE_FAILURE, json_result.error_string)
 
 	var json_data = json_result.result
 	if typeof(json_data) != TYPE_DICTIONARY:
-		return Result.err(Error.Code.BASE_CONFIG_UNEXPECTED_DATA, str(json_data))
+		return Safely.err(Error.Code.BASE_CONFIG_UNEXPECTED_DATA, str(json_data))
 
 	return parse_dict(json_data)
 
@@ -190,9 +190,9 @@ func find_data_get(query: String) -> Result:
 	var r := _find_data(_split_query(query))
 
 	if r.empty():
-		return Result.err(Error.Code.BASE_CONFIG_DATA_NOT_FOUND)
+		return Safely.err(Error.Code.BASE_CONFIG_DATA_NOT_FOUND)
 
-	return Result.ok(r.pop_back())
+	return Safely.ok(r.pop_back())
 
 ## Finds nested data and replaces it with a new value using node-path syntax
 ##
@@ -207,7 +207,7 @@ func find_data_set(query: String, new_value) -> Result:
 	var r := _find_data(split)
 
 	if r.empty():
-		return Result.err(Error.Code.BASE_CONFIG_DATA_NOT_FOUND)
+		return Safely.err(Error.Code.BASE_CONFIG_DATA_NOT_FOUND)
 
 	var val = r[r.size() - 2]
 	var key = split[split.size() - 1]
@@ -219,12 +219,12 @@ func find_data_set(query: String, new_value) -> Result:
 		TYPE_DICTIONARY:
 			val[key] = new_value
 		_:
-			return Result.err(Error.Code.BASE_CONFIG_UNHANDLED_FIND_SET_DATA_TYPE)
+			return Safely.err(Error.Code.BASE_CONFIG_UNHANDLED_FIND_SET_DATA_TYPE)
 
 	# TODO might not need this?
 	# AM.ps.publish(key, new_value)
 	
-	return Result.ok()
+	return Safely.ok()
 
 ## Set data on the current config
 ##

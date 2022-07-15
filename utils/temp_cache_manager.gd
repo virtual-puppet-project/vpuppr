@@ -64,6 +64,6 @@ func push(key: String, value) -> void:
 func pull(key: String, default_value = null) -> Result:
 	var ret = _cache.get(key, default_value)
 	if ret != null:
-		return Result.ok(ret)
+		return Safely.ok(ret)
 	else:
-		return Result.err(Error.Code.TEMP_CACHE_MANAGER_KEY_NOT_FOUND, key)
+		return Safely.err(Error.Code.TEMP_CACHE_MANAGER_KEY_NOT_FOUND, key)

@@ -58,9 +58,9 @@ class PresetsPage extends ScrollContainer:
 		logger = p_logger
 
 		model_config = ModelConfig.new()
-		var res: Result = model_config.parse_string(config_string)
-		if Result.failed(res):
-			logger.error(Result.to_log_string(res))
+		var res: Result = Safely.wrap(model_config.parse_string(config_string))
+		if res.is_err():
+			logger.error(res.to_string())
 			return
 
 		ControlUtil.h_expand_fill(self)
@@ -204,7 +204,7 @@ func _setup() -> Result:
 	_initial_page = AM.cm.get_data("config_name")
 	var res: Result = _add_page(root, _initial_page, AM.cm.model_config.get_as_json_string(), true)
 	if res.is_err():
-		return Result.err(Error.Code.GUI_SETUP_ERROR, "Unable to create preset page for %s" % _initial_page)
+		return Safely.err(Error.Code.GUI_SETUP_ERROR, "Unable to create preset page for %s" % _initial_page)
 
 	var model_configs: Dictionary = AM.cm.get_data("model_configs")
 	for config_name in model_configs.keys():
@@ -237,7 +237,7 @@ func _setup() -> Result:
 
 	AM.ps.subscribe(self, "model_configs", "_on_event_published")
 	
-	return Result.ok()
+	return Safely.ok()
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
@@ -254,9 +254,9 @@ func _on_event_published(payload: SignalPayload) -> void:
 					logger.error("Unable to read config at %s" % config_path)
 					return
 				
-				var res := _add_page(tree.get_root(), changed_config_name, file.get_as_text(), true)
-				if Result.failed(res):
-					logger.error(Result.to_log_string(res))
+				var res := Safely.wrap(_add_page(tree.get_root(), changed_config_name, file.get_as_text(), true))
+				if res.is_err():
+					logger.error(res.to_string())
 					return
 			else:
 				var current_config_name: String = AM.cm.get_data("config_name")
@@ -276,14 +276,14 @@ func _on_new_preset_text_changed(text: String, button: Button) -> void:
 	button.disabled = is_disabled
 
 func _on_new_preset_button_pressed(line_edit: LineEdit) -> void:
-	var new_model_config := AM.cm.model_config.duplicate(true)
+	var new_model_config: ModelConfig = AM.cm.model_config.duplicate(true)
 	new_model_config.config_name = line_edit.text
 
 	line_edit.text = ""
 
-	var res := AM.cm.save_data(new_model_config.config_name, new_model_config.get_as_json_string())
-	if Result.failed(res):
-		logger.error(Result.to_log_string(res))
+	var res := Safely.wrap(AM.cm.save_data(new_model_config.config_name, new_model_config.get_as_json_string()))
+	if res.is_err():
+		logger.error(res.to_string())
 		return
 
 	var model_configs: Dictionary = AM.cm.get_data("model_configs")
@@ -372,7 +372,7 @@ func _add_page(root: TreeItem, page_name: String, config_string: String, should_
 	if should_select:
 		ti.select(TREE_COLUMN)
 
-	return Result.ok()
+	return Safely.ok()
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #

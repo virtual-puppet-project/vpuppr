@@ -44,17 +44,17 @@ func _setup_logger() -> void:
 func _pre_setup() -> Result:
 	yield(get_tree(), "idle_frame")
 
-	return Result.ok()
+	return Safely.ok()
 
 func _setup() -> Result:
 	yield(get_tree(), "idle_frame")
 
-	return Result.ok()
+	return Safely.ok()
 
 func _post_setup() -> Result:
 	yield(get_tree(), "idle_frame")
 
-	return Result.ok()
+	return Safely.ok()
 
 func _teardown() -> void:
 	pass

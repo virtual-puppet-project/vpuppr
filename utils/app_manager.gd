@@ -32,6 +32,8 @@ func _ready() -> void:
 	OS.window_size = OS.get_screen_size() * 0.75
 	OS.center_window()
 	
+	Safely.register_error_codes(Error.Code)
+	
 	connect("tree_exiting", self, "_on_tree_exiting")
 	
 	if ClassDB.class_exists("Redirect"):

@@ -145,10 +145,10 @@ func _find_runner_preview(view_name: String) -> Result:
 	if file.file_exists(expected_path):
 		var image := Image.new()
 		if image.load(expected_path) != OK:
-			return Result.err(Error.Code.RUNNER_NO_PREVIEW_IMAGE_FOUND, expected_path)
-		return Result.ok(image)
+			return Safely.err(Error.Code.RUNNER_NO_PREVIEW_IMAGE_FOUND, expected_path)
+		return Safely.ok(image)
 
-	return Result.err(Error.Code.RUNNER_NO_PREVIEW_IMAGE_FOUND, expected_path)
+	return Safely.err(Error.Code.RUNNER_NO_PREVIEW_IMAGE_FOUND, expected_path)
 
 func _create_gui_select(runner_path: String) -> WindowDialog:
 	var wd := WindowDialog.new()
@@ -192,10 +192,10 @@ func _create_gui_select(runner_path: String) -> WindowDialog:
 	return wd
 
 func _run_runner(runner_path: String, gui_path: String) -> void:
-	var res: Result = FileUtil.switch_to_runner(runner_path, gui_path)
+	var res: Result = Safely.wrap(FileUtil.switch_to_runner(runner_path, gui_path))
 
-	if Result.failed(res):
-		logger.error(Result.to_log_string(res))
+	if res.is_err():
+		logger.error(res.to_string())
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #

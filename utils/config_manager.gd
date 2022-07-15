@@ -75,14 +75,14 @@ func _register_all_configs_with_pub_sub() -> Result:
 	if result.is_err():
 		return result
 	
-	return Result.ok()
+	return Safely.ok()
 
 func _register_config_data_with_pub_sub(data: Dictionary, callback: String) -> Result:
 	for key in data.keys():
 		if key != "other":
 			var result: Result = AM.ps.create_signal(key)
 			if result.is_err():
-				if result.unwrap_err().error_code() == Error.Code.PUB_SUB_USER_SIGNAL_ALREADY_EXISTS:
+				if result.unwrap_err().code == Error.Code.PUB_SUB_USER_SIGNAL_ALREADY_EXISTS:
 					continue
 				return result
 
@@ -97,7 +97,7 @@ func _register_config_data_with_pub_sub(data: Dictionary, callback: String) -> R
 			if result.is_err():
 				return result
 
-	return Result.ok()
+	return Safely.ok()
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #
@@ -119,9 +119,9 @@ static func path_to_stripped_name(path: String) -> String:
 ##
 ## @return: Result<Error> - The error code
 func runtime_subscribe_to_signal(signal_name: String, is_metadata: bool = false) -> Result:
-	var res: Result = AM.ps.create_signal(signal_name)
-	if Result.failed(res):
-		if res == null or res.unwrap_err().error_code() != Error.Code.PUB_SUB_USER_SIGNAL_ALREADY_EXISTS:
+	var res: Result = Safely.wrap(AM.ps.create_signal(signal_name))
+	if res.is_err():
+		if res.unwrap_err().code != Error.Code.PUB_SUB_USER_SIGNAL_ALREADY_EXISTS:
 			return res
 
 	res = AM.ps.subscribe(self, signal_name, {
@@ -138,7 +138,7 @@ func load_metadata() -> Result:
 
 	var file := File.new()
 	if file.open("%s/%s" % [save_data_path, METADATA_FILE_NAME], File.READ) != OK:
-		return Result.err(Error.Code.CONFIG_MANAGER_METADATA_LOAD_ERROR)
+		return Safely.err(Error.Code.CONFIG_MANAGER_METADATA_LOAD_ERROR)
 
 	var result := metadata.parse_string(file.get_as_text())
 	if result.is_err():
@@ -146,14 +146,14 @@ func load_metadata() -> Result:
 
 	logger.info("Finished loading metadata")
 	
-	return Result.ok()
+	return Safely.ok()
 
 func create_new_model_config(model_name: String, model_path: String, config_name: String = "") -> Result:
 	if config_name.empty():
 		config_name = model_name
 	
 	if metadata.model_configs.has(config_name):
-		return Result.err(Error.Code.METADATA_CONFIG_ALREADY_EXISTS, config_name)
+		return Safely.err(Error.Code.METADATA_CONFIG_ALREADY_EXISTS, config_name)
 	
 	var mc := ModelConfig.new()
 	mc.config_name = config_name
@@ -166,10 +166,10 @@ func create_new_model_config(model_name: String, model_path: String, config_name
 	
 	metadata.model_configs[config_name] = res.unwrap()
 	
-	return Result.ok(mc)
+	return Safely.ok(mc)
 
 func load_model_config(path: String) -> Result:
-	var result := load_model_config_no_set(path)
+	var result := Safely.wrap(load_model_config_no_set(path))
 	if result.is_err():
 		return result
 
@@ -184,30 +184,30 @@ func load_model_config_no_set(path: String) -> Result:
 
 	var file := File.new()
 	if file.open("%s/%s" % [save_data_path, path] if not path.is_abs_path() else path, File.READ) != OK:
-		return Result.err(Error.Code.CONFIG_MANAGER_MODEL_CONFIG_LOAD_ERROR)
+		return Safely.err(Error.Code.CONFIG_MANAGER_MODEL_CONFIG_LOAD_ERROR)
 
 	var mc := ModelConfig.new()
 
-	var result := mc.parse_string(file.get_as_text())
+	var result := Safely.wrap(mc.parse_string(file.get_as_text()))
 	if result.is_err():
 		return result
 
 	logger.info("Finished loading model config")
 
-	return Result.ok(mc)
+	return Safely.ok(mc)
 
 func save_data(data_name: String = "", data: String = "") -> Result:
 	logger.info("Saving data")
 	
-	var result := _save_to_file(METADATA_FILE_NAME, metadata.get_as_json_string())
+	var result := Safely.wrap(_save_to_file(METADATA_FILE_NAME, metadata.get_as_json_string()))
 	if result.is_err():
 		return result
 
 	if model_config.config_name != ModelConfig.CHANGE_ME:
-		result = _save_to_file(
+		result = Safely.wrap(_save_to_file(
 			"%s.json" % (data_name if not data_name.empty() else model_config.config_name),
 			data if not data.empty() else model_config.get_as_json_string()
-		)
+		))
 		if result.is_err():
 			return result
 	
@@ -269,32 +269,32 @@ func get_data(key: String, default_value = null, use_metadata: bool = false):
 ##
 ## Uses the find_data_get(...) method which is very slow
 func find_data_get(query: String) -> Result:
-	var result := model_config.find_data_get(query)
+	var result := Safely.wrap(model_config.find_data_get(query))
 	if result.is_ok():
 		return result
 
-	result = metadata.find_data_get(query)
+	result = Safely.wrap(metadata.find_data_get(query))
 	if result.is_ok():
 		return result
 
 	logger.error("Invalid search query %s" % query)
 
-	return Result.err(Error.Code.CONFIG_MANAGER_DATA_NOT_FOUND)
+	return Safely.err(Error.Code.CONFIG_MANAGER_DATA_NOT_FOUND)
 
 ## Wrapper for setting KNOWN data in ModelConfig or Metadata, in that search order.
 ##
 ## Uses the find_data_set(...) method which is very slow
 func find_data_set(query: String, new_value) -> Result:
-	var result := model_config.find_data_set(query, new_value)
+	var result := Safely.wrap(model_config.find_data_set(query, new_value))
 	if result.is_ok():
 		return result
 
-	result = metadata.find_data_set(query, new_value)
+	result = Safely.wrap(metadata.find_data_set(query, new_value))
 	if result.is_ok():
 		return result
 
 	logger.error("Invalid search query %s" % query)
 
-	return Result.err(Error.Code.CONFIG_MANAGER_DATA_NOT_FOUND)
+	return Safely.err(Error.Code.CONFIG_MANAGER_DATA_NOT_FOUND)
 
 #endregion
