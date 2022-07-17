@@ -35,12 +35,12 @@ func test_result_ok_pass():
 	assert_null(result0.unwrap_err())
 	assert_eq(result0.to_string(), "OK: 0")
 
-	var result1 := Result.ok()
+	var result1 := Safely.ok()
 
 	assert_true(result1.is_ok())
 	assert_eq(result1.unwrap(), OK)
 
-	var result2 := Result.ok(1)
+	var result2 := Safely.ok(1)
 
 	assert_true(result2.is_ok())
 	assert_eq(result2.unwrap(), 1)
@@ -59,7 +59,7 @@ func test_result_error_pass():
 		result0.unwrap_err().error_description()
 	])
 
-	var result1 := Result.err(Error.Code.CONNECT_FAILED, "test error")
+	var result1 := Safely.err(Error.Code.CONNECT_FAILED, "test error")
 
 	assert_true(result1.is_err())
 	assert_eq(result1.unwrap_err().error_code(), Error.Code.CONNECT_FAILED)

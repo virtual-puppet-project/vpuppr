@@ -195,16 +195,16 @@ func _find_loaders() -> Dictionary:
 func _try_load_model(path: String) -> Result:
 	var file := File.new()
 	if not file.file_exists(path):
-		return Result.err(Error.Code.RUNNER_FILE_NOT_FOUND, path)
+		return Safely.err(Error.Code.RUNNER_FILE_NOT_FOUND, path)
 
 	var loaders := _find_loaders()
 	if loaders.empty():
-		return Result.err(Error.Code.RUNNER_NO_LOADERS_FOUND)
+		return Safely.err(Error.Code.RUNNER_NO_LOADERS_FOUND)
 
 	var file_ext := path.get_extension().to_lower()
 
 	if not loaders.has(file_ext):
-		return Result.err(Error.Code.RUNNER_UNHANDLED_FILE_FORMAT, file_ext)
+		return Safely.err(Error.Code.RUNNER_UNHANDLED_FILE_FORMAT, file_ext)
 
 	var method_name: String = loaders[file_ext]
 
@@ -234,9 +234,9 @@ func load_glb(path: String) -> Result:
 
 	var model = gltf_loader.import_gltf_scene(path)
 	if model == null:
-		return Result.err(Error.Code.RUNNER_LOAD_FILE_FAILED)
+		return Safely.err(Error.Code.RUNNER_LOAD_FILE_FAILED)
 	
-	return Result.ok(model)
+	return Safely.ok(model)
 
 ## Uses the built-in scene loader to load a PackedScene
 ##
@@ -248,13 +248,13 @@ func load_scn(path: String) -> Result:
 
 	var model = load(path)
 	if model == null:
-		return Result.err(Error.Code.RUNNER_LOAD_FILE_FAILED)
+		return Safely.err(Error.Code.RUNNER_LOAD_FILE_FAILED)
 
 	var model_instance: Node = model.instance()
 	if model_instance == null:
-		return Result.err(Error.Code.RUNNER_LOAD_FILE_FAILED)
+		return Safely.err(Error.Code.RUNNER_LOAD_FILE_FAILED)
 
-	return Result.ok(model_instance)
+	return Safely.ok(model_instance)
 
 ## Uses the built-in scene loader to load a PackedScene
 ##

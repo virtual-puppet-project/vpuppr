@@ -285,22 +285,22 @@ func _on_event_published(payload: SignalPayload) -> void:
 			tcm.push(MODEL_TO_LOAD, payload.data)
 			
 			var runner_path := ""
-			var res: Result = tcm.pull("runner_path")
-			if res == null or res.is_err():
+			var res: Result = Safely.wrap(tcm.pull("runner_path"))
+			if res.is_err():
 				logger.error(res.to_string())
 				return
 			runner_path = res.unwrap()
 
 			var gui_path := ""
-			res = tcm.pull("gui_path")
-			if Result.failed(res):
-				logger.error(Result.to_log_string(res))
+			res = Safely.wrap(tcm.pull("gui_path"))
+			if res.is_err():
+				logger.error(res.to_string())
 				return
 			gui_path = res.unwrap()
 
-			res = FileUtil.switch_to_runner(runner_path, gui_path)
-			if Result.failed(res):
-				logger.error(Result.to_log_string(res))
+			res = Safely.wrap(FileUtil.switch_to_runner(runner_path, gui_path))
+			if res.is_err():
+				logger.error(res.to_string())
 
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
@@ -342,9 +342,9 @@ func load_model(path: String) -> void:
 	if config_result.is_err():
 		logger.info("Config for %s not found. Creating new config" % model_name)
 		
-		var config_res: Result = AM.cm.create_new_model_config(model_name, path, model_name)
-		if Result.failed(config_res):
-			logger.error(Result.to_log_string(config_res))
+		var config_res: Result = Safely.wrap(AM.cm.create_new_model_config(model_name, path, model_name))
+		if config_res.is_err():
+			logger.error(config_res.to_string())
 			logger.error("Failed creating a new config, be aware things might be broken")
 			return
 
@@ -362,7 +362,7 @@ func load_glb(path: String) -> Result:
 
 	var script: GDScript = load(PUPPET_TRAIT_SCRIPT_PATH)
 	if script == null:
-		return Result.err(Error.Code.RUNNER_LOAD_FILE_FAILED, "Unable to load puppet trait script")
+		return Safely.err(Error.Code.RUNNER_LOAD_FILE_FAILED, "Unable to load puppet trait script")
 	
 	res.unwrap().set_script(script)
 

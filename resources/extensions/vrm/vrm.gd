@@ -65,7 +65,7 @@ func load_vrm(path: String) -> Result:
 
 	var m = vrm_loader.import_scene(path, 1, 1000)
 	if m == null:
-		return Result.err(Error.Code.RUNNER_LOAD_FILE_FAILED)
+		return Safely.err(Error.Code.RUNNER_LOAD_FILE_FAILED)
 
 	# TODO: this needs to be futher looked at, as it seems like a hack
 	# vrm_meta needs to be read, stored in a var, and then AFTER
@@ -85,4 +85,4 @@ func load_vrm(path: String) -> Result:
 	translation_adjustment = Vector3(-1, 1, -1)
 	rotation_adjustment = Vector3(1, -1, -1)
 
-	return Result.ok(m)
+	return Safely.ok(m)

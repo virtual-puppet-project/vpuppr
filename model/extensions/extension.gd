@@ -42,7 +42,7 @@ func _init(context_path: String) -> void:
 ## to the Extension
 func add_resource(res_name: String, res_type: String, res_entrypoint: String) -> Result:
 	if resources.has(res_name):
-		return Result.err(Error.Code.EXTENSION_RESOURCE_ALREADY_EXISTS)
+		return Safely.err(Error.Code.EXTENSION_RESOURCE_ALREADY_EXISTS)
 
 	var ext_res := ExtensionResource.new(
 		extension_name,
@@ -65,9 +65,9 @@ func add_resource(res_name: String, res_type: String, res_entrypoint: String) ->
 		GlobalConstants.ExtensionTypes.PLUGIN:
 			plugins.append(res_name)
 		_:
-			return Result.err(Error.Code.UNHANDLED_EXTENSION_TYPE)
+			return Safely.err(Error.Code.UNHANDLED_EXTENSION_TYPE)
 
-	return Result.ok(ext_res)
+	return Safely.ok(ext_res)
 
 ## Gets all data as a Dictionary
 ##

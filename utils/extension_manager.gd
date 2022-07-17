@@ -68,7 +68,7 @@ func _scan() -> Result:
 	var dir := Directory.new()
 
 	if dir.open(scan_path) != OK:
-		return Result.err(Error.Code.EXTENSION_MANAGER_RESOURCE_PATH_DOES_NOT_EXIST)
+		return Safely.err(Error.Code.EXTENSION_MANAGER_RESOURCE_PATH_DOES_NOT_EXIST)
 
 	dir.list_dir_begin(true, true)
 
@@ -88,7 +88,7 @@ func _scan() -> Result:
 			logger.error(r.to_string())
 			continue
 
-	return Result.ok()
+	return Safely.ok()
 
 ## Checks for necessary metadata and then iterates through every section in the
 ## extension's ini file
@@ -100,20 +100,20 @@ func _parse_extension(path: String) -> Result:
 	var file := File.new()
 
 	if file.open("%s/%s" % [path, Config.CONFIG_NAME], File.READ) != OK:
-		return Result.err(
+		return Safely.err(
 			Error.Code.EXTENSION_MANAGER_CONFIG_DOES_NOT_EXIST,
 			"%s/%s" % [path, Config.CONFIG_NAME])
 
 	var c := ConfigFile.new()
 	if c.parse(file.get_as_text()) != OK:
-		return Result.err(Error.Code.EXTENSION_MANAGER_RESOURCE_CONFIG_PARSE_FAILURE, path)
+		return Safely.err(Error.Code.EXTENSION_MANAGER_RESOURCE_CONFIG_PARSE_FAILURE, path)
 
 	if not c.has_section(Config.GENERAL):
-		return Result.err(Error.Code.EXTENSION_MANAGER_MISSING_GENERAL_SECTION, path)
+		return Safely.err(Error.Code.EXTENSION_MANAGER_MISSING_GENERAL_SECTION, path)
 
 	var extension_name: String = c.get_value(Config.GENERAL, Config.GENERAL_KEYS.NAME, "")
 	if extension_name.empty():
-		return Result.err(Error.Code.EXTENSION_MANAGER_MISSING_EXTENSION_NAME, path)
+		return Safely.err(Error.Code.EXTENSION_MANAGER_MISSING_EXTENSION_NAME, path)
 
 	var ext = Extension.new(path)
 	ext.extension_name = extension_name
@@ -127,7 +127,7 @@ func _parse_extension(path: String) -> Result:
 	
 	extensions[extension_name] = ext
 
-	return Result.ok()
+	return Safely.ok()
 
 ## Parses an extension section and registers the absolute path to the entrypoint.
 ##
@@ -142,13 +142,13 @@ func _parse_extension(path: String) -> Result:
 ## @return: Result<int> - The error code
 func _parse_extension_section(path: String, c: ConfigFile, section_name: String, e: Extension) -> Result:
 	if not c.has_section_key(section_name, Config.SECTION_KEYS.TYPE):
-		return Result.err(
+		return Safely.err(
 			Error.Code.EXTENSION_MANAGER_MISSING_EXTENSION_SECTION_KEY,
 			Config.SECTION_KEYS.TYPE
 		)
 
 	if not c.has_section_key(section_name, Config.SECTION_KEYS.ENTRYPOINT):
-		return Result.err(
+		return Safely.err(
 			Error.Code.EXTENSION_MANAGER_MISSING_EXTENSION_SECTION_KEY,
 			Config.SECTION_KEYS.ENTRYPOINT
 		)
@@ -179,15 +179,15 @@ func _parse_extension_section(path: String, c: ConfigFile, section_name: String,
 		var full_native_dir: String = "%s/%s" % [path, native_dir]
 
 		if not dir.dir_exists(full_native_dir):
-			return Result.err(Error.Code.EXTENSION_MANAGER_BAD_GDNATIVE_ENTRYPOINT, full_native_dir)
+			return Safely.err(Error.Code.EXTENSION_MANAGER_BAD_GDNATIVE_ENTRYPOINT, full_native_dir)
 
 		if AM.grl.process_folder(full_native_dir) != OK:
-			return Result.err(Error.Code.EXTENSION_MANAGER_FAILED_PROCESSING_GDNATIVE, full_native_dir)
+			return Safely.err(Error.Code.EXTENSION_MANAGER_FAILED_PROCESSING_GDNATIVE, full_native_dir)
 
 		ext_resource.is_gdnative = true
 		ext_resource.resource_entrypoint = native_dir
 
-	return Result.ok()
+	return Safely.ok()
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #
@@ -201,8 +201,8 @@ func _parse_extension_section(path: String, c: ConfigFile, section_name: String,
 func get_extension(extension_name: String) -> Result:
 	var extension: Extension = extensions.get(extension_name)
 	if extension == null:
-		return Result.err(Error.Code.EXTENSION_MANAGER_EXTENSION_DOES_NOT_EXIST, extension_name)
-	return Result.ok(extension)
+		return Safely.err(Error.Code.EXTENSION_MANAGER_EXTENSION_DOES_NOT_EXIST, extension_name)
+	return Safely.ok(extension)
 
 ## Gets all extensions of a certain type
 ##
@@ -231,7 +231,7 @@ func find_in_extensions(query: String) -> Result:
 	var split_query := query.strip_edges().lstrip("/").rstrip("/").split("/")
 
 	if split_query.empty():
-		return Result.err(Error.Code.EXTENSION_MANAGER_EMPTY_QUERY, query)
+		return Safely.err(Error.Code.EXTENSION_MANAGER_EMPTY_QUERY, query)
 
 	var r := [extensions]
 
@@ -252,9 +252,9 @@ func find_in_extensions(query: String) -> Result:
 			r.append(val)
 			continue
 
-		return Result.err(Error.Code.EXTENSION_MANAGER_BAD_QUERY, "%s: %s" % [str(split_query), key])
+		return Safely.err(Error.Code.EXTENSION_MANAGER_BAD_QUERY, "%s: %s" % [str(split_query), key])
 	
-	return Result.ok(r.pop_back())
+	return Safely.ok(r.pop_back())
 
 ## Wrapper function for safely getting an extension's context path
 ##
@@ -264,9 +264,9 @@ func find_in_extensions(query: String) -> Result:
 func get_context(extension_name: String) -> Result:
 	var ext: Extension = extensions.get(extension_name)
 	if ext == null:
-		return Result.err(Error.Code.EXTENSION_MANAGER_EXTENSION_DOES_NOT_EXIST, extension_name)
+		return Safely.err(Error.Code.EXTENSION_MANAGER_EXTENSION_DOES_NOT_EXIST, extension_name)
 
-	return Result.ok(ext.context)
+	return Safely.ok(ext.context)
 
 ## Wrapper function for safely loading a resource from an extension's context
 ##
@@ -308,14 +308,14 @@ func load_gdnative_resource(
 ) -> Result:
 	var ext = extensions.get(extension_name)
 	if ext == null:
-		return Result.err(Error.Code.EXTENSION_MANAGER_EXTENSION_DOES_NOT_EXIST, extension_name)
+		return Safely.err(Error.Code.EXTENSION_MANAGER_EXTENSION_DOES_NOT_EXIST, extension_name)
 
 	var ext_res = ext.resources.get(resource_name)
 	if ext_res == null:
-		return Result.err(Error.Code.EXTENSION_MANAGER_EXTENSION_RESOURCE_DOES_NOT_EXIST, resource_name)
+		return Safely.err(Error.Code.EXTENSION_MANAGER_EXTENSION_RESOURCE_DOES_NOT_EXIST, resource_name)
 
 	var native_class = AM.grl.create_class(ext_res.resource_entrypoint, clazz_name)
 	if native_class == null:
-		return Result.err(Error.Code.EXTENSION_MANAGER_BAD_GDNATIVE_CLASS, clazz_name)
+		return Safely.err(Error.Code.EXTENSION_MANAGER_BAD_GDNATIVE_CLASS, clazz_name)
 
-	return Result.ok(native_class)
+	return Safely.ok(native_class)

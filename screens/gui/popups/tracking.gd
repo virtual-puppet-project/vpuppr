@@ -64,7 +64,7 @@ func _setup() -> Result:
 
 		add_child(display)
 	
-	return Result.ok()
+	return Safely.ok()
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
@@ -146,18 +146,18 @@ func _from_descriptor(context: ExtensionContext, path_and_func: String) -> Resul
 	
 	var file := File.new()
 	if file.open("%s/%s" % [context.context_path, path], File.READ) != OK:
-		return Result.err(Error.Code.GUI_TRACKER_LOAD_FILE_FAILED,
+		return Safely.err(Error.Code.GUI_TRACKER_LOAD_FILE_FAILED,
 			"Unable to open file: %s" % path)
 	
 	var file_text: String = file.get_as_text()
 	if file_text.strip_edges().length() < 1:
-		return Result.err(Error.Code.GUI_TRACKER_FILE_EMPTY,
+		return Safely.err(Error.Code.GUI_TRACKER_FILE_EMPTY,
 			"File empty: %s" % path)
 
 	var handlers := _find_handlers()
 
 	if not handlers.has(path.get_extension().to_lower()):
-		return Result.err(Error.Code.GUI_TRACKER_UNHANDLED_FILE_FORMAT,
+		return Safely.err(Error.Code.GUI_TRACKER_UNHANDLED_FILE_FORMAT,
 			"No handler found: %s" % path)
 
 	var args := [path, file_text]
@@ -183,7 +183,7 @@ func _handle_gd(path: String, text: String, entrypoint: String) -> Result:
 	gdscript.source_code = text
 
 	if gdscript.reload() != OK:
-		return Result.err(Error.Code.GUI_TRACKER_INVALID_GDSCRIPT)
+		return Safely.err(Error.Code.GUI_TRACKER_INVALID_GDSCRIPT)
 
 	var instance: Object = gdscript.new()
 	
@@ -195,31 +195,31 @@ func _handle_gd(path: String, text: String, entrypoint: String) -> Result:
 	if not entrypoint.empty():
 		var data = instance.call(entrypoint)
 		if typeof(data) == TYPE_NIL or not data is Node:
-			return Result.err(Error.Code.GUI_TRACKER_INVALID_DESCRIPTOR,
+			return Safely.err(Error.Code.GUI_TRACKER_INVALID_DESCRIPTOR,
 				"Invalid data type received while handling GDScript: %s - %s" % [str(data), path])
 
-		return Result.ok(data)
+		return Safely.ok(data)
 	# The file is the actual node
 	else:
 		if not instance.is_class("Node"):
-			return Result.err(Error.Code.GUI_TRACKER_INVALID_GDSCRIPT,
+			return Safely.err(Error.Code.GUI_TRACKER_INVALID_GDSCRIPT,
 				"Invalid data type received while handling GDScript: %s - %s" % [str(instance), path])
 
-		return Result.ok(instance)
+		return Safely.ok(instance)
 
 func _handle_json(path: String, text: String) -> Result:
 	var json_parse_result := JSON.parse(text)
 	if json_parse_result.error != OK:
-		return Result.err(Error.Code.GUI_TRACKER_INVALID_JSON, "%s\n%s" %
+		return Safely.err(Error.Code.GUI_TRACKER_INVALID_JSON, "%s\n%s" %
 			[path, json_parse_result.error_description()])
 
 	var data = json_parse_result.result
 	if typeof(data) != TYPE_DICTIONARY:
-		return Result.err(Error.Code.GUI_TRACKER_INVALID_JSON,
+		return Safely.err(Error.Code.GUI_TRACKER_INVALID_JSON,
 			"%s must be a JSON object" % path)
 
 	if not data.has("type") or not ClassDB.class_exists(data["type"]):
-		return Result.err(Error.Code.GUI_TRACKER_INVALID_JSON, str(data))
+		return Safely.err(Error.Code.GUI_TRACKER_INVALID_JSON, str(data))
 
 	var node = ClassDB.instance(data["type"])
 	if data.has("name"):
@@ -227,11 +227,11 @@ func _handle_json(path: String, text: String) -> Result:
 
 	var additional_nodes = data.get("nodes", [])
 	if typeof(additional_nodes) != TYPE_ARRAY:
-		return Result.err(Error.Code.GUI_TRACKER_INVALID_JSON, str(data))
+		return Safely.err(Error.Code.GUI_TRACKER_INVALID_JSON, str(data))
 
 	for i in additional_nodes:
 		if typeof(i) != TYPE_DICTIONARY:
-			return Result.err(Error.Code.GUI_TRACKER_INVALID_JSON, str(i))
+			return Safely.err(Error.Code.GUI_TRACKER_INVALID_JSON, str(i))
 
 		var res := _handle_json(path, str(i))
 		if res.is_err():
@@ -239,7 +239,7 @@ func _handle_json(path: String, text: String) -> Result:
 
 		node.add_child(res.unwrap())
 	
-	return Result.ok(node)
+	return Safely.ok(node)
 
 func _create_tracker_info(tracker_name: String, use_for_offsets: bool) -> HBoxContainer:
 	var hbox := HBoxContainer.new()

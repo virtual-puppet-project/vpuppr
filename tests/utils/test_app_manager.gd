@@ -34,9 +34,9 @@ func test_debounce_save_pass():
 	add_child_autoqfree(am)
 
 #	var cm = double("res://utils/config_manager.gd").new()
-#	stub(cm, "load_data").to_return(Result.ok())
-#	stub(cm, "save_data").to_return(Result.ok())
-#	stub(cm, "_register_all_configs_with_pub_sub").to_return(Result.ok())
+#	stub(cm, "load_data").to_return(Safely.ok())
+#	stub(cm, "save_data").to_return(Safely.ok())
+#	stub(cm, "_register_all_configs_with_pub_sub").to_return(Safely.ok())
 #	am.cm = cm
 #
 #	assert_false(am.should_save)

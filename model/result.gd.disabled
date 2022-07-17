@@ -1,4 +1,4 @@
-class_name Result
+#class_name Result
 extends Reference
 
 var _value

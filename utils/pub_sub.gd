@@ -22,13 +22,13 @@ func _setup_logger() -> void:
 ## @return: Result<int> - The error code
 func create_signal(signal_name: String) -> Result:
 	if signal_name.empty():
-		return Result.err(Error.Code.PUB_SUB_INVALID_SIGNAL_NAME)
+		return Safely.err(Error.Code.PUB_SUB_INVALID_SIGNAL_NAME)
 	if has_user_signal(signal_name):
-		return Result.err(Error.Code.PUB_SUB_USER_SIGNAL_ALREADY_EXISTS)
+		return Safely.err(Error.Code.PUB_SUB_USER_SIGNAL_ALREADY_EXISTS)
 
 	add_user_signal(signal_name)
 
-	return Result.ok()
+	return Safely.ok()
 
 ## Wrapper for subscribing (connecting) an object to the PubSub
 ##
@@ -38,7 +38,7 @@ func create_signal(signal_name: String) -> Result:
 ## Can be a: String, Array, or Dictionary
 func subscribe(o: Object, signal_name: String, payload = null) -> Result:
 	if not has_user_signal(signal_name) and not has_signal(signal_name):
-		return Result.err(Error.Code.SIGNAL_DOES_NOT_EXIST)
+		return Safely.err(Error.Code.SIGNAL_DOES_NOT_EXIST)
 
 	var args := []
 	var callback := ""
@@ -50,7 +50,7 @@ func subscribe(o: Object, signal_name: String, payload = null) -> Result:
 		callback = parsed_payload.get("callback", "")
 
 	if is_connected(signal_name, o, "_on_%s" % signal_name if callback.empty() else callback):
-		return Result.ok()
+		return Safely.ok()
 
 	var err: int = connect(
 		signal_name,
@@ -60,12 +60,12 @@ func subscribe(o: Object, signal_name: String, payload = null) -> Result:
 	)
 
 	if err == ERR_INVALID_PARAMETER:
-		return Result.err(Error.Code.PUB_SUB_ALREADY_CONNECTED, signal_name)
+		return Safely.err(Error.Code.PUB_SUB_ALREADY_CONNECTED, signal_name)
 
 	if err != OK:
-		return Result.err(Error.Code.CONNECT_FAILED)
+		return Safely.err(Error.Code.CONNECT_FAILED)
 
-	return Result.ok()
+	return Safely.ok()
 
 ## Parses a payload for the `register` function
 ##
@@ -109,7 +109,7 @@ func publish(signal_name: String, data, id = null) -> Result:
 
 	emit_signal(signal_name, SignalPayload.new(signal_name, data, id))
 	
-	return Result.ok()
+	return Safely.ok()
 
 signal event_published(data)
 ## Emits a generic `event_published` signal with the given data
@@ -124,4 +124,4 @@ signal event_published(data)
 func publish_generic(signal_name: String, data, id = null) -> Result:
 	emit_signal("event_published", SignalPayload.new(signal_name, data, id))
 	
-	return Result.ok()
+	return Safely.ok()
