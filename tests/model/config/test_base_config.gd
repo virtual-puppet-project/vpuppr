@@ -149,7 +149,7 @@ func test_parse_get_data_fail():
 	var res := bc0.parse_string(bad_string0)
 
 	assert_false(res.is_ok())
-	assert_eq(res.unwrap_err().error_code(), Error.Code.BASE_CONFIG_PARSE_FAILURE)
+	assert_eq(res.unwrap_err().code, Error.Code.BASE_CONFIG_PARSE_FAILURE)
 	assert_true(bc0.other.empty())
 
 	var bc1 := BaseConfig.new()

@@ -26,16 +26,16 @@ static func load_godot_resource_from_path(path: String) -> Result:
 	if not path.begins_with("res"):
 		var file := File.new()
 		if not file.file_exists(path):
-			return Result.err(Error.Code.FILE_NOT_FOUND, path)
+			return Safely.err(Error.Code.FILE_NOT_FOUND, path)
 
 	var resource = load(path)
 	if resource == null:
-		return Result.err(Error.Code.FILE_NOT_FOUND, path)
+		return Safely.err(Error.Code.FILE_NOT_FOUND, path)
 
 	var object = resource.instance() if resource is PackedScene else resource.new()
 	object.set("name", path.get_basename().get_file())
 
-	return Result.ok(object)
+	return Safely.ok(object)
 
 ## Loads a runner and a gui
 ##
@@ -44,14 +44,14 @@ static func load_godot_resource_from_path(path: String) -> Result:
 ##
 ## @return: Result<RunnerTrait> - The runner with the gui already added as a child
 static func load_runner(runner_path: String, gui_path: String) -> Result:
-	var res: Result = load_godot_resource_from_path(runner_path)
-	if Result.failed(res):
+	var res: Result = Safely.wrap(load_godot_resource_from_path(runner_path))
+	if res.is_err():
 		return res
 
 	var runner = res.unwrap()
 
-	res = load_godot_resource_from_path(gui_path)
-	if Result.failed(res):
+	res = Safely.wrap(load_godot_resource_from_path(gui_path))
+	if res.is_err():
 		return res
 
 	var gui = res.unwrap()
@@ -62,7 +62,7 @@ static func load_runner(runner_path: String, gui_path: String) -> Result:
 	tcm.push("runner_path", runner_path)
 	tcm.push("gui_path", gui_path)
 
-	return Result.ok(runner)
+	return Safely.ok(runner)
 
 ## Loads a runner and a gui. The current scene is then switched to the new runner
 ##
@@ -71,8 +71,8 @@ static func load_runner(runner_path: String, gui_path: String) -> Result:
 ##
 ## @return: Result<Error> - The error code
 static func switch_to_runner(runner_path: String, gui_path: String) -> Result:
-	var res: Result = load_runner(runner_path, gui_path)
-	if Result.failed(res):
+	var res: Result = Safely.wrap(load_runner(runner_path, gui_path))
+	if res.is_err():
 		return res
 
 	var runner = res.unwrap()
@@ -86,7 +86,7 @@ static func switch_to_runner(runner_path: String, gui_path: String) -> Result:
 	root.remove_child(current_scene)
 	current_scene.queue_free()
 
-	return Result.ok()
+	return Safely.ok()
 
 ## Save text at a given path
 ##
@@ -97,13 +97,13 @@ static func switch_to_runner(runner_path: String, gui_path: String) -> Result:
 static func save_file_at_path(path: String, file_text: String) -> Result:
 	var file := File.new()
 	if file.open(path, File.WRITE) != OK:
-		return Result.err(Error.Code.FILE_WRITE_FAILURE, path)
+		return Safely.err(Error.Code.FILE_WRITE_FAILURE, path)
 
 	file.store_string(file_text)
 
 	file.close()
 
-	return Result.ok(path)
+	return Safely.ok(path)
 
 ## Removes a file at a given path
 ##
@@ -113,9 +113,9 @@ static func save_file_at_path(path: String, file_text: String) -> Result:
 static func remove_file_at_path(path: String) -> Result:
 	var dir := Directory.new()
 	if not dir.file_exists(path):
-		return Result.err(Error.Code.FILE_NOT_FOUND, path)
+		return Safely.err(Error.Code.FILE_NOT_FOUND, path)
 
 	if dir.remove(path) != OK:
-		return Result.err(Error.Code.FILE_DELETE_FAILED, path)
+		return Safely.err(Error.Code.FILE_DELETE_FAILED, path)
 
-	return Result.ok(path)
+	return Safely.ok(path)

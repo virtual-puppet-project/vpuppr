@@ -33,7 +33,7 @@ var _initial_page := ""
 func _pre_setup() -> Result:
 	yield(_wait_for_parent(), "completed")
 
-	return Result.ok()
+	return Safely.ok()
 
 func _setup() -> Result:
 	_set_tree($Tree)
@@ -58,7 +58,7 @@ func _setup() -> Result:
 	
 	tree.connect("item_selected", self, "_on_item_selected")
 
-	return Result.ok()
+	return Safely.ok()
 
 func _teardown() -> void:
 	pages.clear()

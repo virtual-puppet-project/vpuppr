@@ -127,12 +127,12 @@ func _setup() -> Result:
 
 	model = get_tree().current_scene.get("model")
 	if model == null:
-		return Result.err(Error.Code.GUI_SETUP_ERROR, "No model found, no bone functionality will be available")
+		return Safely.err(Error.Code.GUI_SETUP_ERROR, "No model found, no bone functionality will be available")
 
 	var model_skeleton = model.get("skeleton")
 	if model_skeleton == null:
 		printerr("No model skeleton found, no bone functionality will be available")
-		return Result.err(Error.Code.GUI_SETUP_ERROR, "No model skeleton found, no bone functionality will be available")
+		return Safely.err(Error.Code.GUI_SETUP_ERROR, "No model skeleton found, no bone functionality will be available")
 
 	# Store all references to TreeItems, discard afterwards
 	var known_bones := {}
@@ -164,7 +164,7 @@ func _setup() -> Result:
 
 		AM.ps.subscribe(bone_display, GlobalConstants.EVENT_PUBLISHED)
 
-	return Result.ok()
+	return Safely.ok()
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #

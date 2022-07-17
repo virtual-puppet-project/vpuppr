@@ -11,10 +11,9 @@ const CONFIG_KEYS := {
 
 func _init() -> void:
 	for val in CONFIG_KEYS.values():
-		var res: Result = AM.cm.runtime_subscribe_to_signal(val)
-		if Result.failed(res) and \
-				(res == null or res.unwrap_err().error_code() != Error.Code.PUB_SUB_ALREADY_CONNECTED):
-			AM.logger.error(Result.to_log_string(res))
+		var res: Result = Safely.wrap(AM.cm.runtime_subscribe_to_signal(val))
+		if res.is_err() and res.unwrap_err().code != Error.Code.PUB_SUB_ALREADY_CONNECTED:
+			AM.logger.error(res.to_string())
 			return
 
 	_hv_fill_expand(self)
