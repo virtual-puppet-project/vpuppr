@@ -17,6 +17,14 @@ extends Reference
 # Public functions                                                            #
 #-----------------------------------------------------------------------------#
 
+## Takes an absolute or relative path and returns the filename without an extension
+##
+## @param: path: String - The path to strip
+##
+## @return: String - The stripped name
+static func path_to_stripped_name(path: String) -> String:
+	return path.get_basename().get_file()
+
 ## Loads a Godot resource at the given path
 ##
 ## @param: path: String - The path to load a Godot resource from

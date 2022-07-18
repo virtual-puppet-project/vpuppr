@@ -168,22 +168,31 @@ func _pre_setup_scene() -> void:
 	world.environment = load("res://assets/default_env.tres")
 	model_viewport.world = world
 
+	model_parent = Spatial.new()
+
 func _setup_scene() -> void:
-	# TODO this needs to accept either a model path or a config path
 	var model_to_load_path := ""
-	var model_to_load_res = AM.tcm.pull(MODEL_TO_LOAD, AM.cm.get_data("default_model_path"))
-	if not model_to_load_res or model_to_load_res.is_err():
+	var res := Safely.wrap(AM.tcm.pull(MODEL_TO_LOAD, AM.cm.get_data("default_model_path")))
+	if res.is_err():
 		logger.error("Unable to find a model to load")
-		model_to_load_path = GlobalConstants.DEFAULT_MODEL_PATH
+		res = Safely.wrap(GlobalConstants.DEFAULT_MODEL_PATH)
+
+	AM.cm.model_config = ModelConfig.new()
+
+	if res.unwrap().ends_with(".json"):
+		AM.cm.load_model_config(res.unwrap())
+		model_to_load_path = AM.cm.model_config.model_path
 	else:
-		model_to_load_path = model_to_load_res.unwrap()
+		model_to_load_path = res.unwrap()
 	
 	if model_to_load_path.empty():
 		logger.error("Tried to load a model at an empty path")
 		model_to_load_path = GlobalConstants.DEFAULT_MODEL_PATH
 
-	model_parent = Spatial.new()
-	load_model(model_to_load_path)
+	res = load_model(model_to_load_path)
+	if res.is_err():
+		logger.error(res)
+		return
 
 	model_viewport.call_deferred("add_child", model_parent)
 
@@ -281,26 +290,30 @@ func _on_event_published(payload: SignalPayload) -> void:
 					main_tracker = tracker
 					return
 		GlobalConstants.RELOAD_RUNNER:
+			if typeof(payload) != TYPE_STRING:
+				logger.error("Invalid type for %s, data must be a String" % GlobalConstants.RELOAD_RUNNER)
+				return
+
 			var tcm: TempCacheManager = AM.tcm
 			tcm.push(MODEL_TO_LOAD, payload.data)
 			
 			var runner_path := ""
 			var res: Result = Safely.wrap(tcm.pull("runner_path"))
 			if res.is_err():
-				logger.error(res.to_string())
+				logger.error(res)
 				return
 			runner_path = res.unwrap()
 
 			var gui_path := ""
 			res = Safely.wrap(tcm.pull("gui_path"))
 			if res.is_err():
-				logger.error(res.to_string())
+				logger.error(res)
 				return
 			gui_path = res.unwrap()
 
 			res = Safely.wrap(FileUtil.switch_to_runner(runner_path, gui_path))
 			if res.is_err():
-				logger.error(res.to_string())
+				logger.error(res)
 
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
@@ -317,43 +330,43 @@ func _save_offsets() -> void:
 # Public functions                                                            #
 #-----------------------------------------------------------------------------#
 
-func load_model(path: String) -> void:
+func load_model(path: String) -> Result:
 	logger.info("Starting load_model for %s" % path)
 
-	var result := _try_load_model(path)
-	if result == null or result.is_err():
-		logger.error(result.unwrap_err().to_string() if result != null else "Something super broke, please check the logs")
+	var res := Safely.wrap(_try_load_model(path))
+	if res.is_err():
+		logger.error(res)
 		# If this fails, something is very very wrong
-		result = _try_load_model(GlobalConstants.DEFAULT_MODEL_PATH)
-		if result == null or result.is_err():
-			logger.error(result.unwrap_err().to_string() if result != null else "Something super broke, please check the logs")
-			logger.error("Failed loading the default Duck model")
+		res = Safely.wrap(_try_load_model(GlobalConstants.DEFAULT_MODEL_PATH))
+		if res.is_err():
 			get_tree().change_scene(GlobalConstants.LANDING_SCREEN_PATH)
-			return
+			return res
 
 	if model != null:
 		model.free()
-	model = result.unwrap()
+	model = res.unwrap()
 	model_parent.add_child(model)
 
-	var model_name := ConfigManager.path_to_stripped_name(path)
-	# TODO this needs to pull the default config from metadata
-	var config_result: Result = AM.cm.load_model_config("%s.%s" % [model_name, ConfigManager.CONFIG_FILE_EXTENSION])
-	if config_result.is_err():
-		logger.info("Config for %s not found. Creating new config" % model_name)
-		
-		var config_res: Result = Safely.wrap(AM.cm.create_new_model_config(model_name, path, model_name))
-		if config_res.is_err():
-			logger.error(config_res.to_string())
-			logger.error("Failed creating a new config, be aware things might be broken")
-			return
+	var model_name := FileUtil.path_to_stripped_name(path)
+	if AM.cm.model_config.model_name.empty():
+		logger.info("Loading config for model")
 
-		var model_config = config_res.unwrap()
-		model_config.is_default_for_model = true # Must be default since we didn't find any default configs
+		res = Safely.wrap(AM.cm.load_model_config("%s.%s" % [model_name, ConfigManager.CONFIG_FILE_EXTENSION]))
+		if res.is_err():
+			logger.info("No existing config found, creating new config")
 
-		AM.cm.model_config = model_config
+			res = Safely.wrap(AM.cm.create_new_model_config(model_name, path, model_name))
+			if res.is_err():
+				return res
+
+			AM.cm.model_config = res.unwrap()
+			AM.ps.publish("is_default_for_model", true)
+
+		logger.info("Finished loading config")
 
 	logger.info("Finished load_model for %s" % path)
+
+	return Safely.ok()
 
 func load_glb(path: String) -> Result:
 	var res := .load_glb(path)

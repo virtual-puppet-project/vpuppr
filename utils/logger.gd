@@ -67,26 +67,27 @@ func setup(n) -> void:
 	else:
 		trace("Unable to setup logger using var: %s" % str(n))
 
-func notify(message: String, notify_type: int = NotifyType.TOAST) -> void:
-	_log(message, LogType.NOTIFY)
+func notify(message, notify_type: int = NotifyType.TOAST) -> void:
+	var text := str(message)
+	_log(text, LogType.NOTIFY)
 	match notify_type:
 		NotifyType.TOAST:
-			AM.nm.show_toast(message)
+			AM.nm.show_toast(text)
 		NotifyType.POPUP:
-			AM.nm.show_popup(message)
+			AM.nm.show_popup(text)
 		_:
-			assert(false, message)
+			assert(false, text)
 
-func info(message: String) -> void:
-	_log(message, LogType.INFO)
+func info(message) -> void:
+	_log(str(message), LogType.INFO)
 
-func debug(message: String) -> void:
+func debug(message) -> void:
 	if OS.is_debug_build():
-		_log(message, LogType.DEBUG)
+		_log(str(message), LogType.DEBUG)
 
-func trace(message: String) -> void:
+func trace(message) -> void:
 	if OS.is_debug_build():
-		_log(message, LogType.TRACE)
+		_log(str(message), LogType.TRACE)
 
-func error(message: String) -> void:
-	_log(message, LogType.ERROR)
+func error(message) -> void:
+	_log(str(message), LogType.ERROR)

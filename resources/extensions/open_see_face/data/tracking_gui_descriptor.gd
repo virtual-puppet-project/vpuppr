@@ -13,7 +13,7 @@ func _init() -> void:
 	for val in CONFIG_KEYS.values():
 		var res: Result = Safely.wrap(AM.cm.runtime_subscribe_to_signal(val))
 		if res.is_err() and res.unwrap_err().code != Error.Code.PUB_SUB_ALREADY_CONNECTED:
-			AM.logger.error(res.to_string())
+			AM.logger.error(res)
 			return
 
 	_hv_fill_expand(self)

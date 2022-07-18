@@ -7,6 +7,7 @@ enum Code {
 	NULL_VALUE,
 	SIGNAL_DOES_NOT_EXIST,
 	CONNECT_FAILED,
+	NOT_YET_IMPLEMENTED,
 	
 	#region File
 
