@@ -195,7 +195,7 @@ func _run_runner(runner_path: String, gui_path: String) -> void:
 	var res: Result = Safely.wrap(FileUtil.switch_to_runner(runner_path, gui_path))
 
 	if res.is_err():
-		logger.error(res.to_string())
+		logger.error(res)
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #

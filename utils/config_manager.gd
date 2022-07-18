@@ -29,16 +29,16 @@ func _setup_class() -> void:
 		save_data_path = "res://export"
 	
 	if AM.env.current_env != Env.Envs.TEST:
-		var result := load_metadata()
+		var result := Safely.wrap(load_metadata())
 		if result.is_err():
-			logger.error(result.unwrap_err().to_string())
+			logger.error(result)
 			
 			logger.info("Using defaults")
 			metadata = Metadata.new()
 		
-	var result := _register_all_configs_with_pub_sub()
+	var result := Safely.wrap(_register_all_configs_with_pub_sub())
 	if result.is_err():
-		logger.error(result.unwrap_err().to_string())
+		logger.error(result)
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
@@ -103,14 +103,6 @@ func _register_config_data_with_pub_sub(data: Dictionary, callback: String) -> R
 # Public functions                                                            #
 #-----------------------------------------------------------------------------#
 
-## Takes an absolute or relative path and returns the filename without an extension
-##
-## @param: path: String - The path to strip
-##
-## @return: String - The stripped name
-static func path_to_stripped_name(path: String) -> String:
-	return path.get_basename().get_file()
-
 ## Add signals at runtime and subscribe to them. Meant for extension to hook the
 ## ConfigManager up to new config values
 ##
@@ -148,6 +140,14 @@ func load_metadata() -> Result:
 	
 	return Safely.ok()
 
+## Creates a new model config if possible. Does not immediately set the config but does store
+## the config in metadata
+##
+## @param: model_name: String - The name of the model
+## @param: model_path: String - The absolute path to the model
+## @param: config_name: String - The name of the config file
+##
+## @return: Result<ModelConfig> - The resulting config file
 func create_new_model_config(model_name: String, model_path: String, config_name: String = "") -> Result:
 	if config_name.empty():
 		config_name = model_name
@@ -179,6 +179,7 @@ func load_model_config(path: String) -> Result:
 
 	return result
 
+# TODO make this the default behavior
 func load_model_config_no_set(path: String) -> Result:
 	logger.info("Loading model config: %s" % path)
 
@@ -203,7 +204,7 @@ func save_data(data_name: String = "", data: String = "") -> Result:
 	if result.is_err():
 		return result
 
-	if model_config.config_name != ModelConfig.CHANGE_ME:
+	if model_config.config_name.empty():
 		result = Safely.wrap(_save_to_file(
 			"%s.json" % (data_name if not data_name.empty() else model_config.config_name),
 			data if not data.empty() else model_config.get_as_json_string()

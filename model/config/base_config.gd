@@ -1,5 +1,5 @@
 class_name BaseConfig
-extends Resource
+extends Reference
 
 ## Completely generic key/value structure for random values
 ## Try and prefer using explicit fields over using this

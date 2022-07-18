@@ -73,9 +73,9 @@ func load_vrm(path: String) -> Result:
 	# isnt there when the script runs
 	var vrm_meta = m.vrm_meta
 
-	var script_res: Result = AM.em.find_in_extensions("VRM/resources/VRM Model/resource_entrypoint")
+	var script_res: Result = Safely.wrap(AM.em.find_in_extensions("VRM/resources/VRM Model/resource_entrypoint"))
 	if script_res.is_err():
-		logger.error(script_res.to_string())
+		logger.error(script_res)
 		return script_res
 	m.set_script(load(script_res.unwrap()))
 

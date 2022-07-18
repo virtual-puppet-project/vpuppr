@@ -46,7 +46,7 @@ func _setup_class() -> void:
 	
 	var result := _scan()
 	if result.is_err():
-		logger.error(result.to_string())
+		logger.error(result)
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
@@ -83,9 +83,9 @@ func _scan() -> Result:
 		file_name = dir.get_next()
 
 	for i in possible_extensions:
-		var r := _parse_extension(i)
+		var r := Safely.wrap(_parse_extension(i))
 		if r.is_err():
-			logger.error(r.to_string())
+			logger.error(r)
 			continue
 
 	return Safely.ok()

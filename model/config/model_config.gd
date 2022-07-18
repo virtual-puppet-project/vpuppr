@@ -1,12 +1,10 @@
 class_name ModelConfig
 extends BaseConfig
 
-const CHANGE_ME := "changeme"
-
 #region Metadata
 
-var config_name := CHANGE_ME
-var description := CHANGE_ME
+var config_name := ""
+var description := ""
 var hotkey := ""
 var notes := ""
 # Models can have 1-many configs
@@ -15,8 +13,8 @@ var is_default_for_model := false setget _set_is_default_for_model
 # Whether or not the default config in Metadata needs to be changed
 var is_default_dirty := false
 
-var model_name := CHANGE_ME
-var model_path := CHANGE_ME
+var model_name := ""
+var model_path := ""
 
 #endregion
 

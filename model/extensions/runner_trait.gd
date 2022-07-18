@@ -219,8 +219,10 @@ func _try_load_model(path: String) -> Result:
 ## Virtual function for loading a model
 ##
 ## @param: path: String - The absolute path to a model
-func load_model(_path: String) -> void:
-	pass
+##
+## @return: Result - The error code
+func load_model(_path: String) -> Result:
+	return Result.err(Error.Code.NOT_YET_IMPLEMENTED, "load_model")
 
 ## Uses the built-in gltf loader to load a `glb` model
 ##

@@ -43,16 +43,14 @@ func _setup() -> Result:
 
 		var context_res: Result = AM.em.get_context(er.extension_name)
 		if not context_res or context_res.is_err():
-			logger.err(context_res.unwrap_err().to_string() if context_res else
-				"Unable to get ExtensionContext for %s" % er.resource_name)
+			logger.err(context_res)
 			continue
 
 		var entrypoint: String = er.other[GlobalConstants.ExtensionOtherKeys.DATA]
 
 		var descriptor_res: Result = _from_descriptor(context_res.unwrap(), entrypoint)
 		if not descriptor_res or descriptor_res.is_err():
-			logger.error(descriptor_res.unwrap_err().to_string() if descriptor_res else
-				"Unable to process descriptor for %s" % er.resource_name)
+			logger.error(descriptor_res)
 			continue
 
 		var item: TreeItem = tree.create_item(root)

@@ -60,7 +60,7 @@ class PresetsPage extends ScrollContainer:
 		model_config = ModelConfig.new()
 		var res: Result = Safely.wrap(model_config.parse_string(config_string))
 		if res.is_err():
-			logger.error(res.to_string())
+			logger.error(res)
 			return
 
 		ControlUtil.h_expand_fill(self)
@@ -256,7 +256,7 @@ func _on_event_published(payload: SignalPayload) -> void:
 				
 				var res := Safely.wrap(_add_page(tree.get_root(), changed_config_name, file.get_as_text(), true))
 				if res.is_err():
-					logger.error(res.to_string())
+					logger.error(res)
 					return
 			else:
 				var current_config_name: String = AM.cm.get_data("config_name")
@@ -276,14 +276,15 @@ func _on_new_preset_text_changed(text: String, button: Button) -> void:
 	button.disabled = is_disabled
 
 func _on_new_preset_button_pressed(line_edit: LineEdit) -> void:
-	var new_model_config: ModelConfig = AM.cm.model_config.duplicate(true)
+	var new_model_config := ModelConfig.new()
+	new_model_config.parse_dict(AM.cm.model_config.get_as_dict())
 	new_model_config.config_name = line_edit.text
 
 	line_edit.text = ""
 
 	var res := Safely.wrap(AM.cm.save_data(new_model_config.config_name, new_model_config.get_as_json_string()))
 	if res.is_err():
-		logger.error(res.to_string())
+		logger.error(res)
 		return
 
 	var model_configs: Dictionary = AM.cm.get_data("model_configs")

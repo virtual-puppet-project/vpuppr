@@ -11,27 +11,37 @@ var logger: Logger
 func _ready() -> void:
 	_setup_logger()
 	
-	var ret
+	var res: Result
 
-	ret = _pre_setup()
-	if ret is GDScriptFunctionState:
-		ret = yield(ret, "completed")
-	if ret == null or ret.is_err():
-		logger.error(ret.to_string() if ret != null else "Something is super wrong")
+	# This is gross but we do need to wait for the parent popup to finish setting up
+	res = Safely.wrap(_pre_setup())
+	if res.is_err():
+		logger.error(res)
+		return
+	if res.unwrap() is GDScriptFunctionState:
+		res = Safely.wrap(yield(res.unwrap(), "completed"))
+	if res.is_err():
+		logger.error(res)
 		return
 
-	ret = _setup()
-	if ret is GDScriptFunctionState:
-		ret = yield(ret, "completed")
-	if ret == null or ret.is_err():
-		logger.error(ret.to_string() if ret != null else "Something is super wrong")
+	res = Safely.wrap(_setup())
+	if res.is_err():
+		logger.error(res)
+		return
+	if res.unwrap() is GDScriptFunctionState:
+		res = Safely.wrap(yield(res.unwrap(), "completed"))
+	if res.is_err():
+		logger.error(res)
 		return
 	
-	ret = _post_setup()
-	if ret is GDScriptFunctionState:
-		ret = yield(ret, "completed")
-	if ret == null or ret.is_err():
-		logger.error(ret.to_string() if ret != null else "Something is super wrong")
+	res = Safely.wrap(_post_setup())
+	if res.is_err():
+		logger.error(res)
+		return
+	if res.unwrap() is GDScriptFunctionState:
+		res = Safely.wrap(yield(res.unwrap(), "completed"))
+	if res.is_err():
+		logger.error(res)
 		return
 
 ## DO NOT OVERRIDE

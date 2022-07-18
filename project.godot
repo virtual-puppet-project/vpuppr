@@ -19,7 +19,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://utils/app_manager.gd"
 }, {
-"base": "Resource",
+"base": "Reference",
 "class": "BaseConfig",
 "language": "GDScript",
 "path": "res://model/config/base_config.gd"
