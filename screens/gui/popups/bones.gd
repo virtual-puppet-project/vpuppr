@@ -85,7 +85,7 @@ class View extends ScrollContainer:
 				interpolation_rate.caret_position = interpolation_rate.text.length()
 
 	func _on_event_published(payload: SignalPayload) -> void:
-		if payload.signal_name != GlobalConstants.POSE_BONE or payload.id != name:
+		if payload.signal_name != Globals.POSE_BONE or payload.id != name:
 			return
 
 		should_pose.set_pressed_no_signal(payload.data)
@@ -162,7 +162,7 @@ func _setup() -> Result:
 		for signal_name in BONE_SIGNALS:
 			AM.ps.subscribe(bone_display, signal_name, "_on_bone_updated")
 
-		AM.ps.subscribe(bone_display, GlobalConstants.EVENT_PUBLISHED)
+		AM.ps.subscribe(bone_display, Globals.EVENT_PUBLISHED)
 
 	return Safely.ok()
 
@@ -189,7 +189,7 @@ func _on_is_tracking(state: bool, bone_name: String) -> void:
 	AM.ps.publish("additional_bones", additional_bones, bone_name)
 
 func _on_should_pose(state: bool, bone_name: String) -> void:
-	AM.ps.publish(GlobalConstants.POSE_BONE, state, bone_name)
+	AM.ps.publish(Globals.POSE_BONE, state, bone_name)
 
 func _on_should_use_custom_interpolation(state: bool, bone_name: String) -> void:
 	var bones_to_interpolate = AM.cm.get_data("bones_to_interpolate")
@@ -228,10 +228,10 @@ func _on_interpolation_rate_changed(text: String, bone_name: String) -> void:
 	AM.ps.publish("bone_interpolation_rates", bone_interpolation_rate_dict, bone_name)
 
 func _on_reset_bone(bone_name: String) -> void:
-	var bone_transforms: Dictionary = AM.cm.get_data(GlobalConstants.BONE_TRANSFORMS)
+	var bone_transforms: Dictionary = AM.cm.get_data(Globals.BONE_TRANSFORMS)
 	bone_transforms[bone_name] = Transform.IDENTITY
 
-	AM.ps.publish(GlobalConstants.BONE_TRANSFORMS, bone_transforms, bone_name)
+	AM.ps.publish(Globals.BONE_TRANSFORMS, bone_transforms, bone_name)
 
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #

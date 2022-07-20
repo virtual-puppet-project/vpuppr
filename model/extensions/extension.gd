@@ -54,15 +54,15 @@ func add_resource(res_name: String, res_type: String, res_entrypoint: String) ->
 	resources[res_name] = ext_res
 
 	match res_type:
-		GlobalConstants.ExtensionTypes.RUNNER:
+		Globals.ExtensionTypes.RUNNER:
 			runners.append(res_name)
-		GlobalConstants.ExtensionTypes.PUPPET:
+		Globals.ExtensionTypes.PUPPET:
 			puppets.append(res_name)
-		GlobalConstants.ExtensionTypes.TRACKER:
+		Globals.ExtensionTypes.TRACKER:
 			trackers.append(res_name)
-		GlobalConstants.ExtensionTypes.GUI:
+		Globals.ExtensionTypes.GUI:
 			guis.append(res_name)
-		GlobalConstants.ExtensionTypes.PLUGIN:
+		Globals.ExtensionTypes.PLUGIN:
 			plugins.append(res_name)
 		_:
 			return Safely.err(Error.Code.UNHANDLED_EXTENSION_TYPE)

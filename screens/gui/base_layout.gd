@@ -81,7 +81,6 @@ func _on_button_pressed(signal_name: String, _button: Button) -> void:
 			_log_unhandled_signal(signal_name)
 
 func _on_check_button_toggled(state: bool, signal_name: String, _check_button: CheckButton) -> void:
-	# AM.ps.emit_signal(signal_name, state)
 	AM.ps.publish(signal_name, state)
 
 func _on_line_edit_text_changed(text: String, signal_name: String, _line_edit: LineEdit) -> void:
@@ -202,7 +201,7 @@ func _connect_text_edit(text_edit: TextEdit, args = null) -> void:
 func _set_config_float_amount(signal_name: String, value: String) -> void:
 	if not value.is_valid_float():
 		return
-	AM.ps.emit_signal(signal_name, value.to_float())
+	AM.ps.publish(signal_name, value.to_float())
 
 #endregion
 

@@ -136,7 +136,7 @@ func _on_popup_item_pressed(id: int, group: int) -> void:
 func _handle_app_button(id: int) -> void:
 	match id:
 		AppButtons.MAIN_MENU:
-			get_tree().change_scene(GlobalConstants.LANDING_SCREEN_PATH)
+			get_tree().change_scene(Globals.LANDING_SCREEN_PATH)
 		AppButtons.SETTINGS:
 			add_child(BasePopup.new("Settings", Settings))
 		AppButtons.LOGS:
@@ -161,9 +161,9 @@ func _handle_help_button(id: int) -> void:
 		HelpButtons.ABOUT:
 			add_child(BasePopup.new("About", About))
 		HelpButtons.GITHUB:
-			OS.shell_open(GlobalConstants.PROJECT_GITHUB_REPO)
+			OS.shell_open(Globals.PROJECT_GITHUB_REPO)
 		HelpButtons.DISCORD:
-			OS.shell_open(GlobalConstants.DISCORD_INVITE)
+			OS.shell_open(Globals.DISCORD_INVITE)
 		HelpButtons.LICENSES:
 			add_child(BasePopup.new("Licenses", Licenses))
 

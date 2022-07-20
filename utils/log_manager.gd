@@ -25,14 +25,14 @@ func _setup_class() -> void:
 	_timer.one_shot = false
 	AM.add_child(_timer)
 
-	AM.ps.subscribe(self, GlobalConstants.EVENT_PUBLISHED)
+	AM.ps.subscribe(self, Globals.EVENT_PUBLISHED)
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#
 
 func _on_event_published(payload: SignalPayload) -> void:
-	if payload.signal_name != GlobalConstants.MESSAGE_LOGGED:
+	if payload.signal_name != Globals.MESSAGE_LOGGED:
 		return
 	
 	logs.append(payload.data)

@@ -173,7 +173,7 @@ class PresetsPage extends ScrollContainer:
 		match action_type:
 			Actions.LOAD:
 				var configs: Dictionary = AM.cm.get_data("model_configs")
-				AM.ps.publish(GlobalConstants.RELOAD_RUNNER, configs[model_config.config_name])
+				AM.ps.publish(Globals.RELOAD_RUNNER, configs[model_config.config_name])
 			Actions.DELETE:
 				var config_name = AM.cm.get_data("config_name")
 				if config_name == name:

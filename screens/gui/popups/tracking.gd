@@ -13,7 +13,7 @@ func _setup_logger() -> void:
 	logger = Logger.new("Tracking")
 
 func _setup() -> Result:
-	AM.ps.subscribe(self, GlobalConstants.EVENT_PUBLISHED)
+	AM.ps.subscribe(self, Globals.EVENT_PUBLISHED)
 
 	running_trackers = $Info/VBoxContainer/RunningTrackers
 
@@ -35,9 +35,9 @@ func _setup() -> Result:
 
 	tree.connect("item_selected", self, "_on_item_selected")
 
-	for er in AM.em.query_extensions_for_type(GlobalConstants.ExtensionTypes.TRACKER):
+	for er in AM.em.query_extensions_for_type(Globals.ExtensionTypes.TRACKER):
 		er = er as ExtensionResource
-		if not er.other.has(GlobalConstants.ExtensionOtherKeys.DATA):
+		if not er.other.has(Globals.ExtensionOtherKeys.DATA):
 			logger.error("Extension %s missing data descriptor, skipping" % er.resource_name)
 			continue
 
@@ -46,7 +46,7 @@ func _setup() -> Result:
 			logger.err(context_res)
 			continue
 
-		var entrypoint: String = er.other[GlobalConstants.ExtensionOtherKeys.DATA]
+		var entrypoint: String = er.other[Globals.ExtensionOtherKeys.DATA]
 
 		var descriptor_res: Result = _from_descriptor(context_res.unwrap(), entrypoint)
 		if not descriptor_res or descriptor_res.is_err():
@@ -70,7 +70,7 @@ func _setup() -> Result:
 
 func _on_event_published(payload: SignalPayload) -> void:
 	match payload.signal_name:
-		GlobalConstants.TRACKER_TOGGLED:
+		Globals.TRACKER_TOGGLED:
 			if payload.data == true:
 				var tracker_info := _create_tracker_info(payload.id, running_trackers.get_child_count() < 1)
 
@@ -85,7 +85,7 @@ func _on_event_published(payload: SignalPayload) -> void:
 func _on_tracker_info_main_tracker_toggled(state: bool, tracker_name: String) -> void:
 	if state == false:
 		return
-	AM.ps.publish(GlobalConstants.TRACKER_USE_AS_MAIN_TRACKER, tracker_name)
+	AM.ps.publish(Globals.TRACKER_USE_AS_MAIN_TRACKER, tracker_name)
 
 func _on_tracker_info_reordered(tracker_name: String, is_up: bool) -> void:
 	var child_count := running_trackers.get_child_count()
@@ -109,7 +109,7 @@ func _on_tracker_info_reordered(tracker_name: String, is_up: bool) -> void:
 		return
 
 	running_trackers.move_child(node, new_position)
-	AM.ps.publish(GlobalConstants.TRACKER_INFO_REORDERED, new_position, tracker_name)
+	AM.ps.publish(Globals.TRACKER_INFO_REORDERED, new_position, tracker_name)
 
 #endregion
 

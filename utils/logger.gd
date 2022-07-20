@@ -51,7 +51,7 @@ func _log(message: String, log_type: int) -> void:
 			message = "[ERROR] %s" % message
 
 	print(message)
-	AM.ps.publish(GlobalConstants.MESSAGE_LOGGED, message)
+	AM.ps.publish(Globals.MESSAGE_LOGGED, message)
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #

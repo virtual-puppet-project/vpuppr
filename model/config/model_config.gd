@@ -217,7 +217,7 @@ func get_as_dict() -> Dictionary:
 	var r := {}
 
 	for i in get_property_list():
-		if i.name in GlobalConstants.IGNORED_PROPERTIES:
+		if i.name in Globals.IGNORED_PROPERTIES:
 			continue
 
 		var data_value = get(i.name)

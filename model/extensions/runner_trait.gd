@@ -67,6 +67,8 @@ func _post_setup_scene() -> void:
 
 ## Virtual function that is run when exiting the SceneTree
 func _teardown() -> void:
+	AM.save_config_instant()
+	
 	_generate_preview()
 
 	main_tracker = null
@@ -90,16 +92,16 @@ func _generate_preview() -> void:
 	image.flip_y()
 
 	var dir := Directory.new()
-	if not dir.dir_exists(GlobalConstants.RUNNER_PREVIEW_DIR_PATH):
-		if dir.make_dir_recursive(GlobalConstants.RUNNER_PREVIEW_DIR_PATH) != OK:
+	if not dir.dir_exists(Globals.RUNNER_PREVIEW_DIR_PATH):
+		if dir.make_dir_recursive(Globals.RUNNER_PREVIEW_DIR_PATH) != OK:
 			logger.error("Unable to create %s, declining to create runner preview" %
-				GlobalConstants.RUNNER_PREVIEW_DIR_PATH)
+				Globals.RUNNER_PREVIEW_DIR_PATH)
 			return
 
 	if image.save_png("%s/%s.%s" % [
-		GlobalConstants.RUNNER_PREVIEW_DIR_PATH,
+		Globals.RUNNER_PREVIEW_DIR_PATH,
 		name,
-		GlobalConstants.RUNNER_PREVIEW_FILE_EXT
+		Globals.RUNNER_PREVIEW_FILE_EXT
 	]) != OK:
 		logger.error("Unable to save image preview")
 

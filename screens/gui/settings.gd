@@ -33,7 +33,7 @@ func _setup() -> Result:
 #-----------------------------------------------------------------------------#
 
 func _on_check_button_toggled(state: bool, signal_name: String, _check_button: CheckButton) -> void:
-	AM.ps.emit_signal(signal_name, state)
+	AM.ps.publish(signal_name, state)
 
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #

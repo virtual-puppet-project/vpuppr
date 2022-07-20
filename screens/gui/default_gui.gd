@@ -41,8 +41,8 @@ func _ready() -> void:
 
 		menu_list.add_child(button)
 
-	for ext in AM.em.query_extensions_for_type(GlobalConstants.ExtensionTypes.GUI):
-		if not ext.other.get(GlobalConstants.ExtensionOtherKeys.ADD_GUI_AS_DEFAULT, false):
+	for ext in AM.em.query_extensions_for_type(Globals.ExtensionTypes.GUI):
+		if not ext.other.get(Globals.ExtensionOtherKeys.ADD_GUI_AS_DEFAULT, false):
 			continue
 		
 		var button := Button.new()

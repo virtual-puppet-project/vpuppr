@@ -44,7 +44,7 @@ func _ready() -> void:
 	_setup()
 	_post_setup()
 
-	AM.ps.publish(GlobalConstants.MODEL_LOADED, self)
+	AM.ps.publish(Globals.MODEL_LOADED, self)
 
 func _exit_tree() -> void:
 	_teardown()
@@ -54,7 +54,7 @@ func _setup_logger() -> void:
 	logger = Logger.new("PuppetTrait")
 
 func _pre_setup() -> void:
-	AM.ps.subscribe(self, GlobalConstants.EVENT_PUBLISHED)
+	AM.ps.subscribe(self, Globals.EVENT_PUBLISHED)
 
 func _setup() -> void:
 	for i in DEFAULT_CONFIG_VALUES:
@@ -74,7 +74,7 @@ func _setup() -> void:
 	if head_bone_id < 0:
 		logger.info("No head bone found")
 
-	var bone_transforms: Dictionary = AM.cm.get_data(GlobalConstants.BONE_TRANSFORMS)
+	var bone_transforms: Dictionary = AM.cm.get_data(Globals.BONE_TRANSFORMS)
 	for bone_name in bone_transforms.keys():
 		skeleton.set_bone_pose(skeleton.find_bone(bone_name), bone_transforms[bone_name])
 
@@ -96,18 +96,18 @@ func _on_event_published(payload: SignalPayload) -> void:
 		_:
 			pass
 
-func _on_config_changed(value, signal_name: String) -> void:
+func _on_config_changed(value: SignalPayload, signal_name: String) -> void:
 	match signal_name:
 		"head_bone":
-			head_bone = value
+			head_bone = value.data
 		"bone_translation_damping":
-			bone_translation_damping = value
+			bone_translation_damping = value.data
 		"bone_rotation_damping":
-			bone_rotation_damping = value
+			bone_rotation_damping = value.data
 		"additional_bone_damping":
-			additional_bone_damping = value
+			additional_bone_damping = value.data
 		"gaze_strength":
-			gaze_strength = value
+			gaze_strength = value.data
 		"additional_bones":
 			if typeof(value.data) != TYPE_DICTIONARY:
 				logger.error("Unexpected value for additional_bones")
@@ -153,7 +153,7 @@ func _get_blend_shape_weight(mesh_instance: MeshInstance, blend_shape: String) -
 # Public functions                                                            #
 #-----------------------------------------------------------------------------#
 
-func custom_update(_data, _interpolation_data: InterpolationData) -> void:
+func custom_update(_interpolation_data: InterpolationData) -> void:
 	logger.error("Model custom update not implemented")
 
 func get_bone_names() -> Array:

@@ -1,4 +1,3 @@
-class_name LandingScreen
 extends CanvasLayer
 
 class ExtensionItem extends PanelContainer:
@@ -48,7 +47,7 @@ class ExtensionItem extends PanelContainer:
 		
 		add_child(vbox)
 
-		for section in GlobalConstants.ExtensionTypes.values():
+		for section in Globals.ExtensionTypes.values():
 			if _ext_data.get(section, []).empty():
 				continue
 
@@ -82,9 +81,6 @@ class ExtensionItem extends PanelContainer:
 #-----------------------------------------------------------------------------#
 
 func _ready() -> void:
-	while not AM.is_manager_ready("em"):
-		yield(get_tree(), "idle_frame")
-
 	var extensions := $RootControl/TabContainer/Extensions/ScrollContainer/ExtensionsList as VBoxContainer
 
 	for key in AM.em.extensions.keys():
