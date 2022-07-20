@@ -436,29 +436,30 @@ func set_offsets(offsets: StoredOffsets) -> void:
 	offsets.left_eye_gaze_offset = data.left_gaze.get_euler()
 	offsets.right_eye_gaze_offset = data.right_gaze.get_euler()
 
-func apply(_model: PuppetTrait, interpolation_data: InterpolationData, extra: Dictionary) -> void:
-	var data: OSFData = data_map.get(0, null)
-	if data == null or data.fit_3d_error > 100.0:
+func apply(model: PuppetTrait, interpolation_data: InterpolationData, extra: Dictionary) -> void:
+	var osf_data: OSFData = data_map.get(0, null)
+	if osf_data == null or osf_data.fit_3d_error > 100.0:
 		return
+	
+	var features := osf_data.features
 
 	# TODO rethink this, blindly grabbing data is bad
 	var stored_offsets: StoredOffsets = extra.stored_offsets
 
-	if data.time > updated_time:
-		updated_time = data.time
-
-		var features := data.features
+	if osf_data.time > updated_time:
+		updated_time = osf_data.time
 
 		interpolation_data.update_values(
 			updated_time,
 
-			stored_offsets.translation_offset - data.translation,
-			stored_offsets.rotation_offset - data.rotation,
+			stored_offsets.translation_offset - osf_data.translation,
+			stored_offsets.rotation_offset - osf_data.rotation,
 
-			stored_offsets.left_eye_gaze_offset - data.left_gaze.get_euler(),
-			stored_offsets.right_eye_gaze_offset - data.right_gaze.get_euler(),
-			features.eye_left,
-			features.eye_right,
+			stored_offsets.left_eye_gaze_offset - osf_data.left_gaze.get_euler(),
+			stored_offsets.right_eye_gaze_offset - osf_data.right_gaze.get_euler(),
+
+			osf_data.left_eye_open,
+			osf_data.right_eye_open,
 
 			features.mouth_open,
 			features.mouth_wide,
@@ -472,3 +473,5 @@ func apply(_model: PuppetTrait, interpolation_data: InterpolationData, extra: Di
 			features.eyebrow_quirk_left,
 			features.eyebrow_quirk_right
 		)
+
+	model.custom_update(interpolation_data)

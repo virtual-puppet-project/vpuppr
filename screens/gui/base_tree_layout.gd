@@ -6,7 +6,7 @@ const TREE_MIN_X: int = 200
 
 var tree: Tree setget _set_tree
 
-class Page extends Reference:
+class Page:
 	var control: Control
 	var tree_item: TreeItem
 
@@ -39,22 +39,11 @@ func _setup() -> Result:
 	_set_tree($Tree)
 
 	tree.hide_root = true
-	var root: TreeItem = tree.create_item()
+	tree.create_item()
 
-	for child in get_children():
-		if child == tree:
-			continue
-		
-		var page_name: String = child.name.capitalize()
-
-		var item := tree.create_item(root)
-		item.set_text(TREE_COLUMN, page_name)
-
-		pages[page_name] = Page.new(child, item)
-		child.hide()
-
-	pages[_initial_page].tree_item.select(TREE_COLUMN)
-	_toggle_page(_initial_page)
+	var res := Safely.wrap(_build_tree())
+	if res.is_err():
+		return res
 	
 	tree.connect("item_selected", self, "_on_item_selected")
 
@@ -86,6 +75,77 @@ func _wait_for_parent() -> int:
 func _set_tree(p_tree: Tree) -> void:
 	tree = p_tree
 	tree.rect_min_size.x = TREE_MIN_X
+
+## Builds the entire tree
+##
+## @param: excludes: PoolStringArray - Node names to exclude
+##
+## @return: Result<Error> - The error code
+func _build_tree(excludes: PoolStringArray = []) -> Result:
+	var root := tree.get_root()
+	if root == null:
+		return Safely.err(Error.Code.BASE_TREE_LAYOUT_NO_ROOT_TREE_ITEM)
+
+	for child in get_children():
+		if child == tree:
+			continue
+		
+		var page_name: String = child.name.capitalize()
+		if page_name in excludes:
+			continue
+
+		var item := tree.create_item(root)
+		item.set_text(TREE_COLUMN, page_name)
+
+		pages[page_name] = Page.new(child, item)
+		child.hide()
+
+	pages[_initial_page].tree_item.select(TREE_COLUMN)
+	_toggle_page(_initial_page)
+
+	return Safely.ok()
+
+## Clears the entire Tree of TreeItems
+##
+## @return: Result<Error> - The error code
+func _clear_tree() -> Result:
+	var root := tree.get_root()
+	if root == null:
+		return Safely.err(Error.Code.BASE_TREE_LAYOUT_NO_ROOT_TREE_ITEM)
+
+	var tree_item := root.get_children()
+	if tree_item == null:
+		return Safely.ok()
+
+	while tree_item != null:
+		var old_tree_item := tree_item
+		tree_item = tree_item.get_next()
+
+		old_tree_item.free()
+	
+	pages.clear()
+
+	return Safely.ok()
+
+## Finds a TreeItem in the Tree
+##
+## @param: item_name: String - The TreeItem text to match against
+##
+## @return: Result<TreeItem> - The matching TreeItem
+func _find_tree_item(item_name: String) -> Result:
+	var root := tree.get_root()
+	if root == null:
+		return Safely.err(Error.Code.BASE_TREE_LAYOUT_NO_ROOT_TREE_ITEM)
+	
+	var tree_item := root.get_children()
+	if tree_item == null:
+		return Safely.err(Error.Code.LANDING_SCREEN_TREE_ITEM_NOT_FOUND, item_name)
+	
+	while tree_item != null:
+		if tree_item.get_text(TREE_COLUMN) == item_name:
+			return Safely.ok(tree_item)
+
+	return Safely.err(Error.Code.LANDING_SCREEN_TREE_ITEM_NOT_FOUND, item_name)
 
 func _toggle_page(page_name: String) -> void:
 	if page_name.empty():

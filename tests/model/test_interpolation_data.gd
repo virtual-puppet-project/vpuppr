@@ -131,6 +131,6 @@ func test_update_config_pass():
 	assert_eq(id.bone_translation.interpolation_rate, 1.0)
 	assert_eq(id.bone_translation.last_interpolation_rate, 1.0)
 	
-	AM.ps.emit_signal("bone_interpolation_rate", 0.5)
+	AM.ps.publish("bone_interpolation_rate", 0.5)
 	
 	assert_eq(id.bone_translation.interpolation_rate, 0.5)

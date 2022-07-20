@@ -204,7 +204,7 @@ func save_data(data_name: String = "", data: String = "") -> Result:
 	if result.is_err():
 		return result
 
-	if model_config.config_name.empty():
+	if not model_config.config_name.empty():
 		result = Safely.wrap(_save_to_file(
 			"%s.json" % (data_name if not data_name.empty() else model_config.config_name),
 			data if not data.empty() else model_config.get_as_json_string()

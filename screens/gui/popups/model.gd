@@ -19,11 +19,11 @@ func _setup() -> Result:
 	# TODO need a way to pull the global state of this element
 	# e.g. other "Model" popups might already have "move" turned on
 	move_model = $General/VBoxContainer/MoveModel
-	_connect_element(move_model, GlobalConstants.SceneSignals.MOVE_MODEL)
+	_connect_element(move_model, Globals.SceneSignals.MOVE_MODEL)
 	rotate_model = $General/VBoxContainer/RotateModel
-	_connect_element(rotate_model, GlobalConstants.SceneSignals.ROTATE_MODEL)
+	_connect_element(rotate_model, Globals.SceneSignals.ROTATE_MODEL)
 	zoom_model = $General/VBoxContainer/ZoomModel
-	_connect_element(zoom_model, GlobalConstants.SceneSignals.ZOOM_MODEL)
+	_connect_element(zoom_model, Globals.SceneSignals.ZOOM_MODEL)
 
 	_connect_element($General/VBoxContainer/ResetModelTransform, "reset_model_transform")
 	_connect_element($General/VBoxContainer/ResetModelPose, "reset_model_pose")
@@ -92,7 +92,7 @@ func _setup() -> Result:
 
 	#endregion
 
-	AM.ps.subscribe(self, GlobalConstants.EVENT_PUBLISHED)
+	AM.ps.subscribe(self, Globals.EVENT_PUBLISHED)
 
 	return ._setup()
 
@@ -114,23 +114,38 @@ func _on_button_pressed(signal_name: String, _button: Button) -> void:
 			fd.add_filter("*")
 			
 			fd.connect("file_selected", self, "_on_model_selected")
-			fd.connect("popup_hide", NodeUtil, "queue_free", [fd])
+			fd.connect("popup_hide", NodeUtil, "try_queue_free", [fd])
 			
 			add_child(fd)
 			fd.popup_centered_ratio()
 		"set_model_default":
-			AM.ps.emit_signal("default_model_path", get_tree().current_scene.current_model_path)
+			AM.ps.publish("default_model_path", AM.cm.get_data("model_path"))
 		"reset_model_transform":
 			var scene = get_tree().current_scene
-			scene.model.transform = scene.model_intitial_transform
-			scene.model_parent.transform = scene.model_parent_initial_transform
+			
+			var model_transform := Transform()
+			var res := Safely.wrap(AM.tcm.pull("model_initial_transform"))
+			if res.is_err():
+				logger.error(res)
+			else:
+				model_transform = res.unwrap()
+			
+			var model_parent_transform := Transform()
+			res = Safely.wrap(AM.tcm.pull("model_parent_initial_transform"))
+			if res.is_err():
+				logger.error(res)
+			else:
+				model_parent_transform = res.unwrap()
+			
+			scene.model.transform = model_transform
+			scene.model_parent.transform = model_parent_transform
 		"reset_model_pose":
 			get_tree().current_scene.model.reset_all_bone_poses()
 		_:
 			_log_unhandled_signal(signal_name)
 
 func _on_model_selected(path: String) -> void:
-	AM.ps.publish(GlobalConstants.RELOAD_RUNNER, path)
+	AM.ps.publish(Globals.RELOAD_RUNNER, path)
 
 #endregion
 
@@ -141,18 +156,17 @@ func _on_line_edit_text_changed(text: String, signal_name: String, _line_edit: L
 	
 	match signal_name:
 		"head_bone":
-#			AM.ps.emit_signal(signal_name, text)
 			AM.ps.publish(signal_name, text)
 		_:
 			_set_config_float_amount(signal_name, text)
 
 func _on_event_published(payload: SignalPayload) -> void:
 	match payload.signal_name:
-		GlobalConstants.SceneSignals.MOVE_MODEL:
+		Globals.SceneSignals.MOVE_MODEL:
 			move_model.set_pressed_no_signal(payload.data)
-		GlobalConstants.SceneSignals.ROTATE_MODEL:
+		Globals.SceneSignals.ROTATE_MODEL:
 			rotate_model.set_pressed_no_signal(payload.data)
-		GlobalConstants.SceneSignals.ZOOM_MODEL:
+		Globals.SceneSignals.ZOOM_MODEL:
 			zoom_model.set_pressed_no_signal(payload.data)
 
 #-----------------------------------------------------------------------------#

@@ -89,10 +89,11 @@ static func switch_to_runner(runner_path: String, gui_path: String) -> Result:
 	var root := scene_tree.root
 	var current_scene: Node = scene_tree.current_scene
 
-	root.add_child(runner)
-	scene_tree.current_scene = runner
 	root.remove_child(current_scene)
 	current_scene.queue_free()
+	
+	root.add_child(runner)
+	scene_tree.current_scene = runner
 
 	return Safely.ok()
 

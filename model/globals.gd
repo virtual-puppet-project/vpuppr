@@ -1,4 +1,4 @@
-class_name GlobalConstants
+class_name Globals
 extends Reference
 
 const IGNORED_PROPERTIES := [

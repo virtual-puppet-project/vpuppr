@@ -109,6 +109,13 @@ enum Code {
 
 	#endregion
 
+	#region BaseTreeLayout
+
+	BASE_TREE_LAYOUT_NO_ROOT_TREE_ITEM,
+	BASE_TREE_LAYOUT_TREE_ITEM_NOT_FOUND,
+
+	#endregion
+
 	#region Runner
 
 	RUNNER_NO_LOADERS_FOUND,

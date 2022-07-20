@@ -125,6 +125,11 @@ func _ready() -> void:
 	blink_l = expression_data.get_expression("blink_l")[0] # TODO this is kind of gross?
 	blink_r = expression_data.get_expression("blink_r")[0]
 
+	# TODO hard coded until lip sync is re-implemented
+	current_mouth_shape = a_shape
+
+	a_pose()
+
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#
@@ -173,7 +178,7 @@ func _map_bones_and_eyes() -> void:
 		head_bone = vrm_meta.humanoid_bone_mapping["head"]
 		head_bone_id = skeleton.find_bone(head_bone)
 
-		AM.ps.emit_signal("head_bone", head_bone)
+		AM.ps.publish("head_bone", head_bone)
 
 	var left_eye_name: String = vrm_meta.humanoid_bone_mapping.get("leftEye", "eye_L")
 	left_eye_id = skeleton.find_bone(left_eye_name)
@@ -275,20 +280,22 @@ func _fix_additional_bones() -> void:
 # Public functions                                                            #
 #-----------------------------------------------------------------------------#
 
-func custom_update(data, interpolation_data: InterpolationData) -> void:
+func custom_update(interpolation_data: InterpolationData) -> void:
 	# NOTE Eye mappings are intentionally reversed so that the model mirrors the data
 
 	#region Blinking
 
 	# TODO add way to lock blinking for a certain expression
 
-	var left_eye_open = data.get_left_eye_open_amount()
-	var right_eye_open = data.get_right_eye_open_amount()
+	# var left_eye_open = data.left_eye_open_amount
+	# var right_eye_open = data.right_eye_open_amount
+	var left_eye_open: float = interpolation_data.left_blink.target_value
+	var right_eye_open: float = interpolation_data.right_blink.target_value
 
 	if link_eye_blinks:
 		var average_eye_open = (left_eye_open + right_eye_open) / 2
 		left_eye_open = average_eye_open
-		right_eye_open= average_eye_open
+		right_eye_open = average_eye_open
 
 	if left_eye_open >= blink_threshold:
 		for x in expression_data.get_expression("blink_r"):
@@ -320,29 +327,20 @@ func custom_update(data, interpolation_data: InterpolationData) -> void:
 	left_eye_rotation.y = average_eye_x_rotation
 	right_eye_rotation.y = average_eye_x_rotation
 
-	# Left eye gaze
-	if use_raw_eye_rotation:
-		left_eye_rotation.x = left_eye_rotation.x
-		left_eye_rotation.y = left_eye_rotation.y
-	else:
+	if not use_raw_eye_rotation:
 		left_eye_rotation.x = clamp(left_eye_rotation.x, left_eye.down.x, left_eye.up.x)
 		left_eye_rotation.y = clamp(left_eye_rotation.y, left_eye.right.y, left_eye.left.y)
 
-	# Right eye gaze
-	if use_raw_eye_rotation:
-		right_eye_rotation.x = right_eye_rotation.x
-		right_eye_rotation.y = right_eye_rotation.y
-	else:
 		right_eye_rotation.x = clamp(right_eye_rotation.x, right_eye.down.x, right_eye.up.x)
 		right_eye_rotation.y = clamp(right_eye_rotation.y, right_eye.right.y, right_eye.left.y)
 
 	# Left eye gaze
-	var left_eye_transform: Transform = Transform()
+	var left_eye_transform := Transform()
 	left_eye_transform = left_eye_transform.rotated(Vector3.RIGHT, -left_eye_rotation.x)
 	left_eye_transform = left_eye_transform.rotated(Vector3.UP, left_eye_rotation.y)
 
 	# Right eye gaze
-	var right_eye_transform: Transform = Transform()
+	var right_eye_transform := Transform()
 	right_eye_transform = right_eye_transform.rotated(Vector3.RIGHT, -right_eye_rotation.x)
 	right_eye_transform = right_eye_transform.rotated(Vector3.UP, right_eye_rotation.y)
 	
@@ -353,9 +351,12 @@ func custom_update(data, interpolation_data: InterpolationData) -> void:
 
 	#region Mouth tracking
 		
-	# var mouth_open: float = interpolation_data.interpolate(InterpolationData.InterpolationDataType.MOUTH_OPEN, 2.0)
+	var mouth_open: float = interpolation_data.mouth_open.interpolate(2.0)
 
-	# var mouth_wide: float = interpolation_data.interpolate(InterpolationData.InterpolationDataType.MOUTH_WIDE, 2.0)
+	var mouth_wide: float = interpolation_data.mouth_wide.interpolate(2.0)
+
+	# TODO workaround until lip syncing is re-implemented
+	
 
 	# var mouth_scale_x: int = 0
 	# var mouth_scale_y: int = 0
@@ -404,6 +405,10 @@ func custom_update(data, interpolation_data: InterpolationData) -> void:
 
 	# for x in current_mouth_shape.morphs:
 	# 	_modify_blend_shape(x.mesh, x.morph, min(max(x.values[0], mouth_open), x.values[1]))
+
+	# TODO workaround until lipsync is reimplemented
+	for x in expression_data.get_expression("a"):
+		_modify_blend_shape(x.mesh, x.morph, min(max(x.values[0], mouth_open), x.values[1]))
 
 	#endregion
 

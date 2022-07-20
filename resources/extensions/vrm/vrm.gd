@@ -9,30 +9,6 @@ const VRM_LOADER_PATH := "res://addons/vrm/vrm_loader.gd"
 func _setup_logger() -> void:
 	logger = Logger.new("VRM Runner")
 
-func _setup_scene() -> void:
-	# TODO this is hardcoded for testing
-	# var default_model_path: String = "res://assets/vrm-models/alicia/AliciaSolid_vrm-0.51.vrm"
-
-	# model_parent = Spatial.new()
-	# load_model(default_model_path if not default_model_path.empty() else DEFAULT_MODEL)
-
-	# call_deferred("add_child", model_parent)
-
-	# yield(model, "ready")
-
-	# # Set initial values from config
-	# model_intitial_transform = AM.cm.get_data("model_transform")
-	# model_parent_initial_transform = AM.cm.get_data("model_parent_transform")
-	# model.transform = model_intitial_transform
-	# model_parent.transform = model_parent_initial_transform
-
-	# var bone_transforms: Dictionary = AM.cm.get_data("bone_transforms")
-	# for bone_idx in model.skeleton.get_bone_count():
-	# 	if not bone_idx in bone_transforms:
-	# 		continue
-	# 	model.skeleton.set_bone_pose(bone_idx, bone_transforms[bone_idx])
-	._setup_scene()
-
 func _physics_step(delta: float) -> void:
 	._physics_step(delta)
 	
@@ -45,6 +21,9 @@ func _physics_step(delta: float) -> void:
 
 	# TODO hardcoded for osf
 	# model.custom_update(trackers["OpenSeeFace"].get_data(), interpolation_data)
+
+# func _generate_preview() -> void:
+# 	._generate_preview()
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #

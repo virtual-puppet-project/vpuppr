@@ -1,52 +1,35 @@
-extends VBoxContainer
-
-## The path of godot.log for the application
-const GODOT_LOG_PATH := "user://logs/godot.log"
-
-onready var logs = $Logs as TextEdit
+extends CanvasLayer
 
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#
 
 func _ready() -> void:
-	for i in AM.lm.logs:
-		_add_log(i)
+	OS.window_size = OS.get_screen_size() * 0.75
+	OS.center_window()
 	
-	AM.ps.subscribe(self, Globals.EVENT_PUBLISHED)
-	
-	logs.add_keyword_color("INFO", Color.aquamarine)
-	logs.add_keyword_color("DEBUG", Color.gold)
-	logs.add_keyword_color("TRACE", Color.blue)
-	logs.add_keyword_color("ERROR", Color.red)
-	
-	$HBoxContainer/Copy.connect("pressed", self, "_on_copy")
-	$HBoxContainer/Open.connect("pressed", self, "_on_open")
+	var base := $Base as Control
+	base.connect("gui_input", self, "_on_base_gui_input")
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#
 
-func _on_event_published(payload: SignalPayload) -> void:
-	if payload.signal_name != Globals.MESSAGE_LOGGED:
+func _on_base_gui_input(event: InputEvent) -> void:
+	if not event is InputEventMouseButton and not InputEventKey:
+		return
+	if event is InputEventMouseMotion:
 		return
 	
-	_add_log(payload.data)
-
-## Copies the logs to the system clipboard
-func _on_copy() -> void:
-	OS.clipboard = logs.text
-
-## Opens the godot.log file in the system's native text editor
-func _on_open() -> void:
-	OS.shell_open(ProjectSettings.globalize_path(GODOT_LOG_PATH))
+	if event.pressed:
+		_switch_to_landing_screen()
 
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#
 
-func _add_log(text: String) -> void:
-	logs.text += "%s\n" % text
+func _switch_to_landing_screen() -> void:
+	get_tree().change_scene(Globals.LANDING_SCREEN_PATH)
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #

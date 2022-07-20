@@ -15,17 +15,17 @@ func _setup_logger() -> void:
 func _setup() -> Result:
 	_selectable_gui_count = _get_selectable_gui_count()
 
-	_initial_page = "Default Runner"
 	var default_runner := _create_view({
 		"name": _initial_page,
 		"run_args": [
-			GlobalConstants.DEFAULT_RUNNER_PATH
+			Globals.DEFAULT_RUNNER_PATH
 		]
 	})
 
+	_initial_page = default_runner.name.capitalize()
 	add_child(default_runner)
 
-	for ext in AM.em.query_extensions_for_type(GlobalConstants.ExtensionTypes.RUNNER):
+	for ext in AM.em.query_extensions_for_type(Globals.ExtensionTypes.RUNNER):
 		ext = ext as ExtensionResource
 		var view := _create_view({
 			"name": ext.resource_name,
@@ -38,6 +38,24 @@ func _setup() -> Result:
 	
 	return ._setup()
 
+func _post_setup() -> Result:
+	if get_child_count() > 2:
+		var default_runner: Control = get_child(1)
+		default_runner.hide()
+
+		var next_runner: Control = get_child(2)
+		_initial_page = next_runner.name.capitalize()
+
+		var res := Safely.wrap(_clear_tree())
+		if res.is_err():
+			return res
+		
+		res = Safely.wrap(_build_tree(PoolStringArray([default_runner.name.capitalize()])))
+		if res.is_err():
+			return res
+
+	return Safely.ok()
+
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#
@@ -49,7 +67,7 @@ func _on_run(path: String, toggle: CheckButton) -> void:
 		add_child(popup)
 		popup.popup_centered_ratio()
 	else:
-		_run_runner(path, GlobalConstants.DEFAULT_GUI_PATH)
+		_run_runner(path, Globals.DEFAULT_GUI_PATH)
 
 func _on_gui_selected(runner_path: String, gui_path: String) -> void:
 	var file := File.new()
@@ -69,9 +87,9 @@ func _terminate(node: Node) -> void:
 static func _get_selectable_gui_count() -> int:
 	var r: int = 1
 
-	for ext in AM.em.query_extensions_for_type(GlobalConstants.ExtensionTypes.GUI):
+	for ext in AM.em.query_extensions_for_type(Globals.ExtensionTypes.GUI):
 		# TODO this might not be a great solution
-		if not ext.other.get(GlobalConstants.ExtensionOtherKeys.SELECTABLE_GUI, false):
+		if not ext.other.get(Globals.ExtensionOtherKeys.SELECTABLE_GUI, false):
 			continue
 
 		r += 1
@@ -135,9 +153,9 @@ func _create_view(data: Dictionary) -> ScrollContainer:
 
 func _find_runner_preview(view_name: String) -> Result:
 	var expected_path := "%s/%s.%s" % [
-		GlobalConstants.RUNNER_PREVIEW_DIR_PATH,
+		Globals.RUNNER_PREVIEW_DIR_PATH,
 		view_name,
-		GlobalConstants.RUNNER_PREVIEW_FILE_EXT
+		Globals.RUNNER_PREVIEW_FILE_EXT
 	]
 
 	var file := File.new()
@@ -174,13 +192,13 @@ func _create_gui_select(runner_path: String) -> WindowDialog:
 
 	var default_gui := Button.new()
 	default_gui.text = "Default Gui"
-	default_gui.connect("pressed", self, "_on_gui_selected", [runner_path, GlobalConstants.DEFAULT_GUI_PATH])
+	default_gui.connect("pressed", self, "_on_gui_selected", [runner_path, Globals.DEFAULT_GUI_PATH])
 
 	list.add_child(default_gui)
 
-	for ext in AM.em.query_extensions_for_type(GlobalConstants.ExtensionTypes.GUI):
+	for ext in AM.em.query_extensions_for_type(Globals.ExtensionTypes.GUI):
 		# TODO this might not be a great solution
-		if not ext.other.get(GlobalConstants.ExtensionOtherKeys.SELECTABLE_GUI, false):
+		if not ext.other.get(Globals.ExtensionOtherKeys.SELECTABLE_GUI, false):
 			continue
 
 		var button := Button.new()

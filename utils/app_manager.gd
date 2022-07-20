@@ -28,17 +28,10 @@ var should_save := false
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#
 
-func _ready() -> void:
-	OS.window_size = OS.get_screen_size() * 0.75
-	OS.center_window()
-	
+func _init() -> void:
 	Safely.register_error_codes(Error.Code)
-	
-	connect("tree_exiting", self, "_on_tree_exiting")
-	
-	if ClassDB.class_exists("Redirect"):
-		Engine.get_singleton("Redirect").connect("print_line", self, "_on_stderr")
 
+func _ready() -> void:
 	ps = PubSub.new()
 	# Must be initialized AFTER the PubSub since it needs to connect to other signals
 	lm = LogManager.new()
@@ -51,7 +44,12 @@ func _ready() -> void:
 
 	# Initialized here since loggers must connect to the PubSub
 	logger = Logger.new("AppManager")
+
+	connect("tree_exiting", self, "_on_tree_exiting")
 	
+	if ClassDB.class_exists("Redirect"):
+		Engine.get_singleton("Redirect").connect("print_line", self, "_on_stderr")
+
 	logger.info("Started. おはよう。")
 
 func _process(delta: float) -> void:
