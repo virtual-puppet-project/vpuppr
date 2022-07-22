@@ -45,7 +45,7 @@ class ExpressionData:
 		if not morphs.has(morph_name):
 			morphs[morph_name] = []
 		
-			morphs[morph_name].append(morph_data)
+		morphs[morph_name].append(morph_data)
 
 	func get_expression(morph_name: String) -> Array:
 		return morphs.get(morph_name)
@@ -134,14 +134,14 @@ func _ready() -> void:
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#
 
-func _on_model_config_changed(value, key: String) -> void:
+func _on_model_config_changed(value: SignalPayload, key: String) -> void:
 	match key:
 		"blink_threshold":
-			blink_threshold = value
+			blink_threshold = value.data
 		"link_eye_blinks":
-			link_eye_blinks = value
+			link_eye_blinks = value.data
 		"use_raw_eye_rotation":
-			use_raw_eye_rotation = value
+			use_raw_eye_rotation = value.data
 
 func _on_blend_shape(value: String) -> void:
 	var ed = get(value)
@@ -200,49 +200,45 @@ func _map_bones_and_eyes() -> void:
 		if spine_bone_id >= 0:
 			additional_bones.append(spine_bone_id)
 
-	var lookup: MorphData = expression_data.get_expression("lookup")[0]
-	if lookup != null:
-		var val = lookup.values.pop_back()
-		if val:
-			var rot: Quat = val["rotation"]
-			match lookup.morph:
+	for morph_data in expression_data.get_expression("lookup"):
+		var val = morph_data.values.back()
+		if val != null:
+			var rot: Vector3 = val.rotation.get_euler()
+			match morph_data.morph:
 				left_eye_name:
-					left_eye.up = rot.get_euler()
+					left_eye.up = rot
 				right_eye_name:
-					right_eye.up = rot.get_euler()
-	
-	var lookdown: MorphData = expression_data.get_expression("lookdown")[0]
-	if lookdown != null:
-		var val = lookdown.values.pop_back()
-		if val:
-			var rot: Quat = val["rotation"]
-			match lookdown.morph:
-				left_eye_name:
-					left_eye.down = rot.get_euler()
-				right_eye_name:
-					right_eye.down = rot.get_euler()
+					right_eye.up = rot
 
-	var lookleft: MorphData = expression_data.get_expression("lookleft")[0]
-	if lookleft != null:
-		var val = lookleft.values.pop_back()
-		if val:
-			var rot: Quat = val["rotation"]
-			match lookleft.morph:
+	for morph_data in expression_data.get_expression("lookdown"):
+		var val = morph_data.values.back()
+		if val != null:
+			var rot: Vector3 = val.rotation.get_euler()
+			match morph_data.morph:
 				left_eye_name:
-					left_eye.left = rot.get_euler()
+					left_eye.down = rot
 				right_eye_name:
-					right_eye.left = rot.get_euler()
+					right_eye.down = rot
 
-	var lookright: MorphData = expression_data.get_expression("lookright")[0]
-	if lookright != null:
-		var val = lookright.values.pop_back()
-		if val:
-			var rot: Quat = val["rotation"]
-			match lookright.morph:
+	for morph_data in expression_data.get_expression("lookleft"):
+		var val = morph_data.values.back()
+		if val != null:
+			var rot: Vector3 = val.rotation.get_euler()
+			match morph_data.morph:
 				left_eye_name:
-					left_eye.right = rot.get_euler()
+					left_eye.left = rot
 				right_eye_name:
-					right_eye.right = rot.get_euler()
+					right_eye.left = rot
+
+	for morph_data in expression_data.get_expression("lookright"):
+		var val = morph_data.values.back()
+		if val != null:
+			var rot: Vector3 = val.rotation.get_euler()
+			match morph_data.morph:
+				left_eye_name:
+					left_eye.right = rot
+				right_eye_name:
+					right_eye.right = rot
 
 	# Some models don't have blendshapes for looking up/down/left/right
 	# So let their eyes rotate 360 degrees
