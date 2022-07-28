@@ -199,8 +199,8 @@ func _setup_scene() -> void:
 	model.transform = AM.cm.get_data("model_transform")
 	model_parent.transform = AM.cm.get_data("model_parent_transform")
 
-	AM.tcm.push(MODEL_INITIAL_TRANSFORM, model.transform)
-	AM.tcm.push(MODEL_PARENT_INITIAL_TRANSFORM, model_parent.transform)
+	AM.tcm.push(MODEL_INITIAL_TRANSFORM, model.transform).cleanup_on_signal(self, "tree_exiting")
+	AM.tcm.push(MODEL_PARENT_INITIAL_TRANSFORM, model_parent.transform).cleanup_on_signal(self, "tree_exiting")
 
 func _physics_step(_delta: float) -> void:
 	if trackers.empty():
@@ -220,10 +220,6 @@ func _physics_step(_delta: float) -> void:
 	)
 
 func _teardown() -> void:
-	AM.tcm.erase(MODEL_TO_LOAD)
-	AM.tcm.erase(MODEL_INITIAL_TRANSFORM)
-	AM.tcm.erase(MODEL_PARENT_INITIAL_TRANSFORM)
-	
 	._teardown()
 
 func _generate_preview() -> void:
@@ -303,7 +299,7 @@ func _on_event_published(payload: SignalPayload) -> void:
 				return
 
 			var tcm: TempCacheManager = AM.tcm
-			tcm.push(MODEL_TO_LOAD, payload.data)
+			tcm.push(MODEL_TO_LOAD, payload.data).cleanup_on_pull()
 			
 			var runner_path := ""
 			var res: Result = Safely.wrap(tcm.pull("runner_path"))

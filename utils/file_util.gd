@@ -67,8 +67,10 @@ static func load_runner(runner_path: String, gui_path: String) -> Result:
 	runner.add_child(gui)
 
 	var tcm: TempCacheManager = AM.tcm
-	tcm.push("runner_path", runner_path)
-	tcm.push("gui_path", gui_path)
+	tcm.push("runner_path", runner_path).cleanup_on_pull()
+	tcm.push("gui_path", gui_path).cleanup_on_pull()
+	# tcm.push("runner_path", runner_path)
+	# tcm.push("gui_path", gui_path)
 
 	return Safely.ok(runner)
 
