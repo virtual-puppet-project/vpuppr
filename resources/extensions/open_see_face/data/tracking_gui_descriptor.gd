@@ -1,16 +1,17 @@
 extends PanelContainer
 
-const CONFIG_KEYS := {
-	"OPEN_SEE_FACE_CAMERA_NAME": "open_see_face_camera_name",
-	"OPEN_SEE_FACE_CAMERA_INDEX": "open_see_face_camera_index",
-	"OPEN_SEE_FACE_TRACKER_FPS": "open_see_face_tracker_fps",
-	"OPEN_SEE_FACE_SHOULD_LAUNCH_TRACKER": "open_see_face_should_launch_tracker",
-	"OPEN_SEE_FACE_ADDRESS": "open_see_face_address",
-	"OPEN_SEE_FACE_PORT": "open_see_face_port"
+const ConfigKeys := {
+	"CAMERA_NAME": "open_see_face_camera_name",
+	"CAMERA_INDEX": "open_see_face_camera_index",
+	"TRACKER_FPS": "open_see_face_tracker_fps",
+	"SHOULD_LAUNCH_TRACKER": "open_see_face_should_launch_tracker",
+	"ADDRESS": "open_see_face_address",
+	"PORT": "open_see_face_port",
+	"PYTHON_PATH": "open_see_face_python_path"
 }
 
 func _init() -> void:
-	for val in CONFIG_KEYS.values():
+	for val in ConfigKeys.values():
 		var res: Result = Safely.wrap(AM.cm.runtime_subscribe_to_signal(val))
 		if res.is_err() and res.unwrap_err().code != Error.Code.PUB_SUB_ALREADY_CONNECTED:
 			AM.logger.error(res)
@@ -48,6 +49,24 @@ static func _hv_fill_expand(control: Control) -> void:
 
 static func _h_fill_expand(control: Control) -> void:
 	control.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+#region Connections
+
+const IS_INT: bool = true
+const IS_STRING: bool = false
+
+static func _on_line_edit_changed(text: String, key: String, is_int: bool = false) -> void:
+	if text.empty():
+		return
+	if is_int and not text.is_valid_integer():
+		return
+	
+	AM.ps.publish(key, text if not is_int else text)
+
+static func _on_button_toggled(state: bool, key: String) -> void:
+	AM.ps.publish(key, state)
+
+#endregion
 
 func _camera_select() -> OptionButton:
 	var ob := OptionButton.new()
@@ -153,6 +172,9 @@ func _on_camera_selected(idx: int, ob: OptionButton) -> void:
 
 	popup.set_item_checked(idx, not popup.is_item_checked(idx))
 
+	AM.ps.publish("open_see_face_camera_index", idx)
+	AM.ps.publish("open_see_face_camera", popup.get_item_text(idx))
+
 func _tracker_fps() -> HBoxContainer:
 	var r := HBoxContainer.new()
 	_h_fill_expand(r)
@@ -168,15 +190,17 @@ more CPU usage.
 	var line_edit := LineEdit.new()
 	_h_fill_expand(line_edit)
 
-	var initial_value = AM.cm.get_data("open_see_face_tracker_fps")
+	var initial_value = AM.cm.get_data(ConfigKeys.TRACKER_FPS)
 	if typeof(initial_value) == TYPE_NIL:
 		initial_value = int(12)
-		AM.ps.publish("open_see_face_tracker_fps", initial_value)
+		AM.ps.publish(ConfigKeys.TRACKER_FPS, initial_value)
 
 	line_edit.text = str(initial_value)
 
 	r.add_child(label)
 	r.add_child(line_edit)
+
+	line_edit.connect("text_changed", self, "_on_line_edit_changed", [ConfigKeys.TRACKER_FPS, IS_INT])
 
 	return r
 
@@ -192,12 +216,14 @@ This is generally only useful if Puppeteer is unable to automatically start Open
 you will need to start OpenSeeFace from a terminal.
 	""".strip_edges()
 
-	var initial_value = AM.cm.get_data("open_see_face_should_launch_tracker")
+	var initial_value = AM.cm.get_data(ConfigKeys.SHOULD_LAUNCH_TRACKER)
 	if typeof(initial_value) == TYPE_NIL:
 		initial_value = true
-		AM.ps.publish("open_see_face_should_launch_tracker", initial_value)
+		AM.ps.publish(ConfigKeys.SHOULD_LAUNCH_TRACKER, initial_value)
 
 	r.pressed = initial_value
+
+	r.connect("toggled", self, "_on_button_toggled", [ConfigKeys.SHOULD_LAUNCH_TRACKER])
 
 	return r
 
@@ -215,15 +241,17 @@ The ip address to listen at. Do not change this unless you know what you are doi
 	var line_edit := LineEdit.new()
 	_h_fill_expand(line_edit)
 	
-	var initial_value = AM.cm.get_data("open_see_face_address")
+	var initial_value = AM.cm.get_data(ConfigKeys.ADDRESS)
 	if typeof(initial_value) == TYPE_NIL:
 		initial_value = "127.0.0.1"
-		AM.ps.publish("open_see_face_address", initial_value)
+		AM.ps.publish(ConfigKeys.ADDRESS, initial_value)
 
 	line_edit.text = str(initial_value)
 
 	r.add_child(label)
 	r.add_child(line_edit)
+
+	line_edit.connect("text_changed", self, "_on_line_edit_changed", [ConfigKeys.ADDRESS, IS_STRING])
 
 	return r
 
@@ -241,15 +269,17 @@ The port to listen on. Do not change this unless you know what you are doing.
 	var line_edit := LineEdit.new()
 	_h_fill_expand(line_edit)
 	
-	var initial_value = AM.cm.get_data("open_see_face_port")
+	var initial_value = AM.cm.get_data(ConfigKeys.PORT)
 	if typeof(initial_value) == TYPE_NIL:
 		initial_value = int(11573)
-		AM.ps.publish("open_see_face_port", initial_value)
+		AM.ps.publish(ConfigKeys.PORT, initial_value)
 
 	line_edit.text = str(initial_value)
 
 	r.add_child(label)
 	r.add_child(line_edit)
+
+	line_edit.connect("text_changed", self, "_on_line_edit_changed", [ConfigKeys.PORT, IS_INT])
 
 	return r
 
@@ -314,7 +344,14 @@ python version is not within Python 3.6 - Python 3.9.
 	_h_fill_expand(line_edit)
 	line_edit.placeholder_text = "/path/to/python/binary"
 
+	var initial_value = AM.cm.get_data(ConfigKeys.PYTHON_PATH)
+	if typeof(initial_value) == TYPE_NIL:
+		initial_value = "*"
+		AM.ps.publish(ConfigKeys.PYTHON_PATH, initial_value)
+
 	r.add_child(label)
 	r.add_child(line_edit)
+
+	line_edit.connect("text_changed", self, "_on_line_edit_changed", [ConfigKeys.PYTHON_PATH, IS_STRING])
 
 	return r
