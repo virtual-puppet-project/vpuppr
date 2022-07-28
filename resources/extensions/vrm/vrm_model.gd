@@ -1,4 +1,3 @@
-class_name VRMModel
 extends PuppetTrait
 
 const VRM_ANIMATION_PLAYER := "anim"
@@ -347,12 +346,11 @@ func custom_update(interpolation_data: InterpolationData) -> void:
 
 	#region Mouth tracking
 		
-	var mouth_open: float = interpolation_data.mouth_open.interpolate(2.0)
+	var mouth_open: float = interpolation_data.mouth_open.interpolate()
 
 	var mouth_wide: float = interpolation_data.mouth_wide.interpolate(2.0)
 
 	# TODO workaround until lip syncing is re-implemented
-	
 
 	# var mouth_scale_x: int = 0
 	# var mouth_scale_y: int = 0

@@ -43,13 +43,19 @@ func _unhandled_input(_event: InputEvent) -> void:
 # Public functions                                                            #
 #-----------------------------------------------------------------------------#
 
-func custom_update(data, _interpolation_data: InterpolationData) -> void:
+func custom_update(data: InterpolationData) -> void:
 	if not is_blinking:
-		if(data.get_left_eye_open_amount() < blink_threshold and data.get_right_eye_open_amount() < blink_threshold):
+		if(data.left_blink.target_value < blink_threshold and data.right_blink.target_value < blink_threshold):
 			blink()
 	elif is_blinking:
-		if(data.get_left_eye_open_amount() > blink_threshold and data.get_right_eye_open_amount() > blink_threshold):
+		if(data.left_blink.target_value > blink_threshold and data.right_blink.target_value > blink_threshold):
 			unblink()
+	# if not is_blinking:
+	# 	if(data.get_left_eye_open_amount() < blink_threshold and data.get_right_eye_open_amount() < blink_threshold):
+	# 		blink()
+	# elif is_blinking:
+	# 	if(data.get_left_eye_open_amount() > blink_threshold and data.get_right_eye_open_amount() > blink_threshold):
+	# 		unblink()
 
 func blink() -> void:
 	current_animation = $AnimationPlayer.current_animation
