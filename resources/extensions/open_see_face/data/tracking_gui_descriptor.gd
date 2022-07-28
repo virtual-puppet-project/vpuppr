@@ -61,7 +61,7 @@ static func _on_line_edit_changed(text: String, key: String, is_int: bool = fals
 	if is_int and not text.is_valid_integer():
 		return
 	
-	AM.ps.publish(key, text if not is_int else text)
+	AM.ps.publish(key, text if not is_int else text.to_int())
 
 static func _on_button_toggled(state: bool, key: String) -> void:
 	AM.ps.publish(key, state)

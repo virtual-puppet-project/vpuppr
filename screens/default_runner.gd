@@ -196,8 +196,12 @@ func _setup_scene() -> void:
 
 	yield(model, "ready")
 
-	model.transform = AM.cm.get_data("model_transform")
-	model_parent.transform = AM.cm.get_data("model_parent_transform")
+	var model_transform = AM.cm.get_data("model_transform")
+	if model_transform != null and model_transform != Transform.IDENTITY:
+		model.transform = model_transform
+	var model_parent_transform = AM.cm.get_data("model_parent_transform")
+	if model_parent_transform != null and model_parent_transform != Transform.IDENTITY:
+		model_parent.transform = model_parent_transform
 
 	AM.tcm.push(MODEL_INITIAL_TRANSFORM, model.transform).cleanup_on_signal(self, "tree_exiting")
 	AM.tcm.push(MODEL_PARENT_INITIAL_TRANSFORM, model_parent.transform).cleanup_on_signal(self, "tree_exiting")

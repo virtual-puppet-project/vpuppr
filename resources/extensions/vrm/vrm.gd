@@ -59,6 +59,7 @@ func load_vrm(path: String) -> Result:
 	m.set_script(load(script_res.unwrap()))
 
 	m.vrm_meta = vrm_meta
+	m.transform = m.transform.translated(Vector3(0, -1.3, -2.4))
 	m.transform = m.transform.rotated(Vector3.UP, PI)
 
 	translation_adjustment = Vector3(-1, 1, -1)
