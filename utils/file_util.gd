@@ -23,7 +23,7 @@ extends Reference
 ##
 ## @return: String - The stripped name
 static func path_to_stripped_name(path: String) -> String:
-	return path.get_basename().get_file()
+	return path.get_basename().get_file().validate_node_name()
 
 ## Loads a Godot resource at the given path
 ##

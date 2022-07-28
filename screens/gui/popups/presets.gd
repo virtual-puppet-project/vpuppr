@@ -181,7 +181,9 @@ class PresetsPage extends ScrollContainer:
 					return
 				
 				var model_configs: Dictionary = AM.cm.get_data("model_configs")
+				FileUtil.remove_file_at_path(model_configs[name])
 				model_configs.erase(name)
+
 				AM.ps.publish("model_configs", model_configs, name)
 			_:
 				logger.error("Unhandled action %s" % action_type)
