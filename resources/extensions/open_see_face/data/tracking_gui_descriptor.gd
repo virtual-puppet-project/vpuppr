@@ -7,7 +7,8 @@ const ConfigKeys := {
 	"SHOULD_LAUNCH_TRACKER": "open_see_face_should_launch_tracker",
 	"ADDRESS": "open_see_face_address",
 	"PORT": "open_see_face_port",
-	"PYTHON_PATH": "open_see_face_python_path"
+	"PYTHON_PATH": "open_see_face_python_path",
+	"MODEL": "open_see_face_model"
 }
 
 func _init() -> void:
@@ -32,6 +33,7 @@ func _init() -> void:
 	vbox.add_child(_should_launch_tracker())
 	vbox.add_child(_tracker_address())
 	vbox.add_child(_tracker_port())
+	vbox.add_child(_model())
 
 	if OS.get_name().to_lower() in ["x11", "osx"]:
 		vbox.add_child(_python_path())
@@ -76,15 +78,7 @@ The camera to use for tracking.
 	"""
 
 	var popup: PopupMenu = ob.get_popup()
-	popup.connect(
-		"index_pressed",
-		load(
-			"%s/data/tracking_gui_descriptor.gd" % \
-				AM.em.get_context("OpenSeeFace").expect("Unable to get context").context_path
-		),
-		"_on_camera_selected",
-		[ob]
-	)
+	popup.connect("index_pressed", self, "_on_camera_selected", [ob])
 
 	var os_name := OS.get_name().to_lower()
 
@@ -130,15 +124,15 @@ The camera to use for tracking.
 	for option in results:
 		popup.add_check_item(option)
 
-	var camera_name = AM.cm.get_data("open_see_face_camera_name")
+	var camera_name = AM.cm.get_data(ConfigKeys.CAMERA_NAME)
 	if typeof(camera_name) == TYPE_NIL:
 		camera_name = ""
-		AM.ps.publish("open_see_face_camera_name", camera_name)
+		AM.ps.publish(ConfigKeys.CAMERA_NAME, camera_name)
 
-	var camera_index = AM.cm.get_data("open_see_face_camera_index")
+	var camera_index = AM.cm.get_data(ConfigKeys.CAMERA_INDEX)
 	if typeof(camera_index) == TYPE_NIL:
 		camera_index = 0
-		AM.ps.publish("open_see_face_camera_index", camera_index)
+		AM.ps.publish(ConfigKeys.CAMERA_INDEX, camera_index)
 
 	# TODO compare the camera index to the actual camera name
 
@@ -149,7 +143,7 @@ The camera to use for tracking.
 			
 			if item_text == camera_name:
 				camera_index = i
-				popup.set_item_check(i, true)
+				popup.set_item_checked(i, true)
 				ob.text = item_text
 				found = true
 				break
@@ -160,20 +154,26 @@ The camera to use for tracking.
 		camera_index = 0
 		popup.set_item_checked(0, true)
 		ob.text = item_text
-		AM.ps.publish("open_see_face_camera", item_text)
+		AM.ps.publish(ConfigKeys.CAMERA_NAME, item_text)
 	
 	# Update the camera index every time since camera order can change between computer reboots
-	AM.ps.publish("open_see_face_camera_index", camera_index)
+	AM.ps.publish(ConfigKeys.CAMERA_INDEX, camera_index)
 
 	return ob
 
 func _on_camera_selected(idx: int, ob: OptionButton) -> void:
 	var popup: PopupMenu = ob.get_popup()
 
-	popup.set_item_checked(idx, not popup.is_item_checked(idx))
+	var current_index: int = popup.get_current_index()
+	if current_index < 0:
+		AM.logger.error("OpenSeeFace: No item was previously selected. This is likely a bug.")
+	else:
+		popup.set_item_checked(current_index, false)
+	
+	popup.set_item_checked(idx, true)
 
-	AM.ps.publish("open_see_face_camera_index", idx)
-	AM.ps.publish("open_see_face_camera", popup.get_item_text(idx))
+	AM.ps.publish(ConfigKeys.CAMERA_INDEX, idx)
+	AM.ps.publish(ConfigKeys.CAMERA_NAME, popup.get_item_text(idx))
 
 func _tracker_fps() -> HBoxContainer:
 	var r := HBoxContainer.new()
@@ -355,3 +355,59 @@ python version is not within Python 3.6 - Python 3.9.
 	line_edit.connect("text_changed", self, "_on_line_edit_changed", [ConfigKeys.PYTHON_PATH, IS_STRING])
 
 	return r
+
+const POSSIBLE_ML_MODELS: Dictionary = {
+	"-3": "Between models 0 and 1",
+	"-2": "Roughly equivalent to model 1 but faster",
+	"-1": "Faster idk",
+	"0": "Potato",
+	"1": "Higher quality than Potato but slower",
+	"2": "Slightly faster than Default but lower quality",
+	"3": "Default",
+	"4": "Wink optimized, slower than Default"}
+
+func _model() -> OptionButton:
+	var ob := OptionButton.new()
+	_h_fill_expand(ob)
+	ob.hint_tooltip = """
+The tracking model to use. See the OpenSeeFace README on GitHub for an explanation of the different tracking models.
+	"""
+
+	var popup: PopupMenu = ob.get_popup()
+	popup.connect("index_pressed", self, "_on_model_selected", [ob])
+
+	var ml_model = AM.cm.get_data(ConfigKeys.MODEL)
+	if typeof(ml_model) == TYPE_NIL:
+		ml_model = 3 as int
+		AM.ps.publish(ConfigKeys.MODEL, ml_model)
+
+	for model_num in POSSIBLE_ML_MODELS.keys():
+		var item_text := "%s: %s" % [model_num, POSSIBLE_ML_MODELS[model_num]]
+		popup.add_check_item(item_text)
+		if model_num.to_int() == ml_model as int:
+			popup.set_item_checked(popup.get_item_count() - 1, true)
+			ob.text = item_text
+
+	return ob
+
+func _on_model_selected(idx: int, ob: OptionButton) -> void:
+	var popup: PopupMenu = ob.get_popup()
+
+	var current_index: int = popup.get_current_index()
+	if current_index < 0:
+		AM.logger.error("OpenSeeFace: No item was previously selected. This is likely a bug.")
+	else:
+		popup.set_item_checked(current_index, false)
+	
+	popup.set_item_checked(idx, not popup.is_item_checked(idx))
+
+	var split: PoolStringArray = popup.get_item_text(idx).split(":")
+	if split.size() < 2:
+		AM.logger.error("OpenSeeFace: Invalid ML model selected: %s" % str(split))
+		return
+
+	if not split[0].is_valid_integer():
+		AM.logger.error("OpenSeeFace: ML model selection does not have a valid, preceding integer")
+		return
+
+	AM.ps.publish(ConfigKeys.MODEL, split[0].to_int())

@@ -246,6 +246,11 @@ func _start_tracker() -> bool:
 	if typeof(camera_index) == TYPE_NIL:
 		logger.error("No data found for open_see_face_camera_index")
 		return false
+
+	var ml_model = AM.cm.get_data("open_see_face_model")
+	if typeof(ml_model) == TYPE_NIL:
+		logger.error("No data found for open_see_face_model")
+		return false
 	
 	if not should_launch:
 		logger.info("Assuming face tracker was manually launched.")
@@ -258,74 +263,34 @@ func _start_tracker() -> bool:
 		logger.info("Declining to start face tracker.")
 		return false
 
-	var pid: int = -1
+	var res = Safely.wrap(AM.em.get_context("OpenSeeFace"))
+	if res.is_err():
+		logger.error(res)
+		return false
 
-	match OS.get_name().to_lower():
-		"windows":
-			var exe_path: String = "%s/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe" % \
-				AM.em.get_context("OpenSeeFace").expect("Unable to get context").context_path
-			pid = OS.execute(
-				exe_path,
-				[
-					"-c", camera_index,
-					"-F", str(fps),
-					"-v", "0",
-					"-s", "1",
-					"-P", "1",
-					"--discard-after", "0",
-					"--scan-every", "0",
-					"--no-3d-adapt", "1",
-					"--max-feature-updates", "900",
-					"--ip", address,
-					"--port", str(port),
-				],
-				false
-			)
-		"osx", "x11":
-			var user_data_path: String = ProjectSettings.globalize_path("user://")
-			var python_path: String = AM.cm.get_data("python_path")
-			if python_path == "*":
-				python_path = ""
+	var context_path: String = res.unwrap().context_path
 
-			var dir := Directory.new()
-			if not dir.dir_exists("%s%s" % [user_data_path, "venv"]):
-				# TODO add in logger popup notification
-				# logger.notify("First time setup: creating venv", logger.NotifyType.POPUP)
-
-				var create_venv_script: String = "%s%s" % [OS.get_executable_path().get_base_dir(), "/resources/scripts/create_venv.sh"]
-				if OS.is_debug_build():
-					create_venv_script = ProjectSettings.globalize_path("res://resources/scripts/create_venv.sh")
-				
-				# Give the popup time to actually popup/display
-				yield(Engine.get_main_loop(), "idle_frame")
-				yield(Engine.get_main_loop(), "idle_frame")
-
-				OS.execute(create_venv_script, [python_path, user_data_path])
-
-			var face_tracker_path: String = "/OpenSeeFaceFolder/OpenSeeFace/facetracker.py"
-
-			# These paths must be absolute paths
-			var exe_path: String = "%s%s" % [OS.get_executable_path().get_base_dir(), face_tracker_path]
-			var script_path: String = "%s%s" % [OS.get_executable_path().get_base_dir(), "/resources/scripts/run_osf_linux.sh"]
-			if OS.is_debug_build():
-				exe_path = "%s%s" % [ProjectSettings.globalize_path("res://export"), face_tracker_path]
-				script_path = ProjectSettings.globalize_path("res://resources/scripts/run_osf_linux.sh")
-
-			pid = OS.execute(
-				script_path,
-				[
-					user_data_path,
-					exe_path,
-					str(camera_index),
-					str(fps),
-					address,
-					str(port)
-				],
-				false
-			)
-		_:
-			logger.error("Unhandled os type: %s" % OS.get_name())
-			return false
+	var pid: int = OS.execute(
+		"%s/OpenSeeFaceFolder/OpenSeeFace/facetracker%s" % [
+			context_path,
+			".exe" if OS.get_name().to_lower() == "windows" else ""
+		],
+		[
+			"--capture", camera_index,
+			"--fps", str(fps),
+			"--visualize", "0",
+			"--silent", "1",
+			"--pnp-points", "0",
+			"--discard-after", "0",
+			"--scan-every", "0",
+			"--no-3d-adapt", "1",
+			"--max-feature-updates", "900",
+			"--ip", address,
+			"--port", str(port),
+			"--model", str(ml_model)
+		],
+		false
+	)
 
 	if pid <= 0:
 		logger.error("Failed to start tracker")

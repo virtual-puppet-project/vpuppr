@@ -41,22 +41,22 @@ func _setup() -> Result:
 			logger.error("Extension %s missing data descriptor, skipping" % er.resource_name)
 			continue
 
-		var context_res: Result = AM.em.get_context(er.extension_name)
-		if not context_res or context_res.is_err():
-			logger.err(context_res)
+		var res: Result = Safely.wrap(AM.em.get_context(er.extension_name))
+		if res.is_err():
+			logger.err(res)
 			continue
 
 		var entrypoint: String = er.other[Globals.ExtensionOtherKeys.DATA]
 
-		var descriptor_res: Result = _from_descriptor(context_res.unwrap(), entrypoint)
-		if not descriptor_res or descriptor_res.is_err():
-			logger.error(descriptor_res)
+		res = Safely.wrap(_from_descriptor(res.unwrap(), entrypoint))
+		if res.is_err():
+			logger.error(res)
 			continue
 
 		var item: TreeItem = tree.create_item(root)
 		item.set_text(TREE_COLUMN, er.resource_name)
 
-		var display = descriptor_res.unwrap()
+		var display = res.unwrap()
 		pages[er.resource_name] = Page.new(display, item)
 		display.hide()
 
