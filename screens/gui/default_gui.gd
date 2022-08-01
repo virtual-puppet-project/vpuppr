@@ -72,7 +72,19 @@ func _input(event: InputEvent) -> void:
 #-----------------------------------------------------------------------------#
 
 func _on_pressed(scene) -> void:
-	var popup := _create_popup(scene.resource_path.get_file().get_basename().capitalize(), scene)
+	var popup: WindowDialog
+
+	var popup_name: String = scene.resource_path.get_file().get_basename().capitalize()
+
+	var res := Safely.wrap(AM.tcm.pull(popup_name))
+	if res.is_err():
+		if res.unwrap_err().code != Error.Code.TEMP_CACHE_MANAGER_KEY_NOT_FOUND:
+			logger.error(res)
+			return
+		AM.tcm.push(popup_name, scene).cleanup_on_signal(get_tree().current_scene, "tree_exiting")
+		popup = _create_popup(popup_name, scene)
+	else:
+		popup = _create_popup(popup_name, res.unwrap().duplicate())
 
 	add_child(popup)
 
