@@ -7,6 +7,9 @@ Cappy Ishihara (@CappyIshihara on Twitter)
 Testing and Bug Reports
 Rogue Ren (@ItsRogueRen on Twitter)
 
+Splash Screen
+AshKaijin (@AshKaijin on Twitter)
+
 Flatpak resources, scaled application icon assets for 256,128,64,48,32,24x resolutions
 Oro (@OroWith2Os on Twitter, @orowith2os:tchncs.de on Matrix)
 
