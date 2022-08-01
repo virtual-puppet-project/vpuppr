@@ -15,6 +15,7 @@ class CleanupBuilder:
 			NOTIFICATION_PREDELETE:
 				parent = null
 
+	# TODO this implementation is gross
 	func cleanup_on_signal(object: Object, signal_name: String) -> CleanupBuilder:
 		if not parent._cleanup_mappings.has(object):
 			parent._cleanup_mappings[object] = {}

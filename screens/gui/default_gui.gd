@@ -25,11 +25,16 @@ const BUILTIN_MENUS := [
 	Presets
 ]
 
+var logger: Logger
+
 var grabber_grabbed := false
 
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#
+
+func _init() -> void:
+	logger = Logger.new("DefaultGui")
 
 func _ready() -> void:
 	var menu_list := $VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer/MenuList as VBoxContainer
@@ -67,7 +72,9 @@ func _input(event: InputEvent) -> void:
 #-----------------------------------------------------------------------------#
 
 func _on_pressed(scene) -> void:
-	add_child(_create_popup(scene.resource_path.get_file().get_basename().capitalize(), scene))
+	var popup := _create_popup(scene.resource_path.get_file().get_basename().capitalize(), scene)
+
+	add_child(popup)
 
 func _on_grabber_input(event: InputEvent, split_container: SplitContainer) -> void:
 	if event.is_action_pressed("left_click"):
