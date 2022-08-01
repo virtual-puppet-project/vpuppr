@@ -72,9 +72,24 @@ func _input(event: InputEvent) -> void:
 #-----------------------------------------------------------------------------#
 
 func _on_pressed(scene) -> void:
-	var popup := _create_popup(scene.resource_path.get_file().get_basename().capitalize(), scene)
+	var popup: WindowDialog
 
-	add_child(popup)
+	var popup_name: String = scene.resource_path.get_file().get_basename().capitalize()
+
+	var res := Safely.wrap(AM.tcm.pull(popup_name))
+	if res.is_err():
+		if res.unwrap_err().code != Error.Code.TEMP_CACHE_MANAGER_KEY_NOT_FOUND:
+			logger.error(res)
+			return
+		popup = _create_popup(popup_name, scene)
+		popup.connect("gui_input", self, "_on_popup_clicked", [popup])
+
+		AM.tcm.push(popup_name, popup).cleanup_on_signal(popup, "tree_exiting")
+
+		add_child(popup)
+	else:
+		popup = res.unwrap()
+		move_child(popup, get_child_count() - 1)
 
 func _on_grabber_input(event: InputEvent, split_container: SplitContainer) -> void:
 	if event.is_action_pressed("left_click"):
@@ -87,6 +102,12 @@ func _on_grabber_input(event: InputEvent, split_container: SplitContainer) -> vo
 
 func _on_grabber_mouse(entered: bool) -> void:
 	Input.set_default_cursor_shape(Input.CURSOR_HSIZE if entered else Input.CURSOR_ARROW)
+
+func _on_popup_clicked(event: InputEvent, popup: Control) -> void:
+	if not event is InputEventMouseButton or not event.pressed:
+		return
+
+	move_child(popup, get_child_count() - 1)
 
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
