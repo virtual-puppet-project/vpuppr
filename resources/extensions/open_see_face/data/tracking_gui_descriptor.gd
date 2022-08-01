@@ -91,16 +91,7 @@ The camera to use for tracking.
 					AM.em.get_context("OpenSeeFace").expect("Unable to get context").context_path
 			OS.execute(exe_path, ["-l", "1"], true, output)
 		"osx", "x11":
-			var exe_path := "%s/%s" % [
-				OS.get_executable_path().get_base_dir(),
-				"/resources/scripts/get_video_devices.sh"
-			]
-			if OS.is_debug_build():
-				exe_path = "%s/%s" % [
-					ProjectSettings.globalize_path("res://export"),
-					"/resources/scripts/get_video_devices.sh"
-				]
-			OS.execute(exe_path, [], true, output)
+			OS.execute("ls", ["/dev/v4l/by-id/"], true, output)
 
 	if not output.empty():
 		results.append_array((output[0] as String).split("\n"))
