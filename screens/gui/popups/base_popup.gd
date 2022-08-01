@@ -14,6 +14,7 @@ func _init(p_name: String, p_screen) -> void:
 
 	# Node configuration
 	window_title = p_name
+	name = p_name
 	resizable = true
 	anchor_bottom = 1.0
 	anchor_right = 1.0
