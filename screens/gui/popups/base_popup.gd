@@ -36,7 +36,16 @@ func _init(p_name: String, p_screen) -> void:
 	
 	add_child(panel_container)
 	
-	screen = p_screen.instance() if p_screen is PackedScene else p_screen.new()
+	if p_screen is PackedScene:
+		screen = p_screen.instance()
+	elif p_screen is GDScript:
+		screen = p_screen.new()
+	elif p_screen is Node:
+		screen = p_screen
+	else:
+		_logger.error("Unhandled screen passed to popup, aborting: %s" % str(p_screen))
+		return
+
 	screen.name = p_name
 	screen.set("logger", _logger)
 
