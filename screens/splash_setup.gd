@@ -1,5 +1,7 @@
 extends CanvasLayer
 
+const Flagd = preload("res://addons/flagd/flagd.gd")
+
 var viewport: Viewport
 var screen_center := Vector2.ZERO
 var max_parallax_offset := Vector2.ZERO
@@ -15,6 +17,12 @@ func _ready() -> void:
 	OS.window_size = OS.get_screen_size() * 0.75
 	OS.center_window()
 	
+	while not get_tree().root.has_node("/root/AM"):
+		yield(get_tree(), "idle_frame")
+	
+	var args: Dictionary = _get_args()
+	# TODO do something with args
+	
 	viewport = get_viewport()
 	
 	background = $DucksBackground
@@ -27,10 +35,14 @@ func _ready() -> void:
 	
 	var fade: ColorRect = $Fade
 	var fade_tween: Tween = $FadeTween
-	fade_tween.connect("tween_all_completed", self, "_on_fade_in_completed", [fade_tween, fade])
 	
-	fade_tween.interpolate_property(fade, "color", fade.color, Color(0.0, 0.0, 0.0, 0.0), 1.0, Tween.TRANS_LINEAR, Tween.EASE_OUT)
-	fade_tween.start()
+	if not args.stay_on_splash:
+		fade_tween.connect("tween_all_completed", self, "_on_fade_in_completed", [fade_tween, fade])
+		
+		fade_tween.interpolate_property(fade, "color", fade.color, Color(0.0, 0.0, 0.0, 0.0), 1.0, Tween.TRANS_LINEAR, Tween.EASE_OUT)
+		fade_tween.start()
+	else:
+		fade.hide()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton or event is InputEventKey:
@@ -41,9 +53,9 @@ func _process(delta: float) -> void:
 	
 	mouse_diff.x = max(-max_parallax_offset.x, min(max_parallax_offset.x, mouse_diff.x))
 	mouse_diff.y = max(-max_parallax_offset.y, min(max_parallax_offset.y, mouse_diff.y))
-	
-	background.rect_position = background.rect_position.linear_interpolate(-mouse_diff, 0.002)
-	
+
+	background.rect_position = background.rect_position.linear_interpolate(-mouse_diff, 0.005)
+
 	foreground.rect_position = foreground.rect_position.linear_interpolate(mouse_diff, 0.01)
 
 #-----------------------------------------------------------------------------#
@@ -54,7 +66,7 @@ func _on_screen_resized() -> void:
 	var screen_size: Vector2 = viewport.size
 	
 	screen_center = screen_size / 2
-	max_parallax_offset = screen_center / 2
+	max_parallax_offset = screen_center / 25
 	
 	background.rect_pivot_offset = background.rect_size / 2
 	foreground.rect_pivot_offset = foreground.rect_size / 2
@@ -80,6 +92,47 @@ func _on_fade_out_completed() -> void:
 
 func _switch_to_landing_screen() -> void:
 	get_tree().change_scene(Globals.LANDING_SCREEN_PATH)
+
+func _get_args() -> Dictionary:
+	var flagd = Flagd.new()
+	
+	var parser = flagd.new_parser({
+		"description": "vpuppr flag parser"
+	})
+	
+	#region General
+	
+	parser.add_argument({
+		"name": "verbose",
+		"aliases": ["v"],
+		"description": "Show debug logs. Only has an effect in release builds",
+		"is_flag": true,
+		"type": TYPE_BOOL,
+		"default": false
+	})
+	parser.add_argument({
+		"name": "environment",
+		"aliases": ["env"],
+		"description": "The environment the application will assume it is running in (e.g. dev)",
+		"type": TYPE_STRING,
+		"default": Env.Envs.DEFAULT
+	})
+	
+	#endregion
+	
+	#region Splash
+	
+	parser.add_argument({
+		"name": "stay-on-splash",
+		"description": "Whether to automatically move on from the splash screen",
+		"is_flag": true,
+		"type": TYPE_BOOL,
+		"default": false
+	})
+	
+	#endregion
+	
+	return parser.parse()
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #
