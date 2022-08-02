@@ -227,6 +227,11 @@ func _start_tracker() -> bool:
 		logger.error("No data found for open_see_face_should_launch_tracker")
 		return false
 
+	# Settings could be messed up, so do this before anything else.
+	if not should_launch:
+		logger.info("Assuming face tracker was manually launched.")
+		return true
+
 	var fps = AM.cm.get_data("open_see_face_tracker_fps")
 	if typeof(fps) == TYPE_NIL:
 		logger.error("No data found for open_see_face_tracker_fps")
@@ -252,10 +257,6 @@ func _start_tracker() -> bool:
 		logger.error("No data found for open_see_face_model")
 		return false
 	
-	if not should_launch:
-		logger.info("Assuming face tracker was manually launched.")
-		return true
-
 	logger.info("Starting face tracker")
 	
 	if fps > MAX_TRACKER_FPS:
@@ -384,7 +385,7 @@ func stop_receiver() -> void:
 		receive_thread.wait_to_finish()
 		receive_thread = null
 	
-	if server.is_listening():
+	if server != null and server.is_listening():
 		if connection != null and connection.is_connected_to_host():
 			connection.close()
 			connection = null
