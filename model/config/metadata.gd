@@ -12,4 +12,6 @@ var model_configs := {} # Config name: String -> Path: String
 
 var model_defaults := {} # Model name: String -> Config name: String
 
+var skip_splash := false
+
 var python_path := ""

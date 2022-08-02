@@ -12,14 +12,19 @@ margin_right = 1.0
 margin_bottom = 900.0
 
 [node name="General" type="ScrollContainer" parent="."]
-visible = false
-margin_left = 313.0
+margin_left = 13.0
 margin_right = 1600.0
 margin_bottom = 900.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="General"]
-margin_right = 1287.0
+margin_right = 1587.0
+margin_bottom = 40.0
 size_flags_horizontal = 3
+
+[node name="SkipSplashScreen" type="CheckButton" parent="General/VBoxContainer"]
+margin_right = 1587.0
+margin_bottom = 40.0
+text = "Skip splash screen"
 
 [node name="Rendering" type="ScrollContainer" parent="."]
 visible = false
@@ -44,6 +49,7 @@ margin_bottom = 84.0
 text = "Use FXAA"
 
 [node name="Linux" type="ScrollContainer" parent="."]
+visible = false
 margin_left = 13.0
 margin_right = 1600.0
 margin_bottom = 900.0

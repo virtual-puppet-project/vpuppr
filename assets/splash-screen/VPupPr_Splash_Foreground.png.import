@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/VPupPr_Splash_Github.png-eeb993e7b1ddbb535068b219ead19483.stex"
+path="res://.import/VPupPr_Splash_Foreground.png-2c77d912f170e3aa4412d9fa7385eb69.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/splash_screen/VPupPr_Splash_Github.png"
-dest_files=[ "res://.import/VPupPr_Splash_Github.png-eeb993e7b1ddbb535068b219ead19483.stex" ]
+source_file="res://assets/splash-screen/VPupPr_Splash_Foreground.png"
+dest_files=[ "res://.import/VPupPr_Splash_Foreground.png-2c77d912f170e3aa4412d9fa7385eb69.stex" ]
 
 [params]
 

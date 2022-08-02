@@ -20,8 +20,8 @@ func _ready() -> void:
 	while not get_tree().root.has_node("/root/AM"):
 		yield(get_tree(), "idle_frame")
 	
-	var args: Dictionary = _get_args()
-	# TODO do something with args
+	if AM.cm.get_data("skip_splash", false):
+		_switch_to_landing_screen()
 	
 	viewport = get_viewport()
 	
@@ -36,7 +36,7 @@ func _ready() -> void:
 	var fade: ColorRect = $Fade
 	var fade_tween: Tween = $FadeTween
 	
-	if not args.stay_on_splash:
+	if not AM.app_args.stay_on_splash:
 		fade_tween.connect("tween_all_completed", self, "_on_fade_in_completed", [fade_tween, fade])
 		
 		fade_tween.interpolate_property(fade, "color", fade.color, Color(0.0, 0.0, 0.0, 0.0), 1.0, Tween.TRANS_LINEAR, Tween.EASE_OUT)
@@ -92,47 +92,6 @@ func _on_fade_out_completed() -> void:
 
 func _switch_to_landing_screen() -> void:
 	get_tree().change_scene(Globals.LANDING_SCREEN_PATH)
-
-func _get_args() -> Dictionary:
-	var flagd = Flagd.new()
-	
-	var parser = flagd.new_parser({
-		"description": "vpuppr flag parser"
-	})
-	
-	#region General
-	
-	parser.add_argument({
-		"name": "verbose",
-		"aliases": ["v"],
-		"description": "Show debug logs. Only has an effect in release builds",
-		"is_flag": true,
-		"type": TYPE_BOOL,
-		"default": false
-	})
-	parser.add_argument({
-		"name": "environment",
-		"aliases": ["env"],
-		"description": "The environment the application will assume it is running in (e.g. dev)",
-		"type": TYPE_STRING,
-		"default": Env.Envs.DEFAULT
-	})
-	
-	#endregion
-	
-	#region Splash
-	
-	parser.add_argument({
-		"name": "stay-on-splash",
-		"description": "Whether to automatically move on from the splash screen",
-		"is_flag": true,
-		"type": TYPE_BOOL,
-		"default": false
-	})
-	
-	#endregion
-	
-	return parser.parse()
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #

@@ -1,11 +1,11 @@
 [gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://screens/splash_setup.gd" type="Script" id=1]
-[ext_resource path="res://assets/splash_screen/VPupPr_Splash_Foreground.png" type="Texture" id=2]
-[ext_resource path="res://assets/splash_screen/VPupPr_Ducks_BG.png" type="Texture" id=3]
-[ext_resource path="res://assets/splash_screen/VPupPr_Splash_Github.png" type="Texture" id=4]
-[ext_resource path="res://assets/splash_screen/VPupPr_Splash_Github_Pressed.png" type="Texture" id=5]
-[ext_resource path="res://assets/splash_screen/VPupPr_Splash_Github_Hover.png" type="Texture" id=6]
+[ext_resource path="res://assets/splash-screen/VPupPr_Splash_Foreground.png" type="Texture" id=2]
+[ext_resource path="res://assets/splash-screen/VPupPr_Ducks_BG.png" type="Texture" id=3]
+[ext_resource path="res://assets/splash-screen/VPupPr_Splash_Github.png" type="Texture" id=4]
+[ext_resource path="res://assets/splash-screen/VPupPr_Splash_Github_Pressed.png" type="Texture" id=5]
+[ext_resource path="res://assets/splash-screen/VPupPr_Splash_Github_Hover.png" type="Texture" id=6]
 
 [node name="SplashSetup" type="CanvasLayer"]
 script = ExtResource( 1 )
