@@ -24,11 +24,15 @@ var should_save := false
 
 #endregion
 
+var app_args := {}
+
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#
 
 func _init() -> void:
+	app_args = _get_args()
+	
 	Safely.register_error_codes(Error.Code)
 
 func _ready() -> void:
@@ -76,6 +80,51 @@ func _on_stderr(text: String, is_error: bool) -> void:
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#
+
+## Flag parsing
+## See https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html
+## for a list of reserved flags
+func _get_args() -> Dictionary:
+	var flagd = preload("res://addons/flagd/flagd.gd").new()
+	
+	var parser = flagd.new_parser({
+		"description": "vpuppr flag parser"
+	})
+	
+	#region General
+	
+	# Cannot call this 'verbose' since that's reserved by Godot
+	parser.add_argument({
+		"name": "all-logs",
+		"aliases": ["loud"],
+		"description": "Show debug/trace logs. Only has an effect in release builds",
+		"is_flag": true,
+		"type": TYPE_BOOL,
+		"default": false
+	})
+	parser.add_argument({
+		"name": "environment",
+		"aliases": ["env"],
+		"description": "The environment the application will assume it is running in (e.g. dev)",
+		"type": TYPE_STRING,
+		"default": Env.Envs.DEFAULT
+	})
+	
+	#endregion
+	
+	#region Splash
+	
+	parser.add_argument({
+		"name": "stay-on-splash",
+		"description": "Whether to automatically move on from the splash screen",
+		"is_flag": true,
+		"type": TYPE_BOOL,
+		"default": false
+	})
+	
+	#endregion
+	
+	return parser.parse()
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #

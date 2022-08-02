@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/VPupPr_Ducks_BG.png-590eab47738c9e00daaf774e2cdd4ef6.stex"
+path="res://.import/VPupPr_Splash_Github.png-abda9a943dfb4bf0e49b251c62d86f9f.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/splash_screen/VPupPr_Ducks_BG.png"
-dest_files=[ "res://.import/VPupPr_Ducks_BG.png-590eab47738c9e00daaf774e2cdd4ef6.stex" ]
+source_file="res://assets/splash-screen/VPupPr_Splash_Github.png"
+dest_files=[ "res://.import/VPupPr_Splash_Github.png-abda9a943dfb4bf0e49b251c62d86f9f.stex" ]
 
 [params]
 

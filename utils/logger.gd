@@ -5,6 +5,7 @@ enum LogType { NONE, NOTIFY, INFO, DEBUG, TRACE, ERROR }
 enum NotifyType { NONE, TOAST, POPUP }
 
 var parent_name := "DefaultLogger"
+var all_logs := false
 
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
@@ -66,6 +67,8 @@ func setup(n) -> void:
 		parent_name = n.name
 	else:
 		trace("Unable to setup logger using var: %s" % str(n))
+	
+	all_logs = AM.app_args.all_logs
 
 func notify(message, notify_type: int = NotifyType.TOAST) -> void:
 	var text := str(message)
@@ -82,11 +85,11 @@ func info(message) -> void:
 	_log(str(message), LogType.INFO)
 
 func debug(message) -> void:
-	if OS.is_debug_build():
+	if all_logs or OS.is_debug_build():
 		_log(str(message), LogType.DEBUG)
 
 func trace(message) -> void:
-	if OS.is_debug_build():
+	if all_logs or OS.is_debug_build():
 		_log(str(message), LogType.TRACE)
 
 func error(message) -> void:

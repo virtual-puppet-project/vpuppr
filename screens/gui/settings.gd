@@ -10,6 +10,12 @@ func _setup_logger() -> void:
 func _setup() -> Result:
 	_initial_page = "General"
 	
+	#region General
+	
+	_connect_element($General/VBoxContainer/SkipSplashScreen, "skip_splash")
+	
+	#endregion
+	
 	#region Rendering
 
 	_connect_element($Rendering/VBoxContainer/TransparentBackground, "use_transparent_background")
