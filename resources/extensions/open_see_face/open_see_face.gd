@@ -310,12 +310,8 @@ func _stop_tracker() -> void:
 
 	if face_tracker_pid >= 0:
 		match OS.get_name().to_lower():
-			"windows":
+			"windows", "osx", "x11":
 				OS.kill(face_tracker_pid)
-			"osx", "x11":
-				# The bash script spawns a child process that does not get cleaned up by OS.kill()
-				# Thus, we call pkill to kill the process group
-				OS.execute("pkill", ["-15", "-P", face_tracker_pid])
 			_:
 				logger.info("Unhandled os type %s" % OS.get_name())
 				return
