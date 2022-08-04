@@ -4,9 +4,6 @@ extends Node
 ## The logger assigned for this class
 var logger: Logger
 
-# TODO this should be stored on the model
-var current_model_path := ""
-
 ## Array of TrackingBackendInterfaces
 var trackers := []
 var main_tracker: TrackingBackendInterface
@@ -217,6 +214,17 @@ func _try_load_model(path: String) -> Result:
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #
 #-----------------------------------------------------------------------------#
+
+## Gets all builtin prop items
+##
+## Generally refers to the camera, world, light, and anything else provided by
+## the runner by default.
+##
+## @return: Dictionary<String, Node> - A map of variable name to Node
+func get_stage() -> Dictionary:
+	var r := {}
+
+	return r
 
 ## Virtual function for loading a model
 ##

@@ -102,6 +102,9 @@ func _on_text_edit_text_changed(text: String, signal_name: String, _text_edit: T
 		_:
 			_log_unhandled_signal(signal_name)
 
+func _on_color_picker_button_color_changed(color: Color, signal_name: String, _color_picker_button: ColorPickerButton) -> void:
+	AM.ps.publish(signal_name, color)
+
 func _on_config_updated(payload: SignalPayload, control: Control) -> void:
 	match control.get_class():
 		"Button":
@@ -113,6 +116,8 @@ func _on_config_updated(payload: SignalPayload, control: Control) -> void:
 				return
 			control.text = str(payload.data)
 			control.caret_position = control.text.length()
+		"ColorPickerButton":
+			control.color = payload.data
 
 #endregion
 
@@ -195,6 +200,16 @@ func _connect_text_edit(text_edit: TextEdit, args = null) -> void:
 		text_edit.text = str(AM.cm.get_data(args))
 		AM.ps.subscribe(self, args, {
 			"args": [text_edit],
+			"callback": "_on_config_updated"
+		})
+
+func _connect_color_picker_button(color_picker_button: ColorPickerButton, args = null) -> void:
+	color_picker_button.connect("color_changed", self, "_on_color_picker_button_color_changed", [args, color_picker_button])
+	
+	if AM.cm.has_data(args):
+		color_picker_button.color = AM.cm.get_data(args, Color(Globals.CHROMAKEY_GREEN_HEX))
+		AM.ps.subscribe(self, args, {
+			"args": [color_picker_button],
 			"callback": "_on_config_updated"
 		})
 

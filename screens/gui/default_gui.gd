@@ -16,13 +16,15 @@ const Bones = preload("res://screens/gui/popups/bones.tscn")
 const Tracking = preload("res://screens/gui/popups/tracking.tscn")
 const Props = preload("res://screens/gui/popups/props.tscn")
 const Presets = preload("res://screens/gui/popups/presets.tscn")
+const Stage = preload("res://screens/gui/popups/stage.tscn")
 
 const BUILTIN_MENUS := [
 	Model,
 	Bones,
 	Tracking,
 	Props,
-	Presets
+	Presets,
+	Stage
 ]
 
 var logger: Logger

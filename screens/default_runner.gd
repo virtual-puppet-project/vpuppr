@@ -7,6 +7,8 @@ const CONFIG_LISTEN_VALUES := [
 	"apply_rotation",
 	"should_track_eye",
 
+	"stage_world_background_color",
+
 	"use_transparent_background",
 	"use_fxaa"
 ]
@@ -18,12 +20,14 @@ const MODEL_TO_LOAD := "model_to_load"
 const MODEL_INITIAL_TRANSFORM := "model_initial_transform"
 const MODEL_PARENT_INITIAL_TRANSFORM := "model_parent_initial_transform"
 
-# TODO this might be bad?
 var model_viewport := Viewport.new()
 
 var model: PuppetTrait
 var model_parent: Spatial
-var props_node: Spatial
+
+var main_light: Light
+var main_camera: Camera
+var main_world: World
 
 var updated_time: float = 0.0
 var stored_offsets := StoredOffsets.new()
@@ -153,18 +157,18 @@ func _pre_setup_scene() -> void:
 	viewport_container.add_child(model_viewport)
 
 	# TODO pull settings from config
-	var light := DirectionalLight.new()
-	light.light_energy = 0.5
-	model_viewport.add_child(light)
+	main_light = DirectionalLight.new()
+	main_light.light_energy = 0.5
+	model_viewport.add_child(main_light)
 
-	var camera := Camera.new()
-	camera.current = true
-	camera.translate(Vector3(0.0, 0.0, 3.0))
-	model_viewport.add_child(camera)
+	main_camera = Camera.new()
+	main_camera.current = true
+	main_camera.translate(Vector3(0.0, 0.0, 3.0))
+	model_viewport.add_child(main_camera)
 
-	var world := World.new()
-	world.environment = load("res://assets/default_env.tres")
-	model_viewport.world = world
+	main_world = World.new()
+	main_world.environment = load("res://assets/default_env.tres")
+	model_viewport.world = main_world
 
 	model_parent = Spatial.new()
 
@@ -248,6 +252,7 @@ func _generate_preview() -> void:
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#
 
+# TODO consolidate with event published
 func _on_config_changed(payload: SignalPayload, signal_name: String) -> void:
 	match signal_name:
 		#region Config
@@ -322,6 +327,8 @@ func _on_event_published(payload: SignalPayload) -> void:
 			res = Safely.wrap(FileUtil.switch_to_runner(runner_path, gui_path))
 			if res.is_err():
 				logger.error(res)
+		"stage_world_background_color":
+			main_world.environment.background_color = payload.data
 
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
@@ -337,6 +344,13 @@ func _save_offsets() -> void:
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #
 #-----------------------------------------------------------------------------#
+
+func get_stage() -> Dictionary:
+	return {
+		"main_camera": main_camera,
+		"main_light": main_light,
+		"main_world": main_world
+	}
 
 func load_model(path: String) -> Result:
 	logger.info("Starting load_model for %s" % path)

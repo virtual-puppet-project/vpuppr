@@ -1,7 +1,13 @@
 class_name Globals
 extends Reference
 
-const IGNORED_PROPERTIES := [
+const IGNORED_REFERENCE_PROPERTIES := [
+	"Reference",
+	"script",
+	"Script Variables",
+]
+
+const IGNORED_RESOURCE_PROPERTIES := [
 	"Reference",
 	"Resource",
 	"script",
@@ -9,6 +15,26 @@ const IGNORED_PROPERTIES := [
 	"resource_local_to_scene",
 	"resource_path",
 	"resource_name"
+]
+
+const IGNORED_SPATIAL_PROPERTIES := [
+	"Node",
+	"Spatial",
+	"editor_description",
+	"_import_path",
+	"pause_mode",
+	"name",
+	"filename",
+	"owner",
+	"multiplayer",
+	"custom_multiplayer",
+	"process_priority",
+	"Transform",
+	"Matrix",
+	"Visibility",
+	"gizmo",
+	"script",
+	"Script Variables"
 ]
 
 #region Extensions
@@ -83,3 +109,5 @@ const DISCORD_INVITE := "https://discord.com/invite/6mcdWWBkrr"
 
 const RUNNER_PREVIEW_DIR_PATH := "user://runner-previews/"
 const RUNNER_PREVIEW_FILE_EXT := "png"
+
+const CHROMAKEY_GREEN_HEX := "00b140"

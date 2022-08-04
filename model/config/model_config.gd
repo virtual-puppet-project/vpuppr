@@ -98,15 +98,6 @@ var mouth_wide_group_2: float = 0.3
 
 #endregion
 
-#region Launch tracker values
-
-# var tracker_should_launch := true
-# var tracker_fps: int = 12 # TODO this is specific to OpenSeeFace
-# var tracker_address := "127.0.0.1" # TODO this is specific to OpenSeeFace
-# var tracker_port: int = 11573 # TODO this is specific to OpenSeeFace
-
-#endregion
-
 #endregion
 
 #region Features
@@ -217,7 +208,7 @@ func get_as_dict() -> Dictionary:
 	var r := {}
 
 	for i in get_property_list():
-		if i.name in Globals.IGNORED_PROPERTIES:
+		if i.name in Globals.IGNORED_REFERENCE_PROPERTIES:
 			continue
 
 		var data_value = get(i.name)
