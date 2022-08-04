@@ -2,6 +2,8 @@
 
 [![Chat on Discord](https://img.shields.io/discord/853476898071117865?label=chat&logo=discord)](https://discord.gg/6mcdWWBkrr)
 
+<a href='https://flathub.org/apps/details/com.github.virtual_puppet_project.vpuppr'><img width='240' alt='Download the Virtual Puppet Project on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
+
 All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` has not been tested but might work. `.scn` files created with Godot should all import correctly as well.
 
 ## Available renderers
