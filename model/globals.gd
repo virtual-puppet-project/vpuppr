@@ -75,6 +75,9 @@ const DEFAULT_RUNNER_PATH := "res://screens/default_runner.gd"
 const DEFAULT_GUI_PATH := "res://screens/gui/default_gui.tscn"
 const DEFAULT_MODEL_PATH := "res://entities/duck/duck.tscn"
 
+const TRANSLATIONS_PATH := "/resources/translations"
+const EXTENSION_TRANSLATION_PATH := "/translations"
+
 const PROJECT_GITHUB_REPO := "https://github.com/virtual-puppet-project/vpuppr"
 const DISCORD_INVITE := "https://discord.com/invite/6mcdWWBkrr"
 

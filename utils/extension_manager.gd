@@ -74,13 +74,16 @@ func _scan() -> Result:
 
 	var possible_extensions := []
 
-	var file_name := dir.get_next()
+	var file_name := "start"
 	while file_name != "":
+		file_name = dir.get_next()
+		
+		if file_name.empty():
+			continue
+		
 		if dir.current_is_dir():
 			# The directory that houses the extension
 			possible_extensions.append("%s/%s" % [scan_path, file_name])
-
-		file_name = dir.get_next()
 
 	for i in possible_extensions:
 		var r := Safely.wrap(_parse_extension(i))
@@ -275,7 +278,7 @@ func get_context(extension_name: String) -> Result:
 ##
 ## @return: Result<Variant> - The loaded resource
 func load_resource(extension_name: String, rel_res_path: String) -> Result:
-	var result := get_context(extension_name)
+	var result := Safely.wrap(get_extension(extension_name))
 	if result.is_err():
 		return result
 

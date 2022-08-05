@@ -35,8 +35,8 @@ func _init() -> void:
 	vbox.add_child(_tracker_port())
 	vbox.add_child(_model())
 
-	if OS.get_name().to_lower() in ["x11", "osx"]:
-		vbox.add_child(_python_path())
+	# if OS.get_name().to_lower() in ["x11", "osx"]:
+	# 	vbox.add_child(_python_path())
 
 	vbox.add_child(_toggle_tracking())
 
@@ -73,9 +73,7 @@ static func _on_button_toggled(state: bool, key: String) -> void:
 func _camera_select() -> OptionButton:
 	var ob := OptionButton.new()
 	_h_fill_expand(ob)
-	ob.hint_tooltip = """
-The camera to use for tracking.
-	"""
+	ob.hint_tooltip = tr("CAMERA_SELECT_HINT")
 
 	var popup: PopupMenu = ob.get_popup()
 	popup.connect("index_pressed", self, "_on_camera_selected", [ob])
@@ -88,7 +86,7 @@ The camera to use for tracking.
 	match os_name:
 		"windows":
 			var exe_path: String = "%s/OpenSeeFaceFolder/OpenSeeFace/facetracker.exe" % \
-					AM.em.get_context("OpenSeeFace").expect("Unable to get context").context_path
+					AM.em.get_extension("OpenSeeFace").expect("Unable to get context").context
 			OS.execute(exe_path, ["-l", "1"], true, output)
 		"osx", "x11":
 			OS.execute("ls", ["/dev/v4l/by-id/"], true, output)
@@ -102,12 +100,12 @@ The camera to use for tracking.
 			"osx", "x11":
 				results.pop_back()
 	else:
-		results.append("Unable to list cameras")
-		results.append("Please report this as a bug")
+		results.append(tr("CAMERA_SELECT_NO_OUTPUT_1"))
+		results.append(tr("CAMERA_SELECT_NO_OUTPUT_2"))
 
 	if results.size() < 1:
-		popup.add_check_item("No cameras found")
-		popup.add_check_item("Please report this as a bug")
+		popup.add_check_item(tr("CAMERA_SELECT_NO_OUTPUT_1"))
+		popup.add_check_item(tr("CAMERA_SELECT_NO_OUTPUT_2"))
 		popup.set_item_checked(0, true)
 		ob.text = popup.get_item_text(0)
 		return ob
@@ -157,7 +155,7 @@ func _on_camera_selected(idx: int, ob: OptionButton) -> void:
 
 	var current_index: int = popup.get_current_index()
 	if current_index < 0:
-		AM.logger.error("OpenSeeFace: No item was previously selected. This is likely a bug.")
+		AM.logger.error(tr("CAMERA_SELECTED_NO_PREVIOUSLY_SELECTED_ITEM"))
 	else:
 		popup.set_item_checked(current_index, false)
 	
@@ -169,14 +167,11 @@ func _on_camera_selected(idx: int, ob: OptionButton) -> void:
 func _tracker_fps() -> HBoxContainer:
 	var r := HBoxContainer.new()
 	_h_fill_expand(r)
-	r.hint_tooltip = """
-The FPS to run OpenSeeFace at. A higher value results in more accurate tracking but also
-more CPU usage.
-	""".strip_edges()
+	r.hint_tooltip = tr("TRACKER_FPS_HINT")
 
 	var label := Label.new()
 	_h_fill_expand(label)
-	label.text = "Tracker FPS"
+	label.text = tr("TRACKER_FPS_LABEL")
 
 	var line_edit := LineEdit.new()
 	_h_fill_expand(line_edit)
@@ -199,13 +194,8 @@ func _should_launch_tracker() -> CheckButton:
 	var r := CheckButton.new()
 	_h_fill_expand(r)
 
-	r.text = "Should launch tracker"
-	r.hint_tooltip = """
-Whether or not to launch OpenSeeFace or just listen for OpenSeeFace data.
-
-This is generally only useful if Puppeteer is unable to automatically start OpenSeeFace. In that case,
-you will need to start OpenSeeFace from a terminal.
-	""".strip_edges()
+	r.text = tr("SHOULD_LAUNCH_TRACKER_LABEL")
+	r.hint_tooltip = tr("SHOULD_LAUNCH_TRACKER_HINT")
 
 	var initial_value = AM.cm.get_data(ConfigKeys.SHOULD_LAUNCH_TRACKER)
 	if typeof(initial_value) == TYPE_NIL:
@@ -221,13 +211,11 @@ you will need to start OpenSeeFace from a terminal.
 func _tracker_address() -> HBoxContainer:
 	var r := HBoxContainer.new()
 	_h_fill_expand(r)
-	r.hint_tooltip = """
-The ip address to listen at. Do not change this unless you know what you are doing.
-	""".strip_edges()
+	r.hint_tooltip = tr("TRACKER_ADDRESS_HINT")
 
 	var label := Label.new()
 	_h_fill_expand(label)
-	label.text = "Address"
+	label.text = tr("TRACKER_ADDRESS_LABEL")
 
 	var line_edit := LineEdit.new()
 	_h_fill_expand(line_edit)
@@ -249,13 +237,11 @@ The ip address to listen at. Do not change this unless you know what you are doi
 func _tracker_port() -> HBoxContainer:
 	var r := HBoxContainer.new()
 	_h_fill_expand(r)
-	r.hint_tooltip = """
-The port to listen on. Do not change this unless you know what you are doing.
-	""".strip_edges()
+	r.hint_tooltip = tr("TRACKER_PORT_HINT")
 
 	var label := Label.new()
 	_h_fill_expand(label)
-	label.text = "Port"
+	label.text = tr("TRACKER_PORT_LABEL")
 
 	var line_edit := LineEdit.new()
 	_h_fill_expand(line_edit)
@@ -277,7 +263,7 @@ The port to listen on. Do not change this unless you know what you are doing.
 func _toggle_tracking() -> Button:
 	var r := Button.new()
 	_h_fill_expand(r)
-	r.text = "Start"
+	r.text = tr("TOGGLE_TRACKING_BUTTON_TEXT_START")
 
 	r.connect("pressed", self, "_on_toggle_tracking", [r])
 
@@ -286,7 +272,7 @@ func _toggle_tracking() -> Button:
 func _on_toggle_tracking(button: Button) -> void:
 	var trackers = get_tree().current_scene.get("trackers")
 	if typeof(trackers) != TYPE_ARRAY:
-		AM.logger.error("OpenSeeFace: Incompatible runner, no trackers property found")
+		AM.logger.error(tr("TOGGLE_TRACKING_INCOMPATIBLE_RUNNER_ERROR"))
 		return
 
 	var tracker: TrackingBackendInterface
@@ -304,21 +290,22 @@ func _on_toggle_tracking(button: Button) -> void:
 		tracker.stop_receiver()
 		trackers.erase(tracker)
 
-		button.text = "Start"
+		button.text = tr("TOGGLE_TRACKING_BUTTON_TEXT_START")
 	else:
 		var osf_res: Result = AM.em.load_resource("OpenSeeFace", "open_see_face.gd")
 		if not osf_res or osf_res.is_err():
-			AM.logger.error("OpenSeeFace: Unable to load tracker")
+			AM.logger.error(tr("TOGGLE_TRACKING_LOAD_TRACKER_ERROR"))
 			return
 
 		var osf = osf_res.unwrap().new()
 
 		trackers.append(osf)
 
-		button.text = "Stop"
+		button.text = tr("TOGGLE_TRACKING_BUTTON_TEXT_STOP")
 
 	AM.ps.publish(Globals.TRACKER_TOGGLED, not found, "OpenSeeFace")
 
+# TODO unused now that osf is bundled using pyinstaller on all platforms
 func _python_path() -> HBoxContainer:
 	var r := HBoxContainer.new()
 	_h_fill_expand(r)
@@ -347,22 +334,21 @@ python version is not within Python 3.6 - Python 3.9.
 
 	return r
 
-const POSSIBLE_ML_MODELS: Dictionary = {
-	"-3": "Between models 0 and 1",
-	"-2": "Roughly equivalent to model 1 but faster",
-	"-1": "Faster idk",
-	"0": "Potato",
-	"1": "Higher quality than Potato but slower",
-	"2": "Slightly faster than Default but lower quality",
-	"3": "Default",
-	"4": "Wink optimized, slower than Default"}
+var POSSIBLE_ML_MODELS: Dictionary = {
+	"-3": tr("ML_MODEL_NEG_3"),
+	"-2": tr("ML_MODEL_NEG_2"),
+	"-1": tr("ML_MODEL_NEG_1"),
+	"0": tr("ML_MODEL_0"),
+	"1": tr("ML_MODEL_1"),
+	"2": tr("ML_MODEL_2"),
+	"3": tr("ML_MDOEL_3"),
+	"4": tr("ML_MODEL_4")
+}
 
 func _model() -> OptionButton:
 	var ob := OptionButton.new()
 	_h_fill_expand(ob)
-	ob.hint_tooltip = """
-The tracking model to use. See the OpenSeeFace README on GitHub for an explanation of the different tracking models.
-	"""
+	ob.hint_tooltip = tr("ML_MODEL_SELECT_HINT")
 
 	var popup: PopupMenu = ob.get_popup()
 	popup.connect("index_pressed", self, "_on_model_selected", [ob])
@@ -386,7 +372,7 @@ func _on_model_selected(idx: int, ob: OptionButton) -> void:
 
 	var current_index: int = popup.get_current_index()
 	if current_index < 0:
-		AM.logger.error("OpenSeeFace: No item was previously selected. This is likely a bug.")
+		AM.logger.error(tr("ML_MODEL_SELECT_NO_PREVIOUS_MODEL_SELECTED_ERROR"))
 	else:
 		popup.set_item_checked(current_index, false)
 	
@@ -394,11 +380,11 @@ func _on_model_selected(idx: int, ob: OptionButton) -> void:
 
 	var split: PoolStringArray = popup.get_item_text(idx).split(":")
 	if split.size() < 2:
-		AM.logger.error("OpenSeeFace: Invalid ML model selected: %s" % str(split))
+		AM.logger.error(tr("ML_MODEL_SELECT_INVALID_MODEL_SELECTED") % str(split))
 		return
 
 	if not split[0].is_valid_integer():
-		AM.logger.error("OpenSeeFace: ML model selection does not have a valid, preceding integer")
+		AM.logger.error(tr("ML_MODEL_SELECT_NO_PRECEDING_INTEGER"))
 		return
 
 	AM.ps.publish(ConfigKeys.MODEL, split[0].to_int())
