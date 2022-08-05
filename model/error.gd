@@ -75,6 +75,13 @@ enum Code {
 	TEMP_CACHE_MANAGER_KEY_NOT_FOUND,
 
 	#endregion
+	
+	#region TranslationManager
+	
+	TRANSLATION_MANAGER_DIRECTORY_DOES_NOT_EXIST,
+	TRANSLATION_MANAGER_FILE_OPEN_ERROR,
+	
+	#endregion
 
 	#region BaseConfig
 

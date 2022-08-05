@@ -11,6 +11,7 @@ var ps: PubSub
 var lm: LogManager
 var cm: ConfigManager
 var em: ExtensionManager
+var tm: TranslationManager
 var nm: NotificationManager
 var tcm: TempCacheManager
 # Not girl, you weirdo
@@ -42,6 +43,8 @@ func _ready() -> void:
 	cm = ConfigManager.new()
 	# Must be initialized AFTER ConfigManager because it needs to pull config data
 	em = ExtensionManager.new()
+	# Must be initialized AFTER ExtensionManager because it can load translation files for extensions
+	tm = TranslationManager.new()
 	# Idk, this could really be anywhere
 	nm = NotificationManager.new()
 	tcm = TempCacheManager.new()
