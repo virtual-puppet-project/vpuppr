@@ -1,0 +1,3 @@
+EXTENSIONS="Extensions"
+
+TRANSPARENT_BACKGROUND="Transparent background"
