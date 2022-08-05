@@ -41,14 +41,16 @@ func _setup() -> Result:
 			logger.error("Extension %s missing data descriptor, skipping" % er.resource_name)
 			continue
 
-		var res: Result = Safely.wrap(AM.em.get_context(er.extension_name))
+#		var res: Result = Safely.wrap(AM.em.get_context(er.extension_name))
+		# # TODO just grab the extension directly?
+		var res: Result = Safely.wrap(AM.em.get_extension(er.extension_name))
 		if res.is_err():
 			logger.err(res)
 			continue
 
 		var entrypoint: String = er.other[Globals.ExtensionOtherKeys.DATA]
 
-		res = Safely.wrap(_from_descriptor(res.unwrap(), entrypoint))
+		res = Safely.wrap(_from_descriptor(res.unwrap().context, entrypoint))
 		if res.is_err():
 			logger.error(res)
 			continue
@@ -137,13 +139,13 @@ func _find_handlers() -> Dictionary:
 	return r
 
 ## @return: Result<Dictionary<String, Node>> - The UI parsed from the descriptor
-func _from_descriptor(context: ExtensionContext, path_and_func: String) -> Result:
+func _from_descriptor(context: String, path_and_func: String) -> Result:
 	var split := path_and_func.split(":", false, 1)
 	var path: String = split[0]
 	var entrypoint := split[1] if split.size() > 1 else ""
 	
 	var file := File.new()
-	if file.open("%s/%s" % [context.context_path, path], File.READ) != OK:
+	if file.open("%s/%s" % [context, path], File.READ) != OK:
 		return Safely.err(Error.Code.GUI_TRACKER_LOAD_FILE_FAILED,
 			"Unable to open file: %s" % path)
 	

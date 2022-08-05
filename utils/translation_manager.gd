@@ -22,7 +22,13 @@ func _setup_class() -> void:
 	else:
 		scan_path = "%s/%s" % [ProjectSettings.globalize_path("res://"), Globals.TRANSLATIONS_PATH]
 	
-	_scan()
+	var dir := Directory.new()
+	var file := File.new()
+	
+	_scan(dir, file, scan_path)
+	for extension in AM.em.extensions.values():
+		if extension.has_directory(Globals.EXTENSION_TRANSLATION_PATH):
+			_scan(dir, file, "%s/%s" % [extension.context, Globals.EXTENSION_TRANSLATION_PATH])
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
@@ -32,15 +38,11 @@ func _setup_class() -> void:
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#
 
-func _scan() -> Result:
-	var dir := Directory.new()
-	
-	if dir.open(scan_path) != OK:
+func _scan(dir: Directory, file: File, path: String) -> Result:
+	if dir.open(path) != OK:
 		return Safely.err(Error.Code.TRANSLATION_MANAGER_DIRECTORY_DOES_NOT_EXIST, scan_path)
 	
 	dir.list_dir_begin(true, true)
-	
-	var file := File.new()
 	
 	var file_name := "start"
 	while file_name != "":
@@ -52,7 +54,7 @@ func _scan() -> Result:
 		if dir.current_is_dir():
 			continue
 		
-		if file.open("%s/%s" % [scan_path, file_name], File.READ) != OK:
+		if file.open("%s/%s" % [path, file_name], File.READ) != OK:
 			printerr("Unable to open translation file %s, skipping", file_name)
 			continue
 		
@@ -60,15 +62,22 @@ func _scan() -> Result:
 		
 		file.close()
 	
+	dir.list_dir_end()
+	
 	return Safely.ok()
 
-## Parses the translation file into Godot's Translation object
+## Parses the translation file into Godot's Translation object. Note that it doesn't matter if
+## a translation for the same locale is loaded twice. The new translation is appended to the
+## existing translation. Keys are overridden if the new translation contains existing keys.
 ##
 ## @param: locale: String - The locale for the translation
 ## @param: file_text: String - The full, unparsed text of the file
 func _load_translation(locale: String, file_text: String) -> void:
 	var translation := Translation.new()
 	translation.locale = locale
+	
+	# Attempt to normalize line endings
+	file_text = file_text.replace("\r", "")
 	
 	var current_key := ""
 	var current_message := ""

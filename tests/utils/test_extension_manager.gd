@@ -44,7 +44,6 @@ class ExtensionManagerTester extends ExtensionManager:
 # into git. We could do this but it's bad practice
 
 func test_scan_pass():
-	pass
 	AM.em.scan_path = "res://tests/test_resources/extension_resources/good_extensions/"
 	
 	AM.em._scan()
@@ -58,15 +57,15 @@ func test_scan_pass():
 
 	#region TestExtension
 
-	var context_res: Result = AM.em.get_context("TestExtension")
+	var ext_res: Result = AM.em.get_extension("TestExtension")
 
-	assert_true(context_res.is_ok())
+	assert_true(ext_res.is_ok())
 
 	# Test loading a resource from a context
 
-	var context: ExtensionContext = context_res.unwrap()
+	var extension: Extension = ext_res.unwrap()
 
-	var runner_res = context.load_resource("runner_entrypoint.gd")
+	var runner_res = extension.load_resource("runner_entrypoint.gd")
 
 	assert_true(runner_res.is_ok())
 
