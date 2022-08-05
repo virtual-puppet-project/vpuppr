@@ -278,7 +278,7 @@ func get_context(extension_name: String) -> Result:
 ##
 ## @return: Result<Variant> - The loaded resource
 func load_resource(extension_name: String, rel_res_path: String) -> Result:
-	var result := get_context(extension_name)
+	var result := Safely.wrap(get_extension(extension_name))
 	if result.is_err():
 		return result
 

@@ -3,7 +3,8 @@ extends Reference
 
 var extension_name := ""
 
-var context: ExtensionContext
+## Absolute path to the extension
+var context := ""
 var resources := {} # Name: String -> ExtensionResource
 
 # Presort resources, these all refer to something in the resources dictionary
@@ -18,7 +19,7 @@ var plugins := [] # Resources name: String
 #-----------------------------------------------------------------------------#
 
 func _init(context_path: String) -> void:
-	context = ExtensionContext.new(context_path)
+	context = context_path
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
@@ -75,10 +76,41 @@ func add_resource(res_name: String, res_type: String, res_entrypoint: String) ->
 func as_data() -> Dictionary:
 	return {
 		"extension_name": extension_name,
-		"context_path": context.context_path,
+		"context_path": context,
 		"runner": runners.duplicate(),
 		"puppet": puppets.duplicate(),
 		"tracker": trackers.duplicate(),
 		"gui": guis.duplicate(),
 		"plugin": plugins.duplicate()
 	}
+
+func has_file(rel_path: String) -> bool:
+	var file := File.new()
+	
+	return file.file_exists("%s/%s" % [context, rel_path])
+
+func has_directory(rel_path: String) -> bool:
+	var dir := Directory.new()
+	
+	return dir.dir_exists("%s/%s" % [context, rel_path])
+
+func load_file_text(rel_path: String) -> Result:
+	var file := File.new()
+	if not file.file_exists(rel_path):
+		return Safely.err(Error.Code.EXTENSION_CONTEXT_RESOURCE_NOT_FOUND, rel_path)
+	
+	if file.open("%s/%s" % [context, rel_path], File.READ) != OK:
+		return Safely.err(Error.Code.FILE_PARSE_FAILURE, "%s/%s" % [context, rel_path])
+	
+	var file_text := file.get_as_text()
+	
+	file.close()
+	
+	return Safely.ok(file_text)
+
+func load_resource(rel_path: String) -> Result:
+	var resource = load("%s/%s" % [context, rel_path])
+	if resource == null:
+		return Safely.err(Error.Code.EXTENSION_CONTEXT_RESOURCE_NOT_FOUND, rel_path)
+	
+	return Safely.ok(resource)
