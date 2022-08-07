@@ -54,8 +54,8 @@ func _ready() -> void:
 
 	connect("tree_exiting", self, "_on_tree_exiting")
 	
-	if ClassDB.class_exists("Redirect"):
-		Engine.get_singleton("Redirect").connect("print_line", self, "_on_stderr")
+	if ClassDB.class_exists("StdoutStderrIntercept"):
+		Engine.get_singleton("StdoutStderrIntercept").connect("intercepted_message", self, "_on_stderr")
 
 	logger.info("Started. おはよう。")
 
