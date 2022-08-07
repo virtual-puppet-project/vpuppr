@@ -252,7 +252,7 @@ func _create_tracker_info(tracker_name: String, use_for_offsets: bool) -> HBoxCo
 	hbox.add_child(label)
 
 	var toggle_button := CheckButton.new()
-	toggle_button.text = "Main tracker"
+	toggle_button.text = tr("DEFAULT_GUI_POPUP_TRACKING_MAIN_TRACKER")
 	toggle_button.group = running_trackers_button_group
 	toggle_button.connect("toggled", self, "_on_tracker_info_main_tracker_toggled", [tracker_name])
 	toggle_button.pressed = use_for_offsets

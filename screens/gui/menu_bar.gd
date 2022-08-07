@@ -69,16 +69,16 @@ func _ready() -> void:
 	popup.connect("id_pressed", self, "_on_popup_item_pressed", [ButtonGrouping.APP])
 	popup.hide_on_checkable_item_selection = false
 	
-	popup.add_item("Main Menu", AppButtons.MAIN_MENU)
+	popup.add_item(tr("DEFAULT_GUI_MENU_BAR_APP_MAIN_MENU"), AppButtons.MAIN_MENU)
 	
 	popup.add_separator()
 	
-	popup.add_item("Settings", AppButtons.SETTINGS)
-	popup.add_item("Logs", AppButtons.LOGS)
+	popup.add_item(tr("DEFAULT_GUI_MENU_BAR_APP_SETTINGS"), AppButtons.SETTINGS)
+	popup.add_item(tr("DEFAULT_GUI_MENU_BAR_APP_LOGS"), AppButtons.LOGS)
 	
 	popup.add_separator()
 	
-	popup.add_item("Quit", AppButtons.QUIT)
+	popup.add_item(tr("DEFAULT_GUI_MENU_BAR_APP_QUIT"), AppButtons.QUIT)
 	
 	#endregion
 	
@@ -88,11 +88,11 @@ func _ready() -> void:
 	popup.connect("id_pressed", self, "_on_popup_item_pressed", [ButtonGrouping.DEBUG])
 	popup.hide_on_checkable_item_selection = false
 	
-	popup.add_check_item("Show Raw Mesh", DebugButtons.SHOW_RAW_MESH)
+	popup.add_check_item(tr("DEFAULT_GUI_MENU_BAR_DEBUG_SHOW_RAW_MESH"), DebugButtons.SHOW_RAW_MESH)
 	
 	popup.add_separator()
 	
-	popup.add_item("Debug Console", DebugButtons.DEBUG_CONSOLE)
+	popup.add_item(tr("DEFAULT_GUI_MENU_BAR_DEBUG_DEBUG_CONSOLE"), DebugButtons.DEBUG_CONSOLE)
 	
 	#endregion
 	
@@ -102,17 +102,17 @@ func _ready() -> void:
 	popup.connect("id_pressed", self, "_on_popup_item_pressed", [ButtonGrouping.HELP])
 	popup.hide_on_checkable_item_selection = false
 	
-	popup.add_item("In-app Help", HelpButtons.IN_APP_HELP)
-	popup.add_item("About", HelpButtons.ABOUT)
+	popup.add_item(tr("DEFAULT_GUI_MENU_BAR_HELP_IN_APP_HELP"), HelpButtons.IN_APP_HELP)
+	popup.add_item(tr("DEFAULT_GUI_MENU_BAR_HELP_ABOUT"), HelpButtons.ABOUT)
 	
 	popup.add_separator()
 	
-	popup.add_item("GitHub", HelpButtons.GITHUB)
-	popup.add_item("Discord", HelpButtons.DISCORD)
+	popup.add_item(tr("DEFAULT_GUI_MENU_BAR_HELP_GITHUB"), HelpButtons.GITHUB)
+	popup.add_item(tr("DEFAULT_GUI_MENU_BAR_HELP_DISCORD"), HelpButtons.DISCORD)
 
 	popup.add_separator()
 
-	popup.add_item("Licenses", HelpButtons.LICENSES)
+	popup.add_item(tr("DEFAULT_GUI_MENU_BAR_HELP_LICENSES"), HelpButtons.LICENSES)
 	
 	#endregion
 
