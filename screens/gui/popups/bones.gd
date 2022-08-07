@@ -108,6 +108,7 @@ var model: Node
 
 func _setup() -> Result:
 	info = $Info
+
 	_set_tree($Tree)
 
 	tree.hide_root = true
@@ -127,12 +128,11 @@ func _setup() -> Result:
 
 	model = get_tree().current_scene.get("model")
 	if model == null:
-		return Safely.err(Error.Code.GUI_SETUP_ERROR, "No model found, no bone functionality will be available")
+		return Safely.err(Error.Code.GUI_SETUP_ERROR, tr("DEFAULT_GUI_POPUP_BONES_NO_MODEL_FOUND_ERROR"))
 
 	var model_skeleton = model.get("skeleton")
 	if model_skeleton == null:
-		printerr("No model skeleton found, no bone functionality will be available")
-		return Safely.err(Error.Code.GUI_SETUP_ERROR, "No model skeleton found, no bone functionality will be available")
+		return Safely.err(Error.Code.GUI_SETUP_ERROR, tr("DEFAULT_GUI_POPUP_BONES_NO_MODEL_SKELETON_FOUND_ERROR"))
 
 	# Store all references to TreeItems, discard afterwards
 	var known_bones := {}
@@ -178,7 +178,7 @@ func _on_is_tracking(state: bool, bone_name: String) -> void:
 
 	var bone_id: int = model.skeleton.find_bone(bone_name)
 	if bone_id < 0:
-		logger.error("Bone %s not found, aborting config modification" % bone_name)
+		logger.error(tr("DEFAULT_GUI_POPUP_BONES_BONE_NOT_FOUND_ERROR") % bone_name)
 		return
 	
 	if state:
@@ -199,7 +199,7 @@ func _on_should_use_custom_interpolation(state: bool, bone_name: String) -> void
 
 	var bone_id: int = model.skeleton.find_bone(bone_name)
 	if bone_id < 0:
-		logger.error("Bone %s not found, aborting config modification" % bone_name)
+		logger.error(tr("DEFAULT_GUI_POPUP_BONES_BONE_NOT_FOUND_ERROR") % bone_name)
 		return
 	
 	if state:

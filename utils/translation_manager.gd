@@ -1,6 +1,7 @@
 class_name TranslationManager
 extends AbstractManager
 
+const IGNORED_CHARS := ";;"
 const TRANSLATION_EXTENSION := ".txt"
 const ESCAPED_QUOTE := "\\\""
 
@@ -82,6 +83,9 @@ func _load_translation(locale: String, file_text: String) -> void:
 	var current_key := ""
 	var current_message := ""
 	for line in file_text.split("\n"):
+		var ignored_chars_pos: int = line.find(IGNORED_CHARS)
+		line = line.substr(0, ignored_chars_pos if ignored_chars_pos > -1 else line.length()).strip_edges()
+		
 		var split: PoolStringArray = line.split("=", true, 1)
 		if split.size() < 2:
 			current_message += "\n%s" % line

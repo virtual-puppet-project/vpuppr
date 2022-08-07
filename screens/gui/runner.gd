@@ -135,7 +135,7 @@ func _create_view(data: Dictionary) -> ScrollContainer:
 	list.add_child(preview)
 
 	var select_gui_toggle := CheckButton.new()
-	select_gui_toggle.text = "Show GUI selector"
+	select_gui_toggle.text = tr("LANDING_SCREEN_RUNNER_SHOW_GUI_SELECTOR")
 	select_gui_toggle.set_pressed_no_signal(true if _selectable_gui_count > 1 else false)
 
 	list.add_child(select_gui_toggle)
@@ -143,7 +143,7 @@ func _create_view(data: Dictionary) -> ScrollContainer:
 	data.run_args.append(select_gui_toggle)
 
 	var run_button := Button.new()
-	run_button.text = "Run"
+	run_button.text = tr("LANDING_SCREEN_RUNNER_RUN")
 	
 	run_button.connect("pressed", self, "_on_run", data.run_args)
 
@@ -191,7 +191,7 @@ func _create_gui_select(runner_path: String) -> WindowDialog:
 		wd.connect(i, self, "_terminate", [wd])
 
 	var default_gui := Button.new()
-	default_gui.text = "Default Gui"
+	default_gui.text = tr("LANDING_SCREEN_RUNNER_DEFAULT_GUI_NAME")
 	default_gui.connect("pressed", self, "_on_gui_selected", [runner_path, Globals.DEFAULT_GUI_PATH])
 
 	list.add_child(default_gui)
