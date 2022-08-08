@@ -16,16 +16,16 @@ margin_right = 1600.0
 margin_bottom = 24.0
 
 [node name="LineEdit" type="LineEdit" parent="Left/HBoxContainer"]
-margin_right = 1555.0
+margin_right = 1256.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
-placeholder_text = "Preset name"
+placeholder_text = "DEFAULT_GUI_PRESETS_NEW_PRESET_NAME_PLACEHOLDER"
 
 [node name="Save" type="Button" parent="Left/HBoxContainer"]
-margin_left = 1559.0
+margin_left = 1260.0
 margin_right = 1600.0
 margin_bottom = 24.0
-text = "Save"
+text = "DEFAULT_GUI_PRESETS_NEW_PRESET_SAVE_BUTTON"
 
 [node name="Tree" type="Tree" parent="Left"]
 margin_top = 28.0

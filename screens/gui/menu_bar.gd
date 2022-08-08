@@ -138,9 +138,9 @@ func _handle_app_button(id: int) -> void:
 		AppButtons.MAIN_MENU:
 			get_tree().change_scene(Globals.LANDING_SCREEN_PATH)
 		AppButtons.SETTINGS:
-			add_child(BasePopup.new("Settings", Settings))
+			add_child(BasePopup.new(Settings))
 		AppButtons.LOGS:
-			add_child(BasePopup.new("Logs", Logs))
+			add_child(BasePopup.new(Logs))
 		AppButtons.QUIT:
 			get_tree().quit()
 
@@ -152,20 +152,20 @@ func _handle_debug_button(id: int) -> void:
 			popup.set_item_checked(idx, not popup.is_item_checked(idx))
 			# TODO toggle textures somehow?
 		DebugButtons.DEBUG_CONSOLE:
-			add_child(BasePopup.new("Debug Console", DebugConsole))
+			add_child(BasePopup.new(DebugConsole))
 
 func _handle_help_button(id: int) -> void:
 	match id:
 		HelpButtons.IN_APP_HELP:
-			add_child(BasePopup.new("In-app Help", InAppHelp))
+			add_child(BasePopup.new(InAppHelp))
 		HelpButtons.ABOUT:
-			add_child(BasePopup.new("About", About))
+			add_child(BasePopup.new(About))
 		HelpButtons.GITHUB:
 			OS.shell_open(Globals.PROJECT_GITHUB_REPO)
 		HelpButtons.DISCORD:
 			OS.shell_open(Globals.DISCORD_INVITE)
 		HelpButtons.LICENSES:
-			add_child(BasePopup.new("Licenses", Licenses))
+			add_child(BasePopup.new(Licenses))
 
 func _create_popup(popup_resource: PackedScene) -> void:
 	var popup: Popup = popup_resource.instance()

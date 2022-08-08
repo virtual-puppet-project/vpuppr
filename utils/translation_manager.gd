@@ -5,6 +5,8 @@ const IGNORED_CHARS := ";;"
 const TRANSLATION_EXTENSION := ".txt"
 const ESCAPED_QUOTE := "\\\""
 
+const DEFAULT_GUI_PREFIX := "DEFAULT_GUI_%s"
+
 var scan_path := ""
 
 #-----------------------------------------------------------------------------#
@@ -125,3 +127,12 @@ static func _valid_message_ending(text: String) -> bool:
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #
 #-----------------------------------------------------------------------------#
+
+static func to_translation_key(text: String) -> String:
+	return text.capitalize().to_upper().replace(" ", "_")
+
+static func builtin_res_path_to_key(res_path: String) -> String:
+	return DEFAULT_GUI_PREFIX % res_path.get_file().get_basename().capitalize().to_upper().replace(" ", "_")
+
+static func parent_item_to_key(parent_name: String, item_name: String) -> String:
+	return "%s_%s" % [to_translation_key(parent_name), to_translation_key(item_name)]

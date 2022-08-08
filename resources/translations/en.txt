@@ -2,47 +2,153 @@ EXTENSIONS="Extensions"
 
 TRANSPARENT_BACKGROUND="Transparent background"
 
-;; LandingScreen: Runner
-LANDING_SCREEN_RUNNER_RUN="Run"
-LANDING_SCREEN_RUNNER_SHOW_GUI_SELECTOR="Show GUI selector"
-LANDING_SCREEN_RUNNER_DEFAULT_GUI_NAME="Default GUI"
+;;----------------------------------------------------------------------------;;
+;; Debug                                                                      ;;
+;;----------------------------------------------------------------------------;;
+MISSING_KEY_PLACEHOLDER="Please report this as a bug"
 
-;; Default GUI: Menu bar - App
+;;----------------------------------------------------------------------------;;
+;; Debug Console                                                              ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_DEBUG_CONSOLE="Debug Console"
+
+;;----------------------------------------------------------------------------;;
+;; LandingScreen: Runner                                                      ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_LANDING_SCREEN_RUNNER_RUN="Run"
+DEFAULT_GUI_LANDING_SCREEN_RUNNER_SHOW_GUI_SELECTOR="Show GUI selector"
+DEFAULT_GUI_LANDING_SCREEN_RUNNER_DEFAULT_GUI_NAME="Default GUI"
+
+;;----------------------------------------------------------------------------;;
+;; Menu bar - App                                                             ;;
+;;----------------------------------------------------------------------------;;
 DEFAULT_GUI_MENU_BAR_APP_MAIN_MENU="Main Menu"
 DEFAULT_GUI_MENU_BAR_APP_SETTINGS="Settings"
 DEFAULT_GUI_MENU_BAR_APP_LOGS="Logs"
 DEFAULT_GUI_MENU_BAR_APP_QUIT="Quit"
 
-;; Default GUI: Menu bar - Debug
+;;----------------------------------------------------------------------------;;
+;; Menu bar - Debug                                                           ;;
+;;----------------------------------------------------------------------------;;
 DEFAULT_GUI_MENU_BAR_DEBUG_SHOW_RAW_MESH="Show Raw Mesh"
 DEFAULT_GUI_MENU_BAR_DEBUG_DEBUG_CONSOLE="Debug Console"
 
-;; Default GUI: Menu bar - Help
+;;----------------------------------------------------------------------------;;
+;; Menu bar - Help                                                            ;;
+;;----------------------------------------------------------------------------;;
 DEFAULT_GUI_MENU_BAR_HELP_IN_APP_HELP="In-app Help"
 DEFAULT_GUI_MENU_BAR_HELP_ABOUT="About"
 DEFAULT_GUI_MENU_BAR_HELP_GITHUB="GitHub"
 DEFAULT_GUI_MENU_BAR_HELP_DISCORD="Discord"
 DEFAULT_GUI_MENU_BAR_HELP_LICENSES="Licenses"
 
-;; Default GUI: Popup - Bones
-DEFAULT_GUI_POPUP_BONES_IS_TRACKING="Is tracking"
-DEFAULT_GUI_POPUP_BONES_SHOULD_POSE="Should pose"
-DEFAULT_GUI_POPUP_BONES_USE_CUSTOM_INTERPOLATION="Use custom interpolation"
-DEFAULT_GUI_POPUP_BONES_INTERPOLATION_RATE="Interpolation rate"
-DEFAULT_GUI_POPUP_BONES_RESET_BONE_POSE="Reset bone pose"
-DEFAULT_GUI_POPUP_BONES_INFO_PAGE="Info" ;; TODO need to think about how to insert this translation
-DEFAULT_GUI_POPUP_BONES_NO_MODEL_FOUND_ERROR="No model found, no bone functionality will be available"
-DEFAULT_GUI_POPUP_BONES_NO_MODEL_SKELETON_FOUND_ERROR="No model skeleton found, no bone functionality will be available"
-DEFAULT_GUI_POPUP_BONES_BONE_NOT_FOUND_ERROR="Bone %s not found, aborting config modification"
+;;----------------------------------------------------------------------------;;
+;; Popup - Model                                                              ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_MODEL="Model"
+DEFAULT_GUI_MODEL_LOAD_MODEL_BUTTON="Load model"
+DEFAULT_GUI_MODEL_SET_MODEL_AS_DEFAULT_BUTTON="Set model as default"
+DEFAULT_GUI_MODEL_MOVE_MODEL_TOGGLE="Move model"
+DEFAULT_GUI_MODEL_ROTATE_MODEL_TOGGLE="Rotate model"
+DEFAULT_GUI_MODEL_ZOOM_MODEL_TOGGLE="Zoom model"
+DEFAULT_GUI_MODEL_RESET_MODEL_TRANSFORM_BUTTON="Reset model transform"
+DEFAULT_GUI_MODEL_RESET_MODEL_POSE_BUTTON="Reset model pose"
+DEFAULT_GUI_MODEL_HEAD_BONE_LABEL="Head bone"
+DEFAULT_GUI_MODEL_APPLY_TRANSLATION_TOGGLE="Apply translation"
+DEFAULT_GUI_MODEL_APPLY_ROTATION_TOGGLE="Apply rotation"
 
-;; Default GUI: Popup - Presets
-DEFAULT_GUI_POPUP_PRESETS_CONFIG_NAME_LABEL="Config name"
-DEFAULT_GUI_POPUP_PRESETS_DESCRIPTION_LABEL="Description"
-DEFAULT_GUI_POPUP_PRESETS_HOTKEY_LABEL="Hotkey"
-DEFAULT_GUI_POPUP_PRESETS_NOTES_LABEL="Notes"
-DEFAULT_GUI_POPUP_PRESETS_IS_DEFAULT_FOR_MODEL_LABEL="Is default for model"
-DEFAULT_GUI_POPUP_PRESETS_LOAD_BUTTON="Load"
-DEFAULT_GUI_POPUP_PRESETS_DELETE_BUTTON="Delete"
+DEFAULT_GUI_MODEL_BONE_TRANSLATION_LABEL="Bone translation"
+DEFAULT_GUI_MODEL_BONE_ROTATION_LABEL="Bone rotation"
+DEFAULT_GUI_MODEL_ADDITIONAL_BONES_LABEL="Additional bones"
+DEFAULT_GUI_MODEL_LEFT_GAZE_LOOSENESS_LABEL="Left gaze"
+DEFAULT_GUI_MODEL_RIGHT_GAZE_LOOSENESS_LABEL="Right gaze"
+DEFAULT_GUI_MODEL_LEFT_BLINK_LOOSENESS_LABEL="Left blink"
+DEFAULT_GUI_MODEL_RIGHT_BLINK_LOOSENESS_LABEL="Right blink"
+DEFAULT_GUI_MODEL_MOUTH_OPEN_LOOSENESS_LABEL="Mouth open"
+DEFAULT_GUI_MODEL_MOUTH_WIDE_LOOSENESS_LABEL="Mouth wide"
+DEFAULT_GUI_MODEL_EYEBROW_STEEPNESS_LEFT_LOOSENESS_LABEL="Eyebrow steepness left"
+DEFAULT_GUI_MODEL_EYEBROW_UP_DOWN_LEFT_LOOSENESS_LABEL="Eyebrow up down left"
+DEFAULT_GUI_MODEL_EYEBROW_QUIRK_LEFT_LOOSENESS_LABEL="Eyebrow quirk left"
+DEFAULT_GUI_MODEL_EYEBROW_STEEPNESS_RIGHT_LOOSENESS_LABEL="Eyebrow steepness right"
+DEFAULT_GUI_MODEL_EYEBROW_UP_DOWN_RIGHT_LOOSENESS_LABEL="Eyebrow steepness right"
+DEFAULT_GUI_MODEL_EYEBROW_QUIRK_RIGHT_LOOSENESS_LABEL="Eyebrow quirk right"
 
-;; Default GUI: Popup - Tracking
-DEFAULT_GUI_POPUP_TRACKING_MAIN_TRACKER="Main tracker"
+DEFAULT_GUI_MODEL_INTERPOLATION_RATE_TOGGLE="Rate"
+DEFAULT_GUI_MODEL_GLOBAL_INTERPOLATION_TOGGLE="Global interpolation"
+DEFAULT_GUI_MODEL_BONE_INTERPOLATION_TOGGLE="Bone interpolation"
+DEFAULT_GUI_MODEL_GAZE_INTERPOLATION_TOGGLE="Gaze interpolation"
+DEFAULT_GUI_MODEL_BLINK_INTERPOLATION_TOGGLE="Blink interpolation"
+DEFAULT_GUI_MODEL_MOUTH_INTERPOLATION_TOGGLE="Mouth interpolation"
+DEFAULT_GUI_MODEL_EYEBROWS_INTERPOLATION_TOGGLE="Eyebrows interpolation"
+
+DEFAULT_GUI_MODEL_SHOULD_TRACK_EYE_TOGGLE="Should track eye"
+DEFAULT_GUI_MODEL_GAZE_STRENGTH_LABEL="Gaze strength"
+DEFAULT_GUI_MODEL_BLINK_THRESHOLD_LABEL="Blink threshold"
+DEFAULT_GUI_MODEL_LINK_EYE_BLINKS_TOGGLE="Link eye blinks"
+DEFAULT_GUI_MODEL_USE_RAW_EYE_ROTATION_TOGGLE="Use raw eye rotation"
+
+;;----------------------------------------------------------------------------;;
+;; Popup - Bones                                                              ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_BONES="Bones"
+DEFAULT_GUI_BONES_IS_TRACKING="Is tracking"
+DEFAULT_GUI_BONES_SHOULD_POSE="Should pose"
+DEFAULT_GUI_BONES_USE_CUSTOM_INTERPOLATION="Use custom interpolation"
+DEFAULT_GUI_BONES_INTERPOLATION_RATE="Interpolation rate"
+DEFAULT_GUI_BONES_RESET_BONE_POSE="Reset bone pose"
+DEFAULT_GUI_BONES_INFO_PAGE="Info" ;; TODO need to think about how to insert this translation
+DEFAULT_GUI_BONES_NO_MODEL_FOUND_ERROR="No model found, no bone functionality will be available"
+DEFAULT_GUI_BONES_NO_MODEL_SKELETON_FOUND_ERROR="No model skeleton found, no bone functionality will be available"
+DEFAULT_GUI_BONES_BONE_NOT_FOUND_ERROR="Bone %s not found, aborting config modification"
+
+;;----------------------------------------------------------------------------;;
+;; Popup - Presets                                                            ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_PRESETS="Presets"
+DEFAULT_GUI_PRESETS_NEW_PRESET_NAME_PLACEHOLDER="Preset name"
+DEFAULT_GUI_PRESETS_NEW_PRESET_SAVE_BUTTON="Save"
+DEFAULT_GUI_PRESETS_CONFIG_NAME_LABEL="Config name"
+DEFAULT_GUI_PRESETS_DESCRIPTION_LABEL="Description"
+DEFAULT_GUI_PRESETS_HOTKEY_LABEL="Hotkey"
+DEFAULT_GUI_PRESETS_NOTES_LABEL="Notes"
+DEFAULT_GUI_PRESETS_IS_DEFAULT_FOR_MODEL_LABEL="Is default for model"
+DEFAULT_GUI_PRESETS_LOAD_BUTTON="Load"
+DEFAULT_GUI_PRESETS_DELETE_BUTTON="Delete"
+
+;;----------------------------------------------------------------------------;;
+;; Popup - Tracking                                                           ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_TRACKING="Tracking"
+DEFAULT_GUI_TRACKING_MAIN_TRACKER="Main tracker"
+
+;;----------------------------------------------------------------------------;;
+;; Popup - Props                                                              ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_PROPS="Props"
+
+;;----------------------------------------------------------------------------;;
+;; Popup - Settings                                                           ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_SETTINGS="Setting"
+
+;;----------------------------------------------------------------------------;;
+;; Popup - In-app Help                                                        ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_IN_APP_HELP="In-app Help"
+
+;;----------------------------------------------------------------------------;;
+;; Popup - About                                                              ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_ABOUT="About"
+
+;;----------------------------------------------------------------------------;;
+;; Popup - Licenses                                                           ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_LICENSES="Licenses"
+
+;;----------------------------------------------------------------------------;;
+;; Popup - Logs                                                               ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_LOGS="Logs"
+DEFAULT_GUI_LOGS_COPY_BUTTON="Copy"
+DEFAULT_GUI_LOGS_OPEN_BUTTON="Open"
