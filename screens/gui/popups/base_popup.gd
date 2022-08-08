@@ -9,7 +9,11 @@ var screen: Node
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#
 
-func _init(p_name: String, p_screen) -> void:
+func _init(p_screen, p_name: String = "") -> void:
+	# TODO this will break for extensions
+	if p_name.empty():
+		p_name = tr(AM.tm.builtin_res_path_to_key(p_screen.resource_path if not p_screen.resource.empty() else p_screen.name))
+
 	_logger = Logger.new(p_name)
 
 	# Node configuration

@@ -81,7 +81,7 @@ func _on_pressed(scene) -> void:
 		if res.unwrap_err().code != Error.Code.TEMP_CACHE_MANAGER_KEY_NOT_FOUND:
 			logger.error(res)
 			return
-		popup = _create_popup(popup_name, scene)
+		popup = _create_popup(scene, popup_name)
 		popup.connect("gui_input", self, "_on_popup_clicked", [popup])
 
 		AM.tcm.push(popup_name, popup).cleanup_on_signal(popup, "tree_exiting")
@@ -113,8 +113,8 @@ func _on_popup_clicked(event: InputEvent, popup: Control) -> void:
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#
 
-func _create_popup(popup_name: String, scene) -> BasePopup:
-	var popup: BasePopup = BasePopup.new(popup_name, scene)
+func _create_popup(scene, popup_name: String) -> BasePopup:
+	var popup: BasePopup = BasePopup.new(scene, popup_name)
 
 	return popup
 
