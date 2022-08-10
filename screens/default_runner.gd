@@ -130,13 +130,9 @@ func _setup_config() -> void:
 		_on_config_changed(SignalPayload.new(i, val), i)
 
 func _pre_setup_scene() -> void:
+	name = tr("DEFAULT_GUI_RUNNER")
+	
 	AM.ps.subscribe(self, Globals.EVENT_PUBLISHED)
-	# for i in SCENE_LISTEN_VALUES:
-	# 	AM.ps.create_signal(i)
-	# 	AM.ps.subscribe(self, i, {
-	# 		"args": [i],
-	# 		"callback": "_on_config_changed"
-	# 	})
 
 	var viewport_container := ViewportContainer.new()
 	viewport_container.anchor_bottom = 1.0
@@ -227,6 +223,8 @@ func _teardown() -> void:
 	._teardown()
 
 func _generate_preview() -> void:
+	logger.info("Generating preview")
+	
 	var image := model_viewport.get_texture().get_data()
 	image.flip_y()
 
@@ -243,6 +241,8 @@ func _generate_preview() -> void:
 		Globals.RUNNER_PREVIEW_FILE_EXT
 	]) != OK:
 		logger.error("Unable to save image preview")
+	else:
+		logger.info("Finished generating preview")
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #

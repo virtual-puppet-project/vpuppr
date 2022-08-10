@@ -169,3 +169,8 @@ DEFAULT_GUI_LOGS="Logs"
 DEFAULT_GUI_LOGS="Logs"
 DEFAULT_GUI_LOGS_COPY_BUTTON="Copy"
 DEFAULT_GUI_LOGS_OPEN_BUTTON="Open"
+
+;;----------------------------------------------------------------------------;;
+;; Default runner                                                             ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_RUNNER="Default Runner"
