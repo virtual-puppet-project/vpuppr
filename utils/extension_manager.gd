@@ -10,12 +10,14 @@ const Config := {
 	"GENERAL": "General",
 	"GENERAL_KEYS": {
 		# How the resource will be referred to when loading via RLM
-		"NAME": "name"
+		"NAME": "name",
+		"TRANSLATION_KEY": "translation_key"
 	},
 	"SECTION_KEYS": {
 		"TYPE": "type",
 		"ENTRYPOINT": "entrypoint",
-		"GDNATIVE": "gdnative"
+		"GDNATIVE": "gdnative",
+		"TRANSLATION_KEY": "translation_key"
 	}
 }
 
@@ -118,8 +120,10 @@ func _parse_extension(path: String) -> Result:
 	if extension_name.empty():
 		return Safely.err(Error.Code.EXTENSION_MANAGER_MISSING_EXTENSION_NAME, path)
 
-	var ext = Extension.new(path)
+	var ext = Extension.new()
+	ext.context = path
 	ext.extension_name = extension_name
+	ext.translation_key = c.get_value(Config.GENERAL, Config.GENERAL_KEYS.TRANSLATION_KEY, ext.extension_name)
 	
 	for i in c.get_sections():
 		if i == Config.GENERAL:
@@ -189,6 +193,9 @@ func _parse_extension_section(path: String, c: ConfigFile, section_name: String,
 
 		ext_resource.is_gdnative = true
 		ext_resource.resource_entrypoint = native_dir
+
+	ext_resource.translation_key = c.get_value(
+		section_name, Config.SECTION_KEYS.TRANSLATION_KEY, ext_resource.resource_name)
 
 	return Safely.ok()
 

@@ -11,24 +11,24 @@ script = ExtResource( 1 )
 margin_right = 1.0
 margin_bottom = 900.0
 
-[node name="Info" type="ScrollContainer" parent="."]
+[node name="DEFAULT_GUI_TRACKING_INFO_PAGE" type="ScrollContainer" parent="."]
 margin_left = 13.0
 margin_right = 1600.0
 margin_bottom = 900.0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Info"]
+[node name="VBoxContainer" type="VBoxContainer" parent="DEFAULT_GUI_TRACKING_INFO_PAGE"]
 margin_right = 1587.0
 margin_bottom = 900.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="Info/VBoxContainer"]
+[node name="Label" type="Label" parent="DEFAULT_GUI_TRACKING_INFO_PAGE/VBoxContainer"]
 margin_right = 1587.0
 margin_bottom = 14.0
 text = "Running trackers"
 align = 1
 
-[node name="RunningTrackers" type="VBoxContainer" parent="Info/VBoxContainer"]
+[node name="RunningTrackers" type="VBoxContainer" parent="DEFAULT_GUI_TRACKING_INFO_PAGE/VBoxContainer"]
 margin_top = 18.0
 margin_right = 1587.0
 margin_bottom = 18.0

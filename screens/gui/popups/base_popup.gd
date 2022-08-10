@@ -10,9 +10,13 @@ var screen: Node
 #-----------------------------------------------------------------------------#
 
 func _init(p_screen, p_name: String = "") -> void:
-	# TODO this will break for extensions
 	if p_name.empty():
-		p_name = tr(AM.tm.builtin_res_path_to_key(p_screen.resource_path if not p_screen.resource.empty() else p_screen.name))
+		if p_screen is Resource:
+			p_name = p_screen.resource_path
+		elif p_screen is Node:
+			p_name = p_screen.name
+		else:
+			p_name = tr("MISSING_KEY_PLACEHOLDER")
 
 	_logger = Logger.new(p_name)
 

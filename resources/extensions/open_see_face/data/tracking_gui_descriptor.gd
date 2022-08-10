@@ -341,7 +341,7 @@ var POSSIBLE_ML_MODELS: Dictionary = {
 	"0": tr("ML_MODEL_0"),
 	"1": tr("ML_MODEL_1"),
 	"2": tr("ML_MODEL_2"),
-	"3": tr("ML_MDOEL_3"),
+	"3": tr("ML_MODEL_3"),
 	"4": tr("ML_MODEL_4")
 }
 

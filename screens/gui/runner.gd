@@ -16,7 +16,7 @@ func _setup() -> Result:
 	_selectable_gui_count = _get_selectable_gui_count()
 
 	var default_runner := _create_view({
-		"name": _initial_page,
+		"name": Globals.DEFAULT_RUNNER_PATH.get_file().get_basename().capitalize(),
 		"run_args": [
 			Globals.DEFAULT_RUNNER_PATH
 		]
@@ -28,7 +28,7 @@ func _setup() -> Result:
 	for ext in AM.em.query_extensions_for_type(Globals.ExtensionTypes.RUNNER):
 		ext = ext as ExtensionResource
 		var view := _create_view({
-			"name": ext.resource_name,
+			"name": tr(ext.translation_key),
 			"run_args": [
 				ext.resource_entrypoint
 			]
@@ -44,13 +44,13 @@ func _post_setup() -> Result:
 		default_runner.hide()
 
 		var next_runner: Control = get_child(2)
-		_initial_page = next_runner.name.capitalize()
+		_initial_page = next_runner.name
 
 		var res := Safely.wrap(_clear_tree())
 		if res.is_err():
 			return res
 		
-		res = Safely.wrap(_build_tree(PoolStringArray([default_runner.name.capitalize()])))
+		res = Safely.wrap(_build_tree(PoolStringArray([default_runner.name])))
 		if res.is_err():
 			return res
 
@@ -97,12 +97,9 @@ static func _get_selectable_gui_count() -> int:
 	return r
 
 func _create_view(data: Dictionary) -> ScrollContainer:
-	# TODO this is kind of gross
-	var view_name: String = data.run_args.front().get_basename().get_file()
-	
 	var sc := ScrollContainer.new()
 	ControlUtil.h_expand_fill(sc)
-	sc.name = view_name
+	sc.name = data.name
 	sc.scroll_horizontal_enabled = false
 
 	var list := VBoxContainer.new()
@@ -124,7 +121,7 @@ func _create_view(data: Dictionary) -> ScrollContainer:
 	preview.expand = true
 	preview.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT
 
-	var preview_image_res: Result = _find_runner_preview(view_name)
+	var preview_image_res: Result = _find_runner_preview(data.name)
 	if not preview_image_res or preview_image_res.is_err():
 		preview.texture = load("res://assets/NoPreview.png")
 	else:
