@@ -1,0 +1,176 @@
+EXTENSIONS="Erweiterungen"
+
+TRANSPARENT_BACKGROUND="Durchsichtiger Hintergrund"
+
+;;----------------------------------------------------------------------------;;
+;; Debug                                                                      ;;
+;;----------------------------------------------------------------------------;;
+MISSING_KEY_PLACEHOLDER="Bitte melde diesen Fehler"
+
+;;----------------------------------------------------------------------------;;
+;; Debug Console                                                              ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_DEBUG_CONSOLE="Entwickler Konsole"
+
+;;----------------------------------------------------------------------------;;
+;; LandingScreen                                                              ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_LANDING_SCREEN_RUNNERS="Runners"
+DEFAULT_GUI_LANDING_SCREEN_EXTENSIONS="Erweiterungen"
+DEFAULT_GUI_LANDING_SCREEN_SETTINGS="Einstellungen"
+DEFAULT_GUI_LANDING_SCREEN_ABOUT="Über uns"
+
+;;----------------------------------------------------------------------------;;
+;; LandingScreen: Runner                                                      ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_LANDING_SCREEN_RUNNER_RUN="Start"
+DEFAULT_GUI_LANDING_SCREEN_RUNNER_SHOW_GUI_SELECTOR="Zeige GUI Auswahl"
+DEFAULT_GUI_LANDING_SCREEN_RUNNER_DEFAULT_GUI_NAME="Standard GUI"
+
+;;----------------------------------------------------------------------------;;
+;; Menu bar - App                                                             ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_MENU_BAR_APP="Anwendung"
+DEFAULT_GUI_MENU_BAR_APP_MAIN_MENU="Hauptmenü"
+DEFAULT_GUI_MENU_BAR_APP_SETTINGS="Einstellungen"
+DEFAULT_GUI_MENU_BAR_APP_LOGS="Logs"
+DEFAULT_GUI_MENU_BAR_APP_QUIT="Beenden"
+
+;;----------------------------------------------------------------------------;;
+;; Menu bar - Layout                                                          ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_MENU_BAR_LAYOUT="Layout" ;; TODO: Need a better translation for this
+
+;;----------------------------------------------------------------------------;;
+;; Menu bar - Debug                                                           ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_MENU_BAR_DEBUG="Debug"
+DEFAULT_GUI_MENU_BAR_DEBUG_SHOW_RAW_MESH="Zeige Raw Mesh" ;; TODO: Need a better translation for this
+DEFAULT_GUI_MENU_BAR_DEBUG_DEBUG_CONSOLE="Entwickler Konsole"
+
+;;----------------------------------------------------------------------------;;
+;; Menu bar - Help                                                            ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_MENU_BAR_HELP="Hilfe"
+DEFAULT_GUI_MENU_BAR_HELP_IN_APP_HELP="In-app Hilfe"
+DEFAULT_GUI_MENU_BAR_HELP_ABOUT="Über uns"
+DEFAULT_GUI_MENU_BAR_HELP_GITHUB="GitHub"
+DEFAULT_GUI_MENU_BAR_HELP_DISCORD="Discord"
+DEFAULT_GUI_MENU_BAR_HELP_LICENSES="Lizenzen"
+
+;;----------------------------------------------------------------------------;;
+;; Popup - Model                                                              ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_MODEL="Model"
+DEFAULT_GUI_MODEL_GENERAL_PAGE="Generell"
+DEFAULT_GUI_MODEL_LOAD_MODEL_BUTTON="Modell laden"
+DEFAULT_GUI_MODEL_SET_MODEL_AS_DEFAULT_BUTTON="Setze Modell als Standard"
+DEFAULT_GUI_MODEL_MOVE_MODEL_TOGGLE="Model bewegen"
+DEFAULT_GUI_MODEL_ROTATE_MODEL_TOGGLE="Model drehen"
+DEFAULT_GUI_MODEL_ZOOM_MODEL_TOGGLE="Model vergrößern/verkleinern"
+DEFAULT_GUI_MODEL_RESET_MODEL_TRANSFORM_BUTTON="Modelltransformation zurücksetzen"
+DEFAULT_GUI_MODEL_RESET_MODEL_POSE_BUTTON="Modellpose zurücksetzen"
+DEFAULT_GUI_MODEL_HEAD_BONE_LABEL="Kopfknochen"
+DEFAULT_GUI_MODEL_APPLY_TRANSLATION_TOGGLE="Translation anwenden"
+DEFAULT_GUI_MODEL_APPLY_ROTATION_TOGGLE="Rotation anwenden"
+
+DEFAULT_GUI_MODEL_LOOSENESS_PAGE="Lockerheit"
+DEFAULT_GUI_MODEL_BONE_TRANSLATION_LABEL="Knochenverschiebung"
+DEFAULT_GUI_MODEL_BONE_ROTATION_LABEL="Knochenrotation"
+DEFAULT_GUI_MODEL_ADDITIONAL_BONES_LABEL="Zusätzliche Knochen"
+DEFAULT_GUI_MODEL_LEFT_GAZE_LOOSENESS_LABEL="Linker Blick"
+DEFAULT_GUI_MODEL_RIGHT_GAZE_LOOSENESS_LABEL="Recher Blick"
+DEFAULT_GUI_MODEL_LEFT_BLINK_LOOSENESS_LABEL="Linkes Zwinkern"
+DEFAULT_GUI_MODEL_RIGHT_BLINK_LOOSENESS_LABEL="Rechtes Zwinkern"
+DEFAULT_GUI_MODEL_MOUTH_OPEN_LOOSENESS_LABEL="Mund offen"
+DEFAULT_GUI_MODEL_MOUTH_WIDE_LOOSENESS_LABEL="Mund breite"
+DEFAULT_GUI_MODEL_EYEBROW_STEEPNESS_LEFT_LOOSENESS_LABEL="Augenbraue Steilheit links"
+DEFAULT_GUI_MODEL_EYEBROW_UP_DOWN_LEFT_LOOSENESS_LABEL="Augenbraue oben/unten links"
+DEFAULT_GUI_MODEL_EYEBROW_QUIRK_LEFT_LOOSENESS_LABEL="Augenbraue quirk links"
+DEFAULT_GUI_MODEL_EYEBROW_STEEPNESS_RIGHT_LOOSENESS_LABEL="Augenbraue Steilheit rechts"
+DEFAULT_GUI_MODEL_EYEBROW_UP_DOWN_RIGHT_LOOSENESS_LABEL="Augenbraue Steilheit rechts"
+DEFAULT_GUI_MODEL_EYEBROW_QUIRK_RIGHT_LOOSENESS_LABEL="Augenbraue quirk rechts"
+
+DEFAULT_GUI_MODEL_INTERPOLATION_PAGE="Interpolation"
+DEFAULT_GUI_MODEL_INTERPOLATION_RATE_TOGGLE="Rate"
+DEFAULT_GUI_MODEL_GLOBAL_INTERPOLATION_TOGGLE="Globale Interpolation"
+DEFAULT_GUI_MODEL_BONE_INTERPOLATION_TOGGLE="Knocheninterpolation"
+DEFAULT_GUI_MODEL_GAZE_INTERPOLATION_TOGGLE="Blickinterpolation"
+DEFAULT_GUI_MODEL_BLINK_INTERPOLATION_TOGGLE="Zwinkerinterpolation"
+DEFAULT_GUI_MODEL_MOUTH_INTERPOLATION_TOGGLE="Mundinterpolation"
+DEFAULT_GUI_MODEL_EYEBROWS_INTERPOLATION_TOGGLE="Augenbraueninterpolation"
+
+DEFAULT_GUI_MODEL_EYES_PAGE="Augen"
+DEFAULT_GUI_MODEL_SHOULD_TRACK_EYE_TOGGLE="Soll Augen folgen"
+DEFAULT_GUI_MODEL_GAZE_STRENGTH_LABEL="Blickstärke"
+DEFAULT_GUI_MODEL_BLINK_THRESHOLD_LABEL="Zwinkerschwelle"
+DEFAULT_GUI_MODEL_LINK_EYE_BLINKS_TOGGLE="Zwinkern verlinken"
+DEFAULT_GUI_MODEL_USE_RAW_EYE_ROTATION_TOGGLE="Nutze direkte Augenrotation"
+
+;;----------------------------------------------------------------------------;;
+;; Popup - Bones                                                              ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_BONES="Knochen"
+DEFAULT_GUI_BONES_INFO_PAGE="Info"
+DEFAULT_GUI_BONES_IS_TRACKING="Ist tracking"
+DEFAULT_GUI_BONES_SHOULD_POSE="Soll poseieren"
+DEFAULT_GUI_BONES_USE_CUSTOM_INTERPOLATION="Eigene Interpolation nutzen"
+DEFAULT_GUI_BONES_INTERPOLATION_RATE="Interpolationsrate"
+DEFAULT_GUI_BONES_RESET_BONE_POSE="Knochen pose zurücksetzen"
+DEFAULT_GUI_BONES_INFO_PAGE="Info" ;; TODO need to think about how to insert this translation
+DEFAULT_GUI_BONES_NO_MODEL_FOUND_ERROR="Kein Modell gefunden. Knochenfunktionalität ist nicht verfügbar."
+DEFAULT_GUI_BONES_NO_MODEL_SKELETON_FOUND_ERROR="Kein Skelett gefunden. Knochenfunktionalität ist nicht verfügbar."
+DEFAULT_GUI_BONES_BONE_NOT_FOUND_ERROR="Der Knochen %s wurde nicht gefunden. Abbruch der Konfigurationsänderung"
+DEFAULT_GUI_BONES_IS_TRACKING_TOGGLE="Ist tracking"
+DEFAULT_GUI_BONES_SHOULD_POSE_TOGGLE="Soll poseieren"
+DEFAULT_GUI_BONES_SHOULD_USE_CUSTOM_INTERPOLATION_TOGGLE="Eigene Interpolation nutzen"
+DEFAULT_GUI_BONES_INTERPOLATION_RATE_LABEL="Interpolationsrate"
+DEFAULT_GUI_BONES_RESET_BONE_POSE_BUTTON="Knochen pose zurücksetzen"
+
+;;----------------------------------------------------------------------------;;
+;; Popup - Presets                                                            ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_PRESETS="Voreinstellungen"
+DEFAULT_GUI_PRESETS_NEW_PRESET_NAME_PLACEHOLDER="Voreinstellungsname"
+DEFAULT_GUI_PRESETS_NEW_PRESET_SAVE_BUTTON="Speichern"
+DEFAULT_GUI_PRESETS_CONFIG_NAME_LABEL="Einstellungsname"
+DEFAULT_GUI_PRESETS_DESCRIPTION_LABEL="Beschreibung"
+DEFAULT_GUI_PRESETS_HOTKEY_LABEL="Tastaturkürzel"
+DEFAULT_GUI_PRESETS_NOTES_LABEL="Notizen"
+DEFAULT_GUI_PRESETS_IS_DEFAULT_FOR_MODEL_LABEL="Ist Standardmodell"
+DEFAULT_GUI_PRESETS_LOAD_BUTTON="Laden"
+DEFAULT_GUI_PRESETS_DELETE_BUTTON="Entfernen"
+
+;;----------------------------------------------------------------------------;;
+;; Popup - Tracking                                                           ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_TRACKING="Tracking"
+DEFAULT_GUI_TRACKING_INFO_PAGE="Info"
+DEFAULT_GUI_TRACKING_MAIN_TRACKER="Haupt tracker"
+
+;;----------------------------------------------------------------------------;;
+;; Popup - Props                                                              ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_PROPS="Eigenschaften"
+
+;;----------------------------------------------------------------------------;;
+;; Popup - Settings                                                           ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_SETTINGS="Einstellungen"
+
+;;----------------------------------------------------------------------------;;
+;; Popup - Logs                                                               ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_LOGS="Logs"
+
+;;----------------------------------------------------------------------------;;
+;; Popup - Logs                                                               ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_LOGS="Logs"
+DEFAULT_GUI_LOGS_COPY_BUTTON="Kopieren"
+DEFAULT_GUI_LOGS_OPEN_BUTTON="Öffnen"
+
+;;----------------------------------------------------------------------------;;
+;; Default runner                                                             ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_RUNNER="Standard Runner"
