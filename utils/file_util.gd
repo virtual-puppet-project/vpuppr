@@ -41,7 +41,6 @@ static func load_godot_resource_from_path(path: String) -> Result:
 		return Safely.err(Error.Code.FILE_NOT_FOUND, path)
 
 	var object = resource.instance() if resource is PackedScene else resource.new()
-	object.set("name", path.get_basename().get_file())
 
 	return Safely.ok(object)
 
@@ -69,8 +68,6 @@ static func load_runner(runner_path: String, gui_path: String) -> Result:
 	var tcm: TempCacheManager = AM.tcm
 	tcm.push("runner_path", runner_path).cleanup_on_pull()
 	tcm.push("gui_path", gui_path).cleanup_on_pull()
-	# tcm.push("runner_path", runner_path)
-	# tcm.push("gui_path", gui_path)
 
 	return Safely.ok(runner)
 

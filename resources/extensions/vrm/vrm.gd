@@ -9,21 +9,13 @@ const VRM_LOADER_PATH := "res://addons/vrm/vrm_loader.gd"
 func _setup_logger() -> void:
 	logger = Logger.new("VRM Runner")
 
+func _pre_setup_scene() -> void:
+	._pre_setup_scene()
+	
+	name = tr("VRM_RUNNER")
+
 func _physics_step(delta: float) -> void:
 	._physics_step(delta)
-	
-	# if not trackers["OpenSeeFace"].is_listening():
-	# 	return
-	
-	# var data = trackers["OpenSeeFace"].get_data()
-	# if data == null:
-	# 	return
-
-	# TODO hardcoded for osf
-	# model.custom_update(trackers["OpenSeeFace"].get_data(), interpolation_data)
-
-# func _generate_preview() -> void:
-# 	._generate_preview()
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
