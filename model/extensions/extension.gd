@@ -2,6 +2,7 @@ class_name Extension
 extends Reference
 
 var extension_name := ""
+var translation_key := ""
 
 ## Absolute path to the extension
 var context := ""
@@ -17,9 +18,6 @@ var plugins := [] # Resources name: String
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#
-
-func _init(context_path: String) -> void:
-	context = context_path
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
@@ -76,6 +74,7 @@ func add_resource(res_name: String, res_type: String, res_entrypoint: String) ->
 func as_data() -> Dictionary:
 	return {
 		"extension_name": extension_name,
+		"translation_key": translation_key,
 		"context_path": context,
 		"runner": runners.duplicate(),
 		"puppet": puppets.duplicate(),

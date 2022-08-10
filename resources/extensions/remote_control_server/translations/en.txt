@@ -1,1 +1,1 @@
-Remote Control="Remote Control"
+REMOTE_CONTROL_EXTENSION="Remote Control Server"

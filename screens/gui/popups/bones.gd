@@ -30,22 +30,22 @@ class View extends ScrollContainer:
 
 		options_list.add_child(bone_name_label)
 
-		is_tracking.text = "Is tracking"
+		is_tracking.text = tr("DEFAULT_GUI_BONES_IS_TRACKING_TOGGLE")
 		options_list.add_child(is_tracking)
 
-		should_pose.text = "Should pose"
+		should_pose.text = tr("DEFAULT_GUI_BONES_SHOULD_POSE_TOGGLE")
 		options_list.add_child(should_pose)
 
 		#region Interpolation rate
 
-		should_use_custom_interpolation.text = "Use custom interpolation"
+		should_use_custom_interpolation.text = tr("DEFAULT_GUI_BONES_SHOULD_USE_CUSTOM_INTERPOLATION_TOGGLE")
 		options_list.add_child(should_use_custom_interpolation)
 
 		var hbox := HBoxContainer.new()
 		ControlUtil.h_expand_fill(hbox)
 
 		var interpolation_label := Label.new()
-		interpolation_label.text = "Interpolation rate"
+		interpolation_label.text = tr("DEFAULT_GUI_BONES_INTERPOLATION_RATE_LABEL")
 		ControlUtil.h_expand_fill(interpolation_label)
 
 		hbox.add_child(interpolation_label)
@@ -58,7 +58,7 @@ class View extends ScrollContainer:
 
 		#endregion
 
-		reset_bone.text = "Reset bone pose"
+		reset_bone.text = tr("DEFAULT_GUI_BONES_RESET_BONE_POSE_BUTTON")
 
 		options_list.add_child(reset_bone)
 
@@ -96,7 +96,7 @@ const BONE_SIGNALS := [
 	"bone_interpolation_rates"
 ]
 
-const INFO_PAGE := "Info"
+const INFO_PAGE := "DEFAULT_GUI_BONES_INFO_PAGE"
 
 var info: ScrollContainer
 
@@ -108,6 +108,7 @@ var model: Node
 
 func _setup() -> Result:
 	info = $Info
+	_initial_page = tr(INFO_PAGE)
 
 	_set_tree($Tree)
 
@@ -115,14 +116,12 @@ func _setup() -> Result:
 	var root: TreeItem = tree.create_item()
 
 	var info_item: TreeItem = tree.create_item(root)
-	info_item.set_text(TREE_COLUMN, INFO_PAGE)
+	info_item.set_text(TREE_COLUMN, _initial_page)
 	info_item.select(TREE_COLUMN)
 
-	pages[INFO_PAGE] = Page.new(info, info_item)
+	pages[_initial_page] = Page.new(info, info_item)
 	
-	_initial_page = INFO_PAGE
-	
-	_toggle_page(INFO_PAGE)
+	_toggle_page(_initial_page)
 
 	tree.connect("item_selected", self, "_on_item_selected")
 

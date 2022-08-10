@@ -1,13 +1,18 @@
 extends CanvasLayer
 
-const Flagd = preload("res://addons/flagd/flagd.gd")
-
 var viewport: Viewport
 var screen_center := Vector2.ZERO
 var max_parallax_offset := Vector2.ZERO
 
 var background: TextureRect
 var foreground: TextureRect
+
+onready var fade: ColorRect = $Fade
+onready var fade_tween: Tween = $FadeTween
+
+const TIME_UNTIL_FADE_OUT: float = 2.0
+var _time_until_fade_out_counter: float = 0.0
+var _should_count_fade_out := false
 
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
@@ -33,11 +38,8 @@ func _ready() -> void:
 	
 	$MarginContainer/GitHubButton.connect("pressed", self, "_on_github_button_pressed")
 	
-	var fade: ColorRect = $Fade
-	var fade_tween: Tween = $FadeTween
-	
 	if not AM.app_args.stay_on_splash:
-		fade_tween.connect("tween_all_completed", self, "_on_fade_in_completed", [fade_tween, fade])
+		fade_tween.connect("tween_all_completed", self, "_on_fade_in_completed")
 		
 		fade_tween.interpolate_property(fade, "color", fade.color, Color(0.0, 0.0, 0.0, 0.0), 1.0, Tween.TRANS_LINEAR, Tween.EASE_OUT)
 		fade_tween.start()
@@ -57,6 +59,12 @@ func _process(delta: float) -> void:
 	background.rect_position = background.rect_position.linear_interpolate(-mouse_diff, 0.005)
 
 	foreground.rect_position = foreground.rect_position.linear_interpolate(mouse_diff, 0.01)
+	
+	if _should_count_fade_out:
+		_time_until_fade_out_counter += delta
+		if _time_until_fade_out_counter > TIME_UNTIL_FADE_OUT:
+			_fade_out()
+			_should_count_fade_out = false
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
@@ -74,14 +82,10 @@ func _on_screen_resized() -> void:
 func _on_github_button_pressed() -> void:
 	OS.shell_open(Globals.PROJECT_GITHUB_REPO)
 
-func _on_fade_in_completed(fade_tween: Tween, fade: ColorRect) -> void:
+func _on_fade_in_completed() -> void:
 	fade_tween.disconnect("tween_all_completed", self, "_on_fade_in_completed")
-	fade_tween.connect("tween_all_completed", self, "_on_fade_out_completed")
 	
-	yield(get_tree().create_timer(2.0), "timeout")
-	
-	fade_tween.interpolate_property(fade, "color", fade.color, Color.black, 1.0, Tween.TRANS_LINEAR, Tween.EASE_IN)
-	fade_tween.start()
+	_should_count_fade_out = true
 
 func _on_fade_out_completed() -> void:
 	_switch_to_landing_screen()
@@ -89,6 +93,12 @@ func _on_fade_out_completed() -> void:
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#
+
+func _fade_out() -> void:
+	fade_tween.connect("tween_all_completed", self, "_on_fade_out_completed")
+	
+	fade_tween.interpolate_property(fade, "color", fade.color, Color.black, 1.0, Tween.TRANS_LINEAR, Tween.EASE_IN)
+	fade_tween.start()
 
 func _switch_to_landing_screen() -> void:
 	get_tree().change_scene(Globals.LANDING_SCREEN_PATH)
