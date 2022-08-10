@@ -11,643 +11,644 @@ script = ExtResource( 1 )
 margin_right = 1.0
 margin_bottom = 900.0
 
-[node name="General" type="ScrollContainer" parent="."]
-visible = false
-margin_left = 313.0
-margin_right = 1600.0
-margin_bottom = 900.0
-
-[node name="VBoxContainer" type="VBoxContainer" parent="General"]
-margin_right = 1287.0
-margin_bottom = 900.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="LoadModel" type="Button" parent="General/VBoxContainer"]
-margin_right = 1287.0
-margin_bottom = 20.0
-text = "Load model"
-
-[node name="SetModelDefault" type="Button" parent="General/VBoxContainer"]
-margin_top = 24.0
-margin_right = 1287.0
-margin_bottom = 44.0
-text = "Set model as default"
-
-[node name="HSeparator" type="HSeparator" parent="General/VBoxContainer"]
-margin_top = 48.0
-margin_right = 1287.0
-margin_bottom = 52.0
-
-[node name="MoveModel" type="CheckButton" parent="General/VBoxContainer"]
-margin_top = 56.0
-margin_right = 1287.0
-margin_bottom = 96.0
-text = "Move model"
-
-[node name="RotateModel" type="CheckButton" parent="General/VBoxContainer"]
-margin_top = 100.0
-margin_right = 1287.0
-margin_bottom = 140.0
-text = "Rotate model"
-
-[node name="ZoomModel" type="CheckButton" parent="General/VBoxContainer"]
-margin_top = 144.0
-margin_right = 1287.0
-margin_bottom = 184.0
-text = "Zoom model"
-
-[node name="HSeparator2" type="HSeparator" parent="General/VBoxContainer"]
-margin_top = 188.0
-margin_right = 1287.0
-margin_bottom = 192.0
-
-[node name="ResetModelTransform" type="Button" parent="General/VBoxContainer"]
-margin_top = 196.0
-margin_right = 1287.0
-margin_bottom = 216.0
-text = "Reset model transform"
-
-[node name="ResetModelPose" type="Button" parent="General/VBoxContainer"]
-margin_top = 220.0
-margin_right = 1287.0
-margin_bottom = 240.0
-text = "Reset model pose"
-
-[node name="HeadBone" type="HBoxContainer" parent="General/VBoxContainer"]
-margin_top = 244.0
-margin_right = 1287.0
-margin_bottom = 268.0
-
-[node name="Label" type="Label" parent="General/VBoxContainer/HeadBone"]
-margin_top = 5.0
-margin_right = 641.0
-margin_bottom = 19.0
-size_flags_horizontal = 3
-text = "Head bone"
-
-[node name="LineEdit" type="LineEdit" parent="General/VBoxContainer/HeadBone"]
-margin_left = 645.0
-margin_right = 1287.0
-margin_bottom = 24.0
-size_flags_horizontal = 3
-
-[node name="ApplyTranslation" type="CheckButton" parent="General/VBoxContainer"]
-margin_top = 272.0
-margin_right = 1287.0
-margin_bottom = 312.0
-text = "Apply translation"
-
-[node name="ApplyRotation" type="CheckButton" parent="General/VBoxContainer"]
-margin_top = 316.0
-margin_right = 1287.0
-margin_bottom = 356.0
-text = "Apply rotation"
-
-[node name="Looseness" type="ScrollContainer" parent="."]
+[node name="DEFAULT_GUI_MODEL_GENERAL_PAGE" type="ScrollContainer" parent="."]
 margin_left = 13.0
 margin_right = 1600.0
 margin_bottom = 900.0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Looseness"]
+[node name="VBoxContainer" type="VBoxContainer" parent="DEFAULT_GUI_MODEL_GENERAL_PAGE"]
 margin_right = 1587.0
 margin_bottom = 900.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="BoneTranslation" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+[node name="LoadModel" type="Button" parent="DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer"]
 margin_right = 1587.0
-margin_bottom = 24.0
+margin_bottom = 20.0
+text = "DEFAULT_GUI_MODEL_LOAD_MODEL_BUTTON"
 
-[node name="Label" type="Label" parent="Looseness/VBoxContainer/BoneTranslation"]
+[node name="SetModelDefault" type="Button" parent="DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer"]
+margin_top = 24.0
+margin_right = 1587.0
+margin_bottom = 44.0
+text = "DEFAULT_GUI_MODEL_SET_MODEL_AS_DEFAULT_BUTTON"
+
+[node name="HSeparator" type="HSeparator" parent="DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer"]
+margin_top = 48.0
+margin_right = 1587.0
+margin_bottom = 52.0
+
+[node name="MoveModel" type="CheckButton" parent="DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer"]
+margin_top = 56.0
+margin_right = 1587.0
+margin_bottom = 96.0
+text = "DEFAULT_GUI_MODEL_MOVE_MODEL_TOGGLE"
+
+[node name="RotateModel" type="CheckButton" parent="DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer"]
+margin_top = 100.0
+margin_right = 1587.0
+margin_bottom = 140.0
+text = "DEFAULT_GUI_MODEL_ROTATE_MODEL_TOGGLE"
+
+[node name="ZoomModel" type="CheckButton" parent="DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer"]
+margin_top = 144.0
+margin_right = 1587.0
+margin_bottom = 184.0
+text = "DEFAULT_GUI_MODEL_ZOOM_MODEL_TOGGLE"
+
+[node name="HSeparator2" type="HSeparator" parent="DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer"]
+margin_top = 188.0
+margin_right = 1587.0
+margin_bottom = 192.0
+
+[node name="ResetModelTransform" type="Button" parent="DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer"]
+margin_top = 196.0
+margin_right = 1587.0
+margin_bottom = 216.0
+text = "DEFAULT_GUI_MODEL_RESET_MODEL_TRANSFORM_BUTTON"
+
+[node name="ResetModelPose" type="Button" parent="DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer"]
+margin_top = 220.0
+margin_right = 1587.0
+margin_bottom = 240.0
+text = "DEFAULT_GUI_MODEL_RESET_MODEL_POSE_BUTTON"
+
+[node name="HeadBone" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer"]
+margin_top = 244.0
+margin_right = 1587.0
+margin_bottom = 268.0
+
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer/HeadBone"]
 margin_top = 5.0
 margin_right = 791.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Bone translation"
+text = "DEFAULT_GUI_MODEL_HEAD_BONE_LABEL"
 
-[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/BoneTranslation"]
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer/HeadBone"]
 margin_left = 795.0
 margin_right = 1587.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="BoneRotation" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+[node name="ApplyTranslation" type="CheckButton" parent="DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer"]
+margin_top = 272.0
+margin_right = 1587.0
+margin_bottom = 312.0
+text = "DEFAULT_GUI_MODEL_APPLY_TRANSLATION_TOGGLE"
+
+[node name="ApplyRotation" type="CheckButton" parent="DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer"]
+margin_top = 316.0
+margin_right = 1587.0
+margin_bottom = 356.0
+text = "DEFAULT_GUI_MODEL_APPLY_ROTATION_TOGGLE"
+
+[node name="DEFAULT_GUI_MODEL_LOOSENESS_PAGE" type="ScrollContainer" parent="."]
+visible = false
+margin_left = 13.0
+margin_right = 1600.0
+margin_bottom = 900.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE"]
+margin_right = 1587.0
+margin_bottom = 900.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="BoneTranslation" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer"]
+margin_right = 1587.0
+margin_bottom = 24.0
+
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/BoneTranslation"]
+margin_top = 5.0
+margin_right = 791.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "DEFAULT_GUI_MODEL_BONE_TRANSLATION_LABEL"
+
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/BoneTranslation"]
+margin_left = 795.0
+margin_right = 1587.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="BoneRotation" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer"]
 margin_top = 28.0
 margin_right = 1587.0
 margin_bottom = 52.0
 
-[node name="Label" type="Label" parent="Looseness/VBoxContainer/BoneRotation"]
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/BoneRotation"]
 margin_top = 5.0
 margin_right = 791.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Bone rotation"
+text = "DEFAULT_GUI_MODEL_BONE_ROTATION_LABEL"
 
-[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/BoneRotation"]
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/BoneRotation"]
 margin_left = 795.0
 margin_right = 1587.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="AdditionalBones" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+[node name="AdditionalBones" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer"]
 margin_top = 56.0
 margin_right = 1587.0
 margin_bottom = 80.0
 
-[node name="Label" type="Label" parent="Looseness/VBoxContainer/AdditionalBones"]
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/AdditionalBones"]
 margin_top = 5.0
 margin_right = 791.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Additional bones"
+text = "DEFAULT_GUI_MODEL_ADDITIONAL_BONES_LABEL"
 
-[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/AdditionalBones"]
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/AdditionalBones"]
 margin_left = 795.0
 margin_right = 1587.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="HSeparator" type="HSeparator" parent="Looseness/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer"]
 margin_top = 84.0
 margin_right = 1587.0
 margin_bottom = 88.0
 
-[node name="LeftGaze" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+[node name="LeftGaze" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer"]
 margin_top = 92.0
 margin_right = 1587.0
 margin_bottom = 116.0
 
-[node name="Label" type="Label" parent="Looseness/VBoxContainer/LeftGaze"]
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/LeftGaze"]
 margin_top = 5.0
 margin_right = 791.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Left gaze"
+text = "DEFAULT_GUI_MODEL_LEFT_GAZE_LOOSENESS_LABEL"
 
-[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/LeftGaze"]
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/LeftGaze"]
 margin_left = 795.0
 margin_right = 1587.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="RightGaze" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+[node name="RightGaze" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer"]
 margin_top = 120.0
 margin_right = 1587.0
 margin_bottom = 144.0
 
-[node name="Label" type="Label" parent="Looseness/VBoxContainer/RightGaze"]
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/RightGaze"]
 margin_top = 5.0
 margin_right = 791.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Right gaze"
+text = "DEFAULT_GUI_MODEL_RIGHT_GAZE_LOOSENESS_LABEL"
 
-[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/RightGaze"]
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/RightGaze"]
 margin_left = 795.0
 margin_right = 1587.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="HSeparator2" type="HSeparator" parent="Looseness/VBoxContainer"]
+[node name="HSeparator2" type="HSeparator" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer"]
 margin_top = 148.0
 margin_right = 1587.0
 margin_bottom = 152.0
 
-[node name="LeftBlink" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+[node name="LeftBlink" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer"]
 margin_top = 156.0
 margin_right = 1587.0
 margin_bottom = 180.0
 
-[node name="Label" type="Label" parent="Looseness/VBoxContainer/LeftBlink"]
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/LeftBlink"]
 margin_top = 5.0
 margin_right = 791.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Left blink"
+text = "DEFAULT_GUI_MODEL_LEFT_BLINK_LOOSENESS_LABEL"
 
-[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/LeftBlink"]
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/LeftBlink"]
 margin_left = 795.0
 margin_right = 1587.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="RightBlink" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+[node name="RightBlink" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer"]
 margin_top = 184.0
 margin_right = 1587.0
 margin_bottom = 208.0
 
-[node name="Label" type="Label" parent="Looseness/VBoxContainer/RightBlink"]
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/RightBlink"]
 margin_top = 5.0
 margin_right = 791.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Right blink"
+text = "DEFAULT_GUI_MODEL_RIGHT_BLINK_LOOSENESS_LABEL"
 
-[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/RightBlink"]
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/RightBlink"]
 margin_left = 795.0
 margin_right = 1587.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="HSeparator3" type="HSeparator" parent="Looseness/VBoxContainer"]
+[node name="HSeparator3" type="HSeparator" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer"]
 margin_top = 212.0
 margin_right = 1587.0
 margin_bottom = 216.0
 
-[node name="MouthOpen" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+[node name="MouthOpen" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer"]
 margin_top = 220.0
 margin_right = 1587.0
 margin_bottom = 244.0
 
-[node name="Label" type="Label" parent="Looseness/VBoxContainer/MouthOpen"]
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/MouthOpen"]
 margin_top = 5.0
 margin_right = 791.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Mouth open"
+text = "DEFAULT_GUI_MODEL_MOUTH_OPEN_LOOSENESS_LABEL"
 
-[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/MouthOpen"]
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/MouthOpen"]
 margin_left = 795.0
 margin_right = 1587.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="MouthWide" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+[node name="MouthWide" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer"]
 margin_top = 248.0
 margin_right = 1587.0
 margin_bottom = 272.0
 
-[node name="Label" type="Label" parent="Looseness/VBoxContainer/MouthWide"]
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/MouthWide"]
 margin_top = 5.0
 margin_right = 791.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Mouth wide"
+text = "DEFAULT_GUI_MODEL_MOUTH_WIDE_LOOSENESS_LABEL"
 
-[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/MouthWide"]
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/MouthWide"]
 margin_left = 795.0
 margin_right = 1587.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="HSeparator4" type="HSeparator" parent="Looseness/VBoxContainer"]
+[node name="HSeparator4" type="HSeparator" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer"]
 margin_top = 276.0
 margin_right = 1587.0
 margin_bottom = 280.0
 
-[node name="EyebrowSteepnessLeft" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+[node name="EyebrowSteepnessLeft" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer"]
 margin_top = 284.0
 margin_right = 1587.0
 margin_bottom = 308.0
 
-[node name="Label" type="Label" parent="Looseness/VBoxContainer/EyebrowSteepnessLeft"]
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/EyebrowSteepnessLeft"]
 margin_top = 5.0
 margin_right = 791.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Eyebrow steepness left"
+text = "DEFAULT_GUI_MODEL_EYEBROW_STEEPNESS_LEFT_LOOSENESS_LABEL"
 
-[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/EyebrowSteepnessLeft"]
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/EyebrowSteepnessLeft"]
 margin_left = 795.0
 margin_right = 1587.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="EyebrowUpDownLeft" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+[node name="EyebrowUpDownLeft" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer"]
 margin_top = 312.0
 margin_right = 1587.0
 margin_bottom = 336.0
 
-[node name="Label" type="Label" parent="Looseness/VBoxContainer/EyebrowUpDownLeft"]
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/EyebrowUpDownLeft"]
 margin_top = 5.0
 margin_right = 791.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Eyebrow up down left"
+text = "DEFAULT_GUI_MODEL_EYEBROW_UP_DOWN_LEFT_LOOSENESS_LABEL"
 
-[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/EyebrowUpDownLeft"]
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/EyebrowUpDownLeft"]
 margin_left = 795.0
 margin_right = 1587.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="EyebrowQuirkLeft" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+[node name="EyebrowQuirkLeft" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer"]
 margin_top = 340.0
 margin_right = 1587.0
 margin_bottom = 364.0
 
-[node name="Label" type="Label" parent="Looseness/VBoxContainer/EyebrowQuirkLeft"]
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/EyebrowQuirkLeft"]
 margin_top = 5.0
 margin_right = 791.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Eyebrow quirk left"
+text = "DEFAULT_GUI_MODEL_EYEBROW_QUIRK_LEFT_LOOSENESS_LABEL"
 
-[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/EyebrowQuirkLeft"]
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/EyebrowQuirkLeft"]
 margin_left = 795.0
 margin_right = 1587.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="HSeparator5" type="HSeparator" parent="Looseness/VBoxContainer"]
+[node name="HSeparator5" type="HSeparator" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer"]
 margin_top = 368.0
 margin_right = 1587.0
 margin_bottom = 372.0
 
-[node name="EyebrowSteepnessRight" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+[node name="EyebrowSteepnessRight" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer"]
 margin_top = 376.0
 margin_right = 1587.0
 margin_bottom = 400.0
 
-[node name="Label" type="Label" parent="Looseness/VBoxContainer/EyebrowSteepnessRight"]
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/EyebrowSteepnessRight"]
 margin_top = 5.0
 margin_right = 791.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Eyebrow steepness right"
+text = "DEFAULT_GUI_MODEL_EYEBROW_STEEPNESS_RIGHT_LOOSENESS_LABEL"
 
-[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/EyebrowSteepnessRight"]
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/EyebrowSteepnessRight"]
 margin_left = 795.0
 margin_right = 1587.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="EyebrowUpDownRight" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+[node name="EyebrowUpDownRight" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer"]
 margin_top = 404.0
 margin_right = 1587.0
 margin_bottom = 428.0
 
-[node name="Label" type="Label" parent="Looseness/VBoxContainer/EyebrowUpDownRight"]
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/EyebrowUpDownRight"]
 margin_top = 5.0
 margin_right = 791.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Eyebrow up down right"
+text = "DEFAULT_GUI_MODEL_EYEBROW_UP_DOWN_RIGHT_LOOSENESS_LABEL"
 
-[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/EyebrowUpDownRight"]
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/EyebrowUpDownRight"]
 margin_left = 795.0
 margin_right = 1587.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="EyebrowQuirkRight" type="HBoxContainer" parent="Looseness/VBoxContainer"]
+[node name="EyebrowQuirkRight" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer"]
 margin_top = 432.0
 margin_right = 1587.0
 margin_bottom = 456.0
 
-[node name="Label" type="Label" parent="Looseness/VBoxContainer/EyebrowQuirkRight"]
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/EyebrowQuirkRight"]
 margin_top = 5.0
 margin_right = 791.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Eyebrow quirk right"
+text = "DEFAULT_GUI_MODEL_EYEBROW_QUIRK_RIGHT_LOOSENESS_LABEL"
 
-[node name="LineEdit" type="LineEdit" parent="Looseness/VBoxContainer/EyebrowQuirkRight"]
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/EyebrowQuirkRight"]
 margin_left = 795.0
 margin_right = 1587.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="InterpolationOptions" type="ScrollContainer" parent="."]
+[node name="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE" type="ScrollContainer" parent="."]
 visible = false
-margin_left = 313.0
+margin_left = 13.0
 margin_right = 1600.0
 margin_bottom = 900.0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="InterpolationOptions"]
-margin_right = 1287.0
+[node name="VBoxContainer" type="VBoxContainer" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE"]
+margin_right = 1587.0
 margin_bottom = 900.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Global" type="VBoxContainer" parent="InterpolationOptions/VBoxContainer"]
-margin_right = 1287.0
+[node name="Global" type="VBoxContainer" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer"]
+margin_right = 1587.0
 margin_bottom = 68.0
 
-[node name="CheckButton" type="CheckButton" parent="InterpolationOptions/VBoxContainer/Global"]
-margin_right = 1287.0
+[node name="CheckButton" type="CheckButton" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Global"]
+margin_right = 1587.0
 margin_bottom = 40.0
-text = "Global interpolation"
+text = "DEFAULT_GUI_MODEL_GLOBAL_INTERPOLATION_TOGGLE"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="InterpolationOptions/VBoxContainer/Global"]
+[node name="HBoxContainer" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Global"]
 margin_top = 44.0
-margin_right = 1287.0
+margin_right = 1587.0
 margin_bottom = 68.0
 
-[node name="Label" type="Label" parent="InterpolationOptions/VBoxContainer/Global/HBoxContainer"]
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Global/HBoxContainer"]
 margin_top = 5.0
-margin_right = 641.0
+margin_right = 791.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Rate"
+text = "DEFAULT_GUI_MODEL_INTERPOLATION_RATE_TOGGLE"
 
-[node name="LineEdit" type="LineEdit" parent="InterpolationOptions/VBoxContainer/Global/HBoxContainer"]
-margin_left = 645.0
-margin_right = 1287.0
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Global/HBoxContainer"]
+margin_left = 795.0
+margin_right = 1587.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="Bones" type="VBoxContainer" parent="InterpolationOptions/VBoxContainer"]
-margin_right = 1287.0
-margin_bottom = 68.0
-
-[node name="CheckButton" type="CheckButton" parent="InterpolationOptions/VBoxContainer/Bones"]
-margin_right = 1287.0
-margin_bottom = 40.0
-text = "Bone interpolation"
-
-[node name="HBoxContainer" type="HBoxContainer" parent="InterpolationOptions/VBoxContainer/Bones"]
-margin_top = 44.0
-margin_right = 1287.0
-margin_bottom = 68.0
-
-[node name="Label" type="Label" parent="InterpolationOptions/VBoxContainer/Bones/HBoxContainer"]
-margin_top = 5.0
-margin_right = 641.0
-margin_bottom = 19.0
-size_flags_horizontal = 3
-text = "Rate"
-
-[node name="LineEdit" type="LineEdit" parent="InterpolationOptions/VBoxContainer/Bones/HBoxContainer"]
-margin_left = 645.0
-margin_right = 1287.0
-margin_bottom = 24.0
-size_flags_horizontal = 3
-
-[node name="Gaze" type="VBoxContainer" parent="InterpolationOptions/VBoxContainer"]
+[node name="Bones" type="VBoxContainer" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer"]
 margin_top = 72.0
-margin_right = 1287.0
+margin_right = 1587.0
 margin_bottom = 140.0
 
-[node name="CheckButton" type="CheckButton" parent="InterpolationOptions/VBoxContainer/Gaze"]
-margin_right = 1287.0
+[node name="CheckButton" type="CheckButton" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Bones"]
+margin_right = 1587.0
 margin_bottom = 40.0
-text = "Gaze interpolation"
+text = "DEFAULT_GUI_MODEL_BONE_INTERPOLATION_TOGGLE"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="InterpolationOptions/VBoxContainer/Gaze"]
+[node name="HBoxContainer" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Bones"]
 margin_top = 44.0
-margin_right = 1287.0
+margin_right = 1587.0
 margin_bottom = 68.0
 
-[node name="Label" type="Label" parent="InterpolationOptions/VBoxContainer/Gaze/HBoxContainer"]
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Bones/HBoxContainer"]
 margin_top = 5.0
-margin_right = 641.0
+margin_right = 791.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Rate"
+text = "DEFAULT_GUI_MODEL_INTERPOLATION_RATE_TOGGLE"
 
-[node name="LineEdit" type="LineEdit" parent="InterpolationOptions/VBoxContainer/Gaze/HBoxContainer"]
-margin_left = 645.0
-margin_right = 1287.0
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Bones/HBoxContainer"]
+margin_left = 795.0
+margin_right = 1587.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="Blink" type="VBoxContainer" parent="InterpolationOptions/VBoxContainer"]
+[node name="Gaze" type="VBoxContainer" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer"]
 margin_top = 144.0
-margin_right = 1287.0
+margin_right = 1587.0
 margin_bottom = 212.0
 
-[node name="CheckButton" type="CheckButton" parent="InterpolationOptions/VBoxContainer/Blink"]
-margin_right = 1287.0
+[node name="CheckButton" type="CheckButton" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Gaze"]
+margin_right = 1587.0
 margin_bottom = 40.0
-text = "Blink interpolation"
+text = "DEFAULT_GUI_MODEL_GAZE_INTERPOLATION_TOGGLE"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="InterpolationOptions/VBoxContainer/Blink"]
+[node name="HBoxContainer" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Gaze"]
 margin_top = 44.0
-margin_right = 1287.0
+margin_right = 1587.0
 margin_bottom = 68.0
 
-[node name="Label" type="Label" parent="InterpolationOptions/VBoxContainer/Blink/HBoxContainer"]
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Gaze/HBoxContainer"]
 margin_top = 5.0
-margin_right = 641.0
+margin_right = 791.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Rate"
+text = "DEFAULT_GUI_MODEL_INTERPOLATION_RATE_TOGGLE"
 
-[node name="LineEdit" type="LineEdit" parent="InterpolationOptions/VBoxContainer/Blink/HBoxContainer"]
-margin_left = 645.0
-margin_right = 1287.0
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Gaze/HBoxContainer"]
+margin_left = 795.0
+margin_right = 1587.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="Mouth" type="VBoxContainer" parent="InterpolationOptions/VBoxContainer"]
+[node name="Blink" type="VBoxContainer" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer"]
 margin_top = 216.0
-margin_right = 1287.0
+margin_right = 1587.0
 margin_bottom = 284.0
 
-[node name="CheckButton" type="CheckButton" parent="InterpolationOptions/VBoxContainer/Mouth"]
-margin_right = 1287.0
+[node name="CheckButton" type="CheckButton" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Blink"]
+margin_right = 1587.0
 margin_bottom = 40.0
-text = "Mouth"
+text = "DEFAULT_GUI_MODEL_BLINK_INTERPOLATION_TOGGLE"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="InterpolationOptions/VBoxContainer/Mouth"]
+[node name="HBoxContainer" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Blink"]
 margin_top = 44.0
-margin_right = 1287.0
+margin_right = 1587.0
 margin_bottom = 68.0
 
-[node name="Label" type="Label" parent="InterpolationOptions/VBoxContainer/Mouth/HBoxContainer"]
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Blink/HBoxContainer"]
 margin_top = 5.0
-margin_right = 641.0
+margin_right = 791.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Rate"
+text = "DEFAULT_GUI_MODEL_INTERPOLATION_RATE_TOGGLE"
 
-[node name="LineEdit" type="LineEdit" parent="InterpolationOptions/VBoxContainer/Mouth/HBoxContainer"]
-margin_left = 645.0
-margin_right = 1287.0
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Blink/HBoxContainer"]
+margin_left = 795.0
+margin_right = 1587.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="Eyebrows" type="VBoxContainer" parent="InterpolationOptions/VBoxContainer"]
-margin_top = 216.0
-margin_right = 1287.0
-margin_bottom = 284.0
+[node name="Mouth" type="VBoxContainer" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer"]
+margin_top = 288.0
+margin_right = 1587.0
+margin_bottom = 356.0
 
-[node name="CheckButton" type="CheckButton" parent="InterpolationOptions/VBoxContainer/Eyebrows"]
-margin_right = 1287.0
+[node name="CheckButton" type="CheckButton" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Mouth"]
+margin_right = 1587.0
 margin_bottom = 40.0
-text = "Eyebrows"
+text = "DEFAULT_GUI_MODEL_MOUTH_INTERPOLATION_TOGGLE"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="InterpolationOptions/VBoxContainer/Eyebrows"]
+[node name="HBoxContainer" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Mouth"]
 margin_top = 44.0
-margin_right = 1287.0
+margin_right = 1587.0
 margin_bottom = 68.0
 
-[node name="Label" type="Label" parent="InterpolationOptions/VBoxContainer/Eyebrows/HBoxContainer"]
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Mouth/HBoxContainer"]
 margin_top = 5.0
-margin_right = 641.0
+margin_right = 791.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Rate"
+text = "DEFAULT_GUI_MODEL_INTERPOLATION_RATE_TOGGLE"
 
-[node name="LineEdit" type="LineEdit" parent="InterpolationOptions/VBoxContainer/Eyebrows/HBoxContainer"]
-margin_left = 645.0
-margin_right = 1287.0
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Mouth/HBoxContainer"]
+margin_left = 795.0
+margin_right = 1587.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="EyeOptions" type="ScrollContainer" parent="."]
+[node name="Eyebrows" type="VBoxContainer" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer"]
+margin_top = 360.0
+margin_right = 1587.0
+margin_bottom = 428.0
+
+[node name="CheckButton" type="CheckButton" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Eyebrows"]
+margin_right = 1587.0
+margin_bottom = 40.0
+text = "DEFAULT_GUI_MODEL_EYEBROWS_INTERPOLATION_TOGGLE"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Eyebrows"]
+margin_top = 44.0
+margin_right = 1587.0
+margin_bottom = 68.0
+
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Eyebrows/HBoxContainer"]
+margin_top = 5.0
+margin_right = 791.0
+margin_bottom = 19.0
+size_flags_horizontal = 3
+text = "DEFAULT_GUI_MODEL_INTERPOLATION_RATE_TOGGLE"
+
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Eyebrows/HBoxContainer"]
+margin_left = 795.0
+margin_right = 1587.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="DEFAULT_GUI_MODEL_EYES_PAGE" type="ScrollContainer" parent="."]
 visible = false
-margin_left = 313.0
+margin_left = 13.0
 margin_right = 1600.0
 margin_bottom = 900.0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="EyeOptions"]
-margin_right = 1287.0
+[node name="VBoxContainer" type="VBoxContainer" parent="DEFAULT_GUI_MODEL_EYES_PAGE"]
+margin_right = 1587.0
 margin_bottom = 900.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="ShouldTrackEye" type="CheckButton" parent="EyeOptions/VBoxContainer"]
-margin_right = 1287.0
+[node name="ShouldTrackEye" type="CheckButton" parent="DEFAULT_GUI_MODEL_EYES_PAGE/VBoxContainer"]
+margin_right = 1587.0
 margin_bottom = 40.0
-text = "Should track eye"
+text = "DEFAULT_GUI_MODEL_SHOULD_TRACK_EYE_TOGGLE"
 
-[node name="GazeStrength" type="HBoxContainer" parent="EyeOptions/VBoxContainer"]
+[node name="GazeStrength" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_EYES_PAGE/VBoxContainer"]
 margin_top = 44.0
-margin_right = 1287.0
+margin_right = 1587.0
 margin_bottom = 68.0
 
-[node name="Label" type="Label" parent="EyeOptions/VBoxContainer/GazeStrength"]
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_EYES_PAGE/VBoxContainer/GazeStrength"]
 margin_top = 5.0
-margin_right = 641.0
+margin_right = 791.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Gaze strength"
+text = "DEFAULT_GUI_MODEL_GAZE_STRENGTH_LABEL"
 
-[node name="LineEdit" type="LineEdit" parent="EyeOptions/VBoxContainer/GazeStrength"]
-margin_left = 645.0
-margin_right = 1287.0
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_EYES_PAGE/VBoxContainer/GazeStrength"]
+margin_left = 795.0
+margin_right = 1587.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="BlinkThreshold" type="HBoxContainer" parent="EyeOptions/VBoxContainer"]
+[node name="BlinkThreshold" type="HBoxContainer" parent="DEFAULT_GUI_MODEL_EYES_PAGE/VBoxContainer"]
 margin_top = 72.0
-margin_right = 1287.0
+margin_right = 1587.0
 margin_bottom = 96.0
 
-[node name="Label" type="Label" parent="EyeOptions/VBoxContainer/BlinkThreshold"]
+[node name="Label" type="Label" parent="DEFAULT_GUI_MODEL_EYES_PAGE/VBoxContainer/BlinkThreshold"]
 margin_top = 5.0
-margin_right = 641.0
+margin_right = 791.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-text = "Blink threshold"
+text = "DEFAULT_GUI_MODEL_BLINK_THRESHOLD_LABEL"
 
-[node name="LineEdit" type="LineEdit" parent="EyeOptions/VBoxContainer/BlinkThreshold"]
-margin_left = 645.0
-margin_right = 1287.0
+[node name="LineEdit" type="LineEdit" parent="DEFAULT_GUI_MODEL_EYES_PAGE/VBoxContainer/BlinkThreshold"]
+margin_left = 795.0
+margin_right = 1587.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
-[node name="LinkEyeBlinks" type="CheckButton" parent="EyeOptions/VBoxContainer"]
+[node name="LinkEyeBlinks" type="CheckButton" parent="DEFAULT_GUI_MODEL_EYES_PAGE/VBoxContainer"]
 margin_top = 100.0
-margin_right = 1287.0
+margin_right = 1587.0
 margin_bottom = 140.0
-text = "Link eye blinks"
+text = "DEFAULT_GUI_MODEL_LINK_EYE_BLINKS_TOGGLE"
 
-[node name="RawEyeRotation" type="CheckButton" parent="EyeOptions/VBoxContainer"]
+[node name="RawEyeRotation" type="CheckButton" parent="DEFAULT_GUI_MODEL_EYES_PAGE/VBoxContainer"]
 margin_top = 144.0
-margin_right = 1287.0
+margin_right = 1587.0
 margin_bottom = 184.0
-text = "Use raw eye rotation"
+text = "DEFAULT_GUI_MODEL_USE_RAW_EYE_ROTATION_TOGGLE"

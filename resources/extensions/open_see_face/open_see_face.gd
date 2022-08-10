@@ -269,7 +269,7 @@ func _start_tracker() -> bool:
 		logger.error(res)
 		return false
 
-	var context_path: String = res.unwrap().context_path
+	var context_path: String = res.unwrap()
 
 	var pid: int = OS.execute(
 		"%s/OpenSeeFaceFolder/OpenSeeFace/facetracker%s" % [

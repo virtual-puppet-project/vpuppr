@@ -9,7 +9,15 @@ var screen: Node
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#
 
-func _init(p_name: String, p_screen) -> void:
+func _init(p_screen, p_name: String = "") -> void:
+	if p_name.empty():
+		if p_screen is Resource:
+			p_name = p_screen.resource_path
+		elif p_screen is Node:
+			p_name = p_screen.name
+		else:
+			p_name = tr("MISSING_KEY_PLACEHOLDER")
+
 	_logger = Logger.new(p_name)
 
 	# Node configuration

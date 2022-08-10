@@ -102,20 +102,20 @@ func test_scan_pass():
 # TODO I think this test is flaky
 # It crashed the test runner once, which is something that happens when a library is unloaded
 # Hard to reproduce :<
-func test_gdnative_pass():
-	if OS.get_environment("VSS_ENV") or OS.has_feature("Server"):
-		gut.p("Skipping in ci build")
-		return
-	var res: Result = AM.em._parse_extension(
-		"res://tests/test_resources/extension_resources/gdnative_extension/")
-
-	assert_true(res.is_ok())
-
-	var pinger_res = AM.em.load_gdnative_resource("GDNativeExtension", "PingerNative", "Pinger")
-	assert_true(pinger_res.is_ok())
-
-	var pinger = pinger_res.unwrap()
-	assert_has_method(pinger, "ping")
-	assert_has_method(pinger, "count_up_msec")
-	assert_has_method(pinger, "add_int")
-	assert_eq(pinger.add_int(1, 2), 3)
+#func test_gdnative_pass():
+#	if OS.get_environment("VSS_ENV") or OS.has_feature("Server"):
+#		gut.p("Skipping in ci build")
+#		return
+#	var res: Result = AM.em._parse_extension(
+#		"res://tests/test_resources/extension_resources/gdnative_extension/")
+#
+#	assert_true(res.is_ok())
+#
+#	var pinger_res = AM.em.load_gdnative_resource("GDNativeExtension", "PingerNative", "Pinger")
+#	assert_true(pinger_res.is_ok())
+#
+#	var pinger = pinger_res.unwrap()
+#	assert_has_method(pinger, "ping")
+#	assert_has_method(pinger, "count_up_msec")
+#	assert_has_method(pinger, "add_int")
+#	assert_eq(pinger.add_int(1, 2), 3)

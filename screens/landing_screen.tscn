@@ -29,14 +29,7 @@ margin_top = 10.0
 margin_right = -10.0
 margin_bottom = -10.0
 
-[node name="Runners" parent="RootControl/TabContainer" instance=ExtResource( 4 )]
-margin_left = 7.5
-margin_top = 35.5
-margin_right = -7.5
-margin_bottom = -7.5
-
-[node name="Extensions" type="PanelContainer" parent="RootControl/TabContainer"]
-visible = false
+[node name="DEFAULT_GUI_LANDING_SCREEN_RUNNERS" type="PanelContainer" parent="RootControl/TabContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 7.5
@@ -46,28 +39,7 @@ margin_bottom = -7.5
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="ScrollContainer" type="ScrollContainer" parent="RootControl/TabContainer/Extensions"]
-margin_left = 9.0
-margin_top = 6.0
-margin_right = 1556.0
-margin_bottom = 831.0
-
-[node name="ExtensionsList" type="VBoxContainer" parent="RootControl/TabContainer/Extensions/ScrollContainer"]
-margin_right = 1547.0
-size_flags_horizontal = 3
-
-[node name="Settings" type="PanelContainer" parent="RootControl/TabContainer"]
-visible = false
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 7.5
-margin_top = 35.5
-margin_right = -7.5
-margin_bottom = -7.5
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="Settings" parent="RootControl/TabContainer/Settings" instance=ExtResource( 3 )]
+[node name="Runners" parent="RootControl/TabContainer/DEFAULT_GUI_LANDING_SCREEN_RUNNERS" instance=ExtResource( 4 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_left = 9.0
@@ -75,7 +47,47 @@ margin_top = 6.0
 margin_right = 1556.0
 margin_bottom = 831.0
 
-[node name="About" type="PanelContainer" parent="RootControl/TabContainer"]
+[node name="DEFAULT_GUI_LANDING_SCREEN_EXTENSIONS" type="PanelContainer" parent="RootControl/TabContainer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 7.5
+margin_top = 35.5
+margin_right = -7.5
+margin_bottom = -7.5
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="RootControl/TabContainer/DEFAULT_GUI_LANDING_SCREEN_EXTENSIONS"]
+margin_left = 9.0
+margin_top = 6.0
+margin_right = 1556.0
+margin_bottom = 831.0
+
+[node name="ExtensionsList" type="VBoxContainer" parent="RootControl/TabContainer/DEFAULT_GUI_LANDING_SCREEN_EXTENSIONS/ScrollContainer"]
+margin_right = 1547.0
+size_flags_horizontal = 3
+
+[node name="DEFAULT_GUI_LANDING_SCREEN_SETTINGS" type="PanelContainer" parent="RootControl/TabContainer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 7.5
+margin_top = 35.5
+margin_right = -7.5
+margin_bottom = -7.5
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Settings" parent="RootControl/TabContainer/DEFAULT_GUI_LANDING_SCREEN_SETTINGS" instance=ExtResource( 3 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 9.0
+margin_top = 6.0
+margin_right = 1556.0
+margin_bottom = 831.0
+
+[node name="DEFAULT_GUI_LANDING_SCREEN_ABOUT" type="PanelContainer" parent="RootControl/TabContainer"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0

@@ -28,7 +28,7 @@ ML_MODEL_NEG_1="Faster idk"
 ML_MODEL_0="Potato"
 ML_MODEL_1="Higher quality than Potato but more resource intensive"
 ML_MODEL_2="Slightly faster than Default but lower quality"
-ML_MDOEL_3="Default"
+ML_MODEL_3="Default"
 ML_MODEL_4="Wink optimized, slower than Default"
 
 ML_MODEL_SELECT_HINT="The tracking model to use. See the OpenSeeFace README on GitHub for an explanation of the different tracking models."

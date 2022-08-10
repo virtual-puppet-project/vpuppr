@@ -9,86 +9,86 @@ var zoom_model: CheckButton
 #-----------------------------------------------------------------------------#
 
 func _setup() -> Result:
-	_initial_page = "General"
+	_initial_page = tr("DEFAULT_GUI_MODEL_GENERAL_PAGE")
 
 	#region General
 	
-	_connect_element($General/VBoxContainer/LoadModel, "load_model")
-	_connect_element($General/VBoxContainer/SetModelDefault, "set_model_default")
+	_connect_element($DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer/LoadModel, "load_model")
+	_connect_element($DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer/SetModelDefault, "set_model_default")
 
 	# TODO need a way to pull the global state of this element
 	# e.g. other "Model" popups might already have "move" turned on
-	move_model = $General/VBoxContainer/MoveModel
+	move_model = $DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer/MoveModel
 	_connect_element(move_model, Globals.SceneSignals.MOVE_MODEL)
-	rotate_model = $General/VBoxContainer/RotateModel
+	rotate_model = $DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer/RotateModel
 	_connect_element(rotate_model, Globals.SceneSignals.ROTATE_MODEL)
-	zoom_model = $General/VBoxContainer/ZoomModel
+	zoom_model = $DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer/ZoomModel
 	_connect_element(zoom_model, Globals.SceneSignals.ZOOM_MODEL)
 
-	_connect_element($General/VBoxContainer/ResetModelTransform, "reset_model_transform")
-	_connect_element($General/VBoxContainer/ResetModelPose, "reset_model_pose")
+	_connect_element($DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer/ResetModelTransform, "reset_model_transform")
+	_connect_element($DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer/ResetModelPose, "reset_model_pose")
 
-	_connect_element($General/VBoxContainer/HeadBone/LineEdit, "head_bone")
+	_connect_element($DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer/HeadBone/LineEdit, "head_bone")
 
-	_connect_element($General/VBoxContainer/ApplyTranslation, "apply_translation")
-	_connect_element($General/VBoxContainer/ApplyRotation, "apply_rotation")
+	_connect_element($DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer/ApplyTranslation, "apply_translation")
+	_connect_element($DEFAULT_GUI_MODEL_GENERAL_PAGE/VBoxContainer/ApplyRotation, "apply_rotation")
 
 	#endregion
 
 	#region Looseness
 
-	_connect_element($Looseness/VBoxContainer/AdditionalBones/LineEdit , "additional_bone_damping")
+	_connect_element($DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/AdditionalBones/LineEdit , "additional_bone_damping")
 
-	_connect_element($Looseness/VBoxContainer/BoneTranslation/LineEdit, "bone_translation_damping")
-	_connect_element($Looseness/VBoxContainer/BoneRotation/LineEdit, "bone_rotation_damping")
+	_connect_element($DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/BoneTranslation/LineEdit, "bone_translation_damping")
+	_connect_element($DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/BoneRotation/LineEdit, "bone_rotation_damping")
 
-	_connect_element($Looseness/VBoxContainer/LeftGaze/LineEdit, "left_gaze_damping")
-	_connect_element($Looseness/VBoxContainer/RightGaze/LineEdit, "right_gaze_damping")
+	_connect_element($DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/LeftGaze/LineEdit, "left_gaze_damping")
+	_connect_element($DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/RightGaze/LineEdit, "right_gaze_damping")
 
-	_connect_element($Looseness/VBoxContainer/LeftBlink/LineEdit, "left_blink_damping")
-	_connect_element($Looseness/VBoxContainer/RightBlink/LineEdit, "right_blink_damping")
+	_connect_element($DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/LeftBlink/LineEdit, "left_blink_damping")
+	_connect_element($DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/RightBlink/LineEdit, "right_blink_damping")
 
-	_connect_element($Looseness/VBoxContainer/MouthOpen/LineEdit, "mouth_open_damping")
-	_connect_element($Looseness/VBoxContainer/MouthWide/LineEdit, "mouth_wide_damping")
+	_connect_element($DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/MouthOpen/LineEdit, "mouth_open_damping")
+	_connect_element($DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/MouthWide/LineEdit, "mouth_wide_damping")
 
-	_connect_element($Looseness/VBoxContainer/EyebrowSteepnessLeft/LineEdit, "eyebrow_steepness_left_damping")
-	_connect_element($Looseness/VBoxContainer/EyebrowUpDownLeft/LineEdit, "eyebrow_up_down_left_damping")
-	_connect_element($Looseness/VBoxContainer/EyebrowQuirkLeft/LineEdit, "eyebrow_quirk_left_damping")
+	_connect_element($DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/EyebrowSteepnessLeft/LineEdit, "eyebrow_steepness_left_damping")
+	_connect_element($DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/EyebrowUpDownLeft/LineEdit, "eyebrow_up_down_left_damping")
+	_connect_element($DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/EyebrowQuirkLeft/LineEdit, "eyebrow_quirk_left_damping")
 
-	_connect_element($Looseness/VBoxContainer/EyebrowSteepnessRight/LineEdit, "eyebrow_steepness_right_damping")
-	_connect_element($Looseness/VBoxContainer/EyebrowUpDownRight/LineEdit, "eyebrow_up_down_right_damping")
-	_connect_element($Looseness/VBoxContainer/EyebrowQuirkRight/LineEdit, "eyebrow_quirk_right_damping")
+	_connect_element($DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/EyebrowSteepnessRight/LineEdit, "eyebrow_steepness_right_damping")
+	_connect_element($DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/EyebrowUpDownRight/LineEdit, "eyebrow_up_down_right_damping")
+	_connect_element($DEFAULT_GUI_MODEL_LOOSENESS_PAGE/VBoxContainer/EyebrowQuirkRight/LineEdit, "eyebrow_quirk_right_damping")
 
 	#endregion
 
 	#region Interpolation
 
-	_connect_element($InterpolationOptions/VBoxContainer/Global/CheckButton, "interpolate_global")
-	_connect_element($InterpolationOptions/VBoxContainer/Global/HBoxContainer/LineEdit, "base_interpolation_rate")
+	_connect_element($DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Global/CheckButton, "interpolate_global")
+	_connect_element($DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Global/HBoxContainer/LineEdit, "base_interpolation_rate")
 
-	_connect_element($InterpolationOptions/VBoxContainer/Bones/CheckButton, "interpolate_bones")
-	_connect_element($InterpolationOptions/VBoxContainer/Bones/HBoxContainer/LineEdit, "bone_interpolation_rate")
+	_connect_element($DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Bones/CheckButton, "interpolate_bones")
+	_connect_element($DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Bones/HBoxContainer/LineEdit, "bone_interpolation_rate")
 
-	_connect_element($InterpolationOptions/VBoxContainer/Gaze/CheckButton, "interpolate_gaze")
-	_connect_element($InterpolationOptions/VBoxContainer/Gaze/HBoxContainer/LineEdit, "gaze_interpolation_rate")
+	_connect_element($DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Gaze/CheckButton, "interpolate_gaze")
+	_connect_element($DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Gaze/HBoxContainer/LineEdit, "gaze_interpolation_rate")
 
-	_connect_element($InterpolationOptions/VBoxContainer/Blink/CheckButton, "interpolate_blinks")
-	_connect_element($InterpolationOptions/VBoxContainer/Blink/HBoxContainer/LineEdit, "blinks_interpolation_rate")
+	_connect_element($DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Blink/CheckButton, "interpolate_blinks")
+	_connect_element($DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Blink/HBoxContainer/LineEdit, "blinks_interpolation_rate")
 
-	_connect_element($InterpolationOptions/VBoxContainer/Mouth/CheckButton, "interpolate_mouth")
-	_connect_element($InterpolationOptions/VBoxContainer/Mouth/HBoxContainer/LineEdit, "mouth_interpolation_rate")
+	_connect_element($DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Mouth/CheckButton, "interpolate_mouth")
+	_connect_element($DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Mouth/HBoxContainer/LineEdit, "mouth_interpolation_rate")
 
-	_connect_element($InterpolationOptions/VBoxContainer/Eyebrows/CheckButton, "interpolate_eyebrows")
-	_connect_element($InterpolationOptions/VBoxContainer/Eyebrows/HBoxContainer/LineEdit, "eyebrow_interpolation_rate")
+	_connect_element($DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Eyebrows/CheckButton, "interpolate_eyebrows")
+	_connect_element($DEFAULT_GUI_MODEL_INTERPOLATION_PAGE/VBoxContainer/Eyebrows/HBoxContainer/LineEdit, "eyebrow_interpolation_rate")
 
 	#endregion
 
 	#region Eye Options
 
-	_connect_element($EyeOptions/VBoxContainer/ShouldTrackEye, "should_track_eye")
-	_connect_element($EyeOptions/VBoxContainer/GazeStrength/LineEdit, "gaze_strength")
-	_connect_element($EyeOptions/VBoxContainer/LinkEyeBlinks, "link_eye_blinks")
-	_connect_element($EyeOptions/VBoxContainer/RawEyeRotation, "use_raw_eye_rotation")
+	_connect_element($DEFAULT_GUI_MODEL_EYES_PAGE/VBoxContainer/ShouldTrackEye, "should_track_eye")
+	_connect_element($DEFAULT_GUI_MODEL_EYES_PAGE/VBoxContainer/GazeStrength/LineEdit, "gaze_strength")
+	_connect_element($DEFAULT_GUI_MODEL_EYES_PAGE/VBoxContainer/LinkEyeBlinks, "link_eye_blinks")
+	_connect_element($DEFAULT_GUI_MODEL_EYES_PAGE/VBoxContainer/RawEyeRotation, "use_raw_eye_rotation")
 
 	#endregion
 

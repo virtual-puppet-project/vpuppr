@@ -1,6 +1,6 @@
 extends BaseTreeLayout
 
-const INFO_PAGE := "Info"
+const INFO_PAGE := "DEFAULT_GUI_TRACKING_INFO_PAGE"
 
 var running_trackers: VBoxContainer
 var running_trackers_button_group := ButtonGroup.new()
@@ -15,23 +15,23 @@ func _setup_logger() -> void:
 func _setup() -> Result:
 	AM.ps.subscribe(self, Globals.EVENT_PUBLISHED)
 
-	running_trackers = $Info/VBoxContainer/RunningTrackers
-
-	var info := $Info as ScrollContainer
+	var info := get_node(INFO_PAGE) as ScrollContainer
 	_set_tree($Tree)
+	
+	running_trackers = info.get_node("VBoxContainer/RunningTrackers")
+	
+	_initial_page = tr(INFO_PAGE)
 
 	tree.hide_root = true
 	var root: TreeItem = tree.create_item()
 
 	var info_item: TreeItem = tree.create_item(root)
-	info_item.set_text(TREE_COLUMN, INFO_PAGE)
+	info_item.set_text(TREE_COLUMN, _initial_page)
 	info_item.select(TREE_COLUMN)
 
-	pages[INFO_PAGE] = Page.new(info, info_item)
-
-	_initial_page = INFO_PAGE
+	pages[_initial_page] = Page.new(info, info_item)
 	
-	_toggle_page(INFO_PAGE)
+	_toggle_page(_initial_page)
 
 	tree.connect("item_selected", self, "_on_item_selected")
 
@@ -252,7 +252,7 @@ func _create_tracker_info(tracker_name: String, use_for_offsets: bool) -> HBoxCo
 	hbox.add_child(label)
 
 	var toggle_button := CheckButton.new()
-	toggle_button.text = "Main tracker"
+	toggle_button.text = tr("DEFAULT_GUI_TRACKING_MAIN_TRACKER")
 	toggle_button.group = running_trackers_button_group
 	toggle_button.connect("toggled", self, "_on_tracker_info_main_tracker_toggled", [tracker_name])
 	toggle_button.pressed = use_for_offsets

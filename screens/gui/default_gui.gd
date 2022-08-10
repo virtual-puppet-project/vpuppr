@@ -17,13 +17,13 @@ const Tracking = preload("res://screens/gui/popups/tracking.tscn")
 const Props = preload("res://screens/gui/popups/props.tscn")
 const Presets = preload("res://screens/gui/popups/presets.tscn")
 
-const BUILTIN_MENUS := [
-	Model,
-	Bones,
-	Tracking,
-	Props,
-	Presets
-]
+const BUILTIN_MENUS := {
+	"DEFAULT_GUI_MODEL": Model,
+	"DEFAULT_GUI_BONES": Bones,
+	"DEFAULT_GUI_TRACKING": Tracking,
+	"DEFAULT_GUI_PROPS": Props,
+	"DEFAULT_GUI_PRESETS": Presets
+}
 
 var logger: Logger
 
@@ -39,10 +39,10 @@ func _init() -> void:
 func _ready() -> void:
 	var menu_list := $VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer/MenuList as VBoxContainer
 
-	for menu in BUILTIN_MENUS:
+	for menu_name in BUILTIN_MENUS.keys():
 		var button := Button.new()
-		button.text = menu.resource_path.get_file().get_basename().capitalize()
-		button.connect("pressed", self, "_on_pressed", [menu])
+		button.text = tr(menu_name)
+		button.connect("pressed", self, "_on_pressed", [BUILTIN_MENUS[menu_name], tr(menu_name)])
 
 		menu_list.add_child(button)
 
@@ -51,8 +51,8 @@ func _ready() -> void:
 			continue
 		
 		var button := Button.new()
-		button.text = ext.resource_name
-		button.connect("pressed", self, "_on_pressed", [load(ext.resource_entrypoint)])
+		button.text = tr(ext.translation_key)
+		button.connect("pressed", self, "_on_pressed", [load(ext.resource_entrypoint), tr(ext.translation_key)])
 
 		menu_list.add_child(button)
 	
@@ -71,17 +71,15 @@ func _input(event: InputEvent) -> void:
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#
 
-func _on_pressed(scene) -> void:
+func _on_pressed(scene, popup_name: String) -> void:
 	var popup: WindowDialog
-
-	var popup_name: String = scene.resource_path.get_file().get_basename().capitalize()
 
 	var res := Safely.wrap(AM.tcm.pull(popup_name))
 	if res.is_err():
 		if res.unwrap_err().code != Error.Code.TEMP_CACHE_MANAGER_KEY_NOT_FOUND:
 			logger.error(res)
 			return
-		popup = _create_popup(popup_name, scene)
+		popup = _create_popup(scene, popup_name)
 		popup.connect("gui_input", self, "_on_popup_clicked", [popup])
 
 		AM.tcm.push(popup_name, popup).cleanup_on_signal(popup, "tree_exiting")
@@ -113,8 +111,8 @@ func _on_popup_clicked(event: InputEvent, popup: Control) -> void:
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#
 
-func _create_popup(popup_name: String, scene) -> BasePopup:
-	var popup: BasePopup = BasePopup.new(popup_name, scene)
+func _create_popup(scene, popup_name: String) -> BasePopup:
+	var popup: BasePopup = BasePopup.new(scene, popup_name)
 
 	return popup
 
