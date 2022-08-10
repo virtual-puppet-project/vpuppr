@@ -69,16 +69,16 @@ func _ready() -> void:
 	popup.connect("id_pressed", self, "_on_popup_item_pressed", [ButtonGrouping.APP])
 	popup.hide_on_checkable_item_selection = false
 	
-	popup.add_item("Main Menu", AppButtons.MAIN_MENU)
+	popup.add_item(tr("DEFAULT_GUI_MENU_BAR_APP_MAIN_MENU"), AppButtons.MAIN_MENU)
 	
 	popup.add_separator()
 	
-	popup.add_item("Settings", AppButtons.SETTINGS)
-	popup.add_item("Logs", AppButtons.LOGS)
+	popup.add_item(tr("DEFAULT_GUI_MENU_BAR_APP_SETTINGS"), AppButtons.SETTINGS)
+	popup.add_item(tr("DEFAULT_GUI_MENU_BAR_APP_LOGS"), AppButtons.LOGS)
 	
 	popup.add_separator()
 	
-	popup.add_item("Quit", AppButtons.QUIT)
+	popup.add_item(tr("DEFAULT_GUI_MENU_BAR_APP_QUIT"), AppButtons.QUIT)
 	
 	#endregion
 	
@@ -88,11 +88,11 @@ func _ready() -> void:
 	popup.connect("id_pressed", self, "_on_popup_item_pressed", [ButtonGrouping.DEBUG])
 	popup.hide_on_checkable_item_selection = false
 	
-	popup.add_check_item("Show Raw Mesh", DebugButtons.SHOW_RAW_MESH)
+	popup.add_check_item(tr("DEFAULT_GUI_MENU_BAR_DEBUG_SHOW_RAW_MESH"), DebugButtons.SHOW_RAW_MESH)
 	
 	popup.add_separator()
 	
-	popup.add_item("Debug Console", DebugButtons.DEBUG_CONSOLE)
+	popup.add_item(tr("DEFAULT_GUI_MENU_BAR_DEBUG_DEBUG_CONSOLE"), DebugButtons.DEBUG_CONSOLE)
 	
 	#endregion
 	
@@ -102,17 +102,17 @@ func _ready() -> void:
 	popup.connect("id_pressed", self, "_on_popup_item_pressed", [ButtonGrouping.HELP])
 	popup.hide_on_checkable_item_selection = false
 	
-	popup.add_item("In-app Help", HelpButtons.IN_APP_HELP)
-	popup.add_item("About", HelpButtons.ABOUT)
+	popup.add_item(tr("DEFAULT_GUI_MENU_BAR_HELP_IN_APP_HELP"), HelpButtons.IN_APP_HELP)
+	popup.add_item(tr("DEFAULT_GUI_MENU_BAR_HELP_ABOUT"), HelpButtons.ABOUT)
 	
 	popup.add_separator()
 	
-	popup.add_item("GitHub", HelpButtons.GITHUB)
-	popup.add_item("Discord", HelpButtons.DISCORD)
+	popup.add_item(tr("DEFAULT_GUI_MENU_BAR_HELP_GITHUB"), HelpButtons.GITHUB)
+	popup.add_item(tr("DEFAULT_GUI_MENU_BAR_HELP_DISCORD"), HelpButtons.DISCORD)
 
 	popup.add_separator()
 
-	popup.add_item("Licenses", HelpButtons.LICENSES)
+	popup.add_item(tr("DEFAULT_GUI_MENU_BAR_HELP_LICENSES"), HelpButtons.LICENSES)
 	
 	#endregion
 
@@ -138,9 +138,9 @@ func _handle_app_button(id: int) -> void:
 		AppButtons.MAIN_MENU:
 			get_tree().change_scene(Globals.LANDING_SCREEN_PATH)
 		AppButtons.SETTINGS:
-			add_child(BasePopup.new("Settings", Settings))
+			add_child(BasePopup.new(Settings, tr("DEFAULT_GUI_SETTINGS")))
 		AppButtons.LOGS:
-			add_child(BasePopup.new("Logs", Logs))
+			add_child(BasePopup.new(Logs, tr("DEFAULT_GUI_LOGS")))
 		AppButtons.QUIT:
 			get_tree().quit()
 
@@ -152,20 +152,20 @@ func _handle_debug_button(id: int) -> void:
 			popup.set_item_checked(idx, not popup.is_item_checked(idx))
 			# TODO toggle textures somehow?
 		DebugButtons.DEBUG_CONSOLE:
-			add_child(BasePopup.new("Debug Console", DebugConsole))
+			add_child(BasePopup.new(DebugConsole, tr("DEFAULT_GUI_DEBUG_CONSOLE")))
 
 func _handle_help_button(id: int) -> void:
 	match id:
 		HelpButtons.IN_APP_HELP:
-			add_child(BasePopup.new("In-app Help", InAppHelp))
+			add_child(BasePopup.new(InAppHelp, tr("DEFAULT_GUI_MENU_BAR_HELP_IN_APP_HELP")))
 		HelpButtons.ABOUT:
-			add_child(BasePopup.new("About", About))
+			add_child(BasePopup.new(About, tr("DEFAULT_GUI_MENU_BAR_HELP_ABOUT")))
 		HelpButtons.GITHUB:
 			OS.shell_open(Globals.PROJECT_GITHUB_REPO)
 		HelpButtons.DISCORD:
 			OS.shell_open(Globals.DISCORD_INVITE)
 		HelpButtons.LICENSES:
-			add_child(BasePopup.new("Licenses", Licenses))
+			add_child(BasePopup.new(Licenses, tr("DEFAULT_GUI_MENU_BAR_HELP_LICENSES")))
 
 func _create_popup(popup_resource: PackedScene) -> void:
 	var popup: Popup = popup_resource.instance()

@@ -30,22 +30,22 @@ class View extends ScrollContainer:
 
 		options_list.add_child(bone_name_label)
 
-		is_tracking.text = "Is tracking"
+		is_tracking.text = tr("DEFAULT_GUI_BONES_IS_TRACKING_TOGGLE")
 		options_list.add_child(is_tracking)
 
-		should_pose.text = "Should pose"
+		should_pose.text = tr("DEFAULT_GUI_BONES_SHOULD_POSE_TOGGLE")
 		options_list.add_child(should_pose)
 
 		#region Interpolation rate
 
-		should_use_custom_interpolation.text = "Use custom interpolation"
+		should_use_custom_interpolation.text = tr("DEFAULT_GUI_BONES_SHOULD_USE_CUSTOM_INTERPOLATION_TOGGLE")
 		options_list.add_child(should_use_custom_interpolation)
 
 		var hbox := HBoxContainer.new()
 		ControlUtil.h_expand_fill(hbox)
 
 		var interpolation_label := Label.new()
-		interpolation_label.text = "Interpolation rate"
+		interpolation_label.text = tr("DEFAULT_GUI_BONES_INTERPOLATION_RATE_LABEL")
 		ControlUtil.h_expand_fill(interpolation_label)
 
 		hbox.add_child(interpolation_label)
@@ -58,7 +58,7 @@ class View extends ScrollContainer:
 
 		#endregion
 
-		reset_bone.text = "Reset bone pose"
+		reset_bone.text = tr("DEFAULT_GUI_BONES_RESET_BONE_POSE_BUTTON")
 
 		options_list.add_child(reset_bone)
 
@@ -96,7 +96,7 @@ const BONE_SIGNALS := [
 	"bone_interpolation_rates"
 ]
 
-const INFO_PAGE := "Info"
+const INFO_PAGE := "DEFAULT_GUI_BONES_INFO_PAGE"
 
 var info: ScrollContainer
 
@@ -108,31 +108,30 @@ var model: Node
 
 func _setup() -> Result:
 	info = $Info
+	_initial_page = tr(INFO_PAGE)
+
 	_set_tree($Tree)
 
 	tree.hide_root = true
 	var root: TreeItem = tree.create_item()
 
 	var info_item: TreeItem = tree.create_item(root)
-	info_item.set_text(TREE_COLUMN, INFO_PAGE)
+	info_item.set_text(TREE_COLUMN, _initial_page)
 	info_item.select(TREE_COLUMN)
 
-	pages[INFO_PAGE] = Page.new(info, info_item)
+	pages[_initial_page] = Page.new(info, info_item)
 	
-	_initial_page = INFO_PAGE
-	
-	_toggle_page(INFO_PAGE)
+	_toggle_page(_initial_page)
 
 	tree.connect("item_selected", self, "_on_item_selected")
 
 	model = get_tree().current_scene.get("model")
 	if model == null:
-		return Safely.err(Error.Code.GUI_SETUP_ERROR, "No model found, no bone functionality will be available")
+		return Safely.err(Error.Code.GUI_SETUP_ERROR, tr("DEFAULT_GUI_BONES_NO_MODEL_FOUND_ERROR"))
 
 	var model_skeleton = model.get("skeleton")
 	if model_skeleton == null:
-		printerr("No model skeleton found, no bone functionality will be available")
-		return Safely.err(Error.Code.GUI_SETUP_ERROR, "No model skeleton found, no bone functionality will be available")
+		return Safely.err(Error.Code.GUI_SETUP_ERROR, tr("DEFAULT_GUI_BONES_NO_MODEL_SKELETON_FOUND_ERROR"))
 
 	# Store all references to TreeItems, discard afterwards
 	var known_bones := {}
@@ -178,7 +177,7 @@ func _on_is_tracking(state: bool, bone_name: String) -> void:
 
 	var bone_id: int = model.skeleton.find_bone(bone_name)
 	if bone_id < 0:
-		logger.error("Bone %s not found, aborting config modification" % bone_name)
+		logger.error(tr("DEFAULT_GUI_BONES_BONE_NOT_FOUND_ERROR") % bone_name)
 		return
 	
 	if state:
@@ -199,7 +198,7 @@ func _on_should_use_custom_interpolation(state: bool, bone_name: String) -> void
 
 	var bone_id: int = model.skeleton.find_bone(bone_name)
 	if bone_id < 0:
-		logger.error("Bone %s not found, aborting config modification" % bone_name)
+		logger.error(tr("DEFAULT_GUI_BONES_BONE_NOT_FOUND_ERROR") % bone_name)
 		return
 	
 	if state:

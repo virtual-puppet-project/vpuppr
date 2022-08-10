@@ -1,8 +1,11 @@
 class_name TranslationManager
 extends AbstractManager
 
+const IGNORED_CHARS := ";;"
 const TRANSLATION_EXTENSION := ".txt"
 const ESCAPED_QUOTE := "\\\""
+
+const DEFAULT_GUI_PREFIX := "DEFAULT_GUI_%s"
 
 var scan_path := ""
 
@@ -82,6 +85,9 @@ func _load_translation(locale: String, file_text: String) -> void:
 	var current_key := ""
 	var current_message := ""
 	for line in file_text.split("\n"):
+		var ignored_chars_pos: int = line.find(IGNORED_CHARS)
+		line = line.substr(0, ignored_chars_pos if ignored_chars_pos > -1 else line.length()).strip_edges()
+		
 		var split: PoolStringArray = line.split("=", true, 1)
 		if split.size() < 2:
 			current_message += "\n%s" % line
@@ -121,3 +127,12 @@ static func _valid_message_ending(text: String) -> bool:
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #
 #-----------------------------------------------------------------------------#
+
+static func to_translation_key(text: String) -> String:
+	return text.capitalize().to_upper().replace(" ", "_")
+
+static func builtin_res_path_to_key(res_path: String) -> String:
+	return DEFAULT_GUI_PREFIX % res_path.get_file().get_basename().capitalize().to_upper().replace(" ", "_")
+
+static func parent_item_to_key(parent_name: String, item_name: String) -> String:
+	return "%s_%s" % [to_translation_key(parent_name), to_translation_key(item_name)]

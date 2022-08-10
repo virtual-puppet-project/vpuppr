@@ -29,15 +29,15 @@ margin_right = 1600.0
 margin_bottom = 20.0
 
 [node name="Copy" type="Button" parent="HBoxContainer"]
-margin_right = 43.0
+margin_right = 292.0
 margin_bottom = 20.0
-text = "Copy"
+text = "DEFAULT_GUI_LOGS_COPY_BUTTON"
 
 [node name="Open" type="Button" parent="HBoxContainer"]
-margin_left = 47.0
-margin_right = 94.0
+margin_left = 296.0
+margin_right = 590.0
 margin_bottom = 20.0
-text = "Open"
+text = "DEFAULT_GUI_LOGS_OPEN_BUTTON"
 
 [node name="Logs" type="TextEdit" parent="."]
 margin_top = 24.0

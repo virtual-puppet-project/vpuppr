@@ -10,6 +10,7 @@ class ExtensionItem extends PanelContainer:
 	func _init(p_extension_data: Dictionary) -> void:
 		_ext_data = p_extension_data
 
+		name = tr(_ext_data.translation_key)
 		ControlUtil.all_expand_fill(self)
 		
 		var vbox := VBoxContainer.new()
@@ -19,7 +20,7 @@ class ExtensionItem extends PanelContainer:
 		vbox.add_child(margin_container)
 		
 		var name_label := Label.new()
-		name_label.text = _ext_data["extension_name"]
+		name_label.text = name
 		name_label.align = Label.ALIGN_CENTER
 		
 		margin_container.add_child(name_label)
@@ -81,11 +82,14 @@ class ExtensionItem extends PanelContainer:
 #-----------------------------------------------------------------------------#
 
 func _ready() -> void:
-	var extensions := $RootControl/TabContainer/Extensions/ScrollContainer/ExtensionsList as VBoxContainer
+	var extensions := $RootControl/TabContainer/DEFAULT_GUI_LANDING_SCREEN_EXTENSIONS/ScrollContainer/ExtensionsList as VBoxContainer
 
 	for key in AM.em.extensions.keys():
 		var extension_item := ExtensionItem.new(AM.em.extensions[key].as_data())
 		extensions.add_child(extension_item)
+	
+	for child in $RootControl/TabContainer.get_children():
+		child.name = tr(child.name)
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #

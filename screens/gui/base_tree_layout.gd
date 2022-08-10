@@ -90,7 +90,7 @@ func _build_tree(excludes: PoolStringArray = []) -> Result:
 		if child == tree:
 			continue
 		
-		var page_name: String = child.name.capitalize()
+		var page_name: String = tr(child.name)
 		if page_name in excludes:
 			continue
 

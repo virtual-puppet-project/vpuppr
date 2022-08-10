@@ -73,22 +73,22 @@ class PresetsPage extends ScrollContainer:
 
 		#region Config values
 
-		name_element = PageElement.new("Config name", model_config.config_name)
+		name_element = PageElement.new(tr("DEFAULT_GUI_PRESETS_CONFIG_NAME_LABEL"), model_config.config_name)
 		list.add_child(name_element)
 		name_element.element.connect("text_entered", self, "_on_line_edit_text_entered", ["config_name"])
 		name_element.element.connect("text_changed", self, "_on_line_edit_text_changed", ["config_name"])
 
-		description_element = PageElement.new("Description", model_config.description)
+		description_element = PageElement.new(tr("DEFAULT_GUI_PRESETS_DESCRIPTION_LABEL"), model_config.description)
 		list.add_child(description_element)
 		description_element.element.connect("text_entered", self, "_on_line_edit_text_entered", ["description"])
 		description_element.element.connect("text_changed", self, "_on_line_edit_text_changed", ["description"])
 
-		hotkey_element = PageElement.new("Hotkey", model_config.hotkey)
+		hotkey_element = PageElement.new(tr("DEFAULT_GUI_PRESETS_HOTKEY_LABEL"), model_config.hotkey)
 		list.add_child(hotkey_element)
 		hotkey_element.element.connect("text_entered", self, "_on_line_edit_text_entered", ["hotkey"])
 		hotkey_element.element.connect("text_changed", self, "_on_line_edit_text_changed", ["hotkey"])
 
-		notes_element = PageElement.new("Notes", model_config.notes, {
+		notes_element = PageElement.new(tr("DEFAULT_GUI_PRESETS_NOTES_LABEL"), model_config.notes, {
 			"element_type": "TextEdit",
 			"set_property": "text",
 			"expand_vertically": true
@@ -96,7 +96,7 @@ class PresetsPage extends ScrollContainer:
 		list.add_child(notes_element)
 		notes_element.element.connect("text_changed", self, "_on_text_edit_text_changed", [notes_element.element, "notes"])
 
-		default_for_model_element = PageElement.new("Is default for model", model_config.is_default_for_model, {
+		default_for_model_element = PageElement.new(tr("DEFAULT_GUI_PRESETS_IS_DEFAULT_FOR_MODEL_LABEL"), model_config.is_default_for_model, {
 			"element_type": "CheckButton",
 			"set_property": "pressed"
 		})
@@ -109,13 +109,13 @@ class PresetsPage extends ScrollContainer:
 		
 		load_button = Button.new()
 		ControlUtil.h_expand_fill(load_button)
-		load_button.text = "Load"
+		load_button.text = tr("DEFAULT_GUI_PRESETS_LOAD_BUTTON")
 		button_container.add_child(load_button)
 		load_button.connect("pressed", self, "_on_button_pressed", [Actions.LOAD])
 		
 		delete_button = Button.new()
 		ControlUtil.h_expand_fill(delete_button)
-		delete_button.text = "Delete"
+		delete_button.text = tr("DEFAULT_GUI_PRESETS_DELETE_BUTTON")
 		button_container.add_child(delete_button)
 		delete_button.connect("pressed", self, "_on_button_pressed", [Actions.DELETE])
 		
@@ -297,69 +297,6 @@ func _on_new_preset_button_pressed(line_edit: LineEdit) -> void:
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#
-
-static func _create_page(page_name: String, config_string: String) -> ScrollContainer:
-	var config := ModelConfig.new()
-	config.parse_string(config_string)
-
-	var page := ScrollContainer.new()
-	page.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	page.name = page_name
-
-	var list := VBoxContainer.new()
-	list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-
-	page.add_child(list)
-
-	#region Config values
-
-	var model_name_label := Label.new()
-	model_name_label.text = page_name
-	model_name_label.align = Label.ALIGN_CENTER
-
-	list.add_child(model_name_label)
-
-	list.add_child(_create_input_box("Config name", config.config_name))
-	list.add_child(_create_input_box("Description", config.description))
-	list.add_child(_create_input_box("Hotkey", config.hotkey))
-	list.add_child(_create_input_box("Notes", config.notes))
-
-	var default_for_model := HBoxContainer.new()
-	
-	var default_for_model_label := Label.new()
-	default_for_model_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	default_for_model_label.text = "Is default for model"
-
-	default_for_model.add_child(default_for_model_label)
-
-	var default_for_model_toggle := CheckButton.new()
-	default_for_model_toggle.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	default_for_model_toggle.set_pressed_no_signal(config.is_default_for_model)
-
-	default_for_model.add_child(default_for_model_toggle)
-
-	list.add_child(default_for_model)
-
-	#endregion
-
-	return page
-
-static func _create_input_box(text: String, initial_value: String) -> HBoxContainer:
-	var r := HBoxContainer.new()
-
-	var label := Label.new()
-	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	label.text = text
-
-	r.add_child(label)
-
-	var line_edit := LineEdit.new()
-	line_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	line_edit.text = str(initial_value)
-
-	r.add_child(line_edit)
-
-	return r
 
 func _add_page(root: TreeItem, page_name: String, config_string: String, should_select: bool = false) -> Result:
 	var page := PresetsPage.new(page_name, config_string, logger)
