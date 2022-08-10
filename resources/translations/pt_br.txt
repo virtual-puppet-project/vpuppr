@@ -173,4 +173,4 @@ DEFAULT_GUI_LOGS_OPEN_BUTTON="Abrir"
 ;;----------------------------------------------------------------------------;;
 ;; Default runner                                                             ;;
 ;;----------------------------------------------------------------------------;;
-DEFAULT_GUI_RUNNER="Default Runner"
+DEFAULT_GUI_RUNNER="Runner padrão"
