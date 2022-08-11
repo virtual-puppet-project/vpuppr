@@ -1,4 +1,4 @@
-# Virtual Puppet Project: Puppeteer (VPupPr)
+# Virtual Puppet Project (VPupPr)
 
 [![Chat on Discord](https://img.shields.io/discord/853476898071117865?label=chat&logo=discord)](https://discord.gg/6mcdWWBkrr)
 
@@ -6,10 +6,6 @@ All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` h
 
 ## Available renderers
 * [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace)
-
-## Prerequisites (Linux only)
-* Python 3.6 - Python 3.9 (at time of writing, `onnxruntime` isn't compatible with Python 3.10)
-* `python3-pip` and `python3-venv` are installed
 
 ## Quickstart
 
@@ -27,7 +23,36 @@ All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` h
 5. Start the facetracker from within the application
 
 ## Building from source
-1. TODO
+1. Clone or download this repository at the appropriate tag (or `master` for the latest code)
+2. Download a precompiled Godot editor binary from the [virtual-puppet-project's Godot fork](https://github.com/virtual-puppet-project/godot/releases)
+   1. If you would rather compile the engine yourself, please see [the section on compiling the Godot fork](#building-the-godot-fork)
+3. Download a precompiled Godot release template from the same repository in step 2
+4. Run the custom Godot editor and open your local copy of `vpuppr` with the editor
+5. Follow the [Godot instructions for exporting a project](https://docs.godotengine.org/en/stable/tutorials/export/exporting_projects.html) and use the custom templates downloaded from step 3 instead of the default templates
+6. Next to your resulting binary, copy the `resources` folder next to it. The `resources` folder is read at runtime
+
+## Building the Godot fork
+0. Make sure you have the following tools installed and available on your `PATH` if applicable:
+   * `git`
+   * `python3` (preferably version 3.10+)
+   * [All the tools needed for compiling Godot](https://docs.godotengine.org/en/stable/development/compiling/introduction_to_the_buildsystem.html)
+   * A `bash`-compatible prompt. Git Bash comes preinstalled with Git for Windows
+1. Clone the following utility repositories:
+   1. [The virtual-puppet-project fork of Godot](https://github.com/virtual-puppet-project/godot)
+   2. [godot-module-applier](https://github.com/virtual-puppet-project/godot-module-applier)
+   3. [godot-build-scripts](https://github.com/virtual-puppet-project/godot-build-scripts)
+2. Your directory structure should look like
+   * ./
+       * godot/
+       * godot-module-applier/
+       * godot-build-scripts/
+3. Inside of the `godot/` directory, run `cp ../godot-module-applier/applier.py .` to copy the `applier.py` script into the `godot/` directory
+4. Inside of the `godot/` directory, run `python3 applier.py apply`. This will pull in and apply all modules, third-party sources, and patches to Godot
+5. Inside of the `godot/` directory, run `cp ../godot-build-scripts/build-* .` to copy all build scripts into the `godot/` directory
+6. Inside of the `godot/` directory, to build various versions of the editor do:
+   * Editor: `./build-editor.sh`
+   * Release template: `./build-normal-template.sh`
+7. The compiled Godot binary will be available in the `godot/` directory under the `bin/` directory
 
 ## Special thanks
 * [V-Sekai](https://github.com/V-Sekai) team for their help with `.vrm` importing
