@@ -19,11 +19,11 @@ var _should_count_fade_out := false
 #-----------------------------------------------------------------------------#
 
 func _ready() -> void:
-	OS.window_size = OS.get_screen_size() * 0.75
-	OS.center_window()
-	
 	while not get_tree().root.has_node("/root/AM"):
 		yield(get_tree(), "idle_frame")
+
+	OS.window_size = OS.get_screen_size() * AM.app_args.screen_scaling
+	OS.center_window()
 	
 	if AM.cm.get_data("skip_splash", false):
 		_switch_to_landing_screen()

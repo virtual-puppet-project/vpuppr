@@ -16,9 +16,21 @@ class Parser:
 	var _arguments := {}
 	
 	var description := ""
+
+	# Cmdline args always take precendence over user data args
+	var should_parse_cmdline_args := true
+	var should_parse_user_data_args := false
+	var user_data_args_file_name := "flagd"
 	
 	func _init(args: Dictionary = {}) -> void:
-		description = args.get("description", "")
+		description = args.get("description", description)
+
+		should_parse_cmdline_args = args.get("should_parse_cmdline_args",
+			should_parse_cmdline_args)
+		should_parse_user_data_args = args.get("should_parse_user_data_args",
+			should_parse_user_data_args)
+		user_data_args_file_name = args.get("user_data_args_file_name",
+			user_data_args_file_name)
 	
 	func _to_string() -> String:
 		var r := {
@@ -42,8 +54,22 @@ class Parser:
 		for alias in arg.aliases:
 			_arguments[alias] = arg
 	
+	## Parse all args. If input is provided, those will be the only args parsed
+	##
+	## @param: input: Array<String> - Optional args to parse
+	##
+	## @return: Dictionary<String, Variant> - A list of all args
 	func parse(input: Array = []) -> Dictionary:
-		return _parse(OS.get_cmdline_args() if input.empty() else input)
+		var args = input.duplicate()
+		
+		if args.empty():
+			if should_parse_cmdline_args:
+				args.append_array(OS.get_cmdline_args())
+
+			if should_parse_user_data_args:
+				_get_user_data_args(user_data_args_file_name, args)
+
+		return _parse(args)
 	
 	func _parse(input: Array) -> Dictionary:
 		var r := {RAW_ARGS_KEY: input}
@@ -127,6 +153,37 @@ class Parser:
 			r[config.name] = config.default
 		
 		return r
+	
+	static func _get_user_data_args(file_name: String, args: Array) -> void:
+		var file := File.new()
+
+		if file.open("user://%s" % file_name, File.READ) != OK:
+			printerr("Arg file %s could not be opened, ignoring" % file_name)
+			return
+
+		var file_lines := file.get_as_text().split("\n")
+		for line in file_lines:
+			var split: PoolStringArray = line.split(" ", false)
+			
+			var idx: int = 0
+			while idx < split.size():
+				var arg: String = split[idx]
+
+				if arg.begins_with("-"):
+					# If the arg was already passed as an app arg, then ignore the arg from the file
+					if arg in args:
+						idx += 1
+						# Check next arg to see if it's a value or a flag
+						# If it's a value, assume it's associated with the flag and skip it
+						if idx < split.size() and not split[idx].begins_with("-"):
+							idx += 1
+						
+						continue
+					
+				args.append(arg)
+				idx += 1
+
+		file.close()
 
 class Argument:
 	var name := ""
