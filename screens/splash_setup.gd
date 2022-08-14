@@ -14,11 +14,11 @@ var foreground: TextureRect
 #-----------------------------------------------------------------------------#
 
 func _ready() -> void:
-	OS.window_size = OS.get_screen_size() * 0.75
-	OS.center_window()
-	
 	while not get_tree().root.has_node("/root/AM"):
 		yield(get_tree(), "idle_frame")
+
+	OS.window_size = OS.get_screen_size() * AM.app_args.screen_scaling
+	OS.center_window()
 	
 	if AM.cm.get_data("skip_splash", false):
 		_switch_to_landing_screen()
@@ -48,7 +48,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton or event is InputEventKey:
 		_switch_to_landing_screen()
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	var mouse_diff: Vector2 = screen_center - viewport.get_mouse_position()
 	
 	mouse_diff.x = max(-max_parallax_offset.x, min(max_parallax_offset.x, mouse_diff.x))
