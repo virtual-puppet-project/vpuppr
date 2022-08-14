@@ -112,6 +112,13 @@ func _get_args() -> Dictionary:
 		"type": TYPE_STRING,
 		"default": Env.Envs.DEFAULT
 	})
+
+	parser.add_argument({
+		"name": "screen-scaling",
+		"description": "Ratio to scale the application to",
+		"type": TYPE_REAL,
+		"default": 0.75
+	})
 	
 	#endregion
 	
