@@ -4,7 +4,7 @@
 
 All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` has not been tested but might work. `.scn` files created with Godot should all import correctly as well.
 
-## Available renderers
+## Available trackers
 * [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace)
 
 *more trackers may be available in the future, such as [MediaPipe](https://google.github.io/mediapipe/)*
