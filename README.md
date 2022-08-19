@@ -7,6 +7,8 @@ All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` h
 ## Available renderers
 * [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace)
 
+*more trackers may be available in the future, such as [MediaPipe](https://google.github.io/mediapipe/)*
+
 ## Quickstart
 
 ### Windows
@@ -16,21 +18,33 @@ All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` h
 4. Start the facetracker from within the application
 
 ### Linux
+
+### Flatpak
+1. Ensure that [Flathub is enabled on your system](https://flatpak.org/setup/)
+2. Using a graphical interface that supports Flatpak, search for "virtual puppet project"
+   1. Alternatively, you can use `flatpak install vpuppr` to list any apps that have the same string
+   * VPupPr will be available under the name `com.github.virtual_puppet_project.vpuppr`
+   * For the latest (alpha, beta) builds of VPupPr, you can download them from [Flathub Beta](https://beta.flathub.org/)
+4. Hit the install button and run it just like any other app!
+
+
+### (using binaries from the [releases page](https://github.com/virtual-puppet-project/vpuppr/releases))
 1. Download the latest release
 2. Unzip all files into a directory (do not move any of the files)
-3. Run `chmod +x <binary name>` in a terminal to make the binary executable
+3. Run `chmod +x <binary name>` in a terminal to make the app binary executable
 4. Run the binary
 5. Start the facetracker from within the application
 
+
 ## Building from source
-1. Clone or download this repository at the appropriate tag (or `master` for the latest code)
+1. Clone or download this repository at the appropriate tag (or `master` for the latest commit)
 2. Download a precompiled Godot editor binary from the [virtual-puppet-project's Godot fork](https://github.com/virtual-puppet-project/godot/releases)
    1. If you would rather compile the engine yourself, please see [the section on compiling the Godot fork](#building-the-godot-fork)
 3. Download a precompiled Godot release template from the same repository in step 2
 4. Run the custom Godot editor and open your local copy of `vpuppr` with the editor
 5. Follow the [Godot instructions for exporting a project](https://docs.godotengine.org/en/stable/tutorials/export/exporting_projects.html) and use the custom templates downloaded from step 3 instead of the default templates
 6. Next to your resulting binary, copy the `resources` folder next to it. The `resources` folder is read at runtime
-
+<!--
 ## Building the Godot fork
 0. Make sure you have the following tools installed and available on your `PATH` if applicable:
    * `git`
@@ -53,6 +67,9 @@ All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` h
    * Editor: `./build-editor.sh`
    * Release template: `./build-normal-template.sh`
 7. The compiled Godot binary will be available in the `godot/` directory under the `bin/` directory
+
+These instructions are probably more fit for the Godot fork, than here.
+-->
 
 ## Special thanks
 * [V-Sekai](https://github.com/V-Sekai) team for their help with `.vrm` importing
