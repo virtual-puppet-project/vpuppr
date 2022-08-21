@@ -398,7 +398,7 @@ func set_offsets(offsets: StoredOffsets) -> void:
 	offsets.left_eye_gaze_offset = data.left_gaze.get_euler()
 	offsets.right_eye_gaze_offset = data.right_gaze.get_euler()
 
-func apply(model: PuppetTrait, interpolation_data: InterpolationData, extra: Dictionary) -> void:
+func apply(_model: PuppetTrait, interpolation_data: InterpolationData, extra: Dictionary) -> void:
 	var osf_data: OSFData = data_map.get(0, null)
 	if osf_data == null or osf_data.fit_3d_error > 100.0:
 		return
@@ -435,5 +435,3 @@ func apply(model: PuppetTrait, interpolation_data: InterpolationData, extra: Dic
 			features.eyebrow_quirk_left,
 			features.eyebrow_quirk_right
 		)
-
-	model.custom_update(interpolation_data)
