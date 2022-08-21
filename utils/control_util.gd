@@ -17,6 +17,9 @@ extends Reference
 # Public functions                                                            #
 #-----------------------------------------------------------------------------#
 
+static func no_focus(control: Control) -> void:
+	control.focus_mode = Control.FOCUS_NONE
+
 static func h_expand_fill(control: Control) -> void:
 	control.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
