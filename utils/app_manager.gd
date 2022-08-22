@@ -93,6 +93,8 @@ func _get_args() -> Dictionary:
 	var parser = flagd.new_parser({
 		"description": "vpuppr flag parser"
 	})
+
+	parser.register_feature_funcs(self)
 	
 	#region General
 	
@@ -135,6 +137,33 @@ func _get_args() -> Dictionary:
 	#endregion
 	
 	return parser.parse()
+
+func _flagd_features_debug() -> Array:
+	var r := []
+
+	r.append(
+		"resource_path=asdf"
+	)
+
+	return r
+
+func _flagd_features_flatpak() -> Array:
+	var r := []
+
+	r.append(
+		"resource_path=/app/share/vpuppr/"
+	)
+
+	return r
+
+func _flagd_features_gentoo() -> Array:
+	var r := []
+
+	r.append(
+		"resource_path=/usr/share/vpuppr/"
+	)
+
+	return r
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #

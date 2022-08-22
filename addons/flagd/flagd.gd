@@ -2,6 +2,8 @@ extends Reference
 
 const RAW_ARGS_KEY := "__raw__"
 
+const FEATURE_FLAGS_FUNC_SIGNATURE_PREFIX := "_flagd_features_"
+
 enum Action {
 	NONE = 0,
 	
@@ -14,9 +16,12 @@ enum Action {
 
 class Parser:
 	var _arguments := {}
+	var _feature_func_refs := []
 	
 	var description := ""
 
+	# Cmdline args can override feature flags
+	var should_parse_feature_flags := true
 	# Cmdline args always take precendence over user data args
 	var should_parse_cmdline_args := true
 	var should_parse_user_data_args := false
@@ -53,6 +58,16 @@ class Parser:
 		
 		for alias in arg.aliases:
 			_arguments[alias] = arg
+
+	func register_feature_funcs(from: Object) -> void:
+		for f in from.get_method_list():
+			if not f.name.begins_with(FEATURE_FLAGS_FUNC_SIGNATURE_PREFIX):
+				continue
+			if f.args.size() > 0:
+				printerr("Malformed feature func: %s" % f.name)
+				continue
+			
+			_feature_func_refs.append(funcref(from, f.name))
 	
 	## Parse all args. If input is provided, those will be the only args parsed
 	##
@@ -68,6 +83,17 @@ class Parser:
 
 			if should_parse_user_data_args:
 				_get_user_data_args(user_data_args_file_name, args)
+		
+		for f_ref in _feature_func_refs:
+			if not OS.has_feature(f_ref.function.trim_prefix(FEATURE_FLAGS_FUNC_SIGNATURE_PREFIX)):
+				continue
+
+			var result = f_ref.call_func()
+			if not typeof(result) == TYPE_ARRAY:
+				printerr("Invalid return type from %s in flagd" % f_ref.function)
+				continue
+				
+			args.append_array(result.duplicate(true))
 
 		return _parse(args)
 	
