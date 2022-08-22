@@ -41,10 +41,12 @@ func _setup_logger() -> void:
 	logger = Logger.new(EXTENSION_MANAGER_NAME)
 
 func _setup_class() -> void:
-	if not OS.is_debug_build():
-		scan_path = "%s/%s" % [OS.get_executable_path().get_base_dir(), Config.DEFAULT_SEARCH_FOLDER]
-	else:
-		scan_path = "%s/%s" % [ProjectSettings.globalize_path("res://"), Config.DEFAULT_SEARCH_FOLDER]
+	scan_path = AM.app_args.get("resource_path", "")
+	if scan_path.empty():
+		if not OS.is_debug_build():
+			scan_path = "%s/%s" % [OS.get_executable_path().get_base_dir(), Config.DEFAULT_SEARCH_FOLDER]
+		else:
+			scan_path = "%s/%s" % [ProjectSettings.globalize_path("res://"), Config.DEFAULT_SEARCH_FOLDER]
 	
 	var result := _scan()
 	if result.is_err():
