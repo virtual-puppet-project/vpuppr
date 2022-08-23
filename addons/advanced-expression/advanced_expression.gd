@@ -178,6 +178,13 @@ func _get_instance() -> Reference:
 # Public functions                                                            #
 ###############################################################################
 
+## Adds a new variable with an optional initial value. The initial value must be in a
+## GDScript-compatible String form
+##
+## @param: variable_name: String - The name of the variable
+## @param: variable_value: String - The initial value of the variable
+##
+## @return: Variable - A builder object for variables
 func add_variable(variable_name: String, variable_value: String = "") -> Variable:
 	var variable := Variable.new(variable_name, variable_value)
 	
@@ -185,6 +192,12 @@ func add_variable(variable_name: String, variable_value: String = "") -> Variabl
 	
 	return variable
 
+## Adds a new function with the given name. The function body must be added later
+## with the builder that is returned
+##
+## @param: function_name: String - The name of the function
+##
+## @return: Function - A builder object for functions
 func add_function(function_name: String) -> Function:
 	var function := Function.new(function_name)
 	
@@ -192,12 +205,42 @@ func add_function(function_name: String) -> Function:
 	
 	return function
 
+## Adds a raw String that will be inserted into the script without any modifications
+##
+## @param: text: String - The text to be added
+func add_raw(text: String) -> void:
+	raw.append(text)
+
+## Adds text to be added to the body of the runner function. No text can be provided
+## so just the Runner builder can be obtained
+##
+## @param: text: String - The text to be added to the body of the runner function
+##
+## @return: Runner - A builder object for the runner function
 func add(text: String = "") -> Runner:
 	if not text.empty():
 		runner.add(text)
 	
 	return runner
 
+## Adds a parameter to the runner function
+##
+## @param: text: String - The name of the parameter to be passed to the runner function
+##
+## @return: Runner - A builder object for the runner function
+func add_param(text: String) -> Runner:
+	if not text.empty():
+		runner.add(text)
+
+	return runner
+
+## Adds text to the body of the runner function. This text will be split by the specified
+## delimiter and then added as separate lines
+##
+## @param: text: String - The delimited body of the runner
+## @param: delimiter: String - The delimiter to split on
+##
+## @return: Runner - A builder object for the runner function
 func add_delimited(text: String, delimiter: String = ";") -> Runner:
 	var split := text.split(delimiter)
 	for i in split:
@@ -205,19 +248,31 @@ func add_delimited(text: String, delimiter: String = ";") -> Runner:
 	
 	return runner
 
-func add_raw(text: String) -> void:
-	raw.append(text)
-
+## Adds the specified number of tabs to the body of the runner function. Does_not
+## add a newline when adding a tab
+##
+## @param: amount: int - The amount of tabs to add
+##
+## @return: Runner - A builder object for the runner function
 func tab(amount: int = 1) -> Runner:
 	runner.tab(amount)
 	
 	return runner
 
+## Adds a newline to the body of the runner function
+##
+## @return: Runner - A builder object for the runner function
 func newline() -> Runner:
 	runner.newline()
 	
 	return runner
 
+## Compiles the expression, adding text to the runner function if any text was provided.
+## The compilation process produces a gdscript file will all data added to it.
+##
+## @param: text: String - The text to add, if any
+##
+## @return: int - The error code
 func compile(text: String = "") -> int:
 	if not text.empty():
 		runner.add(text)
@@ -225,6 +280,16 @@ func compile(text: String = "") -> int:
 	
 	return gdscript.reload()
 
+## Injects the given variables into the compiled GDScript instance
+##
+## @example:
+##	{
+##		"my_variable": "my_string_value"
+##	}
+##
+## @param: data: Dictionary - The data to inject into the script
+##
+## @return: int - The error code
 func inject_variables(data: Dictionary) -> int:
 	var script_instance = _get_instance()
 	
@@ -233,9 +298,16 @@ func inject_variables(data: Dictionary) -> int:
 	
 	return OK
 
+## Executes the runner function on the GDScript instance. Params can be passed to the
+## runner function if parameters were defined beforehand
+##
+## @param: params: Array - The params to pass to the runner function
+##
+## @return: Variant - The return value of the runner function, if any
 func execute(params: Array = []):
 	return _get_instance().callv(RUN_FUNC, params)
 
+## Clears all data
 func clear() -> void:
 	gdscript = null
 	instance = null
