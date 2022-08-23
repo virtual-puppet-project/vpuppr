@@ -108,9 +108,9 @@ class Parser:
 				
 			preparse_args.append_array(result.duplicate(true))
 
-		_preparse(preparse_args)
+		var args := _preparse(preparse_args)
 		
-		var args = input.duplicate()
+		args.append_array(input.duplicate())
 		
 		if should_parse_cmdline_args:
 			args.append_array(OS.get_cmdline_args())
@@ -120,7 +120,16 @@ class Parser:
 
 		return _parse(args)
 
-	func _preparse(input: Array) -> void:
+	## Parse preparse arguments. If an argument is registered with the parser, it is handled later with
+	## the rest of the args. Otherwise, it is processed using a registered funcref or blindly set on
+	## the current parser.
+	##
+	## @param: input: Array - The preparse input args
+	##
+	## @return: Array<String> - The args that match a registered argument
+	func _preparse(input: Array) -> Array:
+		var r := []
+
 		var idx: int = 0
 		while idx < input.size():
 			var current_arg: String = input[idx]
@@ -140,11 +149,15 @@ class Parser:
 				idx += 1
 
 				if idx >= input.size():
-					return
+					return r
 
 				current_arg = input[idx]
 
 				current_val = _string_to_type(current_arg, typeof(get(current_key)))
+
+			if _arguments.has(current_key):
+				r.append("%s=%s" % [current_key, str(current_val)])
+				continue
 
 			if preparse_func != null:
 				print_debug("Using preparse func")
@@ -152,6 +165,8 @@ class Parser:
 			else:
 				print_debug("No preparse func defined, only setting preparse vars on parser")
 				set(current_key, current_val)
+
+		return r
 	
 	func _parse(input: Array) -> Dictionary:
 		var r := {RAW_ARGS_KEY: input}
