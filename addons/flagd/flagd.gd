@@ -22,16 +22,24 @@ class Parser:
 
 	# Cmdline args can override feature flags
 	var should_parse_feature_flags := true
+	var preparse_func: FuncRef = null
+
 	# Cmdline args always take precendence over user data args
 	var should_parse_cmdline_args := true
+
 	var should_parse_user_data_args := false
 	var user_data_args_file_name := "flagd"
 	
 	func _init(args: Dictionary = {}) -> void:
 		description = args.get("description", description)
 
+		should_parse_feature_flags = args.get("should_parse_feature_flags",
+			should_parse_feature_flags)
+		preparse_func = args.get("preparse_func", null)
+		
 		should_parse_cmdline_args = args.get("should_parse_cmdline_args",
 			should_parse_cmdline_args)
+		
 		should_parse_user_data_args = args.get("should_parse_user_data_args",
 			should_parse_user_data_args)
 		user_data_args_file_name = args.get("user_data_args_file_name",
@@ -59,6 +67,11 @@ class Parser:
 		for alias in arg.aliases:
 			_arguments[alias] = arg
 
+	## https://docs.godotengine.org/en/stable/tutorials/export/feature_tags.html
+	##
+	## Note that the execution order is probably random at runtime
+	##
+	## @param: from: Object - The object to scan for feature funcs
 	func register_feature_funcs(from: Object) -> void:
 		for f in from.get_method_list():
 			if not f.name.begins_with(FEATURE_FLAGS_FUNC_SIGNATURE_PREFIX):
@@ -69,21 +82,21 @@ class Parser:
 			
 			_feature_func_refs.append(funcref(from, f.name))
 	
-	## Parse all args. If input is provided, those will be the only args parsed
+	## Parse all args. Duplicate args are allowed. If args are passed multiple times, then
+	## the arg value is overwritten in the following level of importance (least -> greatest):
+	## 1. Function param
+	## 2. Godot feature
+	## 3. Cmdline args
+	## 4. User data args
+	##
+	## Additionally, Function params and Godot features can be used to further configure
+	## parser arguments during parsing.
 	##
 	## @param: input: Array<String> - Optional args to parse
 	##
 	## @return: Dictionary<String, Variant> - A list of all args
 	func parse(input: Array = []) -> Dictionary:
-		var args = input.duplicate()
-		
-		if args.empty():
-			if should_parse_cmdline_args:
-				args.append_array(OS.get_cmdline_args())
-
-			if should_parse_user_data_args:
-				_get_user_data_args(user_data_args_file_name, args)
-		
+		var preparse_args := []
 		for f_ref in _feature_func_refs:
 			if not OS.has_feature(f_ref.function.trim_prefix(FEATURE_FLAGS_FUNC_SIGNATURE_PREFIX)):
 				continue
@@ -93,9 +106,52 @@ class Parser:
 				printerr("Invalid return type from %s in flagd" % f_ref.function)
 				continue
 				
-			args.append_array(result.duplicate(true))
+			preparse_args.append_array(result.duplicate(true))
+
+		_preparse(preparse_args)
+		
+		var args = input.duplicate()
+		
+		if should_parse_cmdline_args:
+			args.append_array(OS.get_cmdline_args())
+
+		if should_parse_user_data_args:
+			_get_user_data_args(user_data_args_file_name, args)
 
 		return _parse(args)
+
+	func _preparse(input: Array) -> void:
+		var idx: int = 0
+		while idx < input.size():
+			var current_arg: String = input[idx]
+			
+			var current_key := ""
+			var current_val
+
+			var split: PoolStringArray = current_arg.split("=", false, 1)
+			if split.size() > 1:
+				current_key = split[0].lstrip("-").replace("-", "_")
+				current_val = _string_to_type(split[1], typeof(get(current_key)))
+				
+				idx += 1
+			else:
+				current_key = current_arg.lstrip("-").replace("-", "_")
+
+				idx += 1
+
+				if idx >= input.size():
+					return
+
+				current_arg = input[idx]
+
+				current_val = _string_to_type(current_arg, typeof(get(current_key)))
+
+			if preparse_func != null:
+				print_debug("Using preparse func")
+				preparse_func.call_funcv([current_key, current_val])
+			else:
+				print_debug("No preparse func defined, only setting preparse vars on parser")
+				set(current_key, current_val)
 	
 	func _parse(input: Array) -> Dictionary:
 		var r := {RAW_ARGS_KEY: input}
@@ -117,22 +173,14 @@ class Parser:
 					continue
 				
 				var val = split[1]
-				
-				match arg_config.type:
-					TYPE_STRING:
-						r[arg_config.name] = val
-					TYPE_INT:
-						r[arg_config.name] = int(val)
-					TYPE_REAL:
-						r[arg_config.name] = float(val)
-					TYPE_BOOL:
-						r[arg_config.name] = bool(val)
-					_:
-						r[arg_config.name] = val
+
+				r[arg_config.name] = _string_to_type(val, arg_config.type)
 				
 				unhandled_args.erase(arg_config.name)
 				for alias in arg_config.aliases:
 					unhandled_args.erase(alias)
+				
+				idx += 1
 			else:
 				current_arg = current_arg.lstrip("-").replace("-", "_")
 				
@@ -156,18 +204,8 @@ class Parser:
 				
 				if idx >= input.size():
 					return r
-				
-				match arg_config.type:
-					TYPE_STRING:
-						r[arg_config.name] = input[idx]
-					TYPE_INT:
-						r[arg_config.name] = int(input[idx])
-					TYPE_REAL:
-						r[arg_config.name] = float(input[idx])
-					TYPE_BOOL:
-						r[arg_config.name] = bool(input[idx])
-					_:
-						r[arg_config.name] = input[idx]
+
+				r[arg_config.name] = _string_to_type(input[idx], arg_config.type)
 				
 				unhandled_args.erase(arg_config.name)
 				for alias in arg_config.aliases:
@@ -179,6 +217,19 @@ class Parser:
 			r[config.name] = config.default
 		
 		return r
+
+	static func _string_to_type(text: String, type: int):
+		match type:
+			TYPE_STRING:
+				return text
+			TYPE_INT:
+				return int(text)
+			TYPE_REAL:
+				return float(text)
+			TYPE_BOOL:
+				return true if text.to_lower() == "true" else false
+			_:
+				return text
 	
 	static func _get_user_data_args(file_name: String, args: Array) -> void:
 		var file := File.new()

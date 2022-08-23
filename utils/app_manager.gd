@@ -32,11 +32,15 @@ var app_args := {}
 #-----------------------------------------------------------------------------#
 
 func _init() -> void:
-	app_args = _get_args()
-	
 	Safely.register_error_codes(Error.Code)
 
 func _ready() -> void:
+	var startup_data = preload("res://utils/startup_args.gd").new().data
+	for key in startup_data.keys():
+		if app_args.has(key):
+			continue
+		app_args[key] = startup_data[key]
+
 	ps = PubSub.new()
 	# Must be initialized AFTER the PubSub since it needs to connect to other signals
 	lm = LogManager.new()
@@ -83,87 +87,6 @@ func _on_stderr(text: String, is_error: bool) -> void:
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#
-
-## Flag parsing
-## See https://docs.godotengine.org/en/stable/tutorials/editor/command_line_tutorial.html
-## for a list of reserved flags
-func _get_args() -> Dictionary:
-	var flagd = preload("res://addons/flagd/flagd.gd").new()
-	
-	var parser = flagd.new_parser({
-		"description": "vpuppr flag parser"
-	})
-
-	parser.register_feature_funcs(self)
-	
-	#region General
-	
-	# Cannot call this 'verbose' since that's reserved by Godot
-	parser.add_argument({
-		"name": "all-logs",
-		"aliases": ["loud"],
-		"description": "Show debug/trace logs. Only has an effect in release builds",
-		"is_flag": true,
-		"type": TYPE_BOOL,
-		"default": false
-	})
-	parser.add_argument({
-		"name": "environment",
-		"aliases": ["env"],
-		"description": "The environment the application will assume it is running in (e.g. dev)",
-		"type": TYPE_STRING,
-		"default": Env.Envs.DEFAULT
-	})
-
-	parser.add_argument({
-		"name": "screen-scaling",
-		"description": "Ratio to scale the application to",
-		"type": TYPE_REAL,
-		"default": 0.75
-	})
-	
-	#endregion
-	
-	#region Splash
-	
-	parser.add_argument({
-		"name": "stay-on-splash",
-		"description": "Whether to automatically move on from the splash screen",
-		"is_flag": true,
-		"type": TYPE_BOOL,
-		"default": false
-	})
-	
-	#endregion
-	
-	return parser.parse()
-
-func _flagd_features_debug() -> Array:
-	var r := []
-
-	r.append(
-		"resource_path=asdf"
-	)
-
-	return r
-
-func _flagd_features_flatpak() -> Array:
-	var r := []
-
-	r.append(
-		"resource_path=/app/share/vpuppr/"
-	)
-
-	return r
-
-func _flagd_features_gentoo() -> Array:
-	var r := []
-
-	r.append(
-		"resource_path=/usr/share/vpuppr/"
-	)
-
-	return r
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #
