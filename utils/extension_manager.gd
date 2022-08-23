@@ -4,7 +4,8 @@ extends AbstractManager
 const EXTENSION_MANAGER_NAME := "ExtensionManager"
 
 const Config := {
-	"DEFAULT_SEARCH_FOLDER": "resources/extensions",
+	"SCAN_PATH_FORMAT": "%s/resources/%s",
+	"DEFAULT_SEARCH_FOLDER": "extensions/",
 
 	"CONFIG_NAME": "config.ini",
 	"GENERAL": "General",
@@ -41,10 +42,16 @@ func _setup_logger() -> void:
 	logger = Logger.new(EXTENSION_MANAGER_NAME)
 
 func _setup_class() -> void:
-	if not OS.is_debug_build():
-		scan_path = "%s/%s" % [OS.get_executable_path().get_base_dir(), Config.DEFAULT_SEARCH_FOLDER]
+	scan_path = AM.app_args.get("resource_path", "")
+	if scan_path.empty():
+		if not OS.is_debug_build():
+			scan_path = Config.SCAN_PATH_FORMAT % [
+				OS.get_executable_path().get_base_dir(), Config.DEFAULT_SEARCH_FOLDER]
+		else:
+			scan_path = Config.SCAN_PATH_FORMAT % [
+				ProjectSettings.globalize_path("res://"), Config.DEFAULT_SEARCH_FOLDER]
 	else:
-		scan_path = "%s/%s" % [ProjectSettings.globalize_path("res://"), Config.DEFAULT_SEARCH_FOLDER]
+		scan_path = "%s/%s" % [scan_path, Config.DEFAULT_SEARCH_FOLDER]
 	
 	var result := _scan()
 	if result.is_err():
@@ -70,7 +77,7 @@ func _scan() -> Result:
 	var dir := Directory.new()
 
 	if dir.open(scan_path) != OK:
-		return Safely.err(Error.Code.EXTENSION_MANAGER_RESOURCE_PATH_DOES_NOT_EXIST)
+		return Safely.err(Error.Code.EXTENSION_MANAGER_RESOURCE_PATH_DOES_NOT_EXIST, scan_path)
 
 	dir.list_dir_begin(true, true)
 
