@@ -104,16 +104,16 @@ func test_update_values_pass():
 
 func test_update_config_pass():
 	var id := InterpolationData.new()
-
-	id._on_model_config_changed(0.1, "interpolate_rate")
-	id._on_model_config_changed(1.0, "bone_interpolation_rate")
+	
+	AM.ps.publish("base_interpolation_rate", 0.1)
+	AM.ps.publish("bone_interpolation_rate", 1.0)
 
 	assert_eq(id.global.should_interpolate, true)
-	assert_eq(id.global.interpolation_rate, 0.1)
+	assert_eq(stepify(id.global.interpolation_rate, 0.00001), 0.1)
 
 	assert_eq(id.bone_translation.should_interpolate, false)
 	# The bone translation is overriden by the global rate, so only the last interpolation rate will change
-	assert_eq(id.bone_translation.interpolation_rate, 0.1)
+	assert_eq(stepify(id.bone_translation.interpolation_rate, 0.01), 0.1)
 	assert_eq(id.bone_translation.last_interpolation_rate, 1.0)
 
 	id._on_model_config_changed(false, "interpolate_global")
@@ -123,7 +123,7 @@ func test_update_config_pass():
 
 	id._on_model_config_changed(true, "interpolate_global")
 
-	assert_eq(id.bone_translation.interpolation_rate, 0.1)
+	assert_eq(stepify(id.bone_translation.interpolation_rate, 0.1), 0.1)
 	assert_eq(id.bone_translation.last_interpolation_rate, 1.0)
 
 	id._on_model_config_changed(true, "interpolate_bones")
