@@ -215,9 +215,11 @@ func _physics_step(_delta: float) -> void:
 	model.custom_update(interpolation_data)
 	
 	model.apply_movement(
-		interpolation_data.bone_translation.interpolate() * translation_adjustment if apply_translation 
+		interpolation_data.bone_translation.interpolate(
+				interpolation_data.bone_translation.interpolation_rate) * translation_adjustment if apply_translation 
 			else Vector3.ZERO,
-		interpolation_data.bone_rotation.interpolate() * rotation_adjustment if apply_rotation
+		interpolation_data.bone_rotation.interpolate(
+				interpolation_data.bone_rotation.interpolation_rate) * rotation_adjustment if apply_rotation
 			else Vector3.ZERO
 	)
 
