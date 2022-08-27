@@ -31,7 +31,8 @@ All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` h
 ### (using binaries from the [releases page](https://github.com/virtual-puppet-project/vpuppr/releases))
 1. Download the latest release
 2. Unzip all files into a directory (do not move any of the files)
-3. Run `chmod +x <binary name>` in a terminal to make the app binary executable
+3. Run `chmod +x <binary names>` in a terminal to make the app binaries executable.
+   1. Do this for `vpuppr.x86_64` and `resources/extensions/open_see_face/OpenSeeFaceFolder/OpenSeeFace/facetracker`
 4. Run the binary
 5. Start the facetracker from within the application
 
