@@ -19,7 +19,7 @@ All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` h
 
 ### Linux
 
-### Flatpak
+#### Flatpak
 1. Ensure that [Flathub is enabled on your system](https://flatpak.org/setup/)
 2. Using a graphical interface that supports Flatpak, search for "virtual puppet project"
    1. Alternatively, you can use `flatpak install vpuppr` to list any apps that have the same string
@@ -28,7 +28,7 @@ All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` h
 4. Hit the install button and run it just like any other app!
 
 
-### (using binaries from the [releases page](https://github.com/virtual-puppet-project/vpuppr/releases))
+#### Using binaries from the [releases page](https://github.com/virtual-puppet-project/vpuppr/releases)
 1. Download the latest release
 2. Unzip all files into a directory (do not move any of the files)
 3. Run `chmod +x <binary names>` in a terminal to make the app binaries executable.
