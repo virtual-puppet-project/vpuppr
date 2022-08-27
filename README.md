@@ -45,7 +45,7 @@ All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` h
 4. Run the custom Godot editor and open your local copy of `vpuppr` with the editor
 5. Follow the [Godot instructions for exporting a project](https://docs.godotengine.org/en/stable/tutorials/export/exporting_projects.html) and use the custom templates downloaded from step 3 instead of the default templates
 6. Next to your resulting binary, copy the `resources` folder next to it. The `resources` folder is read at runtime
-<!--
+<!--Gonna uncomment this for now, when the forks to build are all set up the instructions can be moved over -->
 ## Building the Godot fork
 0. Make sure you have the following tools installed and available on your `PATH` if applicable:
    * `git`
@@ -70,7 +70,7 @@ All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` h
 7. The compiled Godot binary will be available in the `godot/` directory under the `bin/` directory
 
 These instructions are probably more fit for the Godot fork, than here.
--->
+
 
 ## Special thanks
 * [V-Sekai](https://github.com/V-Sekai) team for their help with `.vrm` importing
