@@ -69,7 +69,7 @@ All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` h
    * Release template: `./build-normal-template.sh`
 7. The compiled Godot binary will be available in the `godot/` directory under the `bin/` directory
 
-These instructions are probably more fit for the Godot fork, than here.
+<!-- These instructions are probably more fit for the Godot fork, than here. -->
 
 
 ## Special thanks
