@@ -257,6 +257,9 @@ func get_data(key: String, default_value = null, use_metadata: bool = false):
 	if val != null:
 		return val
 
+	if default_value == null:
+		return default_value
+
 	logger.debug("Key %s not found in ModelConfig and Metadata, creating and using default value" % key)
 
 	if use_metadata:

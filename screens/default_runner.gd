@@ -211,6 +211,8 @@ func _physics_step(_delta: float) -> void:
 			"stored_offsets": stored_offsets,
 			"runner": self
 		})
+
+	model.custom_update(interpolation_data)
 	
 	model.apply_movement(
 		interpolation_data.bone_translation.interpolate() * translation_adjustment if apply_translation 
