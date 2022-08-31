@@ -19,4 +19,4 @@ jobs:
           version: "3.x"
           release_type: "stable"
           test-dir: "res://tests"
-          custom-godot-dl-url: "https://github.com/you-win/godot/releases/download/3.x-binaries/Godot_v3.x-stable_linux_headless.64.zip"
+          custom-godot-dl-url: "https://github.com/virtual-puppet-project/godot/releases/download/latest/Godot_v3.x-stable_linux_headless.64.zip"
