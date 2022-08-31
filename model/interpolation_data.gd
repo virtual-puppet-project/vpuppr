@@ -42,51 +42,8 @@ const DAMPS := [
 	"eyebrow_quirk_right_damping"
 ]
 
-class Interpolation:
-	var should_interpolate := false
-	var interpolation_rate: float = 0.0
-	var last_interpolation_rate: float = 0.0
-
-	# Basically easing the target value lower so we don't snap to a stop when we are done interpolating
-	var damping: float = 1.0
-
-	var last_value
-	var target_value
-
-	func _init(p_last_value, p_target_value) -> void:
-		last_value = p_last_value
-		target_value = p_target_value
-
-	func set_both_rates(new_value: float) -> void:
-		if should_interpolate:
-			interpolation_rate = new_value
-		last_interpolation_rate = new_value
-
-	## Called when toggling base interpolation
-	func global_rate_changed(new_value: float) -> void:
-		if not should_interpolate:
-			interpolation_rate = new_value
-
-	## Called when setting specific interpolation rates
-	func maybe_reset_rate(global_rate: float) -> void:
-		if should_interpolate:
-			interpolation_rate = last_interpolation_rate
-		else:
-			last_interpolation_rate = interpolation_rate
-			interpolation_rate = global_rate
-
-	## Interpolate the value, update the stored floating target, and return the result
-	func interpolate(rate: float = interpolation_rate):
-		last_value = lerp(last_value, target_value * damping, rate)
-
-		return last_value
-
-	## Interpolate the value and return the result. Does not update the stored floating target
-	func interpolate_no_update(rate: float = interpolation_rate):
-		return lerp(last_value, target_value * damping, rate)
-
-class InterpolationHelper:
-	## Wrapper class for applying rates to a group of Interpolation classes
+class InterpolationBundle:
+	## Wrapper class for applying rates to a group of InterpolationHelper classes
 
 	var interpolations: Array
 
@@ -112,31 +69,31 @@ class InterpolationHelper:
 var last_updated: float = 0.0
 
 # The fallback rate for non-overridden Interpolaters
-var global := Interpolation.new(0.0, 0.0)
+var global := InterpolationHelper.new()
 
-var bone_translation := Interpolation.new(Vector3.ZERO, Vector3.ZERO)
-var bone_rotation := Interpolation.new(Vector3.ZERO, Vector3.ZERO)
-var bone_helper := InterpolationHelper.new([bone_translation, bone_rotation])
+var bone_translation := InterpolationHelper.new()
+var bone_rotation := InterpolationHelper.new()
+var bone_helper := InterpolationBundle.new([bone_translation, bone_rotation])
 
-var left_gaze := Interpolation.new(Vector3.ZERO, Vector3.ZERO)
-var right_gaze := Interpolation.new(Vector3.ZERO, Vector3.ZERO)
-var gaze_helper := InterpolationHelper.new([left_gaze, right_gaze])
+var left_gaze := InterpolationHelper.new()
+var right_gaze := InterpolationHelper.new()
+var gaze_helper := InterpolationBundle.new([left_gaze, right_gaze])
 
-var left_blink := Interpolation.new(0.0, 0.0)
-var right_blink := Interpolation.new(0.0, 0.0)
-var blink_helper := InterpolationHelper.new([left_blink, right_blink])
+var left_blink := InterpolationHelper.new()
+var right_blink := InterpolationHelper.new()
+var blink_helper := InterpolationBundle.new([left_blink, right_blink])
 
-var mouth_open := Interpolation.new(0.0, 0.0)
-var mouth_wide := Interpolation.new(0.0, 0.0)
-var mouth_helper := InterpolationHelper.new([mouth_open, mouth_wide])
+var mouth_open := InterpolationHelper.new()
+var mouth_wide := InterpolationHelper.new()
+var mouth_helper := InterpolationBundle.new([mouth_open, mouth_wide])
 
-var eyebrow_steepness_left := Interpolation.new(0.0, 0.0)
-var eyebrow_up_down_left := Interpolation.new(0.0, 0.0)
-var eyebrow_quirk_left := Interpolation.new(0.0, 0.0)
-var eyebrow_steepness_right := Interpolation.new(0.0, 0.0)
-var eyebrow_up_down_right := Interpolation.new(0.0, 0.0)
-var eyebrow_quirk_right := Interpolation.new(0.0, 0.0)
-var eyebrow_helper := InterpolationHelper.new([
+var eyebrow_steepness_left := InterpolationHelper.new()
+var eyebrow_up_down_left := InterpolationHelper.new()
+var eyebrow_quirk_left := InterpolationHelper.new()
+var eyebrow_steepness_right := InterpolationHelper.new()
+var eyebrow_up_down_right := InterpolationHelper.new()
+var eyebrow_quirk_right := InterpolationHelper.new()
+var eyebrow_helper := InterpolationBundle.new([
 	eyebrow_steepness_left,
 	eyebrow_up_down_left,
 	eyebrow_quirk_left,
@@ -171,6 +128,43 @@ func _init() -> void:
 	for i in INTERPOLATE_FLAGS:
 		AM.ps.subscribe(self, i, {"args": [i], "callback": "_on_model_config_changed"})
 		_on_model_config_changed(AM.cm.model_config.get(i), i)
+
+	global.target_value = 0.0
+	global.last_value = 0.0
+
+	bone_translation.target_value = Vector3.ZERO
+	bone_translation.last_value = Vector3.ZERO
+	bone_rotation.target_value = Vector3.ZERO
+	bone_rotation.last_value = Vector3.ZERO
+
+	left_gaze.target_value = Vector3.ZERO
+	left_gaze.last_value = Vector3.ZERO
+	right_gaze.target_value = Vector3.ZERO
+	right_gaze.last_value = Vector3.ZERO
+
+	left_blink.target_value = 0.0
+	left_blink.last_value = 0.0
+	right_blink.target_value = 0.0
+	right_blink.last_value = 0.0
+
+	mouth_open.target_value = 0.0
+	mouth_open.last_value = 0.0
+	mouth_wide.target_value = 0.0
+	mouth_wide.last_value = 0.0
+
+	eyebrow_steepness_left.target_value = 0.0
+	eyebrow_steepness_left.last_value = 0.0
+	eyebrow_up_down_left.target_value = 0.0
+	eyebrow_up_down_left.last_value = 0.0
+	eyebrow_quirk_left.target_value = 0.0
+	eyebrow_quirk_left.last_value = 0.0
+
+	eyebrow_steepness_right.target_value = 0.0
+	eyebrow_steepness_right.last_value = 0.0
+	eyebrow_up_down_right.target_value = 0.0
+	eyebrow_up_down_right.last_value = 0.0
+	eyebrow_quirk_right.target_value = 0.0
+	eyebrow_quirk_right.last_value = 0.0
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #

@@ -346,7 +346,8 @@ func custom_update(interpolation_data: InterpolationData) -> void:
 
 	#region Mouth tracking
 		
-	var mouth_open: float = interpolation_data.mouth_open.interpolate()
+	var mouth_open: float = interpolation_data.mouth_open.interpolate(
+		interpolation_data.mouth_open.interpolation_rate)
 
 	var mouth_wide: float = interpolation_data.mouth_wide.interpolate(2.0)
 
