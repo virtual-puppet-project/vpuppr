@@ -107,6 +107,11 @@ func _receive() -> void:
 	server.poll()
 	if connection != null:
 		var packet := connection.get_packet()
+		if connection.get_packet_error() != OK:
+			logger.error("Last packet had an error: %d" % connection.get_packet_error())
+			connection.close()
+			connection = null
+			return
 		if packet.size() < 1:
 			return
 
