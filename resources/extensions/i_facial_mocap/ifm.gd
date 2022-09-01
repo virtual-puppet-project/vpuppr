@@ -1,4 +1,4 @@
-extends TrackingBackendInterface
+extends TrackingBackendTrait
 
 ## Reference: https://www.ifacialmocap.com/for-developer/
 ##
@@ -20,6 +20,8 @@ extends TrackingBackendInterface
 # TODO Check if these can be ints or not
 ## Data from an ifm packet. Variables are defined and named in the order they are encounted in the packet
 class IFacialMocapData:
+	var has_data := false
+
 	var blend_shapes := {}
 	
 	var head_rotation := Vector3.ZERO
@@ -107,6 +109,8 @@ func _receive() -> void:
 		var packet := connection.get_packet()
 		if packet.size() < 1:
 			return
+
+		ifm_data.has_data = true
 		
 		var split := packet.get_string_from_utf8().split("|")
 		for pair in split:
@@ -193,13 +197,16 @@ func stop_receiver() -> void:
 		server.stop()
 		server = null
 
-func set_offsets(offsets: StoredOffsets) -> void:
-	offsets.translation_offset = ifm_data.head_position
-	offsets.rotation_offset = ifm_data.head_rotation
-	offsets.left_eye_gaze_offset = ifm_data.left_eye_rotation
-	offsets.right_eye_gaze_offset = ifm_data.right_eye_rotation
+func set_offsets() -> void:
+	stored_offsets.translation_offset = ifm_data.head_position
+	stored_offsets.rotation_offset = ifm_data.head_rotation
+	stored_offsets.left_eye_gaze_offset = ifm_data.left_eye_rotation
+	stored_offsets.right_eye_gaze_offset = ifm_data.right_eye_rotation
 
-func apply(_model: PuppetTrait, interpolation_data: InterpolationData, _extra: Dictionary) -> void:
+func has_data() -> bool:
+	return ifm_data.has_data
+
+func apply(interpolation_data: InterpolationData, _model: PuppetTrait) -> void:
 	interpolation_data.bone_translation.target_value = ifm_data.head_position
 	interpolation_data.bone_rotation.target_value = ifm_data.head_rotation
 	

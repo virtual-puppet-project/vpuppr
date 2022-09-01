@@ -1,4 +1,4 @@
-extends TrackingBackendInterface
+extends TrackingBackendTrait
 
 func is_listening() -> bool:
 	return true

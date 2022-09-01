@@ -108,24 +108,28 @@ func _toggle_tracking() -> Button:
 
 func _on_toggle_tracking(button: Button) -> void:
 	var trackers = get_tree().current_scene.get("trackers")
-	if typeof(trackers) != TYPE_ARRAY:
+	if typeof(trackers) != TYPE_DICTIONARY:
 		logger.error(tr("I_FACIAL_MOCAP_INCOMPATIBLE_RUNNER_ERROR"))
 		return
 
-	var tracker: TrackingBackendInterface
+	var tracker: TrackingBackendTrait
 	var found := false
-	for i in trackers:
-		if i.get_name() == "iFacialMocap" and i is TrackingBackendInterface:
+	for i in trackers.values():
+		if i is TrackingBackendTrait and i.get_name() == "iFacialMocap":
 			tracker = i
 			found = true
 			break
 
 	if found:
+		logger.debug("Stopping ifm tracker")
+
 		tracker.stop_receiver()
-		trackers.erase(tracker)
+		trackers.erase(tracker.get_name())
 
 		button.text = tr("I_FACIAL_MOCAP_TOGGLE_TRACKING_BUTTON_START")
 	else:
+		logger.debug("Starting ifm tracker")
+
 		var res: Result = Safely.wrap(AM.em.load_resource("iFacialMocap", "ifm.gd"))
 		if res.is_err():
 			logger.error(res)
@@ -133,7 +137,7 @@ func _on_toggle_tracking(button: Button) -> void:
 
 		var ifm = res.unwrap().new()
 
-		trackers.append(ifm)
+		trackers[ifm.get_name()] = ifm
 
 		button.text = tr("I_FACIAL_MOCAP_TOGGLE_TRACKING_BUTTON_STOP")
 	
