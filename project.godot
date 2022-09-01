@@ -194,15 +194,10 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://utils/temp_cache_manager.gd"
 }, {
-"base": "TrackingBackendInterface",
-"class": "TrackingBackendDummy",
-"language": "GDScript",
-"path": "res://model/dummies/tracking_backend_dummy.gd"
-}, {
 "base": "Reference",
-"class": "TrackingBackendInterface",
+"class": "TrackingBackendTrait",
 "language": "GDScript",
-"path": "res://model/extensions/tracking_backend_interface.gd"
+"path": "res://model/extensions/tracking_backend_trait.gd"
 }, {
 "base": "AbstractManager",
 "class": "TranslationManager",
@@ -252,8 +247,7 @@ _global_script_class_icons={
 "StoredOffsets": "",
 "Sun": "",
 "TempCacheManager": "",
-"TrackingBackendDummy": "",
-"TrackingBackendInterface": "",
+"TrackingBackendTrait": "",
 "TranslationManager": "",
 "VRMTopLevel": ""
 }

@@ -7,9 +7,9 @@ var logger: Logger
 # TODO this should be stored on the model
 var current_model_path := ""
 
-## Array of TrackingBackendInterfaces
-var trackers := []
-var main_tracker: TrackingBackendInterface
+## @type: Dictionary<String, TrackingBackendTrait>
+var trackers := {}
+var main_tracker: TrackingBackendTrait
 
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
@@ -72,8 +72,9 @@ func _teardown() -> void:
 	_generate_preview()
 
 	main_tracker = null
-	for tracker in trackers:
-		if not tracker is TrackingBackendInterface:
+	for tracker in trackers.values():
+		if not tracker is TrackingBackendTrait:
+			logger.error("Tracker %s does not inherit from TrackingBackendTrait" % str(tracker))
 			continue
 		tracker.stop_receiver()
 	trackers.clear()
@@ -225,22 +226,6 @@ func _try_load_model(path: String) -> Result:
 ## @return: Result - The error code
 func load_model(_path: String) -> Result:
 	return Result.err(Error.Code.NOT_YET_IMPLEMENTED, "load_model")
-
-## Uses the built-in gltf loader to load a `glb` model
-##
-## @param: path: String - The absolute path to a model
-##
-## @return: Result<Spatial> - The loaded model
-func load_glb(path: String) -> Result:
-	logger.info("Using glb loader")
-
-	var gltf_loader := PackedSceneGLTF.new()
-
-	var model = gltf_loader.import_gltf_scene(path)
-	if model == null:
-		return Safely.err(Error.Code.RUNNER_LOAD_FILE_FAILED)
-	
-	return Safely.ok(model)
 
 ## Uses the built-in scene loader to load a PackedScene
 ##

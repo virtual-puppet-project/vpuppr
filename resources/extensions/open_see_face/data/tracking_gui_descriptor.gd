@@ -11,11 +11,13 @@ const ConfigKeys := {
 	"MODEL": "open_see_face_model"
 }
 
+var logger := Logger.new("OpenSeeFaceGUI")
+
 func _init() -> void:
 	for val in ConfigKeys.values():
 		var res: Result = Safely.wrap(AM.cm.runtime_subscribe_to_signal(val))
 		if res.is_err() and res.unwrap_err().code != Error.Code.PUB_SUB_ALREADY_CONNECTED:
-			AM.logger.error(res)
+			logger.error(res)
 			return
 
 	_hv_fill_expand(self)
@@ -155,7 +157,7 @@ func _on_camera_selected(idx: int, ob: OptionButton) -> void:
 
 	var current_index: int = popup.get_current_index()
 	if current_index < 0:
-		AM.logger.error(tr("CAMERA_SELECTED_NO_PREVIOUSLY_SELECTED_ITEM"))
+		logger.error(tr("CAMERA_SELECTED_NO_PREVIOUSLY_SELECTED_ITEM"))
 	else:
 		popup.set_item_checked(current_index, false)
 	
@@ -271,14 +273,14 @@ func _toggle_tracking() -> Button:
 
 func _on_toggle_tracking(button: Button) -> void:
 	var trackers = get_tree().current_scene.get("trackers")
-	if typeof(trackers) != TYPE_ARRAY:
-		AM.logger.error(tr("TOGGLE_TRACKING_INCOMPATIBLE_RUNNER_ERROR"))
+	if typeof(trackers) != TYPE_DICTIONARY:
+		logger.error(tr("TOGGLE_TRACKING_INCOMPATIBLE_RUNNER_ERROR"))
 		return
 
-	var tracker: TrackingBackendInterface
+	var tracker: TrackingBackendTrait
 	var found := false
-	for i in trackers:
-		if i.get_name() == "OpenSeeFace" and i is TrackingBackendInterface:
+	for i in trackers.values():
+		if i is TrackingBackendTrait and i.get_name() == "OpenSeeFace":
 			tracker = i
 			found = true
 			break
@@ -287,19 +289,23 @@ func _on_toggle_tracking(button: Button) -> void:
 	# is being turned off. Thus if the button were to be pressed again, it would be for
 	# starting the tracker
 	if found:
+		logger.debug("Stopping osf tracker")
+
 		tracker.stop_receiver()
-		trackers.erase(tracker)
+		trackers.erase(tracker.get_name())
 
 		button.text = tr("TOGGLE_TRACKING_BUTTON_TEXT_START")
 	else:
+		logger.debug("Starting osf tracker")
+
 		var osf_res: Result = AM.em.load_resource("OpenSeeFace", "open_see_face.gd")
 		if not osf_res or osf_res.is_err():
-			AM.logger.error(tr("TOGGLE_TRACKING_LOAD_TRACKER_ERROR"))
+			logger.error(tr("TOGGLE_TRACKING_LOAD_TRACKER_ERROR"))
 			return
 
 		var osf = osf_res.unwrap().new()
 
-		trackers.append(osf)
+		trackers[osf.get_name()] = osf
 
 		button.text = tr("TOGGLE_TRACKING_BUTTON_TEXT_STOP")
 
@@ -372,7 +378,7 @@ func _on_model_selected(idx: int, ob: OptionButton) -> void:
 
 	var current_index: int = popup.get_current_index()
 	if current_index < 0:
-		AM.logger.error(tr("ML_MODEL_SELECT_NO_PREVIOUS_MODEL_SELECTED_ERROR"))
+		logger.error(tr("ML_MODEL_SELECT_NO_PREVIOUS_MODEL_SELECTED_ERROR"))
 	else:
 		popup.set_item_checked(current_index, false)
 	
@@ -380,11 +386,11 @@ func _on_model_selected(idx: int, ob: OptionButton) -> void:
 
 	var split: PoolStringArray = popup.get_item_text(idx).split(":")
 	if split.size() < 2:
-		AM.logger.error(tr("ML_MODEL_SELECT_INVALID_MODEL_SELECTED") % str(split))
+		logger.error(tr("ML_MODEL_SELECT_INVALID_MODEL_SELECTED") % str(split))
 		return
 
 	if not split[0].is_valid_integer():
-		AM.logger.error(tr("ML_MODEL_SELECT_NO_PRECEDING_INTEGER"))
+		logger.error(tr("ML_MODEL_SELECT_NO_PRECEDING_INTEGER"))
 		return
 
 	AM.ps.publish(ConfigKeys.MODEL, split[0].to_int())

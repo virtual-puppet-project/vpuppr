@@ -206,11 +206,8 @@ func _physics_step(_delta: float) -> void:
 	if trackers.empty():
 		return
 	
-	for tracker in trackers:
-		tracker.apply(model, interpolation_data, {
-			"stored_offsets": stored_offsets,
-			"runner": self
-		})
+	for tracker in trackers.values():
+		tracker.apply(interpolation_data, model)
 
 	model.custom_update(interpolation_data)
 	
@@ -296,8 +293,20 @@ func _on_event_published(payload: SignalPayload) -> void:
 		Globals.POSE_BONE:
 			should_pose_model = payload.data
 			bone_to_pose = model.skeleton.find_bone(payload.id)
+		Globals.TRACKER_TOGGLED:
+			if payload.data == false:
+				return
+			if not trackers.has(payload.id):
+				logger.error("Tried to set offsets on non-existent tracker %s" % payload.id)
+				return
+			
+			var tracker: TrackingBackendTrait = trackers[payload.id]
+			while not tracker.has_data():
+				yield(get_tree(), "idle_frame")
+
+			tracker.set_offsets()
 		Globals.TRACKER_USE_AS_MAIN_TRACKER:
-			for tracker in trackers:
+			for tracker in trackers.values():
 				if tracker.get_name() == payload.data:
 					main_tracker = tracker
 					return
@@ -332,11 +341,8 @@ func _on_event_published(payload: SignalPayload) -> void:
 #-----------------------------------------------------------------------------#
 
 func _save_offsets() -> void:
-	if main_tracker == null:
-		logger.error("No main tracker defined")
-		return
-
-	main_tracker.set_offsets(stored_offsets)
+	for tracker in trackers.values():
+		tracker.set_offsets()
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #
@@ -380,21 +386,30 @@ func load_model(path: String) -> Result:
 
 	return Safely.ok()
 
+## Uses the built-in gltf loader to load a `glb` model
+##
+## @param: path: String - The absolute path to a model
+##
+## @return: Result<Spatial> - The loaded model
 func load_glb(path: String) -> Result:
-	var res := .load_glb(path)
-	if res.is_err():
-		return res
+	logger.info("Using glb loader")
+
+	var gltf_loader := PackedSceneGLTF.new()
+
+	var node: Node = gltf_loader.import_gltf_scene(path)
+	if node == null:
+		return Safely.err(Error.Code.RUNNER_LOAD_FILE_FAILED)
 
 	var script: GDScript = load(PUPPET_TRAIT_SCRIPT_PATH)
 	if script == null:
 		return Safely.err(Error.Code.RUNNER_LOAD_FILE_FAILED, "Unable to load puppet trait script")
 	
-	res.unwrap().set_script(script)
+	node.set_script(script)
 
 	translation_adjustment = Vector3.ONE
 	rotation_adjustment = Vector3(-1, -1, 1)
 
-	return res
+	return Safely.ok(node)
 
 func load_scn(path: String) -> Result:
 	var res := .load_scn(path)
