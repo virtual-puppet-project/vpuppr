@@ -1,4 +1,4 @@
-extends TrackingBackendInterface
+extends TrackingBackendTrait
 
 class OSFData:
 	const NUMBER_OF_POINTS: int = 68
@@ -192,14 +192,11 @@ var connection: PacketPeerUDP # Must be taken when running the server
 var receive_thread: Thread # Must be created when starting tracking
 
 var reception_counter: float = 0.0
-
 var stop_reception := false
 
 var face_tracker_pid: int = -1
 
 var data_map := {} # Face id: int -> OpenSeeFaceData
-
-# var open_see_face_data: GDScript
 
 var updated_time: float = 0.0
 
@@ -388,50 +385,32 @@ func stop_receiver() -> void:
 		server.stop()
 		server = null
 
-func set_offsets(offsets: StoredOffsets) -> void:
+func set_offsets() -> void:
 	var data: OSFData = data_map.get(0, null)
 	if data == null:
 		return
 
-	offsets.translation_offset = data.translation
-	offsets.rotation_offset = data.rotation
-	offsets.left_eye_gaze_offset = data.left_gaze.get_euler()
-	offsets.right_eye_gaze_offset = data.right_gaze.get_euler()
+	stored_offsets.translation_offset = data.translation
+	stored_offsets.rotation_offset = data.rotation
+	stored_offsets.left_eye_gaze_offset = data.left_gaze.get_euler()
+	stored_offsets.right_eye_gaze_offset = data.right_gaze.get_euler()
 
-func apply(_model: PuppetTrait, interpolation_data: InterpolationData, extra: Dictionary) -> void:
+func has_data() -> bool:
+	return not data_map.empty()
+
+func apply(data: InterpolationData, _model: PuppetTrait) -> void:
 	var osf_data: OSFData = data_map.get(0, null)
 	if osf_data == null or osf_data.fit_3d_error > 100.0:
 		return
-	
-	var features := osf_data.features
 
-	# TODO rethink this, blindly grabbing data is bad
-	var stored_offsets: StoredOffsets = extra.stored_offsets
+	data.bone_translation.target_value = stored_offsets.translation_offset - osf_data.translation
+	data.bone_rotation.target_value = stored_offsets.rotation_offset - osf_data.rotation
 
-	if osf_data.time > updated_time:
-		updated_time = osf_data.time
+	data.left_gaze.target_value = stored_offsets.left_eye_gaze_offset - osf_data.left_gaze.get_euler()
+	data.right_gaze.target_value = stored_offsets.right_eye_gaze_offset - osf_data.right_gaze.get_euler()
 
-		interpolation_data.update_values(
-			updated_time,
+	data.left_blink.target_value = osf_data.left_eye_open
+	data.right_blink.target_value = osf_data.right_eye_open
 
-			stored_offsets.translation_offset - osf_data.translation,
-			stored_offsets.rotation_offset - osf_data.rotation,
-
-			stored_offsets.left_eye_gaze_offset - osf_data.left_gaze.get_euler(),
-			stored_offsets.right_eye_gaze_offset - osf_data.right_gaze.get_euler(),
-
-			osf_data.left_eye_open,
-			osf_data.right_eye_open,
-
-			features.mouth_open,
-			features.mouth_wide,
-
-			features.eyebrow_steepness_left,
-			features.eyebrow_steepness_right,
-
-			features.eyebrow_up_down_left,
-			features.eyebrow_up_down_right,
-
-			features.eyebrow_quirk_left,
-			features.eyebrow_quirk_right
-		)
+	data.mouth_open.target_value = osf_data.features.mouth_open
+	data.mouth_wide.target_value = osf_data.features.mouth_wide

@@ -7,9 +7,9 @@ var logger: Logger
 # TODO this should be stored on the model
 var current_model_path := ""
 
-## Array of TrackingBackendInterfaces
-var trackers := []
-var main_tracker: TrackingBackendInterface
+## @type: Dictionary<String, TrackingBackendTrait>
+var trackers := {}
+var main_tracker: TrackingBackendTrait
 
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
@@ -72,8 +72,9 @@ func _teardown() -> void:
 	_generate_preview()
 
 	main_tracker = null
-	for tracker in trackers:
-		if not tracker is TrackingBackendInterface:
+	for tracker in trackers.values():
+		if not tracker is TrackingBackendTrait:
+			logger.error("Tracker %s does not inherit from TrackingBackendTrait" % str(tracker))
 			continue
 		tracker.stop_receiver()
 	trackers.clear()
