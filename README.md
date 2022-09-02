@@ -4,6 +4,10 @@
 
 All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` has not been tested but might work. `.scn` files created with Godot should all import correctly as well.
 
+## Important update
+If you were working on a PR to this repo before September 1, 2022, you will need to delete your GitHub/local copies of vpuppr and re-fork vpuppr. This is because
+[bfg-repo-cleaner](https://github.com/rtyley/bfg-repo-cleaner) has been run on the repo, reducing the size from ~200mb -> ~100mb. Your changes will not be affected. The only thing that has changed is the commit history has been stripped of large blobs.
+
 ## Available trackers
 * [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace)
 * [iFacialMocap](https://www.ifacialmocap.com/)
