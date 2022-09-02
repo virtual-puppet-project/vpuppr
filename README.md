@@ -6,6 +6,7 @@ All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` h
 
 ## Available trackers
 * [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace)
+* [iFacialMocap](https://www.ifacialmocap.com/)
 
 *More trackers may be available in the future, such as [MediaPipe](https://google.github.io/mediapipe/)*
 
