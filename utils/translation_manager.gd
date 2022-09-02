@@ -20,10 +20,14 @@ func _setup_logger() -> void:
 	logger = Logger.new("TranslationManager")
 
 func _setup_class() -> void:
-	if not OS.is_debug_build():
-		scan_path = "%s/%s" % [OS.get_executable_path().get_base_dir(), Globals.TRANSLATIONS_PATH]
+	scan_path = AM.app_args.get("resource_path", "")
+	if scan_path.empty():
+		if not OS.is_debug_build():
+			scan_path = "%s/%s" % [OS.get_executable_path().get_base_dir(), Globals.TRANSLATIONS_PATH]
+		else:
+			scan_path = "%s/%s" % [ProjectSettings.globalize_path("res://"), Globals.TRANSLATIONS_PATH]
 	else:
-		scan_path = "%s/%s" % [ProjectSettings.globalize_path("res://"), Globals.TRANSLATIONS_PATH]
+		scan_path = "%s/%s" % [scan_path, Globals.TRANSLATIONS_PATH]
 	
 	logger.debug("Using scan_path: %s" % scan_path)
 	
