@@ -355,7 +355,8 @@ func load_model(path: String) -> Result:
 	if res.is_err():
 		logger.error(res)
 		# If this fails, something is very very wrong
-		res = Safely.wrap(_try_load_model(Globals.DEFAULT_MODEL_PATH))
+		path = Globals.DEFAULT_MODEL_PATH
+		res = Safely.wrap(_try_load_model(path))
 		if res.is_err():
 			get_tree().change_scene(Globals.LANDING_SCREEN_PATH)
 			return res

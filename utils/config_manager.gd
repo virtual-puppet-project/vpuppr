@@ -28,6 +28,8 @@ func _setup_class() -> void:
 	else:
 		save_data_path = "res://export"
 	
+	logger.debug("Using save_data_path: %s" % save_data_path)
+	
 	if AM.env.current_env != Env.Envs.TEST:
 		var result := Safely.wrap(load_metadata())
 		if result.is_err():

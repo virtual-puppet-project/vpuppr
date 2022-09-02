@@ -25,6 +25,8 @@ func _setup_class() -> void:
 	else:
 		scan_path = "%s/%s" % [ProjectSettings.globalize_path("res://"), Globals.TRANSLATIONS_PATH]
 	
+	logger.debug("Using scan_path: %s" % scan_path)
+	
 	var dir := Directory.new()
 	var file := File.new()
 	
@@ -32,6 +34,8 @@ func _setup_class() -> void:
 	for extension in AM.em.extensions.values():
 		if extension.has_directory(Globals.EXTENSION_TRANSLATION_PATH):
 			_scan(dir, file, "%s/%s" % [extension.context, Globals.EXTENSION_TRANSLATION_PATH])
+	
+	logger.debug("Auto-detected language is: %s" % TranslationServer.get_locale())
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
@@ -42,6 +46,8 @@ func _setup_class() -> void:
 #-----------------------------------------------------------------------------#
 
 func _scan(dir: Directory, file: File, path: String) -> Result:
+	logger.debug("Scanning %s for translations" % path)
+	
 	if dir.open(path) != OK:
 		return Safely.err(Error.Code.TRANSLATION_MANAGER_DIRECTORY_DOES_NOT_EXIST, scan_path)
 	
@@ -61,11 +67,17 @@ func _scan(dir: Directory, file: File, path: String) -> Result:
 			printerr("Unable to open translation file %s, skipping", file_name)
 			continue
 		
+		logger.debug("Loading translation file %s" % file_name)
+		
 		_load_translation(file_name.trim_suffix(TRANSLATION_EXTENSION), file.get_as_text())
+		
+		logger.debug("Finished loading translation file %s" % file_name)
 		
 		file.close()
 	
 	dir.list_dir_end()
+	
+	logger.debug("Finished scanning %s for translations" % path)
 	
 	return Safely.ok()
 
@@ -73,9 +85,13 @@ func _scan(dir: Directory, file: File, path: String) -> Result:
 ## a translation for the same locale is loaded twice. The new translation is appended to the
 ## existing translation. Keys are overridden if the new translation contains existing keys.
 ##
+## NOTE: PHashTranslation cannot be used at runtime
+##
 ## @param: locale: String - The locale for the translation
 ## @param: file_text: String - The full, unparsed text of the file
 func _load_translation(locale: String, file_text: String) -> void:
+	logger.debug("Loading translation for locale: %s" % locale)
+	
 	var translation := Translation.new()
 	translation.locale = locale
 	
@@ -100,6 +116,10 @@ func _load_translation(locale: String, file_text: String) -> void:
 				continue
 			else:
 				translation.add_message(current_key, final_message.substr(1, final_message.length() - 2))
+				
+				logger.debug("Added translation: %s - %s" % [
+					current_key, final_message.substr(1, final_message.length() - 2)])
+				
 				current_key = ""
 				current_message = ""
 		
@@ -116,10 +136,11 @@ func _load_translation(locale: String, file_text: String) -> void:
 	else:
 		translation.add_message(current_key, final_message.substr(1, final_message.length() - 2))
 	
-	var hash_translation := PHashTranslation.new()
-	hash_translation.generate(translation)
+	logger.debug("Loaded %d translations" % translation.get_message_count())
 	
-	TranslationServer.add_translation(hash_translation)
+	TranslationServer.add_translation(translation)
+	
+	logger.debug("Finished loading translation")
 
 static func _valid_message_ending(text: String) -> bool:
 	return text.ends_with("\"") or not text.ends_with(ESCAPED_QUOTE)
