@@ -26,6 +26,7 @@ const BUILTIN_MENUS := {
 }
 
 var logger: Logger
+onready var menu_bar: MenuBar = $VBoxContainer/MenuBar
 
 var grabber_grabbed := false
 
@@ -37,6 +38,8 @@ func _init() -> void:
 	logger = Logger.new("DefaultGui")
 
 func _ready() -> void:
+	menu_bar.parent = self
+
 	var menu_list := $VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer/MenuList as VBoxContainer
 
 	for menu_name in BUILTIN_MENUS.keys():
@@ -80,7 +83,6 @@ func _on_pressed(scene, popup_name: String) -> void:
 			logger.error(res)
 			return
 		popup = _create_popup(scene, popup_name)
-		popup.connect("gui_input", self, "_on_popup_clicked", [popup])
 
 		AM.tcm.push(popup_name, popup).cleanup_on_signal(popup, "tree_exiting")
 
@@ -119,3 +121,9 @@ func _create_popup(scene, popup_name: String) -> BasePopup:
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #
 #-----------------------------------------------------------------------------#
+
+func add_child(node: Node, legible_unique_name: bool = false) -> void:
+	if node is BasePopup:
+		(node as BasePopup).connect("gui_input", self, "_on_popup_clicked", [node])
+	
+	.add_child(node, legible_unique_name)

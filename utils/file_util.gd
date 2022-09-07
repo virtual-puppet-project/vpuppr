@@ -127,3 +127,12 @@ static func remove_file_at_path(path: String) -> Result:
 		return Safely.err(Error.Code.FILE_DELETE_FAILED, path)
 
 	return Safely.ok(path)
+
+static func inject_env_vars(text: String) -> String:
+	text = text.replace("$EXE_DIR", OS.get_executable_path().get_base_dir())
+	
+	return text \
+		.replace("$EXE_DIR", OS.get_executable_path().get_base_dir()) \
+		.replace("$PROJECT", ProjectSettings.globalize_path("res://")) \
+		.replace("$USER", ProjectSettings.globalize_path("user://")) \
+		.replace("$HOME", OS.get_environment("HOME"))
