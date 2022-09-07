@@ -2,17 +2,21 @@ I_FACIAL_MOCAP_EXTENSION="iFacialMocap"
 
 I_FACIAL_MOCAP_INCOMPATIBLE_RUNNER_ERROR="Incompatible runner"
 
+I_FACIAL_MOCAP_USAGE_LABEL="Click on the appropriate button to copy your computer's IP address to your clipboard. Paste this somewhere OFFSTREAM to see the IP address and then enter that value into the iFacialMocap app at \"Destination setting > Destination IP Address\".
+
+The address and port to listen for data on can also be configured. These should only be changed if you know what you are doing."
+
 I_FACIAL_MOCAP_PORT_LABEL="Port"
 I_FACIAL_MOCAP_PORT_LABEL_HINT="The port the listen on. Should only be changed if you know what you are doing."
 
 I_FACIAL_MOCAP_ADDRESS_LABEL="Address"
 I_FACIAL_MOCAP_ADDRESS_LABEL_HINT="The address to accept connections from. Should only be changed if you know what you are doing."
 
-I_FACIAL_MOCAP_HIDDEN_LOCAL_IP_BUTTON="Copy IP to clipboard"
-I_FACIAL_MOCAP_HIDDEN_LOCAL_IP_BUTTON_HINT="Copies your computer's IP address to the system clipboard.
-
-DO NOT SHOW THIS ON STREAM."
+I_FACIAL_MOCAP_HIDDEN_LOCAL_IP_DESCRIPTION="Detected IP addresses"
 
 I_FACIAL_MOCAP_TOGGLE_TRACKING_BUTTON_START="Start"
 I_FACIAL_MOCAP_TOGGLE_TRACKING_BUTTON_STOP="Stop"
 I_FACIAL_MOCAP_TOGGLE_TRACKING_BUTTON_HINT="Toggles tracking on or off."
+
+I_FACIAL_MOCAP_ADVANCED_OPTIONS_BUTTON_HINT="Show/hide advanced options"
+I_FACIAL_MOCAP_ADVANCED_OPTIONS_BUTTON_TEXT="Toggle advanced options"

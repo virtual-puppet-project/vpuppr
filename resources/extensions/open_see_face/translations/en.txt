@@ -1,37 +1,46 @@
-CAMERA_SELECT_HINT="The camera to use for tracking"
-CAMERA_SELECT_NO_OUTPUT_1="Unable to list cameras"
-CAMERA_SELECT_NO_OUTPUT_2="Please report this as a bug"
-CAMERA_SELECTED_NO_PREVIOUSLY_SELECTED_ITEM="OpenSeeFace: No item was previously selected. This is likely a bug."
+OPENSEEFACE_USAGE_LABEL="1. Select the camera to be used for tracking
+2. Set the FPS to track at (higher is better but is more CPU intensive)
+3. Select the tracking model to be used
 
-TRACKER_FPS_HINT="The FPS to run OpenSeeFace at. A higher value results in more accurate tracking but also more CPU usage."
-TRACKER_FPS_LABEL="Tracker FPS"
+There are various advanced options that should only be configured if you know what you are doing."
 
-SHOULD_LAUNCH_TRACKER_HINT="Whether or not to launch OpenSeeFace or just listen for OpenSeeFace data.
+OPENSEEFACE_ADVANCED_OPTIONS_TOGGLE_HINT="Show/hide advanced options"
+OPENSEEFACE_ADVANCED_OPTIONS_TOGGLE_TEXT="Toggle advanced options"
+
+OPENSEEFACE_CAMERA_SELECT_HINT="The camera to use for tracking"
+OPENSEEFACE_CAMERA_SELECT_NO_OUTPUT_1="Unable to list cameras"
+OPENSEEFACE_CAMERA_SELECT_NO_OUTPUT_2="Please report this as a bug"
+OPENSEEFACE_CAMERA_SELECTED_NO_PREVIOUSLY_SELECTED_ITEM="OpenSeeFace: No item was previously selected. This is likely a bug."
+
+OPENSEEFACE_TRACKER_FPS_HINT="The FPS to run OpenSeeFace at. A higher value results in more accurate tracking but also more CPU usage."
+OPENSEEFACE_TRACKER_FPS_LABEL="Tracker FPS"
+
+OPENSEEFACE_SHOULD_LAUNCH_TRACKER_HINT="Whether or not to launch OpenSeeFace or just listen for OpenSeeFace data.
 
 This is generally only useful if VPupPr is unable to automatically start OpenSeeFace. In that case, you will need to start OpenSeeFace from a terminal."
-SHOULD_LAUNCH_TRACKER_LABEL="Should launch tracker"
+OPENSEEFACE_SHOULD_LAUNCH_TRACKER_LABEL="Should launch tracker"
 
-TRACKER_ADDRESS_HINT="The IP address to listen on. Do not change this unless you know what you are doing."
-TRACKER_ADDRESS_LABEL="Address"
+OPENSEEFACE_TRACKER_ADDRESS_HINT="The IP address to listen on. Do not change this unless you know what you are doing."
+OPENSEEFACE_TRACKER_ADDRESS_LABEL="Address"
 
-TRACKER_PORT_HINT="The port to listen on. Do not change this unless you know what you are doing."
-TRACKER_PORT_LABEL="Port"
+OPENSEEFACE_TRACKER_PORT_HINT="The port to listen on. Do not change this unless you know what you are doing."
+OPENSEEFACE_TRACKER_PORT_LABEL="Port"
 
-TOGGLE_TRACKING_BUTTON_TEXT_START="Start"
-TOGGLE_TRACKING_BUTTON_TEXT_STOP="Stop"
-TOGGLE_TRACKING_INCOMPATIBLE_RUNNER_ERROR="OpenSeeFace: Incompatible runner, no trackers property found"
-TOGGLE_TRACKING_LOAD_TRACKER_ERROR="OpenSeeFace: Unable to load tracker"
+OPENSEEFACE_TOGGLE_TRACKING_BUTTON_TEXT_START="Start"
+OPENSEEFACE_TOGGLE_TRACKING_BUTTON_TEXT_STOP="Stop"
+OPENSEEFACE_TOGGLE_TRACKING_INCOMPATIBLE_RUNNER_ERROR="OpenSeeFace: Incompatible runner, no trackers property found"
+OPENSEEFACE_TOGGLE_TRACKING_LOAD_TRACKER_ERROR="OpenSeeFace: Unable to load tracker"
 
-ML_MODEL_NEG_3="Between models 0 and 1"
-ML_MODEL_NEG_2="Roughly equivalent to model 1 but faster"
-ML_MODEL_NEG_1="Faster idk"
-ML_MODEL_0="Potato"
-ML_MODEL_1="Higher quality than Potato but more resource intensive"
-ML_MODEL_2="Slightly faster than Default but lower quality"
-ML_MODEL_3="Default"
-ML_MODEL_4="Wink optimized, slower than Default"
+OPENSEEFACE_ML_MODEL_NEG_3="Between models 0 and 1"
+OPENSEEFACE_ML_MODEL_NEG_2="Roughly equivalent to model 1 but faster"
+OPENSEEFACE_ML_MODEL_NEG_1="Faster idk"
+OPENSEEFACE_ML_MODEL_0="Potato"
+OPENSEEFACE_ML_MODEL_1="Higher quality than Potato but more resource intensive"
+OPENSEEFACE_ML_MODEL_2="Slightly faster than Default but lower quality"
+OPENSEEFACE_ML_MODEL_3="Default"
+OPENSEEFACE_ML_MODEL_4="Wink optimized, slower than Default"
 
-ML_MODEL_SELECT_HINT="The tracking model to use. See the OpenSeeFace README on GitHub for an explanation of the different tracking models."
-ML_MODEL_SELECT_NO_PREVIOUS_MODEL_SELECTED_ERROR="OpenSeeFace: No item was previously selected. This is likely a bug."
-ML_MODEL_SELECT_INVALID_MODEL_SELECTED="OpenSeeFace: Invalid ML model selected %s"
-ML_MODEL_SELECT_NO_PRECEDING_INTEGER="OpenSeeFace: ML model selection does not have a valid, preceding integer"
+OPENSEEFACE_ML_MODEL_SELECT_HINT="The tracking model to use. See the OpenSeeFace README on GitHub for an explanation of the different tracking models."
+OPENSEEFACE_ML_MODEL_SELECT_NO_PREVIOUS_MODEL_SELECTED_ERROR="OpenSeeFace: No item was previously selected. This is likely a bug."
+OPENSEEFACE_ML_MODEL_SELECT_INVALID_MODEL_SELECTED="OpenSeeFace: Invalid ML model selected %s"
+OPENSEEFACE_ML_MODEL_SELECT_NO_PRECEDING_INTEGER="OpenSeeFace: ML model selection does not have a valid, preceding integer %s"

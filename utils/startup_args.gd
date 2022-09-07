@@ -18,16 +18,13 @@ func _init() -> void:
 	_parser = flagd.new_parser({
 		"description": "vpuppr flag parser",
 
-		"should_parse_feature_flags": true,
-		"preparse_func": funcref(self, "_apply_preparse_args"),
+		"should_parse_feature_flags": Globals.SHOULD_PARSE_FEATURE_FLAGS,
 
-		"should_parse_cmdline_args": true,
+		"should_parse_cmdline_args": Globals.SHOULD_PARSE_CMDLINE_ARGS,
 
-		"should_parse_user_data_args": true,
+		"should_parse_user_data_args": Globals.SHOULD_PARSE_USER_DATA_ARGS,
 		"user_data_args_file_name": "flagd"
 	})
-
-	_parser.register_feature_funcs(self)
 
 	#region General
 	
@@ -88,38 +85,6 @@ func _init() -> void:
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#
-
-func _apply_preparse_args(key: String, val) -> void:
-	if _parser.get(key) != null:
-		_parser.set(key, val)
-		return
-
-	var ae := preload("res://addons/advanced-expression/advanced_expression.gd").new()
-
-	ae.add("%s = %s" % [key, str(val)])
-
-	var err: int = ae.compile()
-	if err != OK:
-		printerr("Unable to compile preparse func: %d" % err)
-		return
-
-	ae.execute()
-
-func _flagd_features_editor() -> Array:
-	return [
-		"should_parse_user_data_args=false",
-		"AM.app_args['stay_on_splash']=true"
-	]
-
-func _flagd_features_flatpak() -> Array:
-	return [
-		"resource_path=/app/share/vpuppr/resources/"
-	]
-
-func _flagd_features_gentoo() -> Array:
-	return [
-		"resource_path=/usr/share/vpuppr/resources/"
-	]
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #

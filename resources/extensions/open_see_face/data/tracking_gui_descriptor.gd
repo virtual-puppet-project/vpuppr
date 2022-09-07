@@ -7,7 +7,6 @@ const ConfigKeys := {
 	"SHOULD_LAUNCH_TRACKER": "open_see_face_should_launch_tracker",
 	"ADDRESS": "open_see_face_address",
 	"PORT": "open_see_face_port",
-	"PYTHON_PATH": "open_see_face_python_path",
 	"MODEL": "open_see_face_model"
 }
 
@@ -20,39 +19,33 @@ func _init() -> void:
 			logger.error(res)
 			return
 
-	_hv_fill_expand(self)
+	ControlUtil.all_expand_fill(self)
 	
 	var scroll_container := ScrollContainer.new()
-	_hv_fill_expand(scroll_container)
+	ControlUtil.all_expand_fill(scroll_container)
 
 	var vbox := VBoxContainer.new()
-	_hv_fill_expand(vbox)
+	ControlUtil.h_expand_fill(vbox)
 
 	#region Actual list of ui elements
 
+	vbox.add_child(_usage())
 	vbox.add_child(_camera_select())
 	vbox.add_child(_tracker_fps())
-	vbox.add_child(_should_launch_tracker())
-	vbox.add_child(_tracker_address())
-	vbox.add_child(_tracker_port())
 	vbox.add_child(_model())
 
-	# if OS.get_name().to_lower() in ["x11", "osx"]:
-	# 	vbox.add_child(_python_path())
+	vbox.add_child(HSeparator.new())
 
 	vbox.add_child(_toggle_tracking())
+
+	vbox.add_child(HSeparator.new())
+
+	vbox.add_child(_advanced_options())
 
 	#endregion
 
 	scroll_container.add_child(vbox)
 	add_child(scroll_container)
-
-static func _hv_fill_expand(control: Control) -> void:
-	control.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	control.size_flags_vertical = Control.SIZE_EXPAND_FILL
-
-static func _h_fill_expand(control: Control) -> void:
-	control.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 #region Connections
 
@@ -72,10 +65,19 @@ static func _on_button_toggled(state: bool, key: String) -> void:
 
 #endregion
 
+func _usage() -> Label:
+	var r := Label.new()
+	ControlUtil.h_expand_fill(r)
+	r.autowrap = true
+	r.text = tr("OPENSEEFACE_USAGE_LABEL")
+
+	return r
+
 func _camera_select() -> OptionButton:
 	var ob := OptionButton.new()
-	_h_fill_expand(ob)
-	ob.hint_tooltip = tr("CAMERA_SELECT_HINT")
+	ControlUtil.h_expand_fill(ob)
+	ob.hint_tooltip = tr("OPENSEEFACE_CAMERA_SELECT_HINT")
+	ob.clip_text = true
 
 	var popup: PopupMenu = ob.get_popup()
 	popup.connect("index_pressed", self, "_on_camera_selected", [ob])
@@ -102,18 +104,18 @@ func _camera_select() -> OptionButton:
 			"osx", "x11":
 				results.pop_back()
 	else:
-		results.append(tr("CAMERA_SELECT_NO_OUTPUT_1"))
-		results.append(tr("CAMERA_SELECT_NO_OUTPUT_2"))
+		results.append(tr("OPENSEEFACE_CAMERA_SELECT_NO_OUTPUT_1"))
+		results.append(tr("OPENSEEFACE_CAMERA_SELECT_NO_OUTPUT_2"))
 
 	if results.size() < 1:
-		popup.add_check_item(tr("CAMERA_SELECT_NO_OUTPUT_1"))
-		popup.add_check_item(tr("CAMERA_SELECT_NO_OUTPUT_2"))
+		popup.add_check_item(tr("OPENSEEFACE_CAMERA_SELECT_NO_OUTPUT_1"))
+		popup.add_check_item(tr("OPENSEEFACE_CAMERA_SELECT_NO_OUTPUT_2"))
 		popup.set_item_checked(0, true)
 		ob.text = popup.get_item_text(0)
 		return ob
 
 	for option in results:
-		popup.add_check_item(option)
+		popup.add_check_item("Camera %s" % option)
 
 	var camera_name = AM.cm.get_data(ConfigKeys.CAMERA_NAME)
 	if typeof(camera_name) == TYPE_NIL:
@@ -157,7 +159,7 @@ func _on_camera_selected(idx: int, ob: OptionButton) -> void:
 
 	var current_index: int = popup.get_current_index()
 	if current_index < 0:
-		logger.error(tr("CAMERA_SELECTED_NO_PREVIOUSLY_SELECTED_ITEM"))
+		logger.error(tr("OPENSEEFACE_CAMERA_SELECTED_NO_PREVIOUSLY_SELECTED_ITEM"))
 	else:
 		popup.set_item_checked(current_index, false)
 	
@@ -168,15 +170,15 @@ func _on_camera_selected(idx: int, ob: OptionButton) -> void:
 
 func _tracker_fps() -> HBoxContainer:
 	var r := HBoxContainer.new()
-	_h_fill_expand(r)
-	r.hint_tooltip = tr("TRACKER_FPS_HINT")
+	ControlUtil.h_expand_fill(r)
+	r.hint_tooltip = tr("OPENSEEFACE_TRACKER_FPS_HINT")
 
 	var label := Label.new()
-	_h_fill_expand(label)
-	label.text = tr("TRACKER_FPS_LABEL")
+	ControlUtil.h_expand_fill(label)
+	label.text = tr("OPENSEEFACE_TRACKER_FPS_LABEL")
 
 	var line_edit := LineEdit.new()
-	_h_fill_expand(line_edit)
+	ControlUtil.h_expand_fill(line_edit)
 
 	var initial_value = AM.cm.get_data(ConfigKeys.TRACKER_FPS)
 	if typeof(initial_value) == TYPE_NIL:
@@ -192,12 +194,42 @@ func _tracker_fps() -> HBoxContainer:
 
 	return r
 
+func _advanced_options() -> VBoxContainer:
+	var vbox := VBoxContainer.new()
+	ControlUtil.h_expand_fill(vbox)
+
+	var toggle := CheckButton.new()
+	ControlUtil.h_expand_fill(toggle)
+	ControlUtil.no_focus(toggle)
+	toggle.hint_tooltip = tr("OPENSEEFACE_ADVANCED_OPTIONS_TOGGLE_HINT")
+	toggle.text = tr("OPENSEEFACE_ADVANCED_OPTIONS_TOGGLE_TEXT")
+
+	vbox.add_child(toggle)
+
+	var inner := VBoxContainer.new()
+	ControlUtil.h_expand_fill(inner)
+
+	vbox.add_child(inner)
+
+	inner.add_child(_should_launch_tracker())
+	inner.add_child(_tracker_address())
+	inner.add_child(_tracker_port())
+
+	toggle.pressed = false
+	_toggle_advanced_options(toggle.pressed, inner)
+	toggle.connect("toggled", self, "_toggle_advanced_options", [inner])
+
+	return vbox
+
+func _toggle_advanced_options(state: bool, control: Control) -> void:
+	control.visible = state
+
 func _should_launch_tracker() -> CheckButton:
 	var r := CheckButton.new()
-	_h_fill_expand(r)
+	ControlUtil.h_expand_fill(r)
 
-	r.text = tr("SHOULD_LAUNCH_TRACKER_LABEL")
-	r.hint_tooltip = tr("SHOULD_LAUNCH_TRACKER_HINT")
+	r.text = tr("OPENSEEFACE_SHOULD_LAUNCH_TRACKER_LABEL")
+	r.hint_tooltip = tr("OPENSEEFACE_SHOULD_LAUNCH_TRACKER_HINT")
 
 	var initial_value = AM.cm.get_data(ConfigKeys.SHOULD_LAUNCH_TRACKER)
 	if typeof(initial_value) == TYPE_NIL:
@@ -212,15 +244,15 @@ func _should_launch_tracker() -> CheckButton:
 
 func _tracker_address() -> HBoxContainer:
 	var r := HBoxContainer.new()
-	_h_fill_expand(r)
-	r.hint_tooltip = tr("TRACKER_ADDRESS_HINT")
+	ControlUtil.h_expand_fill(r)
+	r.hint_tooltip = tr("OPENSEEFACE_TRACKER_ADDRESS_HINT")
 
 	var label := Label.new()
-	_h_fill_expand(label)
-	label.text = tr("TRACKER_ADDRESS_LABEL")
+	ControlUtil.h_expand_fill(label)
+	label.text = tr("OPENSEEFACE_TRACKER_ADDRESS_LABEL")
 
 	var line_edit := LineEdit.new()
-	_h_fill_expand(line_edit)
+	ControlUtil.h_expand_fill(line_edit)
 	
 	var initial_value = AM.cm.get_data(ConfigKeys.ADDRESS)
 	if typeof(initial_value) == TYPE_NIL:
@@ -238,15 +270,15 @@ func _tracker_address() -> HBoxContainer:
 
 func _tracker_port() -> HBoxContainer:
 	var r := HBoxContainer.new()
-	_h_fill_expand(r)
-	r.hint_tooltip = tr("TRACKER_PORT_HINT")
+	ControlUtil.h_expand_fill(r)
+	r.hint_tooltip = tr("OPENSEEFACE_TRACKER_PORT_HINT")
 
 	var label := Label.new()
-	_h_fill_expand(label)
-	label.text = tr("TRACKER_PORT_LABEL")
+	ControlUtil.h_expand_fill(label)
+	label.text = tr("OPENSEEFACE_TRACKER_PORT_LABEL")
 
 	var line_edit := LineEdit.new()
-	_h_fill_expand(line_edit)
+	ControlUtil.h_expand_fill(line_edit)
 	
 	var initial_value = AM.cm.get_data(ConfigKeys.PORT)
 	if typeof(initial_value) == TYPE_NIL:
@@ -264,8 +296,8 @@ func _tracker_port() -> HBoxContainer:
 
 func _toggle_tracking() -> Button:
 	var r := Button.new()
-	_h_fill_expand(r)
-	r.text = tr("TOGGLE_TRACKING_BUTTON_TEXT_START")
+	ControlUtil.h_expand_fill(r)
+	r.text = tr("OPENSEEFACE_TOGGLE_TRACKING_BUTTON_TEXT_START")
 
 	r.connect("pressed", self, "_on_toggle_tracking", [r])
 
@@ -274,7 +306,7 @@ func _toggle_tracking() -> Button:
 func _on_toggle_tracking(button: Button) -> void:
 	var trackers = get_tree().current_scene.get("trackers")
 	if typeof(trackers) != TYPE_DICTIONARY:
-		logger.error(tr("TOGGLE_TRACKING_INCOMPATIBLE_RUNNER_ERROR"))
+		logger.error(tr("OPENSEEFACE_TOGGLE_TRACKING_INCOMPATIBLE_RUNNER_ERROR"))
 		return
 
 	var tracker: TrackingBackendTrait
@@ -294,67 +326,39 @@ func _on_toggle_tracking(button: Button) -> void:
 		tracker.stop_receiver()
 		trackers.erase(tracker.get_name())
 
-		button.text = tr("TOGGLE_TRACKING_BUTTON_TEXT_START")
+		button.text = tr("OPENSEEFACE_TOGGLE_TRACKING_BUTTON_TEXT_START")
 	else:
 		logger.debug("Starting osf tracker")
 
 		var osf_res: Result = AM.em.load_resource("OpenSeeFace", "open_see_face.gd")
 		if not osf_res or osf_res.is_err():
-			logger.error(tr("TOGGLE_TRACKING_LOAD_TRACKER_ERROR"))
+			logger.error(tr("OPENSEEFACE_TOGGLE_TRACKING_LOAD_TRACKER_ERROR"))
 			return
 
 		var osf = osf_res.unwrap().new()
 
 		trackers[osf.get_name()] = osf
 
-		button.text = tr("TOGGLE_TRACKING_BUTTON_TEXT_STOP")
+		button.text = tr("OPENSEEFACE_TOGGLE_TRACKING_BUTTON_TEXT_STOP")
 
 	AM.ps.publish(Globals.TRACKER_TOGGLED, not found, "OpenSeeFace")
 
-# TODO unused now that osf is bundled using pyinstaller on all platforms
-func _python_path() -> HBoxContainer:
-	var r := HBoxContainer.new()
-	_h_fill_expand(r)
-
-	var label := Label.new()
-	_h_fill_expand(label)
-	label.text = "Python path"
-	label.hint_tooltip = """
-The absolute path to the python version to use. This should be defined if your system's
-python version is not within Python 3.6 - Python 3.9.
-	""".strip_edges()
-
-	var line_edit := LineEdit.new()
-	_h_fill_expand(line_edit)
-	line_edit.placeholder_text = "/path/to/python/binary"
-
-	var initial_value = AM.cm.get_data(ConfigKeys.PYTHON_PATH)
-	if typeof(initial_value) == TYPE_NIL:
-		initial_value = "*"
-		AM.ps.publish(ConfigKeys.PYTHON_PATH, initial_value)
-
-	r.add_child(label)
-	r.add_child(line_edit)
-
-	line_edit.connect("text_changed", self, "_on_line_edit_changed", [ConfigKeys.PYTHON_PATH, IS_STRING])
-
-	return r
-
 var POSSIBLE_ML_MODELS: Dictionary = {
-	"-3": tr("ML_MODEL_NEG_3"),
-	"-2": tr("ML_MODEL_NEG_2"),
-	"-1": tr("ML_MODEL_NEG_1"),
-	"0": tr("ML_MODEL_0"),
-	"1": tr("ML_MODEL_1"),
-	"2": tr("ML_MODEL_2"),
-	"3": tr("ML_MODEL_3"),
-	"4": tr("ML_MODEL_4")
+	"-3": tr("OPENSEEFACE_ML_MODEL_NEG_3"),
+	"-2": tr("OPENSEEFACE_ML_MODEL_NEG_2"),
+	"-1": tr("OPENSEEFACE_ML_MODEL_NEG_1"),
+	"0": tr("OPENSEEFACE_ML_MODEL_0"),
+	"1": tr("OPENSEEFACE_ML_MODEL_1"),
+	"2": tr("OPENSEEFACE_ML_MODEL_2"),
+	"3": tr("OPENSEEFACE_ML_MODEL_3"),
+	"4": tr("OPENSEEFACE_ML_MODEL_4")
 }
+const ML_MODEL_PREFIX := "Model"
 
 func _model() -> OptionButton:
 	var ob := OptionButton.new()
-	_h_fill_expand(ob)
-	ob.hint_tooltip = tr("ML_MODEL_SELECT_HINT")
+	ControlUtil.h_expand_fill(ob)
+	ob.hint_tooltip = tr("OPENSEEFACE_ML_MODEL_SELECT_HINT")
 
 	var popup: PopupMenu = ob.get_popup()
 	popup.connect("index_pressed", self, "_on_model_selected", [ob])
@@ -365,7 +369,7 @@ func _model() -> OptionButton:
 		AM.ps.publish(ConfigKeys.MODEL, ml_model)
 
 	for model_num in POSSIBLE_ML_MODELS.keys():
-		var item_text := "%s: %s" % [model_num, POSSIBLE_ML_MODELS[model_num]]
+		var item_text := "%s %s: %s" % [ML_MODEL_PREFIX, model_num, POSSIBLE_ML_MODELS[model_num]]
 		popup.add_check_item(item_text)
 		if model_num.to_int() == ml_model as int:
 			popup.set_item_checked(popup.get_item_count() - 1, true)
@@ -378,19 +382,19 @@ func _on_model_selected(idx: int, ob: OptionButton) -> void:
 
 	var current_index: int = popup.get_current_index()
 	if current_index < 0:
-		logger.error(tr("ML_MODEL_SELECT_NO_PREVIOUS_MODEL_SELECTED_ERROR"))
+		logger.error(tr("OPENSEEFACE_ML_MODEL_SELECT_NO_PREVIOUS_MODEL_SELECTED_ERROR"))
 	else:
 		popup.set_item_checked(current_index, false)
 	
 	popup.set_item_checked(idx, not popup.is_item_checked(idx))
 
-	var split: PoolStringArray = popup.get_item_text(idx).split(":")
+	var split: PoolStringArray = popup.get_item_text(idx).trim_prefix(ML_MODEL_PREFIX).strip_edges().split(":")
 	if split.size() < 2:
-		logger.error(tr("ML_MODEL_SELECT_INVALID_MODEL_SELECTED") % str(split))
+		logger.error(tr("OPENSEEFACE_ML_MODEL_SELECT_INVALID_MODEL_SELECTED") % str(split))
 		return
 
 	if not split[0].is_valid_integer():
-		logger.error(tr("ML_MODEL_SELECT_NO_PRECEDING_INTEGER"))
+		logger.error(tr("OPENSEEFACE_ML_MODEL_SELECT_NO_PRECEDING_INTEGER") % str(split[0]))
 		return
 
 	AM.ps.publish(ConfigKeys.MODEL, split[0].to_int())

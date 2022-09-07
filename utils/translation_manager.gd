@@ -20,7 +20,7 @@ func _setup_logger() -> void:
 	logger = Logger.new("TranslationManager")
 
 func _setup_class() -> void:
-	scan_path = AM.app_args.get("resource_path", "")
+	scan_path = FileUtil.inject_env_vars(Globals.RESOURCE_PATH)
 	if scan_path.empty():
 		if not OS.is_debug_build():
 			scan_path = "%s/%s" % [OS.get_executable_path().get_base_dir(), Globals.TRANSLATIONS_PATH]
@@ -110,7 +110,7 @@ func _load_translation(locale: String, file_text: String) -> void:
 		
 		var split: PoolStringArray = line.split("=", true, 1)
 		if split.size() < 2:
-			current_message += "\n%s" % line
+			current_message += "\n%s" % line.replace(ESCAPED_QUOTE, "\"")
 			continue
 		
 		if not current_key.empty():
@@ -128,7 +128,7 @@ func _load_translation(locale: String, file_text: String) -> void:
 				current_message = ""
 		
 		current_key = split[0]
-		current_message = split[1]
+		current_message = split[1].replace(ESCAPED_QUOTE, "\"")
 		if not current_message.begins_with("\""):
 			printerr("Translation messages must start with a \" character, skipping: %s" % current_key)
 			current_key = ""
@@ -147,7 +147,7 @@ func _load_translation(locale: String, file_text: String) -> void:
 	logger.debug("Finished loading translation")
 
 static func _valid_message_ending(text: String) -> bool:
-	return text.ends_with("\"") or not text.ends_with(ESCAPED_QUOTE)
+	return text.ends_with("\"") and not text.ends_with(ESCAPED_QUOTE)
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #
