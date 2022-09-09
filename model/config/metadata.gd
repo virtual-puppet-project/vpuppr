@@ -6,7 +6,8 @@ var default_search_path := ""
 
 var use_transparent_background := true
 var use_fxaa := false
-var msaa_value := false # TODO change this to be specific values
+## Maps back 1:1 with Viewport::MSAA
+var msaa_value: int = 0
 
 var model_configs := {} # Config name: String -> Path: String
 

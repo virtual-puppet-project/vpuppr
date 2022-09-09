@@ -83,6 +83,9 @@ func _on_button_pressed(signal_name: String, _button: Button) -> void:
 func _on_check_button_toggled(state: bool, signal_name: String, _check_button: CheckButton) -> void:
 	AM.ps.publish(signal_name, state)
 
+func _on_option_button_selected(idx: int, signal_name: String, _option_button: OptionButton) -> void:
+	AM.ps.publish(signal_name, idx)
+
 func _on_line_edit_text_changed(text: String, signal_name: String, _line_edit: LineEdit) -> void:
 	if text.empty():
 		return
@@ -102,12 +105,18 @@ func _on_text_edit_text_changed(text: String, signal_name: String, _text_edit: T
 		_:
 			_log_unhandled_signal(signal_name)
 
+## Callback for updating control state. Should not be used to actually manipulate data
+##
+## @param: payload: SignalPayload
 func _on_config_updated(payload: SignalPayload, control: Control) -> void:
 	match control.get_class():
 		"Button":
 			logger.debug("_on_config_updated for Button not yet implemented")
 		"CheckButton":
 			control.pressed = bool(payload.data)
+		"OptionButton":
+			control.text = control.get_item_text(payload.data)
+			control.get_popup().set_item_checked(payload.data, true)
 		"LineEdit":
 			if control.text.is_valid_float() and payload.data == control.text.to_float():
 				return
@@ -160,6 +169,30 @@ func _connect_check_button(check_button: CheckButton, args = null) -> void:
 		check_button.set_pressed_no_signal(AM.cm.get_data(args))
 		AM.ps.subscribe(self, args, {
 			"args": [check_button],
+			"callback": "_on_config_updated"
+		})
+
+## Connects an OptionButton to the default callback. Listens for config updates by default by subscribing
+## to the given args parameter
+##
+## Also sets its initial value by pulling the args value from the ConfigManager
+##
+## @param: option_button: OptionButton - The OptionBUtton to be connected
+## @param: args: Variant - By default, is the signal name as a String
+func _connect_option_button(option_button: OptionButton, args = null) -> void:
+	option_button.connect("item_selected", self, "_on_option_button_selected", [args, option_button])
+	
+	if AM.cm.has_data(args):
+		var idx: int = int(AM.cm.get_data(args))
+		if idx >= option_button.get_item_count():
+			logger.error("Tried to setup OptionButton with invalid index: %d" % idx)
+			return
+		
+		option_button.text = option_button.get_item_text(idx)
+		option_button.get_popup().set_item_checked(idx, true)
+		
+		AM.ps.subscribe(self, args, {
+			"args": [option_button],
 			"callback": "_on_config_updated"
 		})
 

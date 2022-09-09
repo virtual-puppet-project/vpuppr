@@ -22,10 +22,6 @@ const Config := {
 	}
 }
 
-## The path to scan for extensions.
-## Is configured at runtime to either use the res:// path or the binary's path
-var scan_path := ""
-
 ## The dict of extension names to extension objects
 ##
 ## Extension name: String -> Extension object: Extension
@@ -42,7 +38,7 @@ func _setup_logger() -> void:
 	logger = Logger.new(EXTENSION_MANAGER_NAME)
 
 func _setup_class() -> void:
-	scan_path = AM.app_args.get("resource_path", "")
+	var scan_path: String = FileUtil.inject_env_vars(Globals.RESOURCE_PATH)
 	if scan_path.empty():
 		if not OS.is_debug_build():
 			scan_path = Config.SCAN_PATH_FORMAT % [
@@ -53,9 +49,11 @@ func _setup_class() -> void:
 	else:
 		scan_path = "%s/%s" % [scan_path, Config.DEFAULT_SEARCH_FOLDER]
 	
-	var result := _scan()
-	if result.is_err():
-		logger.error(result)
+	var res: Result = Safely.wrap(_scan(scan_path))
+	if res.is_err():
+		logger.error(res)
+
+	
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
@@ -73,7 +71,7 @@ func _setup_class() -> void:
 ## loading/unloading gdnative libraries at runtime, but without logs, it's hard to tell.
 ##
 ## @return: Result<int> - The error code
-func _scan() -> Result:
+func _scan(scan_path: String) -> Result:
 	var dir := Directory.new()
 
 	if dir.open(scan_path) != OK:

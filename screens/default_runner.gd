@@ -8,7 +8,8 @@ const CONFIG_LISTEN_VALUES := [
 	"should_track_eye",
 
 	"use_transparent_background",
-	"use_fxaa"
+	"use_fxaa",
+	"msaa_value"
 ]
 
 ## The default script to be applied to models
@@ -269,6 +270,10 @@ func _on_config_changed(payload: SignalPayload, signal_name: String) -> void:
 			ProjectSettings.set_setting("rendering/quality/filters/use_fxaa", payload.data)
 			get_viewport().fxaa = payload.data
 			model_viewport.fxaa = payload.data
+		"msaa_value":
+			ProjectSettings.set_setting("rendering/quality/filters/msaa", payload.data)
+			get_viewport().msaa = payload.data
+			model_viewport.msaa = payload.data
 		
 		#endregion
 
