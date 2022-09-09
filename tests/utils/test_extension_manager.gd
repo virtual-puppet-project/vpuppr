@@ -44,9 +44,9 @@ class ExtensionManagerTester extends ExtensionManager:
 # into git. We could do this but it's bad practice
 
 func test_scan_pass():
-	AM.em.scan_path = "res://tests/test_resources/extension_resources/good_extensions/"
+	var scan_path := "res://tests/test_resources/extension_resources/good_extensions/"
 	
-	AM.em._scan()
+	AM.em._scan(scan_path)
 
 	assert_called(AM.em, "_scan")
 	assert_call_count(AM.em, "_scan", 1)

@@ -64,7 +64,7 @@ func test_parse_get_data_pass():
 	assert_eq(md0.get_data("default_search_path"), "some/search_path")
 	assert_eq(md0.get_data("use_transparent_background"), false)
 	assert_eq(md0.get_data("use_fxaa"), false)
-	assert_eq(md0.get_data("msaa_value"), false)
+	assert_eq(md0.get_data("msaa_value"), 0)
 	assert_eq(md0.get_data("model_configs").duck_config, "duck/path")
 	assert_eq(md0.find_data_get("model_defaults/duck.glb").unwrap(), "duck_config")
 	assert_eq(md0.get_data("python_path"), "python/path")
