@@ -34,7 +34,10 @@ func _setup_class() -> void:
 	var dir := Directory.new()
 	var file := File.new()
 	
-	_scan(dir, file, scan_path)
+	var res: Result = Safely.wrap(_scan(dir, file, scan_path))
+	if res.is_err():
+		logger.error(res)
+
 	for extension in AM.em.extensions.values():
 		if extension.has_directory(Globals.EXTENSION_TRANSLATION_PATH):
 			_scan(dir, file, "%s/%s" % [extension.context, Globals.EXTENSION_TRANSLATION_PATH])

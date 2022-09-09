@@ -38,7 +38,7 @@ func create_signal(signal_name: String) -> Result:
 ## Can be a: String, Array, or Dictionary
 func subscribe(o: Object, signal_name: String, payload = null) -> Result:
 	if not has_user_signal(signal_name) and not has_signal(signal_name):
-		return Safely.err(Error.Code.SIGNAL_DOES_NOT_EXIST)
+		return Safely.err(Error.Code.SIGNAL_DOES_NOT_EXIST, signal_name)
 
 	var args := []
 	var callback := ""
@@ -63,7 +63,7 @@ func subscribe(o: Object, signal_name: String, payload = null) -> Result:
 		return Safely.err(Error.Code.PUB_SUB_ALREADY_CONNECTED, signal_name)
 
 	if err != OK:
-		return Safely.err(Error.Code.CONNECT_FAILED)
+		return Safely.err(Error.Code.CONNECT_FAILED, signal_name)
 
 	return Safely.ok()
 

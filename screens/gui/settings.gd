@@ -20,6 +20,7 @@ func _setup() -> Result:
 
 	_connect_element($Rendering/VBoxContainer/TransparentBackground, "use_transparent_background")
 	_connect_element($Rendering/VBoxContainer/UseFxaa, "use_fxaa")
+	_connect_element($Rendering/VBoxContainer/Msaa/OptionButton, "msaa_value")
 
 	#endregion
 
