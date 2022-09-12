@@ -1,5 +1,9 @@
 REMOTE_CONTROL_SERVER_EXTENSION="Remote Control Server"
 
+REMOTE_CONTROL_SERVER_SERVER_STARTED="Remote control server started"
+REMOTE_CONTROL_SERVER_SERVER_STOPPED="Remote control server stopped"
+REMOTE_CONTROL_SERVER_MAX_SHUTDOWN_RETRIES_REACHED="Max shutdown retries reached, force disconnecting all clients"
+
 ;; Errors
 REMOTE_CONTROL_SERVER_NO_PREVIOUSLY_SELECTED_ITEM="No previously selected item found"
 
@@ -12,7 +16,7 @@ REMOTE_CONTROL_SERVER_SERVER_ALREADY_RUNNING="Remote control server is already r
 REMOTE_CONTROL_SERVER_NO_PORT_FOUND="Tried to start server with no port defined"
 REMOTE_CONTROL_SERVER_INVALID_SERVER_TYPE="Tried to start invalid server type"
 
-;;
+;; GUI
 
 REMOTE_CONTROL_SERVER_NONE_OPTION="None"
 REMOTE_CONTROL_SERVER_REST_SERVER_OPTION="REST"
@@ -36,4 +40,4 @@ Protocol: %s"
 REMOTE_CONTROL_SERVER_CLIENT_DISCONNECTED="Client disconnected
 ID: %d
 Clean close: %s"
-
+REMOTE_CONTROL_SERVER_ALL_CLIENTS_DISCONNECTED="All websocket clients disconnected"
