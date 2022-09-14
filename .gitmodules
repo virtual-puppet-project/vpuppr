@@ -1,0 +1,9 @@
+[submodule "resources/extensions/remote-control-server"]
+	path = resources/extensions/remote-control-server
+	url = https://github.com/virtual-puppet-project/remote-control-server.git
+[submodule "resources/extensions/openseeface-tracker"]
+	path = resources/extensions/openseeface-tracker
+	url = https://github.com/virtual-puppet-project/openseeface-tracker.git
+[submodule "resources/extensions/ifacialmocap-tracker"]
+	path = resources/extensions/ifacialmocap-tracker
+	url = https://github.com/virtual-puppet-project/ifacialmocap-tracker.git
