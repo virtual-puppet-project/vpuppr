@@ -4,13 +4,10 @@
 
 All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` has not been tested but might work. `.scn` files created with Godot should all import correctly as well.
 
-## Important update
-If you were working on a PR to this repo before September 1, 2022, you will need to delete your GitHub/local copies of vpuppr and re-fork vpuppr. This is because
-[bfg-repo-cleaner](https://github.com/rtyley/bfg-repo-cleaner) has been run on the repo, reducing the size from ~200mb -> ~100mb. Your changes will not be affected. The only thing that has changed is the commit history has been stripped of large blobs.
-
 ## Available trackers
 * [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace)
 * [iFacialMocap](https://www.ifacialmocap.com/)
+* [Mouse tracker](https://github.com/virtual-puppet-project/mouse-tracker)
 
 *More trackers may be available in the future, such as [MediaPipe](https://google.github.io/mediapipe/)*
 
@@ -32,7 +29,6 @@ If you were working on a PR to this repo before September 1, 2022, you will need
    * For the latest (alpha, beta) builds of VPupPr, you can download them from [Flathub Beta](https://beta.flathub.org/)
 4. Hit the install button and run it just like any other app!
 
-
 #### Using binaries from the [releases page](https://github.com/virtual-puppet-project/vpuppr/releases)
 1. Download the latest release
 2. Unzip all files into a directory (do not move any of the files)
@@ -41,11 +37,11 @@ If you were working on a PR to this repo before September 1, 2022, you will need
 4. Run the binary
 5. Start the facetracker from within the application
 
-
 ## Building from source
 1. Clone or download this repository at the appropriate tag (or `master` for the latest commit)
-2. Download a precompiled Godot editor binary from the [virtual-puppet-project's Godot fork](https://github.com/virtual-puppet-project/godot/releases)
-   1. If you would rather compile the engine yourself, please see [the section on compiling the Godot fork](#building-the-godot-fork)
+   * This repository uses git submodules, so the `--recurse-submodules` flag will need to be passed in order to clone the submodules as well
+2. Download a precompiled Godot editor binary from the [virtual-puppet-project's Godot fork](https://github.com/virtual-puppet-project/godot/releases) <!-- TODO update this to use the godot-builds binaries once that is complete -->
+   * If you would rather compile the engine yourself, please see [the section on compiling the Godot fork](#building-the-godot-fork)
 3. Download a precompiled Godot release template from the same repository in step 2
 4. Run the custom Godot editor and open your local copy of `vpuppr` with the editor
 5. Follow the [Godot instructions for exporting a project](https://docs.godotengine.org/en/stable/tutorials/export/exporting_projects.html) and use the custom templates downloaded from step 3 instead of the default templates
@@ -78,7 +74,6 @@ If you were working on a PR to this repo before September 1, 2022, you will need
 7. The compiled Godot binary will be available in the `godot/` directory under the `bin/` directory
 
 <!-- These instructions are probably more fit for the Godot fork, than here. -->
-
 
 ## Special thanks
 * [V-Sekai](https://github.com/V-Sekai) team for their help with `.vrm` importing

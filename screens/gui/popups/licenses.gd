@@ -1,16 +1,24 @@
 extends TextEdit
 
-const LICENSES_PATH := "resources/licenses/"
+const AUTHORS_PATH := "res://AUTHORS.md"
+const LICENSES_PATH := "/licenses/"
 
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#
 
 func _ready() -> void:
-	var path := "res://%s" % LICENSES_PATH
-	
-	if not OS.is_debug_build():
-		path = "%s/%s" % [OS.get_executable_path(), LICENSES_PATH]
+	# Always pull the AUTHORS.md file first
+	var file := File.new()
+
+	if not file.open(AUTHORS_PATH, File.READ) == OK:
+		printerr("Unable to open file for reading %s" % AUTHORS_PATH)
+	else:
+		text += "%s\n" % file.get_as_text()
+
+	file.close()
+
+	var path := FileUtil.inject_env_vars("%s/%s" % [Globals.RESOURCE_PATH, LICENSES_PATH])
 	
 	var dir := Directory.new()
 	if not dir.dir_exists(path):
@@ -21,13 +29,14 @@ func _ready() -> void:
 	_traverse_directory(path, load_paths)
 	
 	for p in load_paths:
-		var file := File.new()
-		
 		if not file.open(p, File.READ) == OK:
 			printerr("Unable to open file: %s" % p)
+			continue
 		
 		text += "%s\n" % p.get_file().get_basename()
 		text += "%s\n" % file.get_as_text()
+
+		file.close()
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #

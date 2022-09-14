@@ -69,6 +69,7 @@ func _ready() -> void:
 	#region Application setup
 	
 	var popup: PopupMenu = app.get_popup()
+	popup.connect("about_to_show", self, "_on_about_to_show", [popup])
 	popup.connect("id_pressed", self, "_on_popup_item_pressed", [ButtonGrouping.APP])
 	popup.hide_on_checkable_item_selection = false
 	
@@ -88,6 +89,7 @@ func _ready() -> void:
 	#region Debug setup
 	
 	popup = debug.get_popup()
+	popup.connect("about_to_show", self, "_on_about_to_show", [popup])
 	popup.connect("id_pressed", self, "_on_popup_item_pressed", [ButtonGrouping.DEBUG])
 	popup.hide_on_checkable_item_selection = false
 	
@@ -102,6 +104,7 @@ func _ready() -> void:
 	#region Help setup
 	
 	popup = help.get_popup()
+	popup.connect("about_to_show", self, "_on_about_to_show", [popup])
 	popup.connect("id_pressed", self, "_on_popup_item_pressed", [ButtonGrouping.HELP])
 	popup.hide_on_checkable_item_selection = false
 	
@@ -122,6 +125,11 @@ func _ready() -> void:
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#
+
+# TODO this relies on the popup existing in the SceneTree. This could break if the ordering changes
+func _on_about_to_show(popup: PopupMenu) -> void:
+	popup.get_parent().remove_child(popup)
+	parent.add_child(popup)
 
 func _on_popup_item_pressed(id: int, group: int) -> void:
 	match group:

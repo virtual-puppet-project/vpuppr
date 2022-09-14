@@ -22,6 +22,10 @@ func _ready() -> void:
 	
 	$HBoxContainer/Copy.connect("pressed", self, "_on_copy")
 	$HBoxContainer/Open.connect("pressed", self, "_on_open")
+	
+	yield(get_tree(), "idle_frame")
+	
+	logs.scroll_vertical = INF
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
@@ -32,6 +36,8 @@ func _on_event_published(payload: SignalPayload) -> void:
 		return
 	
 	_add_log(payload.data)
+	
+	logs.scroll_vertical = INF
 
 ## Copies the logs to the system clipboard
 func _on_copy() -> void:
