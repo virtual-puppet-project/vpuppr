@@ -25,17 +25,6 @@ const Config := {
 	"EXTENDS": "extends"
 }
 
-const SEARCH_SECTIONS := [
-	Config.WINDOWS32,
-	Config.WINDOWS64,
-
-	Config.X1132,
-	Config.X1164,
-
-	Config.OSX32,
-	Config.OSX64
-]
-
 const NATIVE_LIB_ENTRY := "entry"
 
 const DEFAULT_PREFIX := "godot_"
@@ -53,38 +42,30 @@ class Library:
 	func _init(p_init_func_name: String) -> void:
 		init_func_name = p_init_func_name
 
+	## Adds a single argument to the GDNative init args
+	##
+	## If an array is passed, the entire array object will be added without destructuring it
 	func add_init_arg(arg) -> void:
-		"""
-		Adds a single argument to the GDNative init args
-
-		If an array is passed, the entire array object will be added without destructuring it
-		"""
 		init_args.append(arg)
 
+	## Takes an array of init args and adds them one by one to the GDNative init args
 	func add_init_args(arg_array: Array) -> void:
-		"""
-		Takes an array of init args and adds them one by one to the GDNative init args
-		"""
 		for i in arg_array:
 			init_args.append(i)
 	
+	## Takes an array of init args and appends the array to the GDNative init args
 	func add_init_arg_array(arg_array: Array) -> void:
-		"""
-		Takes an array of init args and appends the array to the GDnative init args
-		"""
 		init_args.append_array(arg_array)
 
+	## Removes all registered NativeScripts
 	func cleanup() -> void:
-		"""
-		Removes all registered NativeScripts
-		"""
 		native_classes.clear()
 
+	## Creates a class. The class must be registered in the config file
 	func create_class(c_name: String) -> Object:
-		"""
-		Creates a class. The class must be registered in the config file.
-		"""
 		return native_classes[c_name].new()
+
+var search_sections := []
 
 var libraries := {} # Library name: String -> Library
 var search_path: String # The path to use when calling scan()
@@ -95,6 +76,23 @@ var search_path: String # The path to use when calling scan()
 
 func _init(p_search_path: String = "") -> void:
 	search_path = p_search_path
+	
+	match OS.get_name().to_lower():
+		"windows":
+			search_sections.append_array([
+				Config.WINDOWS32,
+				Config.WINDOWS64
+			])
+		"x11":
+			search_sections.append_array([
+				Config.X1132,
+				Config.X1164
+			])
+		"osx":
+			search_sections.append_array([
+				Config.OSX32,
+				Config.OSX64
+			])
 
 	if search_path.empty():
 		search_path = (
@@ -123,13 +121,11 @@ func _notification(what):
 # Public functions                                                            #
 #-----------------------------------------------------------------------------#
 
+## Scans the search_path for valid plugins. Attempts to fail gracefully if information is missing
+##
+## This only creates the necessary resources for initializing a library. Actual initialization
+## must be done in setup()
 func scan() -> int:
-	"""
-	Scans the search_path for valid plugins. Attempts to fail gracefully if information is missing
-
-	This only creates the necessary resources for initalizing a library. Actual initialization
-	must be done in setup()
-	"""
 	var dir := Directory.new()
 	
 	if dir.open(search_path) != OK:
@@ -157,10 +153,8 @@ func scan() -> int:
 
 	return OK
 
+## Processes a folder's config file and populates the associated Library object
 func process_folder(path: String) -> int:
-	"""
-	Processes a folder's config file and populates the associated Library object
-	"""
 	# Turn the folder path into a scuffed file name
 	path = path.rstrip("/")
 	
@@ -209,7 +203,7 @@ func process_folder(path: String) -> int:
 
 	var possible_sections := []
 
-	for section in SEARCH_SECTIONS:
+	for section in search_sections:
 		if config.has_section(section):
 			possible_sections.append(section)
 
@@ -240,9 +234,8 @@ func process_folder(path: String) -> int:
 
 	# Everything else in the config is a class definition
 	var classes: Array = config.get_sections()
-	classes.erase(Config.GENERAL)
-	for section in possible_sections:
-		classes.erase(section)
+	for other_keys in Config.values():
+		classes.erase(other_keys)
 
 	for c in classes:
 		if not config.has_section_key(c, Config.EXTENDS):
@@ -261,23 +254,19 @@ func process_folder(path: String) -> int:
 
 	return OK
 
+## Be kind, rewind
+##
+## AKA terminate the libraries. This not used during PREDELETE sinc the class functions
+## are already cleaned up at that point for some reason.
+##
+## This should be used when rescanning for plugins
 func cleanup() -> void:
-	"""
-	Be kind, rewind
-	
-	AKA terminate the libraries. This is not used during PREDELETE since the class functions
-	are already cleaned up at that point for some reason.
-	
-	This should be used when rescanning for plugins
-	"""
 	for key in libraries.keys():
 		libraries[key].cleanup()
 	libraries.clear()
 
+## Returns a PoolStringArray of all currently loaded libraries
 func get_library_names() -> PoolStringArray:
-	"""
-	Returns a PoolStringArray of all currently loaded libraries
-	"""
 	var r := PoolStringArray()
 
 	for key in libraries.keys():
@@ -285,13 +274,11 @@ func get_library_names() -> PoolStringArray:
 
 	return r
 
+## Wrapper for creating a class from a loaded library. Checks if there is a library for the
+## current platform.
+##
+## Params cannot be passed because GDNative does not allow for passing params to the constructor
 func create_class(lib_name: String, c_name: String) -> Object:
-	"""
-	Wrapper for creating a class from a loaded library. Checks is there is a library for the
-	current platform
-
-	Params cannot be passed because GDNative does not allow for passing params to the constructor
-	"""
 	var lib = libraries.get(lib_name)
 	if lib == null:
 		push_error("No valid library called '%s' found for the current architecture" % lib_name)
@@ -299,8 +286,6 @@ func create_class(lib_name: String, c_name: String) -> Object:
 	
 	return lib.create_class(c_name)
 
+## Wrapper for creating a class from a loaded library with no null check
 func create_class_unsafe(lib_name: String, c_name: String) -> Object:
-	"""
-	Wrapper for creating a class from a loaded library with no null check
-	"""
 	return libraries[lib_name].create_class(c_name)
