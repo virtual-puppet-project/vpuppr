@@ -75,6 +75,8 @@ const DEFAULT_RUNNER_PATH := "res://screens/default_runner.gd"
 const DEFAULT_GUI_PATH := "res://screens/gui/default_gui.tscn"
 const DEFAULT_MODEL_PATH := "res://entities/duck/duck.tscn"
 
+const EXTENSIONS_PATH := "/extensions"
+
 const TRANSLATIONS_PATH := "/translations"
 const EXTENSION_TRANSLATION_PATH := "/translations"
 

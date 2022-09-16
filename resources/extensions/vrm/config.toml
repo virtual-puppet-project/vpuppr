@@ -1,0 +1,15 @@
+[extension]
+name = "VRM"
+translation-key = "VRM_EXTENSION"
+
+[[resources]]
+name = "VRM"
+tags = ["runner"]
+entrypoint = "vrm.gd"
+translation-key = "VRM_RUNNER"
+selectable-gui = true
+
+[[resources]]
+name = "VRMModel"
+tags = ["puppet"]
+entrypoint = "vrm_model.gd"

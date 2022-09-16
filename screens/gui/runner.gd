@@ -25,12 +25,12 @@ func _setup() -> Result:
 	_initial_page = default_runner.name.capitalize()
 	add_child(default_runner)
 
-	for ext in AM.em.query_extensions_for_type(Globals.ExtensionTypes.RUNNER):
-		ext = ext as ExtensionResource
+	for ext in AM.em.query_extensions_for_tag(Globals.ExtensionTypes.RUNNER):
+		ext = ext as Extension.ExtensionResource
 		var view := _create_view({
 			"name": tr(ext.translation_key),
 			"run_args": [
-				ext.resource_entrypoint
+				ext.entrypoint
 			]
 		})
 
@@ -87,7 +87,7 @@ func _terminate(node: Node) -> void:
 static func _get_selectable_gui_count() -> int:
 	var r: int = 1
 
-	for ext in AM.em.query_extensions_for_type(Globals.ExtensionTypes.GUI):
+	for ext in AM.em.query_extensions_for_tag(Globals.ExtensionTypes.GUI):
 		# TODO this might not be a great solution
 		if not ext.other.get(Globals.ExtensionOtherKeys.SELECTABLE_GUI, false):
 			continue
