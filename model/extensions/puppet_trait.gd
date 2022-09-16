@@ -33,6 +33,9 @@ var initial_bone_poses: Dictionary # Bone id: int -> Pose: Transform
 
 var has_custom_update := false
 
+## @type: Dictionary<String, Array<String>>
+var blend_shape_mappings := {}
+
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#
@@ -80,6 +83,16 @@ func _setup() -> void:
 
 	for i in skeleton.get_bone_count():
 		initial_bone_poses[i] = skeleton.get_bone_pose(i)
+	
+	for child in skeleton.get_children():
+		if not child is MeshInstance:
+			continue
+
+		var shape_names := []
+		for i in child.mesh.get_blend_shape_count():
+			shape_names.append(child.mesh.get_blend_shape_name(i))
+
+		blend_shape_mappings[child.name] = shape_names
 
 func _post_setup() -> void:
 	pass
