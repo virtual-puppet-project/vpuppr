@@ -1,9 +1,13 @@
 class_name ExtensionManager
 extends AbstractManager
 
-const CONFIG_FILE_NAME := "config.toml"
+const CONFIG_FILE_NAME_TOML := "config.toml"
+const CONFIG_FILE_NAME_JSON := "config.json"
 const EXTENSION_SECTION := "extension"
 const RESOURCES_SECTION := "resources"
+
+const TOML_EXT := "toml"
+const JSON_EXT := "json"
 
 const ExtensionKeys := {
 	"NAME": "name",
@@ -112,18 +116,32 @@ func _scan(file: File, dir: Directory, scan_path: String) -> Result:
 	return Safely.ok()
 
 func _parse_extension(file: File, dir: Directory, path: String) -> Result:
-	var config_path: String = "%s/%s" % [path, CONFIG_FILE_NAME]
-	if file.open(config_path, File.READ) != OK:
-		return Safely.err(
-			Error.Code.EXTENSION_MANAGER_CONFIG_DOES_NOT_EXIST,
-			config_path
-		)
+	var config_path := ""
+	var config_file_ext := ""
+	var found_config := false
+	for i in [{"name": CONFIG_FILE_NAME_TOML, "ext": TOML_EXT}, {"name": CONFIG_FILE_NAME_JSON, "ext": JSON_EXT}]:
+		config_path = "%s/%s" % [path, i.name]
+		config_file_ext = i.ext
+		if file.open(config_path, File.READ) == OK:
+			found_config = true
+			break
+	
+	if not found_config:
+		return Safely.err(Error.Code.EXTENSION_MANAGER_CONFIG_DOES_NOT_EXIST, path)
 
 	var file_text := file.get_as_text()
 	file.close()
 
-	var toml := TOML.new()
-	var parse_res := toml.parse(file_text)
+	var data := {}
+	var parse_res
+
+	match config_file_ext:
+		TOML_EXT:
+			var toml := TOML.new()
+			parse_res = toml.parse(file_text)
+		JSON_EXT:
+			parse_res = JSON.parse(file_text)
+
 	if parse_res.error != OK:
 		return Safely.err(Error.Code.EXTENSION_MANAGER_RESOURCE_CONFIG_PARSE_FAILURE,
 			"Path: %s\nLine: %d\nDescription: %s" % [
@@ -132,7 +150,8 @@ func _parse_extension(file: File, dir: Directory, path: String) -> Result:
 	if not parse_res.result is Dictionary:
 		return Safely.err(Error.Code.EXTENSION_MANAGER_RESOURCE_UNEXPECTED_CONFIG_TYPE, config_path)
 
-	var data: Dictionary = parse_res.result
+	data = parse_res.result
+	
 	var metadata: Dictionary = data.get(EXTENSION_SECTION, {})
 
 	if metadata.empty():

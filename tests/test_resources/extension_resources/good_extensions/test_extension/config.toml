@@ -1,14 +1,17 @@
-[General]
+[extension]
 name="TestExtension"
 
-[Runner]
+[[resources]]
+name = "Runner"
 type="runner"
 entrypoint="runner_entrypoint.gd"
 
-[TrackingDummy]
+[[resources]]
+name = "TrackingDummy"
 type="tracker"
 entrypoint="tracking_entrypoint.gd"
 
-[Plugin]
+[[resources]]
+name = "Plugin"
 type="plugin"
 entrypoint="plugin_entrypoint.gd"
