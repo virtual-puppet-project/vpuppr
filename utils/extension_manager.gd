@@ -19,10 +19,8 @@ const ResourceKeys := {
 	"ENTRYPOINT": "entrypoint",
 	"GDNATIVE": "gdnative",
 	"TRANSLATION_KEY": "translation-key",
-	"Optional": {
-		"GUI": "gui",
-		"HAS_SELECTABLE_GUI": "has-selectable-gui"
-	}
+	"GUI": "gui",
+	"Extra": Globals.ExtensionExtraKeys
 }
 
 ## The dict of extension names to extension objects
@@ -205,7 +203,7 @@ func _parse_extension_item(dir: Directory, e: Extension, data: Dictionary) -> Re
 		
 		ext_resource.entrypoint = entrypoint
 	
-	for key in ResourceKeys.Optional.values():
+	for key in ResourceKeys.Extra.values():
 		if not data.has(key):
 			continue
 		ext_resource.extra[key] = data[key]
@@ -307,7 +305,7 @@ func load_resource(extension_name: String, rel_res_path: String) -> Result:
 	if result.is_err():
 		return result
 
-	result = result.unwrap().load_resource(rel_res_path)
+	result = result.unwrap().load_raw(rel_res_path)
 	if result.is_err():
 		return result
 	

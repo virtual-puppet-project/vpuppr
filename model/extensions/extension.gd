@@ -74,9 +74,19 @@ func load_file_text(rel_path: String) -> Result:
 	
 	return Safely.ok(file_text)
 
-func load_resource(rel_path: String) -> Result:
+func load_resource(resource_name: String) -> Result:
+	if not resources.has(resource_name):
+		return Safely.err(Error.Code.EXTENSION_RESOURCE_NOT_FOUND, resource_name)
+	
+	var resource = load(resources[resource_name].entrypoint)
+	if resource == null:
+		return Safely.err(Error.Code.EXTENSION_RESOURCE_NOT_FOUND, resources[resource_name].entrypoint)
+	
+	return Safely.ok(resource)
+
+func load_raw(rel_path: String) -> Result:
 	var resource = load("%s/%s" % [context, rel_path])
 	if resource == null:
-		return Safely.err(Error.Code.EXTENSION_CONTEXT_RESOURCE_NOT_FOUND, rel_path)
+		return Safely.err(Error.Code.EXTENSION_RESOURCE_NOT_FOUND, rel_path)
 	
 	return Safely.ok(resource)

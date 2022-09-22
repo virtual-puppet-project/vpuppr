@@ -58,6 +58,7 @@ translation-key = "CONFETTI_EXTENSION_NAME"
 # Whether this should be treated as a gdnative library
 # Optional and defaults to false
 gdnative = false
+can-popup = true
 
 [[resources]]
 # Spaces are technically fine in the name but should be avoided
@@ -68,6 +69,7 @@ entrypoint = "emitter.gd"
 
 # Other resources can be added using the same format
 # [[resources]]
+
 ```
 
 The above `toml` file can also be written as `json` if desired:
@@ -84,7 +86,8 @@ The above `toml` file can also be written as `json` if desired:
             "tags": ["gui"],
             "entrypoint": "confetti_gui.gd",
             "translation-key": "CONFETTI_EXTENSION_NAME",
-            "gdnative": false
+            "gdnative": false,
+            "can-popup": true
         },
         {
           "name": "Confetti Emitter",
@@ -121,65 +124,72 @@ const TCM_KEY := "confetti_emitter"
 var logger := Logger.new("ConfettiGUI")
 
 func _init() -> void:
-    # Create a scroll container so the GUI can scroll up/down
-    var sc := ScrollContainer.new()
-    # Helper class for setting expand/fill flags
-    ControlUtil.all_expand_fill(sc)
+	# Create a scroll container so the GUI can scroll up/down
+	var sc := ScrollContainer.new()
+	# Helper class for setting expand/fill flags
+	ControlUtil.all_expand_fill(sc)
 
-    # Adds the ScrollContainer as a child of this class, the PanelContainer
-    add_child(sc)
+	# Adds the ScrollContainer as a child of this class, the PanelContainer
+	add_child(sc)
 
-    # GUI elements should be laid out top-to-bottom
-    var vbox := VBoxContainer.new()
-    ControlUtil.all_expand_fill(vbox)
+	# GUI elements should be laid out top-to-bottom
+	var vbox := VBoxContainer.new()
+	ControlUtil.all_expand_fill(vbox)
 
-    sc.add_child(vbox)
+	sc.add_child(vbox)
 
-    var usage_label := Label.new()
-    ControlUtil.h_expand_fill(usage_label)
+	var usage_label := Label.new()
+	ControlUtil.h_expand_fill(usage_label)
 
-    # Pull an appropriate translation from the extension's translation files
-    usage_label.text = tr("CONFETTI_USAGE_LABEL_TEXT")
-    # Hover text can be applied using the hint_tooltip property
-    usage_label.hint_tooltip = tr("CONFETTI_USAGE_LABEL_HINT")
+	# Pull an appropriate translation from the extension's translation files
+	usage_label.text = tr("CONFETTI_USAGE_LABEL_TEXT")
 
-    vbox.add_child(usage_label)
+	vbox.add_child(usage_label)
 
-    var confetti_button := Button.new()
-    ControlUtil.h_expand_fill(confetti_button)
+	var confetti_button := Button.new()
+	ControlUtil.h_expand_fill(confetti_button)
 
-    confetti_button.text = tr("CONFETTI_SHOW_PARTICLES_BUTTON_TEXT")
+	confetti_button.text = tr("CONFETTI_SHOW_PARTICLES_BUTTON_TEXT")
+	# Hover text can be applied using the hint_tooltip property
+	confetti_button.hint_tooltip = tr("CONFETTI_HINT")
 
-    vbox.add_child(confetti_button)
+	vbox.add_child(confetti_button)
 
-    var emitter
+	var emitter
 
-    # Persistent data/elements can be stored at runtime using vpuppr's TempCacheManager
-    # It is good practice to manually cleanup data once it is no longer needed
-    # Here, we are checking to see if there is already an emitter and using it if it exists
-    var result := AM.tcm.pull(TCM_KEY)
-    if result.is_err():
-        # If the emitter does not exist, we create one
-        result = AM.em.get_extension("Confetti").load_resource("Confetti Emitter")
-        if result.is_err():
-            logger.error("Unable to load in Confetti Emitter resource")
-            return
-        
-        emitter = result.unwrap().new()
-        # Store the emitter in the TempCacheManager and set it to auto-delete
-        # when we navigate away from the current scene
-        AM.tcm.push(TCM_KEY, emitter).cleanup_on_signal(Engine.get_main_loop().current_scene, "tree_exiting")
-        # NOTE: This is technically a memory leak if it is not properly cleaned up
-        Engine.get_main_loop().root.add_child(emitter)
-    else:
-        emitter = result.unwrap()
-    
-    # Remember to hook up the appropriate callbacks so that the GUI actually responds to user input
-    # The emitter is passed as a parameter to the callback function
-    confetti_button.connect("pressed", self, "_on_confetti_button_pressed", [emitter])
+	# Persistent data/elements can be stored at runtime using vpuppr's TempCacheManager
+	# It is good practice to manually cleanup data once it is no longer needed
+	# Here, we are checking to see if there is already an emitter and using it if it exists
+	var result := AM.tcm.pull(TCM_KEY)
+	if result.is_err():
+		# If the emitter does not exist, we create one
+		result = AM.em.get_extension("ConfettiExtension")
+		if result.is_err():
+			logger.error("Unable to get Confetti extension")
+			return
+		
+		var extension: Extension = result.unwrap()
+
+		result = extension.load_resource("Confetti Emitter")
+		if result.is_err():
+			logger.error("Unable to load Emitter resource")
+			return
+		
+		emitter = result.unwrap().new()
+		# Store the emitter in the TempCacheManager and set it to auto-delete
+		# when we navigate away from the current scene
+		AM.tcm.push(TCM_KEY, emitter).cleanup_on_signal(Engine.get_main_loop().current_scene, "tree_exiting")
+		# NOTE: This is technically a memory leak if it is not properly cleaned up
+		Engine.get_main_loop().root.add_child(emitter)
+	else:
+		emitter = result.unwrap()
+	
+	# Remember to hook up the appropriate callbacks so that the GUI actually responds to user input
+	# The emitter is passed as a parameter to the callback function
+	confetti_button.connect("pressed", self, "_on_confetti_button_pressed", [emitter])
 
 func _on_confetti_button_pressed(emitter) -> void:
-    emitter.emit_confetti()
+	emitter.emit_confetti()
 ```
 
 Because this is just a GDScript file, the usual functions and classes are also
@@ -187,13 +197,57 @@ available to the developer.
 
 ## Creating the Confetti Emitter
 
+The code below should be placed into a file called `emitter.gd`. This creates a new
+`CanvasLayer` and creates a new particle emitter when `emit_confetti` is called.
+
 ```GDScript
 extends CanvasLayer
 
-func _init() -> void:
-    pass
+var active_particles := []
+
+func _process(_delta: float) -> void:
+	for p in active_particles:
+		if not p.emitting:
+			p.queue_free()
 
 func emit_confetti() -> void:
+	var particles = CPUParticles2D.new()
+	particles.one_shot = true
+	particles.emitting = true
+	particles.lifetime = 3.0
+	particles.scale *= 5
+	
+	particles.emission_shape = ParticlesMaterial.EMISSION_SHAPE_SPHERE
+	particles.emission_sphere_radius = 10.0
+	particles.gravity = Vector2(0.0, 98.0)
+	particles.linear_accel = 50.0
+	particles.tangential_accel = 50.0
+	particles.scale_amount = 5.0
+	particles.scale_amount_random = 0.5
+	particles.hue_variation = 1.0
+	particles.hue_variation_random = 1.0
 
-    pass
+	particles.position = Vector2(randi() % int(OS.window_size.x), randi() % int(OS.window_size.y))
+
+	add_child(particles)
+```
+
+## Creating the Translation Files
+
+Under the translations folder under the `Confetti` extension folder, create a file called `en.txt`.
+This will create a translation file for all English locales. Please reference i18 for the
+relevant language codes if translations other than English are needed.
+
+Inside of that file, paste the following translations:
+
+```
+CONFETTI_EXTENSION_NAME="Confetti!"
+
+CONFETTI_HINT="This is a secret piece of text :)
+
+New lines are possible here."
+
+CONFETTI_USAGE_LABEL_TEXT="Create confetti on screen by clicking the button below!"
+
+CONFETTI_SHOW_PARTICLES_BUTTON_TEXT="Spawn confetti"
 ```

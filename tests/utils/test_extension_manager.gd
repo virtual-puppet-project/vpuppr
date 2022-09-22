@@ -68,7 +68,7 @@ func test_scan_pass():
 
 	var extension: Extension = ext_res.unwrap()
 
-	var runner_res = extension.load_resource("runner_entrypoint.gd")
+	var runner_res = extension.load_raw("runner_entrypoint.gd")
 
 	if not assert_true(runner_res.is_ok()):
 		return

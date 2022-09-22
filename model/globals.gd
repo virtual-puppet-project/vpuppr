@@ -21,13 +21,16 @@ const ExtensionTypes := {
 	"PLUGIN": "plugin"
 }
 
-const ExtensionOtherKeys := {
+const ExtensionExtraKeys := {
+	# Different from a root-level gui key
+	# Describes a file that serves as the GUI for the given resource
+	"GUI": "gui",
 	# Whether to show this as a selectable GUI when starting a runner
 	# Defaults to false
-	"SELECTABLE_GUI": "selectable_gui",
+	"SELECTABLE_GUI": "selectable-gui",
 	# Whether to show this as a popup in the default GUI
 	# Defaults to false
-	"ADD_GUI_AS_DEFAULT": "add_gui_as_default",
+	"CAN_POPUP": "can-popup",
 	# Arbitrary data associated with the extension resource. Must be a relative path
 	# Can optionally define an entrypoint func if the data is a GDScript file delimited by a ":"
 	# e.g. "my_data.gd:my_entrypoint"

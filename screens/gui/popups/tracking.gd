@@ -37,7 +37,7 @@ func _setup() -> Result:
 
 	for er in AM.em.query_extensions_for_tag(Globals.ExtensionTypes.TRACKER):
 		er = er as Extension.ExtensionResource
-		if not er.extra.has(ExtensionManager.ResourceKeys.Optional.GUI):
+		if not er.extra.has(ExtensionManager.ResourceKeys.Extra.GUI):
 			logger.error("Extension %s missing gui, skipping" % er.resource_name)
 			continue
 
@@ -48,7 +48,7 @@ func _setup() -> Result:
 			logger.err(res)
 			continue
 
-		var entrypoint: String = er.extra[ExtensionManager.ResourceKeys.Optional.GUI]
+		var entrypoint: String = er.extra[ExtensionManager.ResourceKeys.Extra.GUI]
 
 		res = Safely.wrap(_from_descriptor(res.unwrap().context, entrypoint))
 		if res.is_err():
