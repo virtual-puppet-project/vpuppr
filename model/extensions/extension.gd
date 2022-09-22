@@ -1,6 +1,18 @@
 class_name Extension
 extends Reference
 
+class ExtensionResource extends Reference:
+	var extension_name := ""
+	var resource_name := ""
+	var tags := []
+	var entrypoint := ""
+	var translation_key := ""
+
+	var extra := {}
+
+class GDNativeExtensionResource extends ExtensionResource:
+	pass
+
 var extension_name := ""
 var translation_key := ""
 
@@ -8,12 +20,8 @@ var translation_key := ""
 var context := ""
 var resources := {} # Name: String -> ExtensionResource
 
-# Presort resources, these all refer to something in the resources dictionary
-var runners := [] # Resource name: String
-var puppets := [] # Resources name: String
-var trackers := [] # Resources name: String
-var guis := [] # Resources name: String
-var plugins := [] # Resources name: String
+## Dictionary<String, Array<ExtensionResources>>
+var tags := {}
 
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
@@ -31,43 +39,6 @@ var plugins := [] # Resources name: String
 # Public functions                                                            #
 #-----------------------------------------------------------------------------#
 
-## Adds a resource and pre-sorts it
-##
-## @param: res_name: String - The name of the resource from the config file
-## @param: res_type: String - The type of the resource from the config file
-## @param: res_entrypoint: String - The absolute path for the entrypoint for the resource
-##
-## @return: Result<ExtensionResource> - The new ExtensionResource that's implicitly added
-## to the Extension
-func add_resource(res_name: String, res_type: String, res_entrypoint: String) -> Result:
-	if resources.has(res_name):
-		return Safely.err(Error.Code.EXTENSION_RESOURCE_ALREADY_EXISTS)
-
-	var ext_res := ExtensionResource.new(
-		extension_name,
-		res_name,
-		res_type,
-		res_entrypoint
-	)
-
-	resources[res_name] = ext_res
-
-	match res_type:
-		Globals.ExtensionTypes.RUNNER:
-			runners.append(res_name)
-		Globals.ExtensionTypes.PUPPET:
-			puppets.append(res_name)
-		Globals.ExtensionTypes.TRACKER:
-			trackers.append(res_name)
-		Globals.ExtensionTypes.GUI:
-			guis.append(res_name)
-		Globals.ExtensionTypes.PLUGIN:
-			plugins.append(res_name)
-		_:
-			return Safely.err(Error.Code.UNHANDLED_EXTENSION_TYPE)
-
-	return Safely.ok(ext_res)
-
 ## Gets all data as a Dictionary
 ##
 ## @return: Dictionary - The Dictionary of Extension properties
@@ -76,11 +47,7 @@ func as_data() -> Dictionary:
 		"extension_name": extension_name,
 		"translation_key": translation_key,
 		"context_path": context,
-		"runner": runners.duplicate(),
-		"puppet": puppets.duplicate(),
-		"tracker": trackers.duplicate(),
-		"gui": guis.duplicate(),
-		"plugin": plugins.duplicate()
+		"resources": resources.duplicate()
 	}
 
 func has_file(rel_path: String) -> bool:
@@ -107,9 +74,19 @@ func load_file_text(rel_path: String) -> Result:
 	
 	return Safely.ok(file_text)
 
-func load_resource(rel_path: String) -> Result:
+func load_resource(resource_name: String) -> Result:
+	if not resources.has(resource_name):
+		return Safely.err(Error.Code.EXTENSION_RESOURCE_NOT_FOUND, resource_name)
+	
+	var resource = load(resources[resource_name].entrypoint)
+	if resource == null:
+		return Safely.err(Error.Code.EXTENSION_RESOURCE_NOT_FOUND, resources[resource_name].entrypoint)
+	
+	return Safely.ok(resource)
+
+func load_raw(rel_path: String) -> Result:
 	var resource = load("%s/%s" % [context, rel_path])
 	if resource == null:
-		return Safely.err(Error.Code.EXTENSION_CONTEXT_RESOURCE_NOT_FOUND, rel_path)
+		return Safely.err(Error.Code.EXTENSION_RESOURCE_NOT_FOUND, rel_path)
 	
 	return Safely.ok(resource)

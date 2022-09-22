@@ -49,13 +49,13 @@ func _ready() -> void:
 
 		menu_list.add_child(button)
 
-	for ext in AM.em.query_extensions_for_type(Globals.ExtensionTypes.GUI):
-		if not ext.other.get(Globals.ExtensionOtherKeys.ADD_GUI_AS_DEFAULT, false):
+	for ext in AM.em.query_extensions_for_tag(Globals.ExtensionTypes.GUI):
+		if not ext.extra.get(Globals.ExtensionExtraKeys.CAN_POPUP, false):
 			continue
 		
 		var button := Button.new()
 		button.text = tr(ext.translation_key)
-		button.connect("pressed", self, "_on_pressed", [load(ext.resource_entrypoint), tr(ext.translation_key)])
+		button.connect("pressed", self, "_on_pressed", [load(ext.entrypoint), tr(ext.translation_key)])
 
 		menu_list.add_child(button)
 	

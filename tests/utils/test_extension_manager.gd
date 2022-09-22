@@ -44,9 +44,11 @@ class ExtensionManagerTester extends ExtensionManager:
 # into git. We could do this but it's bad practice
 
 func test_scan_pass():
+	var file := File.new()
+	var dir := Directory.new()
 	var scan_path := "res://tests/test_resources/extension_resources/good_extensions/"
 	
-	AM.em._scan(scan_path)
+	AM.em._scan(file, dir, scan_path)
 
 	assert_called(AM.em, "_scan")
 	assert_call_count(AM.em, "_scan", 1)
@@ -59,41 +61,49 @@ func test_scan_pass():
 
 	var ext_res: Result = AM.em.get_extension("TestExtension")
 
-	assert_true(ext_res.is_ok())
+	if not assert_true(ext_res.is_ok()):
+		return
 
 	# Test loading a resource from a context
 
 	var extension: Extension = ext_res.unwrap()
 
-	var runner_res = extension.load_resource("runner_entrypoint.gd")
+	var runner_res = extension.load_raw("runner_entrypoint.gd")
 
-	assert_true(runner_res.is_ok())
+	if not assert_true(runner_res.is_ok()):
+		return
 
 	var runner = runner_res.unwrap().new()
 	
-	assert_true(runner.success())
+	if not assert_true(runner.success()):
+		return
 
 	# Test loading a resource from its entrypoint
 
-	var runner_script = load(AM.em.extensions["TestExtension"].resources["Runner"].resource_entrypoint)
+	var runner_script = load(AM.em.extensions["TestExtension"].resources["Runner"].entrypoint)
 
-	assert_true(runner_script is GDScript)
+	if not assert_true(runner_script is GDScript):
+		return
 
 	runner = runner_script.new()
 
-	assert_true(runner.success())
+	if not assert_true(runner.success()):
+		return
 
 	var tracking_dummy_res: Result = AM.em.find_in_extensions(
-		"TestExtension/resources/TrackingDummy/resource_entrypoint")
+		"TestExtension/resources/TrackingDummy/entrypoint")
 
-	assert_true(tracking_dummy_res.is_ok())
+	if not assert_true(tracking_dummy_res.is_ok()):
+		return
 
 	var tracking_dummy = load(tracking_dummy_res.unwrap()).new()
 
 	var tracking_backend_dummy = tracking_dummy.get_tracking_backend()
 
-	assert_true(tracking_backend_dummy.is_listening())
-	assert_eq(tracking_backend_dummy.test_func(), 10)
+	if not assert_true(tracking_backend_dummy.is_listening()):
+		return
+	if not assert_eq(tracking_backend_dummy.test_func(), 10):
+		return
 	
 	# TODO test applying data to a model using apply(...)
 

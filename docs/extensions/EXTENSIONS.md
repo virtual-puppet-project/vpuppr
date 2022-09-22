@@ -69,5 +69,5 @@ A struct-style class that holds information from a section in the `config.ini` f
 * `selectable_gui`
   * `Runner`: allow a GUI to be selectable when starting
   * `GUI`: show the GUI as an option when starting a `Runner`
-* `add_gui_as_default`
+* `can_popup`
   * `GUI`: should the resource should be displayed on the default GUI

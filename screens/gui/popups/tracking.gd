@@ -35,10 +35,10 @@ func _setup() -> Result:
 
 	tree.connect("item_selected", self, "_on_item_selected")
 
-	for er in AM.em.query_extensions_for_type(Globals.ExtensionTypes.TRACKER):
-		er = er as ExtensionResource
-		if not er.other.has(Globals.ExtensionOtherKeys.DATA):
-			logger.error("Extension %s missing data descriptor, skipping" % er.resource_name)
+	for er in AM.em.query_extensions_for_tag(Globals.ExtensionTypes.TRACKER):
+		er = er as Extension.ExtensionResource
+		if not er.extra.has(ExtensionManager.ResourceKeys.Extra.GUI):
+			logger.error("Extension %s missing gui, skipping" % er.resource_name)
 			continue
 
 #		var res: Result = Safely.wrap(AM.em.get_context(er.extension_name))
@@ -48,7 +48,7 @@ func _setup() -> Result:
 			logger.err(res)
 			continue
 
-		var entrypoint: String = er.other[Globals.ExtensionOtherKeys.DATA]
+		var entrypoint: String = er.extra[ExtensionManager.ResourceKeys.Extra.GUI]
 
 		res = Safely.wrap(_from_descriptor(res.unwrap().context, entrypoint))
 		if res.is_err():
@@ -56,10 +56,10 @@ func _setup() -> Result:
 			continue
 
 		var item: TreeItem = tree.create_item(root)
-		item.set_text(TREE_COLUMN, er.resource_name)
+		item.set_text(TREE_COLUMN, tr(er.translation_key))
 
 		var display = res.unwrap()
-		pages[er.resource_name] = Page.new(display, item)
+		pages[tr(er.translation_key)] = Page.new(display, item)
 		display.hide()
 
 		add_child(display)
