@@ -61,10 +61,7 @@ func _pre_setup() -> void:
 
 func _setup() -> void:
 	for i in DEFAULT_CONFIG_VALUES:
-		AM.ps.subscribe(self, i, {
-			"args": [i],
-			"callback": "_on_config_changed"
-		})
+		AM.ps.subscribe(self, i, "_on_event_published")
 
 		set(i, AM.cm.get_data(i))
 
@@ -106,36 +103,48 @@ func _teardown() -> void:
 
 func _on_event_published(payload: SignalPayload) -> void:
 	match payload.signal_name:
-		_:
-			pass
-
-func _on_config_changed(value: SignalPayload, signal_name: String) -> void:
-	match signal_name:
-		"head_bone":
-			head_bone = value.data
-		"bone_translation_damping":
-			bone_translation_damping = value.data
-		"bone_rotation_damping":
-			bone_rotation_damping = value.data
-		"additional_bone_damping":
-			additional_bone_damping = value.data
-		"gaze_strength":
-			gaze_strength = value.data
 		"additional_bones":
-			if typeof(value.data) != TYPE_DICTIONARY:
+			if typeof(payload.data) != TYPE_DICTIONARY:
 				logger.error("Unexpected value for additional_bones")
 				return
-			additional_bones = value.data.values()
+			additional_bones = payload.data.values()
 		"bone_transforms":
-			var bone_id := skeleton.find_bone(value.id)
+			var bone_id := skeleton.find_bone(payload.id)
 			if bone_id < 0:
-				logger.error("%s not found in skeleton" % value.id)
+				logger.error("%s not found in skeleton" % payload.id)
 				return
 
-			skeleton.set_bone_pose(bone_id, value.data[value.id])
+			skeleton.set_bone_pose(bone_id, payload.data[payload.id])
 		_:
-			# Do nothing
-			pass
+			set(payload.signal_name, payload.data)
+
+# func _on_config_changed(value: SignalPayload, signal_name: String) -> void:
+# 	match signal_name:
+# 		"head_bone":
+# 			head_bone = value.data
+# 		"bone_translation_damping":
+# 			bone_translation_damping = value.data
+# 		"bone_rotation_damping":
+# 			bone_rotation_damping = value.data
+# 		"additional_bone_damping":
+# 			additional_bone_damping = value.data
+# 		"gaze_strength":
+# 			gaze_strength = value.data
+# 		"additional_bones":
+# 			if typeof(value.data) != TYPE_DICTIONARY:
+# 				logger.error("Unexpected value for additional_bones")
+# 				return
+# 			additional_bones = value.data.values()
+# 		"bone_transforms":
+# 			var bone_id := skeleton.find_bone(value.id)
+# 			if bone_id < 0:
+# 				logger.error("%s not found in skeleton" % value.id)
+# 				return
+
+# 			skeleton.set_bone_pose(bone_id, value.data[value.id])
+# 		_:
+# 			# Do nothing
+# 			pass
 
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
