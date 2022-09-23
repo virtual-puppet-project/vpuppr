@@ -1,6 +1,25 @@
 class_name JSONUtil
 extends Reference
 
+static func vector2_to_dict(vec: Vector2) -> Dictionary:
+	return {
+		"x": vec.x,
+		"y": vec.y
+	}
+
+static func dict_to_vector2(data: Dictionary) -> Vector2:
+	return Vector2(data.x, data.y)
+
+static func vector3_to_dict(vec: Vector3) -> Dictionary:
+	return {
+		"x": vec.x,
+		"y": vec.y,
+		"z": vec.z
+	}
+
+static func dict_to_vector3(data: Dictionary) -> Vector3:
+	return Vector3(data.x, data.y, data.z)
+
 static func transform_to_dict(transform: Transform) -> Dictionary:
 	var result: Dictionary = {}
 	

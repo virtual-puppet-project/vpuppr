@@ -312,19 +312,20 @@ func custom_update(i_data: InterpolationData) -> void:
 
 	#region Gaze
 
-	# TODO eyes show weird behavior when blinking
 	var left_eye_rotation: Vector3 = i_data.left_gaze.interpolate(
 		i_data.left_gaze.interpolation_rate)
 	var right_eye_rotation: Vector3 = i_data.right_gaze.interpolate(
 		i_data.right_gaze.interpolation_rate)
-	var average_eye_y_rotation: float = (left_eye_rotation.x + right_eye_rotation.x) / 2.0
-	left_eye_rotation.x = average_eye_y_rotation
-	right_eye_rotation.x = average_eye_y_rotation
+	var average_eye_y_rotation: float = (left_eye_rotation.y + right_eye_rotation.y) / 2.0
+	left_eye_rotation.y = average_eye_y_rotation
+	right_eye_rotation.y = average_eye_y_rotation
 
 	# TODO make this toggleable from the ui
-	var average_eye_x_rotation: float = (left_eye_rotation.y + right_eye_rotation.y) / 2.0
-	left_eye_rotation.y = average_eye_x_rotation
-	right_eye_rotation.y = average_eye_x_rotation
+	var average_eye_x_rotation: float = (left_eye_rotation.x + right_eye_rotation.x) / 2.0
+	left_eye_rotation.x = average_eye_x_rotation
+	right_eye_rotation.x = average_eye_x_rotation
+
+	print("x: %.3d, y: %.3d" % [average_eye_x_rotation, average_eye_y_rotation])
 
 	if not use_raw_eye_rotation:
 		left_eye_rotation.x = clamp(left_eye_rotation.x, left_eye.down.x, left_eye.up.x)
@@ -335,14 +336,15 @@ func custom_update(i_data: InterpolationData) -> void:
 
 	# Left eye gaze
 	var left_eye_transform := Transform()
-	left_eye_transform = left_eye_transform.rotated(Vector3.RIGHT, -left_eye_rotation.x)
-	left_eye_transform = left_eye_transform.rotated(Vector3.UP, left_eye_rotation.y)
+	left_eye_transform = left_eye_transform.rotated(Vector3.UP, left_eye_rotation.x)
+	left_eye_transform = left_eye_transform.rotated(Vector3.RIGHT, -left_eye_rotation.y)
 
 	# Right eye gaze
 	var right_eye_transform := Transform()
-	right_eye_transform = right_eye_transform.rotated(Vector3.RIGHT, -right_eye_rotation.x)
-	right_eye_transform = right_eye_transform.rotated(Vector3.UP, right_eye_rotation.y)
+	right_eye_transform = right_eye_transform.rotated(Vector3.UP, right_eye_rotation.x)
+	right_eye_transform = right_eye_transform.rotated(Vector3.RIGHT, -right_eye_rotation.y)
 	
+	# NOTE: Intentionally mirrored
 	skeleton.set_bone_pose(right_eye_id, left_eye_transform)
 	skeleton.set_bone_pose(left_eye_id, right_eye_transform)
 

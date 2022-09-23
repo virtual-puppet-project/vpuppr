@@ -7,3 +7,6 @@
 [submodule "resources/extensions/ifacialmocap-tracker"]
 	path = resources/extensions/ifacialmocap-tracker
 	url = https://github.com/virtual-puppet-project/ifacialmocap-tracker.git
+[submodule "resources/extensions/meowface-tracker"]
+	path = resources/extensions/meowface-tracker
+	url = https://github.com/virtual-puppet-project/meowface-tracker.git
