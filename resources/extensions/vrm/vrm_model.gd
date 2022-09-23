@@ -275,7 +275,7 @@ func _fix_additional_bones() -> void:
 # Public functions                                                            #
 #-----------------------------------------------------------------------------#
 
-func custom_update(interpolation_data: InterpolationData) -> void:
+func custom_update(i_data: InterpolationData) -> void:
 	# NOTE Eye mappings are intentionally reversed so that the model mirrors the data
 
 	#region Blinking
@@ -284,8 +284,8 @@ func custom_update(interpolation_data: InterpolationData) -> void:
 
 	# var left_eye_open = data.left_eye_open_amount
 	# var right_eye_open = data.right_eye_open_amount
-	var left_eye_open: float = interpolation_data.left_blink.target_value
-	var right_eye_open: float = interpolation_data.right_blink.target_value
+	var left_eye_open: float = i_data.left_blink.target_value
+	var right_eye_open: float = i_data.right_blink.target_value
 
 	if link_eye_blinks:
 		var average_eye_open = (left_eye_open + right_eye_open) / 2
@@ -294,14 +294,16 @@ func custom_update(interpolation_data: InterpolationData) -> void:
 
 	if left_eye_open >= blink_threshold:
 		for x in expression_data.get_expression("blink_r"):
-			_modify_blend_shape(x.mesh, x.morph, x.values[1] - interpolation_data.left_blink.interpolate(1.0))
+			_modify_blend_shape(x.mesh, x.morph, x.values[1] - i_data.left_blink.interpolate(
+				i_data.left_blink.interpolation_rate))
 	else:
 		for x in expression_data.get_expression("blink_r"):
 			_modify_blend_shape(x.mesh, x.morph, x.values[1])
 
 	if right_eye_open >= blink_threshold:
 		for x in expression_data.get_expression("blink_l"):
-			_modify_blend_shape(x.mesh, x.morph, x.values[1] - interpolation_data.right_blink.interpolate(1.0))
+			_modify_blend_shape(x.mesh, x.morph, x.values[1] - i_data.right_blink.interpolate(
+				i_data.right_blink.interpolation_rate))
 	else:
 		for x in expression_data.get_expression("blink_l"):
 			_modify_blend_shape(x.mesh, x.morph, x.values[1])
@@ -311,8 +313,10 @@ func custom_update(interpolation_data: InterpolationData) -> void:
 	#region Gaze
 
 	# TODO eyes show weird behavior when blinking
-	var left_eye_rotation: Vector3 = interpolation_data.left_gaze.interpolate(gaze_strength)
-	var right_eye_rotation: Vector3 = interpolation_data.right_gaze.interpolate(gaze_strength)
+	var left_eye_rotation: Vector3 = i_data.left_gaze.interpolate(
+		i_data.left_gaze.interpolation_rate)
+	var right_eye_rotation: Vector3 = i_data.right_gaze.interpolate(
+		i_data.right_gaze.interpolation_rate)
 	var average_eye_y_rotation: float = (left_eye_rotation.x + right_eye_rotation.x) / 2.0
 	left_eye_rotation.x = average_eye_y_rotation
 	right_eye_rotation.x = average_eye_y_rotation
@@ -346,10 +350,9 @@ func custom_update(interpolation_data: InterpolationData) -> void:
 
 	#region Mouth tracking
 		
-	var mouth_open: float = interpolation_data.mouth_open.interpolate(
-		interpolation_data.mouth_open.interpolation_rate)
+	var mouth_open: float = i_data.mouth_open.interpolate(i_data.mouth_open.interpolation_rate)
 
-	var mouth_wide: float = interpolation_data.mouth_wide.interpolate(2.0)
+	var mouth_wide: float = i_data.mouth_wide.interpolate(i_data.mouth_wide.interpolation_rate)
 
 	# TODO workaround until lip syncing is re-implemented
 
