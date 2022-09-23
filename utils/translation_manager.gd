@@ -20,7 +20,7 @@ func _setup_logger() -> void:
 	logger = Logger.new("TranslationManager")
 
 func _setup_class() -> void:
-	scan_path = FileUtil.inject_env_vars(Globals.RESOURCE_PATH)
+	scan_path = AM.inject_env_vars(Globals.RESOURCE_PATH)
 	if scan_path.empty():
 		if not OS.is_debug_build():
 			scan_path = "%s/%s" % [OS.get_executable_path().get_base_dir(), Globals.TRANSLATIONS_PATH]

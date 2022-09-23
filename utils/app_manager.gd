@@ -53,10 +53,9 @@ func _ready() -> void:
 	nm = NotificationManager.new()
 	tcm = TempCacheManager.new()
 
-	# Initialized here since loggers must connect to the PubSub
-	logger = Logger.new("AppManager")
-
 	connect("tree_exiting", self, "_on_tree_exiting")
+	
+	logger = Logger.new("AppManager")
 	
 	if ClassDB.class_exists("StdoutStderrIntercept"):
 		Engine.get_singleton("StdoutStderrIntercept").connect("intercepted_message", self, "_on_stderr")
@@ -82,6 +81,10 @@ func _on_tree_exiting() -> void:
 
 func _on_stderr(text: String, is_error: bool) -> void:
 	if is_error:
+		# TODO Sometimes there's a race condition that causes the logger to not
+		# be initialized somehow?
+		if logger == null:
+			return
 		logger.error(text)
 
 #-----------------------------------------------------------------------------#
@@ -108,3 +111,12 @@ func save_config_instant() -> void:
 func is_manager_ready(manager_name: String) -> bool:
 	var m = get(manager_name)
 	return m != null and m.is_setup
+
+static func inject_env_vars(text: String) -> String:
+	text = text.replace("$EXE_DIR", OS.get_executable_path().get_base_dir())
+	
+	return text \
+		.replace("$EXE_DIR", OS.get_executable_path().get_base_dir()) \
+		.replace("$PROJECT", ProjectSettings.globalize_path("res://")) \
+		.replace("$USER", ProjectSettings.globalize_path("user://")) \
+		.replace("$HOME", OS.get_environment("HOME"))

@@ -105,16 +105,9 @@ func _setup() -> Result:
 func _on_button_pressed(signal_name: String, _button: Button) -> void:
 	match signal_name:
 		"load_model":
-			var fd := FileDialog.new()
-			fd.access = FileDialog.ACCESS_FILESYSTEM
-			fd.mode = FileDialog.MODE_OPEN_FILE
-
-			fd.current_path = AM.cm.get_data("default_search_path")
-			fd.current_dir = AM.cm.get_data("default_search_path")
-			fd.add_filter("*")
+			var fd = FileUtil.get_file_picker()
 			
 			fd.connect("file_selected", self, "_on_model_selected")
-			fd.connect("popup_hide", NodeUtil, "try_queue_free", [fd])
 			
 			add_child(fd)
 			fd.popup_centered_ratio()
