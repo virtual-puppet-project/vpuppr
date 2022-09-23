@@ -23,6 +23,10 @@ const ResourceKeys := {
 	"Extra": Globals.ExtensionExtraKeys
 }
 
+const RecognizedTags := {
+	"FILE_PICKER": "file-picker"
+}
+
 ## The dict of extension names to extension objects
 ##
 ## Extension name: String -> Extension object: Extension
@@ -56,7 +60,7 @@ func _setup_class() -> void:
 		logger.info("No user extensions found, skipping")
 	
 	# Scan normal resource path afterwards. Ignore duplicates
-	scan_path = FileUtil.inject_env_vars(Globals.RESOURCE_PATH)
+	scan_path = AM.inject_env_vars(Globals.RESOURCE_PATH)
 	if scan_path.empty():
 		if not OS.is_debug_build():
 			scan_path = "%s/%s" % [

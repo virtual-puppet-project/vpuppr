@@ -1,22 +1,6 @@
 class_name FileUtil
 extends Reference
 
-#-----------------------------------------------------------------------------#
-# Builtin functions                                                           #
-#-----------------------------------------------------------------------------#
-
-#-----------------------------------------------------------------------------#
-# Connections                                                                 #
-#-----------------------------------------------------------------------------#
-
-#-----------------------------------------------------------------------------#
-# Private functions                                                           #
-#-----------------------------------------------------------------------------#
-
-#-----------------------------------------------------------------------------#
-# Public functions                                                            #
-#-----------------------------------------------------------------------------#
-
 ## Takes an absolute or relative path and returns the filename without an extension
 ##
 ## @param: path: String - The path to strip
@@ -128,11 +112,27 @@ static func remove_file_at_path(path: String) -> Result:
 
 	return Safely.ok(path)
 
-static func inject_env_vars(text: String) -> String:
-	text = text.replace("$EXE_DIR", OS.get_executable_path().get_base_dir())
+static func get_file_picker() -> Node:
+	# TODO this just picks the first valid extension
+	var file_pickers: Array = AM.em.query_extensions_for_tag(
+		ExtensionManager.RecognizedTags.FILE_PICKER)
 	
-	return text \
-		.replace("$EXE_DIR", OS.get_executable_path().get_base_dir()) \
-		.replace("$PROJECT", ProjectSettings.globalize_path("res://")) \
-		.replace("$USER", ProjectSettings.globalize_path("user://")) \
-		.replace("$HOME", OS.get_environment("HOME"))
+	if not file_pickers.empty():
+		var resource = load(file_pickers.front().entrypoint)
+		if resource != null:
+			# TODO this assumes the resource is a script
+			return resource.new()
+		
+		AM.logger.error("Unable to load a file picker from: %s" % str(file_pickers))
+	
+	var fd := FileDialog.new()
+	fd.access = FileDialog.ACCESS_FILESYSTEM
+	fd.mode = FileDialog.MODE_OPEN_FILE
+
+	fd.current_path = AM.cm.get_data("default_search_path")
+	fd.current_dir = AM.cm.get_data("default_search_path")
+	fd.add_filter("*")
+	
+	fd.connect("popup_hide", NodeUtil, "try_queue_free", [fd])
+	
+	return fd
