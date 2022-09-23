@@ -26,6 +26,38 @@ func after_all():
 # Tests                                                                       #
 #-----------------------------------------------------------------------------#
 
+func test_vector2_roundtrip_pass():
+	var v := Vector2.ONE
+	
+	var d := JSONUtil.vector2_to_dict(v)
+	
+	assert_typeof(d, TYPE_DICTIONARY)
+	assert_eq(d.x, v.x)
+	assert_eq(d.y, v.y)
+	
+	var r := JSONUtil.dict_to_vector2(d)
+	
+	assert_typeof(r, TYPE_VECTOR2)
+	assert_eq(r.x, v.x)
+	assert_eq(r.y, v.y)
+
+func test_vector3_roundtrip_pass():
+	var v := Vector3.ONE
+	
+	var d := JSONUtil.vector3_to_dict(v)
+	
+	assert_typeof(d, TYPE_DICTIONARY)
+	assert_eq(d.x, v.x)
+	assert_eq(d.y, v.y)
+	assert_eq(d.z, v.z)
+	
+	var r := JSONUtil.dict_to_vector3(d)
+	
+	assert_typeof(r, TYPE_VECTOR3)
+	assert_eq(r.x, v.x)
+	assert_eq(r.y, v.y)
+	assert_eq(r.z, v.z)
+
 func test_transform_roundtrip_pass():
 	var t := Transform(
 		Vector3.ONE,
