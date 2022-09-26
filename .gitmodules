@@ -10,3 +10,6 @@
 [submodule "resources/extensions/meowface-tracker"]
 	path = resources/extensions/meowface-tracker
 	url = https://github.com/virtual-puppet-project/meowface-tracker.git
+[submodule "resources/extensions/vtube-studio-tracker"]
+	path = resources/extensions/vtube-studio-tracker
+	url = https://github.com/virtual-puppet-project/vtube-studio-tracker.git
