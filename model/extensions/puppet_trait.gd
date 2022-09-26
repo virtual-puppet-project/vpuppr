@@ -33,6 +33,8 @@ var initial_bone_poses: Dictionary # Bone id: int -> Pose: Transform
 
 var has_custom_update := false
 
+## Dictionary of mesh names to all blendshapes associated with that mesh
+##
 ## @type: Dictionary<String, Array<String>>
 var blend_shape_mappings := {}
 
