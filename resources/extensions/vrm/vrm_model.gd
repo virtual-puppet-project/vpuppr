@@ -325,8 +325,6 @@ func custom_update(i_data: InterpolationData) -> void:
 	left_eye_rotation.x = average_eye_x_rotation
 	right_eye_rotation.x = average_eye_x_rotation
 
-	print("x: %.3d, y: %.3d" % [average_eye_x_rotation, average_eye_y_rotation])
-
 	if not use_raw_eye_rotation:
 		left_eye_rotation.x = clamp(left_eye_rotation.x, left_eye.down.x, left_eye.up.x)
 		left_eye_rotation.y = clamp(left_eye_rotation.y, left_eye.right.y, left_eye.left.y)
@@ -336,13 +334,13 @@ func custom_update(i_data: InterpolationData) -> void:
 
 	# Left eye gaze
 	var left_eye_transform := Transform()
-	left_eye_transform = left_eye_transform.rotated(Vector3.UP, left_eye_rotation.x)
-	left_eye_transform = left_eye_transform.rotated(Vector3.RIGHT, -left_eye_rotation.y)
+	left_eye_transform = left_eye_transform.rotated(Vector3.UP, left_eye_rotation.y)
+	left_eye_transform = left_eye_transform.rotated(Vector3.RIGHT, -left_eye_rotation.x)
 
 	# Right eye gaze
 	var right_eye_transform := Transform()
-	right_eye_transform = right_eye_transform.rotated(Vector3.UP, right_eye_rotation.x)
-	right_eye_transform = right_eye_transform.rotated(Vector3.RIGHT, -right_eye_rotation.y)
+	right_eye_transform = right_eye_transform.rotated(Vector3.UP, right_eye_rotation.y)
+	right_eye_transform = right_eye_transform.rotated(Vector3.RIGHT, -right_eye_rotation.x)
 	
 	# NOTE: Intentionally mirrored
 	skeleton.set_bone_pose(right_eye_id, left_eye_transform)
