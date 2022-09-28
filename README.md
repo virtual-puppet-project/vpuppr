@@ -8,8 +8,14 @@ All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` h
 * [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace)
 * [iFacialMocap](https://www.ifacialmocap.com/)
 * [Mouse tracker](https://github.com/virtual-puppet-project/mouse-tracker)
+* [MeowFace](https://github.com/virtual-puppet-project/meowface-tracker)
 
 *More trackers may be available in the future, such as [MediaPipe](https://google.github.io/mediapipe/)*
+
+## Controls
+
+Currently, the only hidden control is `spacebar`. This allows for setting tracking offsets (aka if your model's
+neck is broken, you need to set the tracking offsets).
 
 ## Quickstart
 
