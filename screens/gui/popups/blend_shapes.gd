@@ -1,40 +1,37 @@
 extends BaseLayout
 
-class BlendShapeItem extends PanelContainer:
+class BlendShapeItem extends VBoxContainer:
+	var mesh_instance: MeshInstance
 	var blend_shape_name := ""
 	var value: float = 0.0
 	
+	var _value_line_edit: LineEdit
+	var _value_slider: HSlider
+	
 	func _init(
+		p_mesh_instance: MeshInstance,
 		p_blend_shape_name: String,
-		p_value: float,
-		options: Dictionary
+		p_value: float
 	) -> void:
-		var stylebox := StyleBoxFlat.new()
-		stylebox.bg_color = Color("202431")
-		stylebox.content_margin_top = 5
-		stylebox.content_margin_bottom = 5
-		stylebox.content_margin_left = 5
-		stylebox.content_margin_right = 5
-		set_indexed("custom_styles/panel", stylebox)
+		AM.ps.create_signal(Globals.BLEND_SHAPES)
+		AM.ps.subscribe(self, Globals.BLEND_SHAPES, "_on_event_published")
 		
+		mesh_instance = p_mesh_instance
 		blend_shape_name = p_blend_shape_name
 		value = p_value
-		
-		var vbox := VBoxContainer.new()
-		ControlUtil.h_expand_fill(vbox)
-		
-		add_child(vbox)
+
+		ControlUtil.h_expand_fill(self)
 		
 		var blend_shape_label := Label.new()
 		ControlUtil.h_expand_fill(blend_shape_label)
 		blend_shape_label.text = "Name: %s" % blend_shape_name
 		
-		vbox.add_child(blend_shape_label)
+		add_child(blend_shape_label)
 		
 		var value_hbox := HBoxContainer.new()
 		ControlUtil.h_expand_fill(value_hbox)
 		
-		vbox.add_child(value_hbox)
+		add_child(value_hbox)
 		
 		var value_label := Label.new()
 		ControlUtil.h_expand_fill(value_label)
@@ -42,16 +39,39 @@ class BlendShapeItem extends PanelContainer:
 		
 		value_hbox.add_child(value_label)
 		
-		var value_line_edit := LineEdit.new()
-		ControlUtil.h_expand_fill(value_line_edit)
+		_value_line_edit = LineEdit.new()
+		ControlUtil.h_expand_fill(_value_line_edit)
+		_value_line_edit.text = str(value)
+		_value_line_edit.connect("text_changed", self, "_on_line_edit_text_changed")
 		
-		value_hbox.add_child(value_line_edit)
+		value_hbox.add_child(_value_line_edit)
 		
-		var value_slider := HSlider.new()
+		_value_slider = HSlider.new()
+		ControlUtil.h_expand_fill(_value_slider)
+		_value_slider.scrollable = false
+		_value_slider.connect("value_changed", self, "_on_slider_value_changed")
 		
-		vbox.add_child(value_slider)
+		add_child(_value_slider)
+	
+	func _on_event_published(payload: SignalPayload) -> void:
+		if payload.signal_name != Globals.BLEND_SHAPES:
+			return
+		if payload.id != blend_shape_name:
+			return
 		
+		_value_line_edit.text = str(payload.data)
+		_value_line_edit.caret_position = _value_line_edit.text.length()
+
+		_value_slider.ratio = payload.data
+	
+	func _on_line_edit_text_changed(text: String) -> void:
+		if not text.is_valid_float():
+			return
 		
+		AM.ps.publish(Globals.BLEND_SHAPES, text.to_float(), blend_shape_name)
+	
+	func _on_slider_value_changed(_value: float) -> void:
+		AM.ps.publish(Globals.BLEND_SHAPES, _value_slider.ratio, blend_shape_name)
 
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
@@ -75,13 +95,14 @@ func _setup() -> Result:
 		return Result.err(Error.Code.NULL_VALUE,
 			"Incompatible runner, no blend shape mappings found")
 	
-	for mesh_name in blend_shape_mappings.keys():
-		var blend_shapes: Array = blend_shape_mappings[mesh_name]
+	for blend_shape in blend_shape_mappings.keys():
+		# TODO this is too indirect
+		# PuppetTrait::BlendShapeMapping
+		var mapping: Reference = blend_shape_mappings[blend_shape]
 		
-		for shape in blend_shapes:
-			var item := BlendShapeItem.new(shape, 0.0, {})
-			
-			blend_shape_list.add_child(item)
+		blend_shape_list.add_child(
+			BlendShapeItem.new(mapping.mesh, blend_shape, mapping.value))
+		blend_shape_list.add_child(HSeparator.new())
 	
 	return ._setup()
 

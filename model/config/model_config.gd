@@ -20,14 +20,19 @@ var model_path := ""
 
 #region Model
 
+var model_transform := Transform()
+var model_parent_transform := Transform()
+
+#endregion
+
+#region Bones
+
 # Additional bones to be tracked
 var additional_bones := {} # Bone name: String -> Bone id: int
 # Bone pose positions
 var bone_transforms := {} # Bone name: String -> Bone transform: Transform
 var bones_to_interpolate := {} # Bone name: String -> Bones id: int
 var bone_interpolation_rates := {} # Bone id: int -> Interpolation rate: float
-var model_transform := Transform()
-var model_parent_transform := Transform()
 
 #endregion
 
@@ -98,14 +103,11 @@ var mouth_wide_group_2: float = 0.3
 
 #endregion
 
-#region Launch tracker values
-
-# var tracker_should_launch := true
-# var tracker_fps: int = 12 # TODO this is specific to OpenSeeFace
-# var tracker_address := "127.0.0.1" # TODO this is specific to OpenSeeFace
-# var tracker_port: int = 11573 # TODO this is specific to OpenSeeFace
-
 #endregion
+
+#region Blend shapes
+
+var blend_shapes := {}
 
 #endregion
 
