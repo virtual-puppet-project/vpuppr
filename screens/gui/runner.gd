@@ -193,7 +193,7 @@ func _create_gui_select(runner_path: String) -> WindowDialog:
 
 	list.add_child(default_gui)
 
-	for ext in AM.em.query_extensions_for_type(Globals.ExtensionTypes.GUI):
+	for ext in AM.em.query_extensions_for_tag(Globals.ExtensionTypes.GUI):
 		# TODO this might not be a great solution
 		if not ext.other.get(Globals.ExtensionExtraKeys.SELECTABLE_GUI, false):
 			continue

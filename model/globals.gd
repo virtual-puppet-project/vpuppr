@@ -54,6 +54,8 @@ const MODEL_LOADED := "model_loaded"
 const POSE_BONE := "pose_bone"
 const BONE_TRANSFORMS := "bone_transforms"
 
+const BLEND_SHAPES := "blend_shapes"
+
 const RELOAD_RUNNER := "reload_runner"
 
 #endregion

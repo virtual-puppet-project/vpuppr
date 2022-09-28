@@ -8,7 +8,8 @@ const DEFAULT_CONFIG_VALUES := [
 	"additional_bone_damping",
 	"gaze_strength",
 	"additional_bones",
-	"bone_transforms"
+	"bone_transforms",
+	Globals.BLEND_SHAPES
 ]
 
 const SKELETON_NODE = "Skeleton"
@@ -33,9 +34,25 @@ var initial_bone_poses: Dictionary # Bone id: int -> Pose: Transform
 
 var has_custom_update := false
 
-## Dictionary of mesh names to all blendshapes associated with that mesh
+class BlendShapeMapping:
+	var mesh: MeshInstance = null
+	# NOTE: this is the property path to the blend shape, not just the name
+	var blend_shape := ""
+	var value: float = 0.0 setget _set_value
+
+	func _init(p_mesh: MeshInstance, p_blend_shape: String, p_value: float) -> void:
+		mesh = p_mesh
+		blend_shape = p_blend_shape
+		value = p_value
+	
+	func _set_value(p_value: float) -> void:
+		value = p_value
+		mesh.set(blend_shape, value)
+
+# TODO this will break if there are blend shapes with the same name on different meshes
+## Dictionary of blend shape to BlendShapeMapping
 ##
-## @type: Dictionary<String, Array<String>>
+## @type: Dictionary<String, BlendShapeMapping>
 var blend_shape_mappings := {}
 
 #-----------------------------------------------------------------------------#
@@ -87,11 +104,13 @@ func _setup() -> void:
 		if not child is MeshInstance:
 			continue
 
-		var shape_names := []
 		for i in child.mesh.get_blend_shape_count():
-			shape_names.append(child.mesh.get_blend_shape_name(i))
+			var blend_shape_name: String = child.mesh.get_blend_shape_name(i)
+			var blend_shape_property_path := "blend_shapes/%s" % blend_shape_name
+			var value: float = child.get(blend_shape_property_path)
 
-		blend_shape_mappings[child.name] = shape_names
+			blend_shape_mappings[blend_shape_name] = BlendShapeMapping.new(
+				child, blend_shape_property_path, value)
 
 func _post_setup() -> void:
 	pass
@@ -117,36 +136,14 @@ func _on_event_published(payload: SignalPayload) -> void:
 				return
 
 			skeleton.set_bone_pose(bone_id, payload.data[payload.id])
+		Globals.BLEND_SHAPES:
+			if payload.id == null:
+				logger.error("Expected an ID for a %s payload" % Globals.BLEND_SHAPES)
+				return
+			
+			set_blend_shape(payload.id, payload.data)
 		_:
 			set(payload.signal_name, payload.data)
-
-# func _on_config_changed(value: SignalPayload, signal_name: String) -> void:
-# 	match signal_name:
-# 		"head_bone":
-# 			head_bone = value.data
-# 		"bone_translation_damping":
-# 			bone_translation_damping = value.data
-# 		"bone_rotation_damping":
-# 			bone_rotation_damping = value.data
-# 		"additional_bone_damping":
-# 			additional_bone_damping = value.data
-# 		"gaze_strength":
-# 			gaze_strength = value.data
-# 		"additional_bones":
-# 			if typeof(value.data) != TYPE_DICTIONARY:
-# 				logger.error("Unexpected value for additional_bones")
-# 				return
-# 			additional_bones = value.data.values()
-# 		"bone_transforms":
-# 			var bone_id := skeleton.find_bone(value.id)
-# 			if bone_id < 0:
-# 				logger.error("%s not found in skeleton" % value.id)
-# 				return
-
-# 			skeleton.set_bone_pose(bone_id, value.data[value.id])
-# 		_:
-# 			# Do nothing
-# 			pass
 
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
@@ -192,6 +189,12 @@ func get_bone_names() -> Array:
 func reset_all_bone_poses() -> void:
 	for bone_id in initial_bone_poses.keys():
 		skeleton.set_bone_pose(bone_id, initial_bone_poses[bone_id])
+
+func set_blend_shape(blend_shape: String, value: float) -> void:
+	blend_shape_mappings[blend_shape].value = value
+
+func get_blend_shape(blend_shape: String) -> float:
+	return blend_shape_mappings[blend_shape].value
 
 # TODO looseness values should be pre-applied
 ## Applies movement to a model
