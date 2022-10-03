@@ -91,6 +91,7 @@ var gaze_strength := 0.5
 var blink_threshold := 0.2
 var link_eye_blinks := false
 var use_raw_eye_rotation := false
+var use_blend_shapes_for_blinking := false
 
 #region Mouth tracking values
 

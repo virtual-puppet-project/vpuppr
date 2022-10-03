@@ -87,8 +87,10 @@ func _setup() -> Result:
 
 	_connect_element($DEFAULT_GUI_MODEL_EYES_PAGE/VBoxContainer/ShouldTrackEye, "should_track_eye")
 	_connect_element($DEFAULT_GUI_MODEL_EYES_PAGE/VBoxContainer/GazeStrength/LineEdit, "gaze_strength")
+	_connect_element($DEFAULT_GUI_MODEL_EYES_PAGE/VBoxContainer/BlinkThreshold/LineEdit, "blink_threshold")
 	_connect_element($DEFAULT_GUI_MODEL_EYES_PAGE/VBoxContainer/LinkEyeBlinks, "link_eye_blinks")
 	_connect_element($DEFAULT_GUI_MODEL_EYES_PAGE/VBoxContainer/RawEyeRotation, "use_raw_eye_rotation")
+	_connect_element($DEFAULT_GUI_MODEL_EYES_PAGE/VBoxContainer/BlendShapeBlinks, "use_blend_shapes_for_blinking")
 
 	#endregion
 

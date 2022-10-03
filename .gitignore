@@ -21,4 +21,5 @@ export/**
 **/temp
 **/OpenSeeFaceFolder
 **/mouse-tracker
+**/hotkey-listener
 release_templates/

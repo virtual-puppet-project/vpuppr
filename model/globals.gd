@@ -94,7 +94,7 @@ const RUNNER_PREVIEW_FILE_EXT := "png"
 #region Compile-time
 
 # See FileUtil for a list of Strings that are automatically expanded with
-# FileUtil::inject_env_vars
+# AppManager::inject_env_vars
 
 const RESOURCE_PATH: String = "$PROJECT/resources"
 

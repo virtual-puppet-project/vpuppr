@@ -9,6 +9,8 @@ const RESOURCES_SECTION := "resources"
 const TOML_EXT := "toml"
 const JSON_EXT := "json"
 
+const AUTO_EXECUTE_METHOD := "execute"
+
 const ExtensionKeys := {
 	"NAME": "name",
 	"TRANSLATION_KEY": "translation-key"
@@ -20,6 +22,7 @@ const ResourceKeys := {
 	"GDNATIVE": "gdnative",
 	"TRANSLATION_KEY": "translation-key",
 	"GUI": "gui",
+	"AUTO_EXECUTE": "auto-execute",
 	"Extra": Globals.ExtensionExtraKeys
 }
 
@@ -45,6 +48,9 @@ func _setup_logger() -> void:
 func _setup_class() -> void:
 	var file := File.new()
 	var dir := Directory.new()
+
+	## Array<ExtensionResource>
+	var auto_executables := []
 	
 	# Scan user data first for resources
 	var scan_path: String = "%s/%s" % [
@@ -53,7 +59,7 @@ func _setup_class() -> void:
 	if dir.dir_exists(scan_path):
 		logger.info("Parsing user extensions: %s" % scan_path)
 
-		var res: Result = Safely.wrap(_scan(file, dir, scan_path))
+		var res: Result = Safely.wrap(_scan(file, dir, scan_path, auto_executables))
 		if res.is_err():
 			logger.error(res)
 	else:
@@ -74,11 +80,39 @@ func _setup_class() -> void:
 	if dir.dir_exists(scan_path):
 		logger.info("Parsing default extensions")
 
-		var res: Result = Safely.wrap(_scan(file, dir, scan_path))
+		var res: Result = Safely.wrap(_scan(file, dir, scan_path, auto_executables))
 		if res.is_err():
 			logger.error(res)
 	else:
 		logger.info("No default extensions found, skipping")
+
+	yield(AM, "ready")
+
+	# All auto executable resources must be run after all extensions are parsed
+	#
+	# Auto executable resources can refer to other extensions, although it is
+	# not guaranteed other extensions will exist
+	for resource in auto_executables:
+		logger.debug("Running auto execute script: %s" % resource.entrypoint)
+
+		var script = load(resource.entrypoint)
+		if script == null:
+			logger.err("Unable to create auto execute script: %s" % resource.entrypoint)
+			continue
+
+		var inst = script.new()
+		if not inst.has_method(AUTO_EXECUTE_METHOD):
+			logger.error("Auto execute script is missing an execute method: %s" % resource.entrypoint)
+			continue
+
+		var err = inst.call(AUTO_EXECUTE_METHOD)
+		if typeof(err) != TYPE_INT:
+			continue
+		
+		if err != OK:
+			logger.err("Auto execute method failed: %s" % resource.entrypoint)
+
+		logger.debug("Finished auto execute script: %s" % resource.entrypoint)
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
@@ -88,7 +122,7 @@ func _setup_class() -> void:
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#
 
-func _scan(file: File, dir: Directory, scan_path: String) -> Result:
+func _scan(file: File, dir: Directory, scan_path: String, auto_executables: Array) -> Result:
 	if dir.open(scan_path) != OK:
 		return Safely.err(Error.Code.EXTENSION_MANAGER_RESOURCE_PATH_DOES_NOT_EXIST, scan_path)
 
@@ -107,7 +141,7 @@ func _scan(file: File, dir: Directory, scan_path: String) -> Result:
 	dir.list_dir_end()
 
 	for ext_path in possible_extensions:
-		var res: Result = Safely.wrap(_parse_extension(file, dir, ext_path))
+		var res: Result = Safely.wrap(_parse_extension(file, dir, ext_path, auto_executables))
 		if res.is_err():
 			logger.error(res)
 			continue
@@ -117,7 +151,7 @@ func _scan(file: File, dir: Directory, scan_path: String) -> Result:
 
 	return Safely.ok()
 
-func _parse_extension(file: File, dir: Directory, path: String) -> Result:
+func _parse_extension(file: File, dir: Directory, path: String, auto_executables: Array) -> Result:
 	var config_path := ""
 	var config_file_ext := ""
 	var found_config := false
@@ -171,13 +205,13 @@ func _parse_extension(file: File, dir: Directory, path: String) -> Result:
 		return Safely.err(Error.Code.EXTENSION_MANAGER_NO_RESOURCES_FOUND, config_path)
 
 	for table in data[RESOURCES_SECTION]:
-		var res: Result = Safely.wrap(_parse_extension_item(dir, extension, table))
+		var res: Result = Safely.wrap(_parse_extension_item(dir, extension, auto_executables, table))
 		if res.is_err():
 			return res # Immediately stop processing a bad extension
 
 	return Safely.ok(extension)
 
-func _parse_extension_item(dir: Directory, e: Extension, data: Dictionary) -> Result:
+func _parse_extension_item(dir: Directory, e: Extension, auto_executables: Array, data: Dictionary) -> Result:
 	var resource_name: String = data.get(ResourceKeys.NAME, "")
 	if resource_name.empty():
 		return Safely.err(Error.Code.EXTENSION_MANAGER_MISSING_RESOURCE_NAME, e.context)
@@ -219,6 +253,9 @@ func _parse_extension_item(dir: Directory, e: Extension, data: Dictionary) -> Re
 		if not e.tags.has(tag):
 			e.tags[tag] = []
 		e.tags[tag].append(ext_resource)
+
+	if data.get(ResourceKeys.AUTO_EXECUTE, false):
+		auto_executables.append(ext_resource)
 
 	return Safely.ok()
 

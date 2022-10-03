@@ -5,7 +5,8 @@ const VRM_ANIMATION_PLAYER := "anim"
 const CONFIG_VALUES := [
 	"blink_threshold",
 	"link_eye_blinks",
-	"use_raw_eye_rotation"
+	"use_raw_eye_rotation",
+	"use_blend_shapes_for_blinking"
 ]
 
 var vrm_meta: Dictionary
@@ -18,6 +19,7 @@ var right_eye_id: int
 var blink_threshold: float
 var link_eye_blinks: bool
 var use_raw_eye_rotation: bool
+var use_blend_shapes_for_blinking: bool
 
 class EyeClamps:
 	var up: Vector3
@@ -141,6 +143,8 @@ func _on_model_config_changed(value: SignalPayload, key: String) -> void:
 			link_eye_blinks = value.data
 		"use_raw_eye_rotation":
 			use_raw_eye_rotation = value.data
+		"use_blend_shapes_for_blinking":
+			use_blend_shapes_for_blinking = value.data
 
 func _on_blend_shape(value: String) -> void:
 	var ed = get(value)
@@ -282,31 +286,35 @@ func custom_update(i_data: InterpolationData) -> void:
 
 	# TODO add way to lock blinking for a certain expression
 
-	# var left_eye_open = data.left_eye_open_amount
-	# var right_eye_open = data.right_eye_open_amount
-	var left_eye_open: float = i_data.left_blink.target_value
-	var right_eye_open: float = i_data.right_blink.target_value
-
-	if link_eye_blinks:
-		var average_eye_open = (left_eye_open + right_eye_open) / 2
-		left_eye_open = average_eye_open
-		right_eye_open = average_eye_open
-
-	if left_eye_open >= blink_threshold:
+	if use_blend_shapes_for_blinking:
 		for x in expression_data.get_expression("blink_r"):
-			_modify_blend_shape(x.mesh, x.morph, x.values[1] - i_data.left_blink.interpolate(
-				i_data.left_blink.interpolation_rate))
+			_modify_blend_shape(x.mesh, x.morph, x.values[1] - i_data.right_blink.target_value)
+		for x in expression_data.get_expression("blink_l"):
+			_modify_blend_shape(x.mesh, x.morph, x.values[1] - i_data.left_blink.target_value)
 	else:
-		for x in expression_data.get_expression("blink_r"):
-			_modify_blend_shape(x.mesh, x.morph, x.values[1])
+		var left_eye_open: float = i_data.left_blink.target_value
+		var right_eye_open: float = i_data.right_blink.target_value
 
-	if right_eye_open >= blink_threshold:
-		for x in expression_data.get_expression("blink_l"):
-			_modify_blend_shape(x.mesh, x.morph, x.values[1] - i_data.right_blink.interpolate(
-				i_data.right_blink.interpolation_rate))
-	else:
-		for x in expression_data.get_expression("blink_l"):
-			_modify_blend_shape(x.mesh, x.morph, x.values[1])
+		if link_eye_blinks:
+			var average_eye_open = (left_eye_open + right_eye_open) / 2
+			left_eye_open = average_eye_open
+			right_eye_open = average_eye_open
+
+		if left_eye_open >= blink_threshold:
+			for x in expression_data.get_expression("blink_r"):
+				_modify_blend_shape(x.mesh, x.morph, x.values[1] - i_data.left_blink.interpolate(
+					i_data.left_blink.interpolation_rate))
+		else:
+			for x in expression_data.get_expression("blink_r"):
+				_modify_blend_shape(x.mesh, x.morph, x.values[1])
+
+		if right_eye_open >= blink_threshold:
+			for x in expression_data.get_expression("blink_l"):
+				_modify_blend_shape(x.mesh, x.morph, x.values[1] - i_data.right_blink.interpolate(
+					i_data.right_blink.interpolation_rate))
+		else:
+			for x in expression_data.get_expression("blink_l"):
+				_modify_blend_shape(x.mesh, x.morph, x.values[1])
 
 	#endregion
 

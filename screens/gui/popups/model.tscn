@@ -652,3 +652,9 @@ margin_top = 144.0
 margin_right = 1587.0
 margin_bottom = 184.0
 text = "DEFAULT_GUI_MODEL_USE_RAW_EYE_ROTATION_TOGGLE"
+
+[node name="BlendShapeBlinks" type="CheckButton" parent="DEFAULT_GUI_MODEL_EYES_PAGE/VBoxContainer"]
+margin_top = 188.0
+margin_right = 1587.0
+margin_bottom = 228.0
+text = "DEFAULT_GUI_MODEL_USE_BLEND_SHAPES_FOR_BLINKING"
