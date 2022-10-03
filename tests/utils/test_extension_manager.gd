@@ -48,7 +48,7 @@ func test_scan_pass():
 	var dir := Directory.new()
 	var scan_path := "res://tests/test_resources/extension_resources/good_extensions/"
 	
-	AM.em._scan(file, dir, scan_path)
+	AM.em._scan(file, dir, scan_path, [])
 
 	assert_called(AM.em, "_scan")
 	assert_call_count(AM.em, "_scan", 1)
