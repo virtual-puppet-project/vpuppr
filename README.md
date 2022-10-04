@@ -4,10 +4,13 @@
 
 All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` has not been tested but might work. `.scn` files created with Godot should all import correctly as well.
 
+The project status is tracked via a public [GitHub project here](https://github.com/orgs/virtual-puppet-project/projects/1/views/2).
+
 ## Available trackers
 * [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace)
 * [iFacialMocap](https://www.ifacialmocap.com/)
 * [Mouse tracker](https://github.com/virtual-puppet-project/mouse-tracker)
+* [VTubeStudio](https://github.com/virtual-puppet-project/vtube-studio-tracker)
 * [MeowFace](https://github.com/virtual-puppet-project/meowface-tracker)
 
 *More trackers may be available in the future, such as [MediaPipe](https://google.github.io/mediapipe/)*
