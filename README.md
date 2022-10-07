@@ -17,8 +17,8 @@ The project status is tracked via a public [GitHub project here](https://github.
 
 ## Controls
 
-Currently, the only hidden control is `spacebar`. This allows for setting tracking offsets (aka if your model's
-neck is broken, you need to set the tracking offsets).
+* <spacebar> - Calibrate your model. Useful when your camera is not directly in front of you
+* <escape> - Show/hide the UI
 
 ## Quickstart
 
