@@ -14,6 +14,7 @@ var em: ExtensionManager
 var tm: TranslationManager
 var nm: NotificationManager
 var tcm: TempCacheManager
+var hm: HotkeyManager
 # Not girl, you weirdo
 var grl = preload("res://addons/gdnative-runtime-loader/gdnative_runtime_loader.gd").new()
 
@@ -41,10 +42,12 @@ func _ready() -> void:
 			continue
 		app_args[key] = startup_data[key]
 
+	# Must be initialized first
 	ps = PubSub.new()
 	# Must be initialized AFTER the PubSub since it needs to connect to other signals
 	lm = LogManager.new()
 	cm = ConfigManager.new()
+	hm = HotkeyManager.new()
 	# Must be initialized AFTER ConfigManager because it needs to pull config data
 	em = ExtensionManager.new()
 	# Must be initialized AFTER ExtensionManager because it can load translation files for extensions
@@ -106,11 +109,6 @@ func save_config_instant() -> void:
 	var result := cm.save_data()
 	if result.is_err():
 		logger.error("Failed to save config:\n%s" % result.to_string())
-
-## Utility function for checking if a singleton that is managed by the AppManager is ready
-func is_manager_ready(manager_name: String) -> bool:
-	var m = get(manager_name)
-	return m != null and m.is_setup
 
 static func inject_env_vars(text: String) -> String:
 	text = text.replace("$EXE_DIR", OS.get_executable_path().get_base_dir())

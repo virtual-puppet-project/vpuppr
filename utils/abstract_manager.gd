@@ -6,17 +6,10 @@ extends Reference
 
 var logger: Logger
 
-## Some logic depends on the setup functions running beforehand and will spin until this is true
-var is_setup := false
-
-## Sets `is_setup` to true after running all setup funcs
-##
 ## THIS SHOULD NOT BE OVERRIDDEN. The setup funcs should be overridden instead.
 func _init() -> void:
 	_setup_logger()
 	_setup_class()
-	
-	is_setup = true
 
 func _setup_logger() -> void:
 	logger = Logger.new("AbstractManager")

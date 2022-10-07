@@ -33,7 +33,6 @@ func test_init_pass():
 	assert_call_count(am, "_setup_logger", 1)
 	assert_called(am, "_setup_class")
 	assert_call_count(am, "_setup_class", 1)
-	assert_eq(am.is_setup, true)
 
 	am._init()
 
