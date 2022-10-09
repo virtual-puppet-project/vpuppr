@@ -1,0 +1,70 @@
+---
+name: Create nightly artifact
+on:
+  schedule:
+    - cron: "59 23 * * *"
+  workflow_dispatch:
+
+env:
+  WINDOWS_EXPORT_DIR: export/windows
+  LINUX_EXPORT_DIR: export/linux
+  FLATPAK_EXPORT_DIR: export/flatpak
+  OSX_EXPORT_DIR: export/osx
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Build default extensions
+        shell: python
+        run: scripts/build_extensions.py
+
+      - name: Download Godot binaries
+        shell: bash
+        run: |
+          curl -L https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_linux_headless.64.tar.gz -o editor.tar.gz
+          tar -xzf editor.tar.gz
+
+          mkdir release_templates
+          cd release_templates
+
+          curl -L https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_linux_release.64.tar.gz -o release_templates/linux.tar.gz
+          curl -L https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_windows_release.64.exe.tar.gz -o release_templates/windows.tar.gz
+          # Disabled for now since OSX templates are not packed correctly
+          # curl -L https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_osx_release.64.tar.gz -o release_templates/osx.tar.gz
+
+          tar -xzf *.tar.gz
+
+      - name: Export Windows
+        shell: bash
+        run: |
+          mkdir ${{ env.WINDOWS_EXPORT_DIR }}
+
+          Godot_v3.x-stable_linux_headless.64 --export Windows ${{ env.WINDOWS_EXPORT_DIR }}
+
+      - name: Export Linux
+        shell: bash
+        run: |
+          mkdir ${{ env.LINUX_EXPORT_DIR }}
+
+          Godot_v3.x-stable_linux_headless.64 --export Linux ${{ env.LINUX_EXPORT_DIR }}
+
+      - name: Export Flatpak
+        shell: bash
+        run: |
+          mkdir ${{ env.FLATPAK_EXPORT_DIR }}
+
+          Godot_v3.x-stable_linux_headless.64 --export Flatpak ${{ env.FLATPAK_EXPORT_DIR }}
+
+      ## Disabled until OSX templates are fixed
+      # - name: Export OSX
+      #   shell: bash
+      #   run: |
+      #     mkdir ${{ env.OSX_EXPORT_DIR }}
+
+      #     Godot_v3.x-stable_linux_headless.64 --export OSX ${{ env.OSX_EXPORT_DIR }}
