@@ -13,9 +13,7 @@ Cargo.lock
 **/*.so
 
 # Godot
-.import/
 .mono/
-data_*/
 export/**
 
 **/temp
