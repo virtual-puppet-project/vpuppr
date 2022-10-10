@@ -13,15 +13,15 @@ jobs:
         include:
           - os-name: windows
             os: windows-latest
-            export-preset-name: Windows
+            export-preset-name: windows
             release-template-url: "https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_windows_release.64.exe.tar.gz"
           - os-name: linux
             os: ubuntu-latest
-            export-preset-name: Linux
+            export-preset-name: linux
             release-template-url: "https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_linux_release.64.tar.gz"
           - os-name: linux
             os: ubuntu-latest
-            export-preset-name: Flatpak
+            export-preset-name: flatpak
             release-template-url: "https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_linux_release.64.tar.gz"
           ## Disabled for now since OSX templates are not packed correctly
           # - os_name: osx
@@ -54,6 +54,8 @@ jobs:
 
           chmod +x Godot_v3.x-stable_linux_headless.64
 
+          ./Godot_v3.x-stable_linux_headless.64 --editor --quit
+
           mkdir release_templates
           cd release_templates
 
@@ -70,7 +72,7 @@ jobs:
         run: |
           mkdir ${{ env.EXPORT_PATH }}
 
-          ./Godot_v3.x-stable_linux_headless.64 --export ${{ matrix.export-preset-name }} ${{ env.EXPORT_PATH }}
+          ./Godot_v3.x-stable_linux_headless.64 --export --verbose ${{ matrix.export-preset-name }}
 
           mv resources ${{ env.EXPORT_PATH }}
 
@@ -81,7 +83,7 @@ jobs:
 
       - name: Set tar name
         shell: bash
-        run: echo "TAR_NAME=vpuppr_nightly_${{ matrix.os }}.tar.gz" >> $GITHUB_ENV
+        run: echo "TAR_NAME=vpuppr_nightly_${{ matrix.export-preset-name }}.tar.gz" >> $GITHUB_ENV
 
       - name: Pack release into tar.gz
         shell: bash
