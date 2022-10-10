@@ -28,6 +28,9 @@ def _setup_extensions(ext_dir: str, args: Namespace) -> None:
     first_import: bool = True
     initial_path = os.getcwd()
 
+    def setup_print(text: str, **kwargs) -> None:
+        print("{}: {}".format(dir_name, text), **kwargs)
+
     for dir_name in os.listdir(ext_dir):
         dir = "{}/{}".format(ext_dir, dir_name)
         if not os.path.isdir(dir):
@@ -55,8 +58,7 @@ def _setup_extensions(ext_dir: str, args: Namespace) -> None:
                 "{} is missing method 'clean(dict)'".format(setup.__file__))
 
         # Monkeypatch the print function for the module
-        setattr(setup, "print", lambda x: print(
-            "{}: {}".format(setup.__file__, x)))
+        setattr(setup, "print", setup_print)
 
         print("Processing {}".format(dir_name))
 

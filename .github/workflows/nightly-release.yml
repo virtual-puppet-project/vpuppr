@@ -5,15 +5,25 @@ on:
     - cron: "59 23 * * *"
   workflow_dispatch:
 
-env:
-  WINDOWS_EXPORT_DIR: export/windows
-  LINUX_EXPORT_DIR: export/linux
-  FLATPAK_EXPORT_DIR: export/flatpak
-  OSX_EXPORT_DIR: export/osx
-
 jobs:
   release:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os-name: windows
+            os: windows-latest
+            export-preset-name: Windows
+          - os-name: linux
+            os: ubuntu-latest
+            export-preset-name: Linux
+          - os-name: linux
+            os: ubuntu-latest
+            export-preset-name: Flatpak
+          ## Disabled for now since OSX templates are not packed correctly
+          # - os_name: osx
+          #   os: macos-latest
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -22,7 +32,7 @@ jobs:
 
       - name: Build default extensions
         shell: python
-        run: scripts/build_extensions.py
+        run: scripts/build_extensions.py --setup --export
 
       - name: Download Godot binaries
         shell: bash
@@ -33,38 +43,40 @@ jobs:
           mkdir release_templates
           cd release_templates
 
-          curl -L https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_linux_release.64.tar.gz -o release_templates/linux.tar.gz
-          curl -L https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_windows_release.64.exe.tar.gz -o release_templates/windows.tar.gz
-          # Disabled for now since OSX templates are not packed correctly
-          # curl -L https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_osx_release.64.tar.gz -o release_templates/osx.tar.gz
+          curl -L https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_${{ matrix.os_name }}_release.64.tar.gz -o template.tar.gz
 
-          tar -xzf *.tar.gz
+          tar -xzvf *.tar.gz
 
-      - name: Export Windows
+      - name: Set export path
+        shell: bash
+        run: echo "EXPORT_PATH=export/${{ matrix.export-preset-name }}" >> $GITHUB_ENV
+
+      - name: Export project
         shell: bash
         run: |
-          mkdir ${{ env.WINDOWS_EXPORT_DIR }}
+          mkdir ${{ env.EXPORT_PATH }}
 
-          Godot_v3.x-stable_linux_headless.64 --export Windows ${{ env.WINDOWS_EXPORT_DIR }}
+          Godot_v3.x-stable_linux_headless.64 --export ${{ matrix.export-preset-name }} ${{ env.EXPORT_PATH }}
 
-      - name: Export Linux
+          mv resources ${{ env.EXPORT_PATH }}
+
+      - name: Fix executable bit
+        if: matrix.os == 'ubuntu-latest'
+        shell: bash
+        run: chmod +x ${{ env.EXPORT_PATH }}/vpuppr.x86_64
+
+      - name: Set tar name
+        shell: bash
+        run: echo "TAR_NAME=vpuppr_nightly_${{ matrix.os }}.tar.gz" >> $GITHUB_ENV
+
+      - name: Pack release into tar.gz
         shell: bash
         run: |
-          mkdir ${{ env.LINUX_EXPORT_DIR }}
+          cd export
+          tar -czvf ${{ env.TAR_NAME }} ${{ matrix.export-preset-name }}
 
-          Godot_v3.x-stable_linux_headless.64 --export Linux ${{ env.LINUX_EXPORT_DIR }}
-
-      - name: Export Flatpak
-        shell: bash
-        run: |
-          mkdir ${{ env.FLATPAK_EXPORT_DIR }}
-
-          Godot_v3.x-stable_linux_headless.64 --export Flatpak ${{ env.FLATPAK_EXPORT_DIR }}
-
-      ## Disabled until OSX templates are fixed
-      # - name: Export OSX
-      #   shell: bash
-      #   run: |
-      #     mkdir ${{ env.OSX_EXPORT_DIR }}
-
-      #     Godot_v3.x-stable_linux_headless.64 --export OSX ${{ env.OSX_EXPORT_DIR }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.TAR_NAME }}
+          path: export/${{ env.TAR_NAME }}
