@@ -14,12 +14,15 @@ jobs:
           - os-name: windows
             os: windows-latest
             export-preset-name: Windows
+            release-template-url: "https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_windows_release.64.exe.tar.gz"
           - os-name: linux
             os: ubuntu-latest
             export-preset-name: Linux
+            release-template-url: "https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_linux_release.64.tar.gz"
           - os-name: linux
             os: ubuntu-latest
             export-preset-name: Flatpak
+            release-template-url: "https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_linux_release.64.tar.gz"
           ## Disabled for now since OSX templates are not packed correctly
           # - os_name: osx
           #   os: macos-latest
@@ -31,19 +34,30 @@ jobs:
           submodules: recursive
 
       - name: Build default extensions
-        shell: python
-        run: scripts/build_extensions.py --setup --export
+        if: matrix.os != 'macos-latest'
+        shell: bash
+        run: |
+          python -m pip install requests
+          python scripts/setup_extensions.py --setup --export
+      - name: Build default extensions
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        run: |
+          python3 -m pip install requests
+          python3 scripts/setup_extensions.py --setup --export
 
       - name: Download Godot binaries
         shell: bash
         run: |
           curl -L https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_linux_headless.64.tar.gz -o editor.tar.gz
-          tar -xzf editor.tar.gz
+          tar -xzvf editor.tar.gz
+
+          chmod +x Godot_v3.x-stable_linux_headless.64
 
           mkdir release_templates
           cd release_templates
 
-          curl -L https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_${{ matrix.os_name }}_release.64.tar.gz -o template.tar.gz
+          curl -L ${{ matrix.release-template-url }} -o template.tar.gz
 
           tar -xzvf *.tar.gz
 
@@ -56,7 +70,7 @@ jobs:
         run: |
           mkdir ${{ env.EXPORT_PATH }}
 
-          Godot_v3.x-stable_linux_headless.64 --export ${{ matrix.export-preset-name }} ${{ env.EXPORT_PATH }}
+          ./Godot_v3.x-stable_linux_headless.64 --export ${{ matrix.export-preset-name }} ${{ env.EXPORT_PATH }}
 
           mv resources ${{ env.EXPORT_PATH }}
 
