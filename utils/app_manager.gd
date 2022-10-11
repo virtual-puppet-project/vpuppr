@@ -35,6 +35,7 @@ var environment: String = Env.Envs.DEFAULT
 var screen_scaling: float = 0.75
 var stay_on_splash := false
 var resource_path := "res://resources" setget , get_resource_path
+var version := "0.9.0"
 
 #endregion
 
@@ -114,35 +115,6 @@ func _parse_dist_file() -> void:
 		var data: Dictionary = parse_result.result
 		for key in data.keys():
 			set(key, data[key])
-
-		# for line in file.get_as_text().split("\n"):
-		# 	if line.empty():
-		# 		continue
-		# 	var split: PoolStringArray = line.split("=", false, 1)
-		# 	if split.size() != 2:
-		# 		printerr("Bad line in dist file:\n%s" % line)
-		# 		continue
-
-		# 	var key: String = split[0].strip_edges()
-		# 	var val: String = split[1].strip_edges()
-
-		# 	var key_type: int = typeof(get(key))
-		# 	match key_type:
-		# 		TYPE_INT:
-		# 			set(key, val.to_int())
-		# 		TYPE_REAL:
-		# 			set(key, val.to_float())
-		# 		TYPE_STRING:
-		# 			set(key, val.trim_prefix("\"").trim_suffix("\""))
-		# 		TYPE_ARRAY, TYPE_DICTIONARY:
-		# 			var parse_result := JSON.parse(val)
-		# 			if parse_result.error != OK or not typeof(parse_result.result) == key_type:
-		# 				printerr("Bad data in dist file: %s" % line)
-		# 				continue
-					
-		# 			set(key, parse_result.result)
-		# 		_:
-		# 			printerr("Unhandled dist file line: %s" % line)
 
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #

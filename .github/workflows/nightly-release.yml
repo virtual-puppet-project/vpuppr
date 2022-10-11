@@ -106,6 +106,9 @@ jobs:
       - name: Set export path
         shell: bash
         run: echo "EXPORT_PATH=export/${{ matrix.export-preset-name }}" >> $GITHUB_ENV
+      - name: Set current date
+        shell: bash
+        run: echo "CURRENT_DATETIME=$(date '+%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
 
       - name: Generate ${{ env.release-config }}
         shell: bash
@@ -113,6 +116,7 @@ jobs:
           touch ${{ env.release-config }}
 
           echo "resource_path = '\$EXE_DIR/resources'" >> ${{ env.release-config }}
+          echo "version = 'nightly_${{ env.CURRENT_DATETIME }}'" >> ${{ env.release-config }}
 
       - name: Export project
         shell: bash
@@ -141,7 +145,7 @@ jobs:
 
       - name: Set tar name
         shell: bash
-        run: echo "PROJECT_TAR_NAME=vpuppr_nightly_${{ matrix.export-preset-name }}.tar.gz" >> $GITHUB_ENV
+        run: echo "PROJECT_TAR_NAME=vpuppr_nightly_${{ matrix.export-preset-name }}_${{ env.CURRENT_DATETIME }}.tar.gz" >> $GITHUB_ENV
 
       - name: Pack release into tar.gz
         shell: bash
@@ -166,7 +170,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: vpuppr_nightly_${{ matrix.export-preset-name }}
+          name: vpuppr_nightly_${{ matrix.export-preset-name }}_${{ env.CURRENT_DATETIME }}
           path: |
             ${{ env.PROJECT_TAR_NAME }}
             ${{ env.decompress-windows }}
