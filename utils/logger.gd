@@ -68,7 +68,7 @@ func setup(n) -> void:
 	else:
 		trace("Unable to setup logger using var: %s" % str(n))
 	
-	all_logs = AM.app_args.all_logs
+	all_logs = AM.all_logs
 
 func notify(message, notify_type: int = NotifyType.TOAST) -> void:
 	var text := str(message)

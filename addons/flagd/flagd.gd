@@ -171,7 +171,6 @@ class Parser:
 	func _parse(input: Array) -> Dictionary:
 		var r := {RAW_ARGS_KEY: input}
 		
-		# Array<String> of argument names
 		var unhandled_args := _arguments.duplicate(true)
 		
 		var idx: int = 0
@@ -229,6 +228,8 @@ class Parser:
 				idx += 1
 		
 		for config in unhandled_args.values():
+			if typeof(config.default) == TYPE_NIL:
+				continue
 			r[config.name] = config.default
 		
 		return r
@@ -284,7 +285,7 @@ class Argument:
 	var aliases := []
 	
 	var is_flag := false
-	var type := TYPE_STRING
+	var type := TYPE_NIL
 	var default
 	
 	func _init(args: Dictionary = {}) -> void:
@@ -297,21 +298,9 @@ class Argument:
 		
 		is_flag = args.get("is_flag", false)
 		if not is_flag:
-			type = args.get("type", TYPE_STRING)
+			type = args.get("type", TYPE_NIL)
 			if args.has("default"):
 				default = args["default"]
-			else:
-				match type:
-					TYPE_STRING:
-						default = ""
-					TYPE_INT:
-						default = 0
-					TYPE_REAL:
-						default = 0.0
-					TYPE_BOOL:
-						default = false
-					_:
-						default = ""
 		else:
 			type = TYPE_BOOL
 			default = args.get("default", false)

@@ -22,7 +22,7 @@ func _ready() -> void:
 	while not get_tree().root.has_node("/root/AM"):
 		yield(get_tree(), "idle_frame")
 
-	OS.window_size = OS.get_screen_size() * AM.app_args.screen_scaling
+	OS.window_size = OS.get_screen_size() * AM.screen_scaling
 	OS.center_window()
 	
 	if AM.cm.get_data("skip_splash", false):
@@ -38,7 +38,7 @@ func _ready() -> void:
 	
 	$MarginContainer/GitHubButton.connect("pressed", self, "_on_github_button_pressed")
 	
-	if not AM.app_args.stay_on_splash:
+	if not AM.stay_on_splash:
 		fade_tween.connect("tween_all_completed", self, "_on_fade_in_completed")
 		
 		fade_tween.interpolate_property(fade, "color", fade.color, Color(0.0, 0.0, 0.0, 0.0), 1.0, Tween.TRANS_LINEAR, Tween.EASE_OUT)

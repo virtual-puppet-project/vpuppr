@@ -22,4 +22,9 @@ export/**
 **/OpenSeeFaceFolder
 **/mouse-tracker
 **/hotkey-listener
+
+# The export config expects this folder to exist
 release_templates/
+
+# Should only be present during export
+release_config.toml

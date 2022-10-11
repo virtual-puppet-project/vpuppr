@@ -66,7 +66,7 @@ func _setup_class() -> void:
 		logger.info("No user extensions found, skipping")
 	
 	# Scan normal resource path afterwards. Ignore duplicates
-	scan_path = AM.inject_env_vars(Globals.RESOURCE_PATH)
+	scan_path = AM.resource_path
 	if scan_path.empty():
 		if not OS.is_debug_build():
 			scan_path = "%s/%s" % [
@@ -76,6 +76,8 @@ func _setup_class() -> void:
 				ProjectSettings.globalize_path("res://"), Globals.EXTENSIONS_PATH]
 	else:
 		scan_path = "%s/%s" % [scan_path, Globals.EXTENSIONS_PATH]
+
+	logger.debug("Searching scan path: %s" % scan_path)
 	
 	if dir.dir_exists(scan_path):
 		logger.info("Parsing default extensions")

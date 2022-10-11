@@ -18,11 +18,11 @@ func _init() -> void:
 	_parser = flagd.new_parser({
 		"description": "vpuppr flag parser",
 
-		"should_parse_feature_flags": Globals.SHOULD_PARSE_FEATURE_FLAGS,
+		"should_parse_feature_flags": true,
 
-		"should_parse_cmdline_args": Globals.SHOULD_PARSE_CMDLINE_ARGS,
+		"should_parse_cmdline_args": true,
 
-		"should_parse_user_data_args": Globals.SHOULD_PARSE_USER_DATA_ARGS,
+		"should_parse_user_data_args": true,
 		"user_data_args_file_name": "flagd"
 	})
 

@@ -18,7 +18,7 @@ func _ready() -> void:
 
 	file.close()
 
-	var path := AM.inject_env_vars("%s/%s" % [Globals.RESOURCE_PATH, LICENSES_PATH])
+	var path := "%s/%s" % [AM.resource_path, LICENSES_PATH]
 	
 	var dir := Directory.new()
 	if not dir.dir_exists(path):

@@ -90,17 +90,3 @@ const DISCORD_INVITE := "https://discord.com/invite/6mcdWWBkrr"
 
 const RUNNER_PREVIEW_DIR_PATH := "user://runner-previews/"
 const RUNNER_PREVIEW_FILE_EXT := "png"
-
-#region Compile-time
-
-# See FileUtil for a list of Strings that are automatically expanded with
-# AppManager::inject_env_vars
-
-const RESOURCE_PATH: String = "$PROJECT/resources"
-
-const SHOULD_PARSE_FEATURE_FLAGS: bool = true
-const SHOULD_PARSE_CMDLINE_ARGS: bool = true
-const SHOULD_PARSE_USER_DATA_ARGS: bool = true
-
-#endregion
-

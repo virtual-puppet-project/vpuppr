@@ -25,7 +25,18 @@ var should_save := false
 
 #endregion
 
-var app_args := {}
+#region Export
+
+# Contains overrides for AppManager variables
+const DIST_FILE := "res://release_config.toml"
+
+var all_logs := false
+var environment: String = Env.Envs.DEFAULT
+var screen_scaling: float = 0.75
+var stay_on_splash := false
+var resource_path := "res://resources" setget , get_resource_path
+
+#endregion
 
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
@@ -34,13 +45,13 @@ var app_args := {}
 func _init() -> void:
 	Safely.register_error_codes(Error.Code)
 
-func _ready() -> void:
+	_parse_dist_file()
+
 	var startup_data = preload("res://utils/startup_args.gd").new().data
 	for key in startup_data.keys():
-		if app_args.has(key):
-			continue
-		app_args[key] = startup_data[key]
+		set(key, startup_data[key])
 
+func _ready() -> void:
 	ps = PubSub.new()
 	# Must be initialized AFTER the PubSub since it needs to connect to other signals
 	lm = LogManager.new()
@@ -91,6 +102,48 @@ func _on_stderr(text: String, is_error: bool) -> void:
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#
 
+func _parse_dist_file() -> void:
+	var file := File.new()
+	if file.open(DIST_FILE, File.READ) == OK:
+		var toml := TOML.new()
+		var parse_result := toml.parse(file.get_as_text())
+		if parse_result.error != OK:
+			printerr("Unable to parse %s, ignoring" % DIST_FILE)
+			return
+
+		var data: Dictionary = parse_result.result
+		for key in data.keys():
+			set(key, data[key])
+
+		# for line in file.get_as_text().split("\n"):
+		# 	if line.empty():
+		# 		continue
+		# 	var split: PoolStringArray = line.split("=", false, 1)
+		# 	if split.size() != 2:
+		# 		printerr("Bad line in dist file:\n%s" % line)
+		# 		continue
+
+		# 	var key: String = split[0].strip_edges()
+		# 	var val: String = split[1].strip_edges()
+
+		# 	var key_type: int = typeof(get(key))
+		# 	match key_type:
+		# 		TYPE_INT:
+		# 			set(key, val.to_int())
+		# 		TYPE_REAL:
+		# 			set(key, val.to_float())
+		# 		TYPE_STRING:
+		# 			set(key, val.trim_prefix("\"").trim_suffix("\""))
+		# 		TYPE_ARRAY, TYPE_DICTIONARY:
+		# 			var parse_result := JSON.parse(val)
+		# 			if parse_result.error != OK or not typeof(parse_result.result) == key_type:
+		# 				printerr("Bad data in dist file: %s" % line)
+		# 				continue
+					
+		# 			set(key, parse_result.result)
+		# 		_:
+		# 			printerr("Unhandled dist file line: %s" % line)
+
 #-----------------------------------------------------------------------------#
 # Public functions                                                            #
 #-----------------------------------------------------------------------------#
@@ -112,10 +165,8 @@ func is_manager_ready(manager_name: String) -> bool:
 	var m = get(manager_name)
 	return m != null and m.is_setup
 
-static func inject_env_vars(text: String) -> String:
-	text = text.replace("$EXE_DIR", OS.get_executable_path().get_base_dir())
-	
-	return text \
+func get_resource_path() -> String:
+	return resource_path \
 		.replace("$EXE_DIR", OS.get_executable_path().get_base_dir()) \
 		.replace("$PROJECT", ProjectSettings.globalize_path("res://")) \
 		.replace("$USER", ProjectSettings.globalize_path("user://")) \
