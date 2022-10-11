@@ -5,27 +5,22 @@ on:
     - cron: "59 23 * * *"
   workflow_dispatch:
 
+env:
+  tar-path: resources.tar.gz
+  resource-artifact-prefix: "__workflow-resources-"
+
 jobs:
-  release:
+  setup-extensions:
     strategy:
       fail-fast: false
       matrix:
         include:
-          - os-name: windows
-            os: windows-latest
-            export-preset-name: windows
-            release-template-url: "https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_windows_release.64.exe.tar.gz"
-          - os-name: linux
-            os: ubuntu-latest
-            export-preset-name: linux
-            release-template-url: "https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_linux_release.64.tar.gz"
-          - os-name: linux
-            os: ubuntu-latest
-            export-preset-name: flatpak
-            release-template-url: "https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_linux_release.64.tar.gz"
-          ## Disabled for now since OSX templates are not packed correctly
-          # - os_name: osx
-          #   os: macos-latest
+          - os: windows-latest
+            os-name: windows
+          - os: ubuntu-latest
+            os-name: linux
+          - os: macos-latest
+            os-name: osx
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repo
@@ -46,15 +41,57 @@ jobs:
           python3 -m pip install requests
           python3 scripts/setup_extensions.py --setup --export
 
+      - name: Tar to preserve file permissions
+        shell: bash
+        run: |
+          tar -czvf ${{ env.tar-path }} resources
+
+      - name: Upload resources
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.resource-artifact-prefix }}${{ matrix.os-name }}
+          path: ${{ env.tar-path }}
+          retention-days: 1 # No reason to retain these
+
+  release:
+    env:
+      headless-bin-url: "https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_linux_headless.64.tar.gz"
+      headless-bin: Godot_v3.x-stable_linux_headless.64
+      release-config: release_config.toml
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os-name: windows
+            export-preset-name: windows
+            release-template-url: "https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_windows_release.64.exe.tar.gz"
+            resource-path: "$EXE_DIR/resources"
+          - os-name: linux
+            export-preset-name: linux
+            release-template-url: "https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_linux_release.64.tar.gz"
+            resource-path: "$EXE_DIR/resources"
+          - os-name: linux
+            export-preset-name: flatpak
+            release-template-url: "https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_linux_release.64.tar.gz"
+            resource-path: "$EXE_DIR/resources"
+          ## Disabled for now since osx templates are not packed correctly
+          # - os-name: osx
+          #   export-preset-name: osx
+    runs-on: ubuntu-latest
+    needs: setup-extensions
+    steps:
+      - name: Checkout repo without submodules
+        uses: actions/checkout@v3
+
       - name: Download Godot binaries
         shell: bash
         run: |
-          curl -L https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_linux_headless.64.tar.gz -o editor.tar.gz
+          curl -L ${{ env.headless-bin-url }} -o editor.tar.gz
           tar -xzvf editor.tar.gz
 
-          chmod +x Godot_v3.x-stable_linux_headless.64
+          chmod +x ${{ env.headless-bin }}
 
-          ./Godot_v3.x-stable_linux_headless.64 --editor --quit
+          ./${{ env.headless-bin }} --editor --quit # Needed to load things once?
 
           mkdir release_templates
           cd release_templates
@@ -67,32 +104,51 @@ jobs:
         shell: bash
         run: echo "EXPORT_PATH=export/${{ matrix.export-preset-name }}" >> $GITHUB_ENV
 
+      - name: Generate ${{ env.release-config }}
+        shell: bash
+        run: |
+          touch ${{ env.release-config }}
+
+          echo "resource_path = '\$EXE_DIR/resources'" >> ${{ env.release-config }}
+
       - name: Export project
         shell: bash
         run: |
           mkdir ${{ env.EXPORT_PATH }}
 
-          ./Godot_v3.x-stable_linux_headless.64 --export --verbose ${{ matrix.export-preset-name }}
+          ./${{ env.headless-bin }} --export --verbose ${{ matrix.export-preset-name }}
 
-          mv resources ${{ env.EXPORT_PATH }}
+          # mv resources ${{ env.EXPORT_PATH }}
 
       - name: Fix executable bit
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os-name == 'linux'
         shell: bash
         run: chmod +x ${{ env.EXPORT_PATH }}/vpuppr.x86_64
 
+      - name: Download pre-setup resources
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ env.resource-artifact-prefix }}${{ matrix.os-name }}
+      - name: Process resources
+        shell: bash
+        run: |
+          rm -rf resources
+          tar -xzvf ${{ env.tar-path }} resources
+          mv resources ${{ env.EXPORT_PATH }}
+
       - name: Set tar name
         shell: bash
-        run: echo "TAR_NAME=vpuppr_nightly_${{ matrix.export-preset-name }}.tar.gz" >> $GITHUB_ENV
+        run: echo "PROJECT_TAR_NAME=vpuppr_nightly_${{ matrix.export-preset-name }}.tar.gz" >> $GITHUB_ENV
 
       - name: Pack release into tar.gz
         shell: bash
         run: |
-          cd export
-          tar -czvf ${{ env.TAR_NAME }} ${{ matrix.export-preset-name }}
+          cd export/${{ matrix.export-preset-name }}
+          tar -czvf ${{ env.PROJECT_TAR_NAME }} *
+          mv ${{ env.PROJECT_TAR_NAME }} ../..
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.TAR_NAME }}
-          path: export/${{ env.TAR_NAME }}
+          name: vpuppr_nightly_${{ matrix.export-preset-name }}
+          path: ${{ env.PROJECT_TAR_NAME }}
