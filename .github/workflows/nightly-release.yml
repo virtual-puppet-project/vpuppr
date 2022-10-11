@@ -58,6 +58,9 @@ jobs:
       headless-bin-url: "https://github.com/virtual-puppet-project/godot-builds/releases/download/latest/Godot_v3.x-stable_linux_headless.64.tar.gz"
       headless-bin: Godot_v3.x-stable_linux_headless.64
       release-config: release_config.toml
+      decompress-windows: decompress.bat
+      decompress-unix: decompress.sh
+      decompress-instructions: instructions.txt
     strategy:
       fail-fast: false
       matrix:
@@ -147,8 +150,25 @@ jobs:
           tar -czvf ${{ env.PROJECT_TAR_NAME }} *
           mv ${{ env.PROJECT_TAR_NAME }} ../..
 
+      - name: Create scripts to decompress tar.gz
+        shell: bash
+        run: |
+          echo "tar xzvf ${{ env.PROJECT_TAR_NAME }}" > ${{ env.decompress-windows }}
+          echo "tar xzvf ${{ env.PROJECT_TAR_NAME }}" > ${{ env.decompress-unix }}
+
+          touch ${{ env.decompress-instructions }}
+          echo "Windows" >> ${{ env.decompress-instructions }}
+          echo "Double click on ${{ env.decompress-windows }}" >> ${{ env.decompress-instructions }}
+          echo "" >> ${{ env.decompress-instructions }}
+          echo "Linux and Mac" >> ${{ env.decompress-instructions }}
+          echo "Run ${{ env.decompress-unix }} from a terminal" >> ${{ env.decompress-instructions }}
+
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: vpuppr_nightly_${{ matrix.export-preset-name }}
-          path: ${{ env.PROJECT_TAR_NAME }}
+          path: |
+            ${{ env.PROJECT_TAR_NAME }}
+            ${{ env.decompress-windows }}
+            ${{ env.decompress-unix }}
+            ${{ env.decompress-instructions }}
