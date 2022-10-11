@@ -1,0 +1,28 @@
+name: Feature request
+description: Suggest a feature!
+title: "[FEATURE]: "
+labels: ["feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        *Chat on [Discord](https://discord.gg/6mcdWWBkrr) for a quicker response.*
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      placeholder: "In 1 or 2 sentences, describe the feature so the maintainer can quickly understand."
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why is this needed
+      placeholder: "Describe in detail why the feature is needed."
+    validations:
+      required: true
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional information
+      placeholder: "Add links and/or examples here that might help with implementing the feature."

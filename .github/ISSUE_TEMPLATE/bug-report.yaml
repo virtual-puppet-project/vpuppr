@@ -1,0 +1,54 @@
+name: Bug Report
+description: Create a bug report!
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        *Chat on [Discord](https://discord.gg/6mcdWWBkrr) for a quicker response.*
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      placeholder: "Please describe the problem being faced."
+    validations:
+      required: true
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Please list the steps to reproduce the problem.
+      value: "1. "
+  - type: input
+    id: app-version
+    attributes:
+      label: App version
+      description: What version of the app is being run?
+      placeholder: e.g. 0.1.0
+    validations:
+      required: true
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: Operating system
+      multiple: false
+      options:
+        - Windows
+        - Linux
+        - MacOS
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+      placeholder: Paste logs here.
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional information
+      placeholder: Add additional context about the problem.
