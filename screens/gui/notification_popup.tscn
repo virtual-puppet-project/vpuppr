@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://screens/gui/notification_popup.gd" type="Script" id=1]
+[ext_resource path="res://assets/default.theme" type="Theme" id=2]
+
+[node name="NotificationPopup" type="WindowDialog"]
+theme = ExtResource( 2 )
+resizable = true
+script = ExtResource( 1 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 10.0
+margin_top = 10.0
+margin_right = -10.0
+margin_bottom = -10.0
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+margin_right = 52.0
+margin_bottom = 26.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+align = 1
+valign = 1
+autowrap = true
+
+[node name="Buttons" type="HBoxContainer" parent="VBoxContainer"]
+margin_top = 32.0
+margin_right = 52.0
+margin_bottom = 32.0
+alignment = 1

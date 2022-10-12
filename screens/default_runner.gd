@@ -202,6 +202,12 @@ func _setup_scene() -> void:
 
 	AM.tcm.push(MODEL_INITIAL_TRANSFORM, model.transform).cleanup_on_signal(self, "tree_exiting")
 	AM.tcm.push(MODEL_PARENT_INITIAL_TRANSFORM, model_parent.transform).cleanup_on_signal(self, "tree_exiting")
+	
+	AM.nm.show_toast(tr("NOTIFICATION_PRESS_ESCAPE_TO_HIDE_GUI"))
+	AM.nm.show_toast(tr("NOTIFICATION_PRESS_SPACE_TO_CALIBRATE"))
+
+func _test(choice: bool) -> void:
+	logger.trace("woo: %s" % "true" if choice else "false")
 
 func _physics_step(_delta: float) -> void:
 	if trackers.empty():

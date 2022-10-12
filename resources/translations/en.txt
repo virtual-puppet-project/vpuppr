@@ -13,6 +13,17 @@ MISSING_KEY_PLACEHOLDER="Please report this as a bug"
 DEFAULT_GUI_DEBUG_CONSOLE="Debug Console"
 
 ;;----------------------------------------------------------------------------;;
+;; Notifications                                                              ;;
+;;----------------------------------------------------------------------------;;
+NOTIFICATION_POPUP_DEFAULT_NOTIFICATION="Notification!"
+NOTIFICATION_POPUP_OKAY_BUTTON="Okay"
+NOTIFICATION_POPUP_CANCEL_BUTTON="Cancel"
+NOTIFICATION_POPUP_CLOSE_BUTTON="Close"
+
+NOTIFICATION_PRESS_ESCAPE_TO_HIDE_GUI="Press the <Esc> key to hide the GUI."
+NOTIFICATION_PRESS_SPACE_TO_CALIBRATE="Press the <Spacebar> key to calibrate the tracker."
+
+;;----------------------------------------------------------------------------;;
 ;; LandingScreen                                                              ;;
 ;;----------------------------------------------------------------------------;;
 DEFAULT_GUI_LANDING_SCREEN_RUNNERS="Runners"

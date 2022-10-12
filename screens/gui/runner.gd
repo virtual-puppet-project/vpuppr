@@ -195,7 +195,7 @@ func _create_gui_select(runner_path: String) -> WindowDialog:
 
 	for ext in AM.em.query_extensions_for_tag(Globals.ExtensionTypes.GUI):
 		# TODO this might not be a great solution
-		if not ext.other.get(Globals.ExtensionExtraKeys.SELECTABLE_GUI, false):
+		if not ext.extra.get(Globals.ExtensionExtraKeys.SELECTABLE_GUI, false):
 			continue
 
 		var button := Button.new()
