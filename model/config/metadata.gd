@@ -15,4 +15,4 @@ var model_defaults := {} # Model name: String -> Config name: String
 
 var skip_splash := false
 
-var python_path := ""
+var automatically_check_for_updates := false

@@ -40,6 +40,7 @@ enum HelpButtons {
 
 	IN_APP_HELP,
 	ABOUT,
+	UPDATES,
 	GITHUB,
 	DISCORD,
 	LICENSES
@@ -52,6 +53,7 @@ const DebugConsole = preload("res://screens/gui/popups/debug_console.tscn")
 
 const InAppHelp = preload("res://screens/gui/popups/in_app_help.tscn")
 const About = preload("res://screens/gui/popups/about.tscn")
+const Updates = preload("res://screens/gui/updates.tscn")
 const Licenses = preload("res://screens/gui/popups/licenses.tscn")
 
 onready var app = $HBoxContainer/App as MenuButton
@@ -110,6 +112,7 @@ func _ready() -> void:
 	
 	popup.add_item(tr("DEFAULT_GUI_MENU_BAR_HELP_IN_APP_HELP"), HelpButtons.IN_APP_HELP)
 	popup.add_item(tr("DEFAULT_GUI_MENU_BAR_HELP_ABOUT"), HelpButtons.ABOUT)
+	popup.add_item(tr("DEFAULT_GUI_MENU_BAR_HELP_UPDATES"), HelpButtons.UPDATES)
 	
 	popup.add_separator()
 	
@@ -171,6 +174,8 @@ func _handle_help_button(id: int) -> void:
 			parent.add_child(BasePopup.new(InAppHelp, tr("DEFAULT_GUI_MENU_BAR_HELP_IN_APP_HELP")))
 		HelpButtons.ABOUT:
 			parent.add_child(BasePopup.new(About, tr("DEFAULT_GUI_MENU_BAR_HELP_ABOUT")))
+		HelpButtons.UPDATES:
+			parent.add_child(BasePopup.new(Updates, tr("DEFAULT_GUI_MENU_BAR_HELP_UPDATES")))
 		HelpButtons.GITHUB:
 			OS.shell_open(Globals.PROJECT_GITHUB_REPO)
 		HelpButtons.DISCORD:

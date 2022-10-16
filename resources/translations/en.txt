@@ -65,12 +65,13 @@ DEFAULT_GUI_MENU_BAR_DEBUG_DEBUG_CONSOLE="Debug Console"
 DEFAULT_GUI_MENU_BAR_HELP="Help"
 DEFAULT_GUI_MENU_BAR_HELP_IN_APP_HELP="In-app Help"
 DEFAULT_GUI_MENU_BAR_HELP_ABOUT="About"
+DEFAULT_GUI_MENU_BAR_HELP_UPDATES="Updates"
 DEFAULT_GUI_MENU_BAR_HELP_GITHUB="GitHub"
 DEFAULT_GUI_MENU_BAR_HELP_DISCORD="Discord"
 DEFAULT_GUI_MENU_BAR_HELP_LICENSES="Licenses"
 
 ;;----------------------------------------------------------------------------;;
-;; Popup - Model                                                              ;;
+;; Model                                                                      ;;
 ;;----------------------------------------------------------------------------;;
 DEFAULT_GUI_MODEL="Model"
 DEFAULT_GUI_MODEL_GENERAL_PAGE="General"
@@ -120,7 +121,7 @@ DEFAULT_GUI_MODEL_USE_RAW_EYE_ROTATION_TOGGLE="Use raw eye rotation"
 DEFAULT_GUI_MODEL_USE_BLEND_SHAPES_FOR_BLINKING="Use blend shapes for blinking"
 
 ;;----------------------------------------------------------------------------;;
-;; Popup - Bones                                                              ;;
+;; Bones                                                                      ;;
 ;;----------------------------------------------------------------------------;;
 DEFAULT_GUI_BONES="Bones"
 DEFAULT_GUI_BONES_INFO_PAGE="Info"
@@ -140,12 +141,12 @@ DEFAULT_GUI_BONES_INTERPOLATION_RATE_LABEL="Interpolation rate"
 DEFAULT_GUI_BONES_RESET_BONE_POSE_BUTTON="Reset bone pose"
 
 ;;----------------------------------------------------------------------------;;
-;; Popup - Blend shapes                                                       ;;
+;; Blend shapes                                                               ;;
 ;;----------------------------------------------------------------------------;;
 DEFAULT_GUI_BLEND_SHAPES="Blend shapes"
 
 ;;----------------------------------------------------------------------------;;
-;; Popup - Presets                                                            ;;
+;; Presets                                                                    ;;
 ;;----------------------------------------------------------------------------;;
 DEFAULT_GUI_PRESETS="Presets"
 DEFAULT_GUI_PRESETS_NEW_PRESET_NAME_PLACEHOLDER="Preset name"
@@ -159,33 +160,37 @@ DEFAULT_GUI_PRESETS_LOAD_BUTTON="Load"
 DEFAULT_GUI_PRESETS_DELETE_BUTTON="Delete"
 
 ;;----------------------------------------------------------------------------;;
-;; Popup - Tracking                                                           ;;
+;; Tracking                                                                   ;;
 ;;----------------------------------------------------------------------------;;
 DEFAULT_GUI_TRACKING="Tracking"
 DEFAULT_GUI_TRACKING_INFO_PAGE="Info"
 DEFAULT_GUI_TRACKING_MAIN_TRACKER="Main tracker"
 
 ;;----------------------------------------------------------------------------;;
-;; Popup - Props                                                              ;;
+;; Props                                                                      ;;
 ;;----------------------------------------------------------------------------;;
 DEFAULT_GUI_PROPS="Props"
 
 ;;----------------------------------------------------------------------------;;
-;; Popup - Settings                                                           ;;
+;; Settings                                                                   ;;
 ;;----------------------------------------------------------------------------;;
 DEFAULT_GUI_SETTINGS="Setting"
 
 ;;----------------------------------------------------------------------------;;
-;; Popup - Logs                                                               ;;
-;;----------------------------------------------------------------------------;;
-DEFAULT_GUI_LOGS="Logs"
-
-;;----------------------------------------------------------------------------;;
-;; Popup - Logs                                                               ;;
+;; Logs                                                                       ;;
 ;;----------------------------------------------------------------------------;;
 DEFAULT_GUI_LOGS="Logs"
 DEFAULT_GUI_LOGS_COPY_BUTTON="Copy"
 DEFAULT_GUI_LOGS_OPEN_BUTTON="Open"
+
+;;----------------------------------------------------------------------------;;
+;; Updates                                                                    ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_CHECK_FOR_UPDATES="Check for updates"
+DEFAULT_GUI_AUTO_CHECK_FOR_UPDATES="Automatically check for updates"
+DEFAULT_GUI_UPDATES_LOADING_0="Loading ."
+DEFAULT_GUI_UPDATES_LOADING_1="Loading .."
+DEFAULT_GUI_UPDATES_LOADING_2="Loading ..."
 
 ;;----------------------------------------------------------------------------;;
 ;; Default runner                                                             ;;

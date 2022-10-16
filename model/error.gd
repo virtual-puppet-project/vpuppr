@@ -147,6 +147,8 @@ enum Code {
 	GUI_TRACKER_INVALID_JSON,
 
 	GUI_TREE_ITEM_NOT_FOUND,
+	
+	GUI_BAD_DATA
 
 	#endregion
 }
