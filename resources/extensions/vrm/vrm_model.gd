@@ -49,7 +49,7 @@ class ExpressionData:
 		morphs[morph_name].append(morph_data)
 
 	func get_expression(morph_name: String) -> Array:
-		return morphs.get(morph_name)
+		return morphs.get(morph_name, [])
 
 var expression_data := ExpressionData.new()
 
@@ -202,11 +202,13 @@ func _map_bones_and_eyes() -> void:
 		var spine_bone_id: int = skeleton.find_bone(vrm_meta.humanoid_bone_mapping["spine"])
 		if spine_bone_id >= 0:
 			additional_bones.append(spine_bone_id)
+	
+	# TODO getting morph data for look<direction> shapes needs to be refactored
 
 	for morph_data in expression_data.get_expression("lookup"):
 		var val = morph_data.values.back()
 		if val != null:
-			var rot: Vector3 = val.rotation.get_euler()
+			var rot = val.rotation.get_euler() if val is Dictionary else Vector3.ZERO
 			match morph_data.morph:
 				left_eye_name:
 					left_eye.up = rot
@@ -216,7 +218,7 @@ func _map_bones_and_eyes() -> void:
 	for morph_data in expression_data.get_expression("lookdown"):
 		var val = morph_data.values.back()
 		if val != null:
-			var rot: Vector3 = val.rotation.get_euler()
+			var rot = val.rotation.get_euler() if val is Dictionary else Vector3.ZERO
 			match morph_data.morph:
 				left_eye_name:
 					left_eye.down = rot
@@ -226,7 +228,7 @@ func _map_bones_and_eyes() -> void:
 	for morph_data in expression_data.get_expression("lookleft"):
 		var val = morph_data.values.back()
 		if val != null:
-			var rot: Vector3 = val.rotation.get_euler()
+			var rot = val.rotation.get_euler() if val is Dictionary else Vector3.ZERO
 			match morph_data.morph:
 				left_eye_name:
 					left_eye.left = rot
@@ -236,7 +238,7 @@ func _map_bones_and_eyes() -> void:
 	for morph_data in expression_data.get_expression("lookright"):
 		var val = morph_data.values.back()
 		if val != null:
-			var rot: Vector3 = val.rotation.get_euler()
+			var rot = val.rotation.get_euler() if val is Dictionary else Vector3.ZERO
 			match morph_data.morph:
 				left_eye_name:
 					left_eye.right = rot
