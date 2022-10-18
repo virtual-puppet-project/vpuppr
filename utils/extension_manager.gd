@@ -196,7 +196,7 @@ func _parse_extension(file: File, dir: Directory, path: String, auto_executables
 		return Safely.err(Error.Code.EXTENSION_MANAGER_MISSING_EXTENSION_SECTION, config_path)
 	
 	var extension := Extension.new()
-	extension.context = path
+	extension.context = ProjectSettings.globalize_path(path)
 	extension.extension_name = metadata.get(ExtensionKeys.NAME, "")
 	if extension.extension_name.empty():
 		return Safely.err(Error.Code.EXTENSION_MANAGER_MISSING_EXTENSION_NAME, config_path)

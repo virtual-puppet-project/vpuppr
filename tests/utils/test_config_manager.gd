@@ -106,7 +106,6 @@ func test_save_pass():
 	assert_true(mc.parse_string(model_config_file.get_as_text()).is_ok())
 
 	assert_eq(md.msaa_value, cm.get_data("msaa_value"))
-	assert_eq(md.python_path, cm.get_data("python_path"))
 	
 	assert_eq(mc.config_name, "test_config")
 	assert_eq(mc.description, cm.get_data("description"))
