@@ -16,8 +16,8 @@ The project status is tracked via a public [GitHub project here](https://github.
 
 ## Controls
 
-* <spacebar> - Calibrate your model. Useful when your camera is not directly in front of you
-* <escape> - Show/hide the UI
+* spacebar - Calibrate your model. Useful when your camera is not directly in front of you
+* escape - Show/hide the UI
 
 ## Quickstart
 
