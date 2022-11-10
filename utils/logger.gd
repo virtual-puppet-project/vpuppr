@@ -24,7 +24,7 @@ func _init(v = null):
 #-----------------------------------------------------------------------------#
 
 func _log(message: String, log_type: int) -> void:
-	var datetime: Dictionary = OS.get_datetime()
+	var datetime: Dictionary = Time.get_datetime_dict_from_system()
 	message = "%s %s-%s-%s_%s:%s:%s %s" % [
 		parent_name,
 		datetime["year"],

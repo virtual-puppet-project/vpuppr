@@ -144,6 +144,18 @@ DEFAULT_GUI_BONES_RESET_BONE_POSE_BUTTON="Reset bone pose"
 ;; Blend shapes                                                               ;;
 ;;----------------------------------------------------------------------------;;
 DEFAULT_GUI_BLEND_SHAPES="Blend shapes"
+DEFAULT_GUI_BLEND_SHAPE_ITEM_NAME="Name: "
+DEFAULT_GUI_BLEND_SHAPE_ITEM_VALUE="Value: "
+
+DEFAULT_GUI_BLEND_SHAPE_ITEM_REPLACE_TYPE_OVERRIDE="Override"
+DEFAULT_GUI_BLEND_SHAPE_ITEM_REPLACE_TYPE_ADD="Add"
+DEFAULT_GUI_BLEND_SHAPE_ITEM_REPLACE_TYPE_COMPLEX="Complex"
+
+DEFAULT_GUI_BLEND_SHAPE_ITEM_HOTKEY_SEQUENCE="Registered hotkeys"
+
+DEFAULT_GUI_BLEND_SHAPE_ITEM_HOTKEYS_BUTTON="Register hotkeys"
+DEFAULT_GUI_BLEND_SHAPE_ITEM_ACTION_BUTTON="Register action"
+DEFAULT_GUI_BLEND_SHAPE_ITEM_DELETE_BUTTON="Delete"
 
 ;;----------------------------------------------------------------------------;;
 ;; Presets                                                                    ;;
@@ -191,6 +203,19 @@ DEFAULT_GUI_AUTO_CHECK_FOR_UPDATES="Automatically check for updates"
 DEFAULT_GUI_UPDATES_LOADING_0="Loading ."
 DEFAULT_GUI_UPDATES_LOADING_1="Loading .."
 DEFAULT_GUI_UPDATES_LOADING_2="Loading ..."
+
+;;----------------------------------------------------------------------------;;
+;; Actions                                                                    ;;
+;;----------------------------------------------------------------------------;;
+DEFAULT_GUI_ACTIONS_POPUP_DEFAULT_ACTION_DROPDOWN_OPTION="Default"
+DEFAULT_GUI_ACTIONS_POPUP_BOOMERANG_ACTION_DROPDOWN_OPTION="Boomerang"
+DEFAULT_GUI_ACTIONS_POPUP_LOCK_ACTION_DROPDOWN_OPTION="Lock"
+DEFAULT_GUI_ACTIONS_POPUP_GOTO_LOCK_ACTION_DROPDOWN_OPTION="Goto and lock"
+
+DEFAULT_GUI_ACTIONS_POPUP_DEFAULT_ACTION_LABEL="No action specified."
+DEFAULT_GUI_ACTIONS_POPUP_BOOMERANG_ACTION_LABEL="Interpolates the item to a specific value and then resumes tracking as normal."
+DEFAULT_GUI_ACTIONS_POPUP_LOCK_ACTION_LABEL="Locks the item value at the current value."
+DEFAULT_GUI_ACTIONS_POPUP_GOTO_LOCK_ACTION_LABEL="Interpolates the item to a specific value and locks the item at that value."
 
 ;;----------------------------------------------------------------------------;;
 ;; Default runner                                                             ;;

@@ -62,6 +62,7 @@ func _init(p_screen, p_name: String = "") -> void:
 	
 	# Hook up close button
 	get_close_button().connect("pressed", self, "_on_close")
+	connect("popup_hide", self, "_on_close")
 
 func _ready() -> void:
 	show()
@@ -75,7 +76,7 @@ func _ready() -> void:
 	rect_global_position = rect.position
 	rect_size = rect.size
 
-	_logger.info("%s popup setup" % window_title)
+	_logger.debug("%s popup setup" % window_title)
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #

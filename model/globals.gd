@@ -56,6 +56,8 @@ const BONE_TRANSFORMS := "bone_transforms"
 
 const BLEND_SHAPES := "blend_shapes"
 
+const HOTKEY_ACTION_RECEIVED := "hotkey_action_received"
+
 const RELOAD_RUNNER := "reload_runner"
 
 #endregion

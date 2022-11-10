@@ -27,7 +27,8 @@ const ResourceKeys := {
 }
 
 const RecognizedTags := {
-	"FILE_PICKER": "file-picker"
+	"FILE_PICKER": "file-picker",
+	"HOTKEY_PROVIDER": "hotkey-provider"
 }
 
 ## The dict of extension names to extension objects

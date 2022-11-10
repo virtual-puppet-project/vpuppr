@@ -14,7 +14,7 @@ enum SidebarButtons {
 const Model = preload("res://screens/gui/popups/model.tscn")
 const Bones = preload("res://screens/gui/popups/bones.tscn")
 const Tracking = preload("res://screens/gui/popups/tracking.tscn")
-const BlendShapes = preload("res://screens/gui/popups/blend_shapes.tscn")
+const BlendShapes = preload("res://screens/gui/blend-shapes/blend_shapes.tscn")
 const Props = preload("res://screens/gui/popups/props.tscn")
 const Presets = preload("res://screens/gui/popups/presets.tscn")
 

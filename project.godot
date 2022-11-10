@@ -20,6 +20,11 @@ _global_script_classes=[ {
 "path": "res://utils/app_manager.gd"
 }, {
 "base": "Reference",
+"class": "Automation",
+"language": "GDScript",
+"path": "res://model/automation.gd"
+}, {
+"base": "Reference",
 "class": "BaseConfig",
 "language": "GDScript",
 "path": "res://model/config/base_config.gd"
@@ -69,6 +74,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://screens/default_runner.gd"
 }, {
+"base": "HotkeyProvider",
+"class": "DummyHotkeyProvider",
+"language": "GDScript",
+"path": "res://utils/dummy_hotkey_provider.gd"
+}, {
 "base": "Reference",
 "class": "Env",
 "language": "GDScript",
@@ -98,6 +108,11 @@ _global_script_classes=[ {
 "class": "Globals",
 "language": "GDScript",
 "path": "res://model/globals.gd"
+}, {
+"base": "Reference",
+"class": "HotkeyProvider",
+"language": "GDScript",
+"path": "res://model/extensions/hotkey_provider.gd"
 }, {
 "base": "Reference",
 "class": "InterpolationData",
@@ -207,6 +222,7 @@ _global_script_classes=[ {
 _global_script_class_icons={
 "AbstractManager": "",
 "AppManager": "",
+"Automation": "",
 "BaseConfig": "",
 "BaseLayout": "",
 "BasePopup": "",
@@ -217,12 +233,14 @@ _global_script_class_icons={
 "DataPoint": "",
 "DefaultGui": "",
 "DefaultRunner": "",
+"DummyHotkeyProvider": "",
 "Env": "",
 "Error": "",
 "Extension": "",
 "ExtensionManager": "",
 "FileUtil": "",
 "Globals": "",
+"HotkeyProvider": "",
 "InterpolationData": "",
 "JSONUtil": "",
 "LogManager": "",

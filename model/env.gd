@@ -1,12 +1,14 @@
 class_name Env
 extends Reference
 
+# TODO this is no longer correct
 ## The default environment variable name
 const ENV_VAR_NAME := "VSS_ENV"
 
 ## The list of recognized environments
 const Envs := {
 	"DEFAULT": "default",
+	"DEBUG": "debug",
 	"TEST": "test"
 }
 

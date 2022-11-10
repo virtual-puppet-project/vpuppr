@@ -108,7 +108,15 @@ var mouth_wide_group_2: float = 0.3
 
 #region Blend shapes
 
+## Blend shape names to blend shape values
+##
+## @type: Dictionary<String, float>
 var blend_shapes := {}
+
+## Blend shape name to an array of Automation structs
+##
+## @type: Dictionary<String, Array<Automation>>
+var blend_shape_actions := {}
 
 #endregion
 

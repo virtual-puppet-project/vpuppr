@@ -1,0 +1,62 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://screens/gui/actions/boomerang.tscn" type="PackedScene" id=1]
+[ext_resource path="res://screens/gui/actions/actions.gd" type="Script" id=2]
+[ext_resource path="res://screens/gui/actions/goto_lock.tscn" type="PackedScene" id=3]
+
+[node name="Actions" type="VBoxContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 2 )
+
+[node name="Types" type="OptionButton" parent="."]
+margin_right = 1600.0
+margin_bottom = 20.0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+margin_top = 24.0
+margin_right = 1600.0
+margin_bottom = 900.0
+size_flags_vertical = 3
+
+[node name="List" type="VBoxContainer" parent="ScrollContainer"]
+margin_right = 1600.0
+margin_bottom = 876.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Default" type="VBoxContainer" parent="ScrollContainer/List"]
+margin_right = 1600.0
+margin_bottom = 216.0
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="ScrollContainer/List/Default"]
+margin_top = 101.0
+margin_right = 1600.0
+margin_bottom = 115.0
+size_flags_vertical = 6
+text = "DEFAULT_GUI_ACTIONS_POPUP_DEFAULT_ACTION_LABEL"
+align = 1
+valign = 1
+
+[node name="Boomerang" parent="ScrollContainer/List" instance=ExtResource( 1 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 220.0
+margin_right = 1600.0
+margin_bottom = 436.0
+
+[node name="Lock" parent="ScrollContainer/List" instance=ExtResource( 3 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 440.0
+margin_right = 1600.0
+margin_bottom = 656.0
+
+[node name="GotoLock" parent="ScrollContainer/List" instance=ExtResource( 3 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 660.0
+margin_right = 1600.0
+margin_bottom = 876.0
+should_goto = true

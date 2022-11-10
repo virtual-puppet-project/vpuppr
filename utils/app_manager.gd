@@ -16,6 +16,7 @@ var nm: NotificationManager
 var tcm: TempCacheManager
 # Not girl, you weirdo
 var grl = preload("res://addons/gdnative-runtime-loader/gdnative_runtime_loader.gd").new()
+var hp: HotkeyProvider
 
 #region Debounce
 
@@ -54,20 +55,46 @@ func _init() -> void:
 
 func _ready() -> void:
 	ps = PubSub.new()
+	
 	# Must be initialized AFTER the PubSub since it needs to connect to other signals
 	lm = LogManager.new()
+	logger = Logger.new("AppManager")
 	cm = ConfigManager.new()
+	
 	# Must be initialized AFTER ConfigManager because it needs to pull config data
 	em = ExtensionManager.new()
+	
 	# Must be initialized AFTER ExtensionManager because it can load translation files for extensions
 	tm = TranslationManager.new()
+
+	#region HotkeyProvider
+	
+	var hotkey_providers: Array = em.query_extensions_for_tag(
+			ExtensionManager.RecognizedTags.HOTKEY_PROVIDER)
+	
+	if OS.is_debug_build() or environment == Env.Envs.DEBUG:
+		for i in hotkey_providers:
+			logger.debug("Found hotkey provider: %s" % i.extension_name)
+	
+	if hotkey_providers.size() == 1:
+		var hotkey_ext: Extension.ExtensionResource = hotkey_providers.pop_back()
+		logger.debug("Using hotkey provider %s" % hotkey_ext.extension_name)
+		hp = load(hotkey_ext.entrypoint).new()
+	elif hotkey_providers.size() > 1:
+		logger.error("Too many hotkey providers found (%d), using dummy provider" %
+				hotkey_providers.size())
+		hp = DummyHotkeyProvider.new()
+	else: # No providers at all
+		logger.debug("No hotkey provider found, using dummy provider")
+		hp = DummyHotkeyProvider.new()
+
+	#endregion
+	
 	# Idk, this could really be anywhere
 	nm = NotificationManager.new()
 	tcm = TempCacheManager.new()
 
 	connect("tree_exiting", self, "_on_tree_exiting")
-	
-	logger = Logger.new("AppManager")
 	
 	if ClassDB.class_exists("StdoutStderrIntercept"):
 		Engine.get_singleton("StdoutStderrIntercept").connect("intercepted_message", self, "_on_stderr")
