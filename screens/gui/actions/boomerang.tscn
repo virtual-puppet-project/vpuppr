@@ -15,6 +15,7 @@ margin_right = 1600.0
 margin_bottom = 14.0
 text = "DEFAULT_GUI_ACTIONS_POPUP_BOOMERANG_ACTION_LABEL"
 align = 1
+autowrap = true
 
 [node name="HSeparator" type="HSeparator" parent="."]
 margin_top = 18.0
@@ -34,4 +35,4 @@ margin_bottom = 104.0
 [node name="TweenOptions" parent="." instance=ExtResource( 1 )]
 margin_top = 108.0
 margin_right = 1600.0
-margin_bottom = 198.0
+margin_bottom = 234.0

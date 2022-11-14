@@ -53,6 +53,8 @@ class PresetsPage extends ScrollContainer:
 	
 	var load_button: Button
 	var delete_button: Button
+	
+	var is_trying_to_save := false
 
 	func _init(page_name: String, config_string: String, p_logger: Logger) -> void:
 		logger = p_logger
@@ -131,17 +133,20 @@ class PresetsPage extends ScrollContainer:
 		if text.empty():
 			return
 
-		AM.ps.publish(signal_name, text, name)
+		model_config.set_data(signal_name, text)
+		_try_save()
 
 	func _on_text_edit_text_changed(text_edit: TextEdit, signal_name: String) -> void:
 		var text := text_edit.text
 		if text.empty():
 			return
 
-		AM.ps.publish(signal_name, text, name)
+		model_config.set_data(signal_name, text)
+		_try_save()
 
 	func _on_check_button_toggled(value: bool, signal_name: String) -> void:
-		AM.ps.publish(signal_name, value, name)
+		model_config.set_data(signal_name, value)
+		_try_save()
 
 	func _on_config_updated(payload: SignalPayload) -> void:
 		if not payload is SignalPayload:
@@ -182,12 +187,21 @@ class PresetsPage extends ScrollContainer:
 				
 				var model_configs: Dictionary = AM.cm.get_data("model_configs")
 				FileUtil.remove_file_at_path(model_configs[name])
-				model_configs.erase(name)
 
-				AM.ps.publish("model_configs", model_configs, name)
+				AM.ps.publish("model_configs", null, name)
 			_:
 				logger.error("Unhandled action %s" % action_type)
 				return
+
+	func _try_save() -> void:
+		if is_trying_to_save:
+			return
+		
+		is_trying_to_save = true
+		yield(get_tree().create_timer(0.2), "timeout")
+		is_trying_to_save = false
+
+		AM.cm.save_data(model_config.config_name, model_config.get_as_json_string())
 
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #

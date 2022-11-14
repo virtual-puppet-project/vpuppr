@@ -1,4 +1,4 @@
-extends VBoxContainer
+extends AbstractActionsSelection
 
 export var should_goto := false
 
@@ -9,6 +9,9 @@ export var should_goto := false
 func _ready() -> void:
 	if should_goto:
 		$Label.text = "DEFAULT_GUI_ACTIONS_POPUP_GOTO_LOCK_ACTION_LABEL"
+		
+		connect_from_to($List/FromToOptions)
+		connect_tween($List/TweenOptions)
 	else:
 		$Label.text = "DEFAULT_GUI_ACTIONS_POPUP_LOCK_ACTION_LABEL"
 		$List.hide()

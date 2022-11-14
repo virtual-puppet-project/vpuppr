@@ -46,17 +46,33 @@ func _setup_class() -> void:
 # Connections                                                                 #
 #-----------------------------------------------------------------------------#
 
-func _on_metadata_changed(data, key: String) -> void:
-	metadata.set_data(key, data.data if data is SignalPayload else data)
-	AM.save_config()
+func _on_metadata_changed(data: SignalPayload, key: String) -> void:
+	_modify_config(metadata, key, data)
 
-func _on_model_config_changed(data, key: String) -> void:
-	model_config.set_data(key, data.data if data is SignalPayload else data)
-	AM.save_config()
+func _on_model_config_changed(data: SignalPayload, key: String) -> void:
+	_modify_config(model_config, key, data)
 
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #
 #-----------------------------------------------------------------------------#
+
+func _modify_config(config: BaseConfig, key: String, data: SignalPayload) -> void:
+	if data.id != null:
+		var existing_data = config.get_data(key)
+		if existing_data == null:
+			logger.error("Bad key: %s" % key)
+			return
+		
+		if data.data == null:
+			existing_data.erase(data.id)
+		else:
+			existing_data[data.id] = data.data
+		
+		config.set_data(key, existing_data)
+	else:
+		config.set_data(key, data.data)
+	
+	AM.save_config()
 
 ## Save a string to a given path
 ##
@@ -200,7 +216,7 @@ func load_model_config_no_set(path: String) -> Result:
 	return Safely.ok(mc)
 
 func save_data(data_name: String = "", data: String = "") -> Result:
-	logger.info("Saving data")
+	logger.info("Saving data for %s" % [data_name if not data_name.empty() else model_config.config_name])
 	
 	var result := Safely.wrap(_save_to_file(METADATA_FILE_NAME, metadata.get_as_json_string()))
 	if result.is_err():

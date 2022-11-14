@@ -95,12 +95,12 @@ var use_blend_shapes_for_blinking := false
 
 #region Mouth tracking values
 
-var mouth_open_max: float = 2.0
-var mouth_open_group_1: float = 0.25
-var mouth_open_group_2: float = 0.3
-var mouth_wide_max: float = 2.0
-var mouth_wide_group_1: float = 0.25
-var mouth_wide_group_2: float = 0.3
+# var mouth_open_max: float = 2.0
+# var mouth_open_group_1: float = 0.25
+# var mouth_open_group_2: float = 0.3
+# var mouth_wide_max: float = 2.0
+# var mouth_wide_group_1: float = 0.25
+# var mouth_wide_group_2: float = 0.3
 
 #endregion
 
@@ -113,9 +113,9 @@ var mouth_wide_group_2: float = 0.3
 ## @type: Dictionary<String, float>
 var blend_shapes := {}
 
-## Blend shape name to an array of Automation structs
+## Blend shape name to an array of Action structs
 ##
-## @type: Dictionary<String, Array<Automation>>
+## @type: Dictionary<String, Array<Action>>
 var blend_shape_actions := {}
 
 #endregion
@@ -154,6 +154,10 @@ func _marshal_data(data) -> Result:
 		return Safely.err(Error.Code.NULL_VALUE)
 
 	match typeof(data):
+		TYPE_VECTOR2:
+			return Safely.ok(JSONUtil.vector2_to_dict(data))
+		TYPE_VECTOR3:
+			return Safely.ok(JSONUtil.vector3_to_dict(data))
 		TYPE_COLOR:
 			return Safely.ok(JSONUtil.color_to_dict(data))
 		TYPE_TRANSFORM:
@@ -180,16 +184,29 @@ func _marshal_data(data) -> Result:
 				r.append(DataPoint.new(typeof(v), result.unwrap()).get_as_dict())
 
 			return Safely.ok(r)
+		TYPE_OBJECT:
+			if data is Action:
+				var result := _marshal_data(data.get_as_dict())
+				if result.is_err():
+					return result
+				
+				return Safely.ok(DataPoint.new(TYPE_OBJECT, result.unwrap()).get_as_dict())
+			
+			return Safely.err(Error.Code.CONFIG_MANAGER_OBJECT_MARSHAL_ERROR, str(data))
 		_:
 			return Safely.ok(data)
 
-func _unmarshal_data(data_type: int, data_value) -> Result:
+func _unmarshal_data(data_type: int, data_value, json_key: String = "") -> Result:
 	if data_value is Result:
 		return data_value
 	if data_value == null:
 		return Safely.err(Error.Code.NULL_VALUE)
 
 	match data_type:
+		TYPE_VECTOR2:
+			return Safely.ok(JSONUtil.dict_to_vector2(data_value))
+		TYPE_VECTOR3:
+			return Safely.ok(JSONUtil.dict_to_vector3(data_value))
 		TYPE_COLOR:
 			return Safely.ok(JSONUtil.dict_to_color(data_value))
 		TYPE_TRANSFORM:
@@ -199,7 +216,7 @@ func _unmarshal_data(data_type: int, data_value) -> Result:
 
 			for key in data_value.keys():
 				var data_point = data_value[key]
-				var result := _unmarshal_data(data_point[DataPoint.TYPE_KEY], data_point[DataPoint.VALUE_KEY])
+				var result := _unmarshal_data(data_point[DataPoint.TYPE_KEY], data_point[DataPoint.VALUE_KEY], key)
 				if result.is_err():
 					return result
 
@@ -217,6 +234,22 @@ func _unmarshal_data(data_type: int, data_value) -> Result:
 				r.append(result.unwrap())
 
 			return Safely.ok(r)
+		TYPE_OBJECT:
+			match json_key:
+				"blend_shape_actions":
+					var action := Action.new()
+					
+					for key in data_value.keys():
+						var data_point = data_value[key]
+						var result := _unmarshal_data(data_point[DataPoint.TYPE_KEY], data_point[DataPoint.VALUE_KEY], key)
+						if result.is_err():
+							return result
+						
+						action.set(key, result.unwrap())
+					
+					return Safely.ok(action)
+				_:
+					return Safely.err(Error.Code.CONFIG_MANAGER_OBJECT_UNMARSHAL_ERROR, json_key)
 		_:
 			return Safely.ok(data_value)
 
@@ -250,7 +283,7 @@ func parse_dict(data: Dictionary) -> Result:
 			AM.logger.error("Invalid data point loaded: %s, bailing out" % str(data_point))
 			return Safely.err(Error.Code.MODEL_CONFIG_UNEXPECTED_DATA)
 
-		var result := _unmarshal_data(data_point[DataPoint.TYPE_KEY], data_point[DataPoint.VALUE_KEY])
+		var result := _unmarshal_data(data_point[DataPoint.TYPE_KEY], data_point[DataPoint.VALUE_KEY], key)
 		if result.is_err():
 			return result
 

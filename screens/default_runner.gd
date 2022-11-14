@@ -91,7 +91,6 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	# TODO how data is published here is pretty gross
 	if should_pose_model and bone_to_pose > 0:
-		var config_data = AM.cm.get_data(Globals.BONE_TRANSFORMS)
 		var transform: Transform = model.skeleton.get_bone_pose(bone_to_pose)
 
 		if is_left_clicking and event is InputEventMouseMotion:
@@ -111,8 +110,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			model.skeleton.set_bone_pose(bone_to_pose, transform)
 			get_tree().set_input_as_handled()
 
-		config_data[model.skeleton.get_bone_name(bone_to_pose)] = transform
-		AM.ps.publish(Globals.BONE_TRANSFORMS, config_data, model.skeleton.get_bone_name(bone_to_pose))
+		AM.ps.publish(Globals.BONE_TRANSFORMS, transform, model.skeleton.get_bone_name(bone_to_pose))
 
 func _setup_logger() -> void:
 	logger = Logger.new("DefaultRunner")

@@ -127,11 +127,11 @@ func _setup() -> Result:
 
 	model = get_tree().current_scene.get("model")
 	if model == null:
-		return Safely.err(Error.Code.GUI_SETUP_ERROR, tr("DEFAULT_GUI_BONES_NO_MODEL_FOUND_ERROR"))
+		return Safely.err(Error.Code.GUI_SETUP_ERROR, "No model found, no bone functionality will be available")
 
 	var model_skeleton = model.get("skeleton")
 	if model_skeleton == null:
-		return Safely.err(Error.Code.GUI_SETUP_ERROR, tr("DEFAULT_GUI_BONES_NO_MODEL_SKELETON_FOUND_ERROR"))
+		return Safely.err(Error.Code.GUI_SETUP_ERROR, "No model skeleton found, no bone functionality will be available")
 
 	# Store all references to TreeItems, discard afterwards
 	var known_bones := {}
@@ -170,43 +170,23 @@ func _setup() -> Result:
 #-----------------------------------------------------------------------------#
 
 func _on_is_tracking(state: bool, bone_name: String) -> void:
-	var additional_bones = AM.cm.get_data("additional_bones")
-	if additional_bones == null:
-		# TODO might not be an error
-		return
-
 	var bone_id: int = model.skeleton.find_bone(bone_name)
 	if bone_id < 0:
-		logger.error(tr("DEFAULT_GUI_BONES_BONE_NOT_FOUND_ERROR") % bone_name)
+		logger.error("Bone %s not found, aborting config modification" % bone_name)
 		return
-	
-	if state:
-		additional_bones[bone_name] = bone_id
-	else:
-		additional_bones.erase(bone_name)
 
-	AM.ps.publish("additional_bones", additional_bones, bone_name)
+	AM.ps.publish("additional_bones", bone_id if state else null, bone_name)
 
 func _on_should_pose(state: bool, bone_name: String) -> void:
 	AM.ps.publish(Globals.POSE_BONE, state, bone_name)
 
 func _on_should_use_custom_interpolation(state: bool, bone_name: String) -> void:
-	var bones_to_interpolate = AM.cm.get_data("bones_to_interpolate")
-	if bones_to_interpolate == null:
-		# TODO might not be an error
-		return
-
 	var bone_id: int = model.skeleton.find_bone(bone_name)
 	if bone_id < 0:
-		logger.error(tr("DEFAULT_GUI_BONES_BONE_NOT_FOUND_ERROR") % bone_name)
+		logger.error("Bone %s not found, aborting config modification" % bone_name)
 		return
-	
-	if state:
-		bones_to_interpolate[bone_name] = bone_id
-	else:
-		bones_to_interpolate.erase(bone_name)
 
-	AM.ps.publish("bones_to_interpolate", bones_to_interpolate, bone_name)
+	AM.ps.publish("bones_to_interpolate", bone_id if state else null, bone_name)
 
 func _on_interpolation_rate_entered(text: String, bone_name: String) -> void:
 	_on_interpolation_rate_changed(text, bone_name)
@@ -215,22 +195,10 @@ func _on_interpolation_rate_changed(text: String, bone_name: String) -> void:
 	if not text.is_valid_float():
 		return
 
-	var rate: float = text.to_float()
-
-	var bone_interpolation_rate_dict = AM.cm.get_data("bone_interpolation_rates")
-	if bone_interpolation_rate_dict == null:
-		# TODO maybe this shouldn't be an error
-		return
-
-	bone_interpolation_rate_dict[bone_name] = rate
-
-	AM.ps.publish("bone_interpolation_rates", bone_interpolation_rate_dict, bone_name)
+	AM.ps.publish("bone_interpolation_rates", text.to_float(), bone_name)
 
 func _on_reset_bone(bone_name: String) -> void:
-	var bone_transforms: Dictionary = AM.cm.get_data(Globals.BONE_TRANSFORMS)
-	bone_transforms[bone_name] = Transform.IDENTITY
-
-	AM.ps.publish(Globals.BONE_TRANSFORMS, bone_transforms, bone_name)
+	AM.ps.publish(Globals.BONE_TRANSFORMS, Transform.IDENTITY, bone_name)
 
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #

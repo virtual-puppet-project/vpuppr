@@ -124,8 +124,7 @@ func test_on_model_config_changed_pass():
 	if not assert_eq(cm.model_config.additional_bones["spine"], 2):
 		return
 
-	dict["spine"] = 4
-	var data := SignalPayload.new("additional_bones", dict, "spine")
+	var data := SignalPayload.new("additional_bones", 4, "spine")
 
 	cm._on_model_config_changed(data, "additional_bones")
 	var bones = cm.get_data("additional_bones")

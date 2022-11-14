@@ -31,12 +31,28 @@ margin_bottom = 24.0
 hint_tooltip = "DEFAULT_GUI_ACTIONS_POPUP_TWEEN_TIME_HINT"
 size_flags_horizontal = 3
 
-[node name="TransitionSelect" type="OptionButton" parent="."]
+[node name="Transition" type="Label" parent="."]
 margin_top = 46.0
 margin_right = 396.0
-margin_bottom = 66.0
+margin_bottom = 60.0
+text = "DEFAULT_GUI_ACTIONS_POPUP_TWEEN_TRANSITION_LABEL"
+align = 1
+
+[node name="TransitionSelect" type="OptionButton" parent="."]
+margin_top = 64.0
+margin_right = 396.0
+margin_bottom = 84.0
+align = 1
+
+[node name="Easing" type="Label" parent="."]
+margin_top = 88.0
+margin_right = 396.0
+margin_bottom = 102.0
+text = "DEFAULT_GUI_ACTIONS_POPUP_TWEEN_EASE_LABEL"
+align = 1
 
 [node name="EasingSelect" type="OptionButton" parent="."]
-margin_top = 70.0
+margin_top = 106.0
 margin_right = 396.0
-margin_bottom = 90.0
+margin_bottom = 126.0
+align = 1

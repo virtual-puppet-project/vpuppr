@@ -1,6 +1,5 @@
-EXTENSIONS="Extensions"
-
-TRANSPARENT_BACKGROUND="Transparent background"
+GENERIC_CONFIRM_BUTTON="Confirm"
+GENERIC_CANCEL_BUTTON="Cancel"
 
 ;;----------------------------------------------------------------------------;;
 ;; Debug                                                                      ;;
@@ -131,9 +130,6 @@ DEFAULT_GUI_BONES_USE_CUSTOM_INTERPOLATION="Use custom interpolation"
 DEFAULT_GUI_BONES_INTERPOLATION_RATE="Interpolation rate"
 DEFAULT_GUI_BONES_RESET_BONE_POSE="Reset bone pose"
 DEFAULT_GUI_BONES_INFO_PAGE="Info" ;; TODO need to think about how to insert this translation
-DEFAULT_GUI_BONES_NO_MODEL_FOUND_ERROR="No model found, no bone functionality will be available"
-DEFAULT_GUI_BONES_NO_MODEL_SKELETON_FOUND_ERROR="No model skeleton found, no bone functionality will be available"
-DEFAULT_GUI_BONES_BONE_NOT_FOUND_ERROR="Bone %s not found, aborting config modification"
 DEFAULT_GUI_BONES_IS_TRACKING_TOGGLE="Is tracking"
 DEFAULT_GUI_BONES_SHOULD_POSE_TOGGLE="Should pose"
 DEFAULT_GUI_BONES_SHOULD_USE_CUSTOM_INTERPOLATION_TOGGLE="Use custom interpolation"
@@ -216,6 +212,53 @@ DEFAULT_GUI_ACTIONS_POPUP_DEFAULT_ACTION_LABEL="No action specified."
 DEFAULT_GUI_ACTIONS_POPUP_BOOMERANG_ACTION_LABEL="Interpolates the item to a specific value and then resumes tracking as normal."
 DEFAULT_GUI_ACTIONS_POPUP_LOCK_ACTION_LABEL="Locks the item value at the current value."
 DEFAULT_GUI_ACTIONS_POPUP_GOTO_LOCK_ACTION_LABEL="Interpolates the item to a specific value and locks the item at that value."
+
+DEFAULT_GUI_ACTIONS_POPUP_FROM_TO_VALUES_LABEL="Values"
+DEFAULT_GUI_ACTIONS_POPUP_FROM_LABEL="From: "
+DEFAULT_GUI_ACTIONS_POPUP_TO_LABEL="To: "
+
+DEFAULT_GUI_ACTIONS_POPUP_TWEEN_LABEL="Tween options"
+DEFAULT_GUI_ACTIONS_POPUP_TWEEN_TIME_LABEL="Travel time: "
+
+DEFAULT_GUI_ACTIONS_POPUP_TWEEN_TRANSITION_LABEL="Transition type"
+DEFAULT_GUI_ACTIONS_POPUP_TWEEN_EASE_LABEL="Easing type"
+
+;;----------------------------------------------------------------------------;;
+;; Tween                                                                      ;;
+;;----------------------------------------------------------------------------;;
+ACTIONS_TWEEN_OPTIONS_TRANS_LINEAR="Linear"
+ACTIONS_TWEEN_OPTIONS_TRANS_SINE="Sine"
+ACTIONS_TWEEN_OPTIONS_TRANS_QUINT="Quintic"
+ACTIONS_TWEEN_OPTIONS_TRANS_QUART="Quartic"
+ACTIONS_TWEEN_OPTIONS_TRANS_QUAD="Quadratic"
+ACTIONS_TWEEN_OPTIONS_TRANS_EXPO="Exponential"
+ACTIONS_TWEEN_OPTIONS_TRANS_ELASTIC="Elastic"
+ACTIONS_TWEEN_OPTIONS_TRANS_CUBIC="Cubic"
+ACTIONS_TWEEN_OPTIONS_TRANS_CIRC="Circular"
+ACTIONS_TWEEN_OPTIONS_TRANS_BOUNCE="Bounce"
+ACTIONS_TWEEN_OPTIONS_TRANS_BACK="Back out"
+
+ACTIONS_TWEEN_OPTIONS_TRANS_LINEAR_HINT="The animation is interpolated linearly."
+ACTIONS_TWEEN_OPTIONS_TRANS_SINE_HINT="The animation is interpolated using a sine function."
+ACTIONS_TWEEN_OPTIONS_TRANS_QUINT_HINT="The animation is interpolated with a quintic (to the power of 5) function."
+ACTIONS_TWEEN_OPTIONS_TRANS_QUART_HINT="The animation is interpolated with a quartic (to the power of 4) function."
+ACTIONS_TWEEN_OPTIONS_TRANS_QUAD_HINT="The animation is interpolated with a quadratic (to the power of 2) function."
+ACTIONS_TWEEN_OPTIONS_TRANS_EXPO_HINT="The animation is interpolated with an exponential (to the power of x) function."
+ACTIONS_TWEEN_OPTIONS_TRANS_ELASTIC_HINT="The animation is interpolated with elasticity, wiggling around the edges."
+ACTIONS_TWEEN_OPTIONS_TRANS_CUBIC_HINT="The animation is interpolated with a cubic (to the power of 3) function."
+ACTIONS_TWEEN_OPTIONS_TRANS_CIRC_HINT="The animation is interpolated with a function using square roots."
+ACTIONS_TWEEN_OPTIONS_TRANS_BOUNCE_HINT="The animation is interpolated by bouncing at the end."
+ACTIONS_TWEEN_OPTIONS_TRANS_BACK_HINT="The animation is interpolated backing out at ends."
+
+ACTIONS_TWEEN_OPTIONS_EASE_IN="In"
+ACTIONS_TWEEN_OPTIONS_EASE_OUT="Out"
+ACTIONS_TWEEN_OPTIONS_EASE_IN_OUT="In out"
+ACTIONS_TWEEN_OPTIONS_EASE_OUT_IN="Out in"
+
+ACTIONS_TWEEN_OPTIONS_EASE_IN_HINT="The interpolation starts slowly and speeds up towards the end."
+ACTIONS_TWEEN_OPTIONS_EASE_OUT_HINT="The interpolation starts quickly and slows down towards the end."
+ACTIONS_TWEEN_OPTIONS_EASE_IN_OUT_HINT="A combination of ease in and ease out. The interpolation is slowest at both ends."
+ACTIONS_TWEEN_OPTIONS_EASE_OUT_IN_HINT="A combination of ease in and ease out. The interpolation is fastest at both ends."
 
 ;;----------------------------------------------------------------------------;;
 ;; Default runner                                                             ;;

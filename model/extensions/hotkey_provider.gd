@@ -34,3 +34,8 @@ func unregister_action(action_name: String, keys: Array) -> Result:
 ## Should emit a signal called `dialog_complete` when done.
 func get_hotkey_input_popup() -> Result:
 	return Safely.err(Error.Code.NOT_YET_IMPLEMENTED, "HotkeyProvider::get_hotkey_input_popup")
+
+func setup_hotkeys() -> Result:
+	
+
+	return Safely.ok()

@@ -9,20 +9,25 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "VBoxContainer",
+"class": "AbstractActionsSelection",
+"language": "GDScript",
+"path": "res://screens/gui/actions/abstract_actions_selection.gd"
+}, {
 "base": "Reference",
 "class": "AbstractManager",
 "language": "GDScript",
 "path": "res://utils/abstract_manager.gd"
 }, {
+"base": "Reference",
+"class": "Action",
+"language": "GDScript",
+"path": "res://model/action.gd"
+}, {
 "base": "Node",
 "class": "AppManager",
 "language": "GDScript",
 "path": "res://utils/app_manager.gd"
-}, {
-"base": "Reference",
-"class": "Automation",
-"language": "GDScript",
-"path": "res://model/automation.gd"
 }, {
 "base": "Reference",
 "class": "BaseConfig",
@@ -220,9 +225,10 @@ _global_script_classes=[ {
 "path": "res://addons/vrm/vrm_toplevel.gd"
 } ]
 _global_script_class_icons={
+"AbstractActionsSelection": "",
 "AbstractManager": "",
+"Action": "",
 "AppManager": "",
-"Automation": "",
 "BaseConfig": "",
 "BaseLayout": "",
 "BasePopup": "",

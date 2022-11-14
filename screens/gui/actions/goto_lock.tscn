@@ -19,7 +19,7 @@ align = 1
 [node name="List" type="VBoxContainer" parent="."]
 margin_top = 18.0
 margin_right = 1600.0
-margin_bottom = 198.0
+margin_bottom = 234.0
 
 [node name="HSeparator" type="HSeparator" parent="List"]
 margin_right = 1600.0
@@ -38,4 +38,4 @@ margin_bottom = 86.0
 [node name="TweenOptions" parent="List" instance=ExtResource( 3 )]
 margin_top = 90.0
 margin_right = 1600.0
-margin_bottom = 180.0
+margin_bottom = 216.0

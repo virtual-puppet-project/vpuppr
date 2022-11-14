@@ -1,18 +1,4 @@
-class_name Automation
-extends Reference
-
-var name := ""
-
-## The hotkeys associated with this automation
-##
-## @type: Array<String>
-var hotkeys := []
-
-## The key to broadcast the automation update on
-var pub_sub_key := ""
-
-var managed_key := ""
-var managed_value
+extends AbstractActionsSelection
 
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
