@@ -44,6 +44,13 @@ all supported operating systems are available via GitHub actions.
    * For the latest (alpha, beta) builds of VPupPr, you can download them from [Flathub Beta](https://beta.flathub.org/)
 4. Hit the install button and run it just like any other app!
 
+#### Gentoo (GURU)
+
+vpuppr is available on the [GURU overlay for Gentoo](https://gitweb.gentoo.org/repo/proj/guru.git/tree/media-gfx/vpuppr).
+
+1. Add the GURU overlay with either eselect-repository or layman
+2. Sync and emerge vpuppr as normal 
+
 #### Using a precompiled binary
 
 1. Download the latest release
