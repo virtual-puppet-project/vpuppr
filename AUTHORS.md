@@ -39,3 +39,9 @@ Oro (@OroWith2Os on Twitter, @orowith2os:tchncs.de on Matrix)
 2022-01-25
 
 ByteDream (@bytedream_dev on Twitter, ByteDream#4312 on Discord)
+
+## Gentoo GURU Package
+
+2022-10-30
+
+Anna (navi) (navirc.com - email: anna@navirc.com)
