@@ -26,46 +26,29 @@ func after_all():
 # Tests                                                                       #
 #-----------------------------------------------------------------------------#
 
-var good_string0 := """
-{
-	"other": {
-		"type": 18,
-		"value": {}
-	},
-	"config_name": {
-		"type": 4,
-		"value": "changeme"
-	},
-	"main_light": {
-		"type": 18,
-		"value": {
-			"light_energy": {
-				"type": 3,
-				"value": 0.7
-			}
-		}
+func test_e2e() -> void:
+	var expected_values := {
+		"name": "test name",
+		"path": "/some/path/to/model",
+		"transform": Transform.FLIP_X
 	}
-}
-"""
 
-func test_parse_get_data_pass():
 	var mc0 := ModelConfig.new()
+	
+	mc0.model_name = expected_values.name
+	mc0.model_path = expected_values.path
+	mc0.model_transform = expected_values.transform
 
-	assert_true(mc0.parse_string(good_string0).is_ok())
-	assert_true(mc0.other.empty())
-	assert_eq(mc0.get_data("config_name"), "changeme")
-	assert_eq(mc0.find_data_get("main_light/light_energy").unwrap(), 0.7)
-
-func test_roundtrip_pass():
-	var mc0 := ModelConfig.new()
-
-	assert_true(mc0.parse_string(good_string0).is_ok())
-
-	var str0 := mc0.get_as_json_string()
+	var file_contents := mc0.to_string()
 
 	var mc1 := ModelConfig.new()
 
-	assert_true(mc1.parse_string(str0).is_ok())
+	assert_eq(mc1.model_name, "")
+	assert_eq(mc1.model_path, "")
+	assert_eq(mc1.model_transform, Transform.IDENTITY)
 
-	assert_eq(mc1.get_as_json_string().replace(" ", "").strip_edges().strip_escapes(),
-		mc0.get_as_json_string().replace(" ", "").strip_edges().strip_escapes())
+	mc1.from_string(file_contents)
+
+	assert_eq(mc1.model_name, expected_values.name)
+	assert_eq(mc1.model_path, expected_values.path)
+	assert_eq(mc1.model_transform, expected_values.transform)

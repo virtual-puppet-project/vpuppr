@@ -64,11 +64,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://utils/control_util.gd"
 }, {
-"base": "Reference",
-"class": "DataPoint",
-"language": "GDScript",
-"path": "res://model/config/data_point.gd"
-}, {
 "base": "Control",
 "class": "DefaultGui",
 "language": "GDScript",
@@ -236,7 +231,6 @@ _global_script_class_icons={
 "BaseTreeLayout": "",
 "ConfigManager": "",
 "ControlUtil": "",
-"DataPoint": "",
 "DefaultGui": "",
 "DefaultRunner": "",
 "DummyHotkeyProvider": "",

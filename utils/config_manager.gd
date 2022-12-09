@@ -1,8 +1,8 @@
 class_name ConfigManager
 extends AbstractManager
 
-const METADATA_FILE_NAME := "metadata.json"
-const CONFIG_FILE_EXTENSION := "json"
+const METADATA_FILE_NAME := "metadata.vpuppr"
+const CONFIG_FILE_EXTENSION := "vpuppr"
 
 const METADATA_CALLBACK := "_on_metadata_changed"
 const MODEL_CONFIG_CALLBACK := "_on_model_config_changed"
@@ -85,11 +85,11 @@ func _save_to_file(path: String, data: String) -> Result:
 ##
 ## @return: Result - An error from registration or OK
 func _register_all_configs_with_pub_sub() -> Result:
-	var result := _register_config_data_with_pub_sub(metadata.get_as_dict(), METADATA_CALLBACK)
+	var result := _register_config_data_with_pub_sub(metadata.to_dict(), METADATA_CALLBACK)
 	if result.is_err():
 		return result
 
-	result = _register_config_data_with_pub_sub(model_config.get_as_dict(), MODEL_CONFIG_CALLBACK)
+	result = _register_config_data_with_pub_sub(model_config.to_dict(), MODEL_CONFIG_CALLBACK)
 	if result.is_err():
 		return result
 	
@@ -150,7 +150,7 @@ func load_metadata() -> Result:
 	if file.open("%s/%s" % [save_data_path, METADATA_FILE_NAME], File.READ) != OK:
 		return Safely.err(Error.Code.CONFIG_MANAGER_METADATA_LOAD_ERROR)
 
-	var result := metadata.parse_string(file.get_as_text())
+	var result := metadata.from_string(file.get_as_text())
 	if result.is_err():
 		return result
 
@@ -178,7 +178,7 @@ func create_new_model_config(model_name: String, model_path: String, config_name
 	mc.model_name = model_name
 	mc.model_path = model_path
 	
-	var res := _save_to_file("%s.json" % config_name, mc.get_as_json_string())
+	var res := _save_to_file("%s.%s" % [config_name, CONFIG_FILE_EXTENSION], mc.to_string())
 	if res.is_err():
 		return res
 	
@@ -207,7 +207,7 @@ func load_model_config_no_set(path: String) -> Result:
 
 	var mc := ModelConfig.new()
 
-	var result := Safely.wrap(mc.parse_string(file.get_as_text()))
+	var result := Safely.wrap(mc.from_string(file.get_as_text()))
 	if result.is_err():
 		return result
 
@@ -218,14 +218,14 @@ func load_model_config_no_set(path: String) -> Result:
 func save_data(data_name: String = "", data: String = "") -> Result:
 	logger.info("Saving data for %s" % [data_name if not data_name.empty() else model_config.config_name])
 	
-	var result := Safely.wrap(_save_to_file(METADATA_FILE_NAME, metadata.get_as_json_string()))
+	var result := Safely.wrap(_save_to_file(METADATA_FILE_NAME, metadata.to_string()))
 	if result.is_err():
 		return result
 
 	if not model_config.config_name.empty():
 		result = Safely.wrap(_save_to_file(
-			"%s.json" % (data_name if not data_name.empty() else model_config.config_name),
-			data if not data.empty() else model_config.get_as_json_string()
+			"%s.%s" % [(data_name if not data_name.empty() else model_config.config_name), CONFIG_FILE_EXTENSION],
+			data if not data.empty() else model_config.to_string()
 		))
 		if result.is_err():
 			return result

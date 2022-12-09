@@ -172,7 +172,7 @@ func _setup_scene() -> void:
 
 	AM.cm.model_config = ModelConfig.new()
 
-	if res.unwrap().ends_with(".json"):
+	if res.unwrap().ends_with(ConfigManager.CONFIG_FILE_EXTENSION):
 		AM.cm.load_model_config(res.unwrap())
 		model_to_load_path = AM.cm.model_config.model_path
 	else:

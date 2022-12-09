@@ -1,0 +1,16 @@
+{
+"automatically_check_for_updates": false,
+"default_model_path": "",
+"default_search_path": "",
+"model_configs": {
+"duck": "res://export/duck.vpuppr"
+},
+"model_defaults": {
+},
+"msaa_value": 0,
+"other": {
+},
+"skip_splash": false,
+"use_fxaa": false,
+"use_transparent_background": true
+}
