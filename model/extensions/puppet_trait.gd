@@ -135,7 +135,7 @@ func _on_event_published(payload: SignalPayload) -> void:
 				logger.error("%s not found in skeleton" % payload.id)
 				return
 
-			skeleton.set_bone_pose(bone_id, payload.data[payload.id])
+			skeleton.set_bone_pose(bone_id, payload.data)
 		Globals.BLEND_SHAPES:
 			if payload.id == null:
 				logger.error("Expected an ID for a %s payload" % Globals.BLEND_SHAPES)

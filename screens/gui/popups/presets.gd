@@ -60,7 +60,7 @@ class PresetsPage extends ScrollContainer:
 		logger = p_logger
 
 		model_config = ModelConfig.new()
-		var res: Result = Safely.wrap(model_config.parse_string(config_string))
+		var res: Result = Safely.wrap(model_config.from_string(config_string))
 		if res.is_err():
 			logger.error(res)
 			return
@@ -201,7 +201,7 @@ class PresetsPage extends ScrollContainer:
 		yield(get_tree().create_timer(0.2), "timeout")
 		is_trying_to_save = false
 
-		AM.cm.save_data(model_config.config_name, model_config.get_as_json_string())
+		AM.cm.save_data(model_config.config_name, model_config.to_string())
 
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
@@ -218,7 +218,7 @@ func _setup() -> Result:
 	var root: TreeItem = tree.create_item()
 
 	_initial_page = AM.cm.get_data("config_name")
-	var res: Result = _add_page(root, _initial_page, AM.cm.model_config.get_as_json_string(), true)
+	var res: Result = _add_page(root, _initial_page, AM.cm.model_config.to_string(), true)
 	if res.is_err():
 		return Safely.err(Error.Code.GUI_SETUP_ERROR, "Unable to create preset page for %s" % _initial_page)
 
@@ -293,12 +293,12 @@ func _on_new_preset_text_changed(text: String, button: Button) -> void:
 
 func _on_new_preset_button_pressed(line_edit: LineEdit) -> void:
 	var new_model_config := ModelConfig.new()
-	new_model_config.parse_dict(AM.cm.model_config.get_as_dict())
+	new_model_config.parse_dict(AM.cm.model_config.to_dict())
 	new_model_config.config_name = line_edit.text
 
 	line_edit.text = ""
 
-	var res := Safely.wrap(AM.cm.save_data(new_model_config.config_name, new_model_config.get_as_json_string()))
+	var res := Safely.wrap(AM.cm.save_data(new_model_config.config_name, new_model_config.to_string()))
 	if res.is_err():
 		logger.error(res)
 		return
