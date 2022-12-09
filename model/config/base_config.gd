@@ -6,14 +6,9 @@ extends Reference
 var other := {}
 
 func _to_string() -> String:
-	return get_as_json_string()
+	return var2str(to_dict())
 
-#region Export
-
-## Gets all valid properties as a Dictionary
-##
-## @return: Dictionary - The Dictionary of properties from the current config
-func get_as_dict() -> Dictionary:
+func to_dict() -> Dictionary:
 	var r := {}
 
 	for i in get_property_list():
@@ -21,96 +16,22 @@ func get_as_dict() -> Dictionary:
 			continue
 
 		r[i.name] = get(i.name)
-
+	
 	return r
 
-## Gets all valid properties as a JSON String
-##
-## @see: `get_as_dict`
-##
-## @return: String - The JSON String
-func get_as_json_string() -> String:
-	return JSON.print(get_as_dict(), "\t")
+func from_string(text: String) -> Result:
+	if text.empty():
+		return Safely.err(Error.Code.BASE_CONFIG_DATA_NOT_FOUND)
 
-#endregion
-
-#region Parsing
-
-func _parse_data(data) -> Result:
-	if data is Result:
-		return data
-	
-	match typeof(data):
-		TYPE_DICTIONARY:
-			var r := {}
-			
-			for key in data.keys():
-				var result := _parse_data(data[key])
-				if result.is_err():
-					return result
-				r[key] = result.unwrap()
-			
-			return Safely.ok(r)
-		TYPE_ARRAY:
-			var r := []
-			
-			for v in data:
-				var result := _parse_data(v)
-				if result.is_err():
-					return result
-				
-				r.append(result.unwrap())
-			
-			return Safely.ok(r)
-		TYPE_OBJECT:
-			return Safely.ok(data.get_as_dict())
-		_:
-			return Safely.ok(data)
-
-func parse_dict(data: Dictionary) -> Result:
-	var result: Result
-	if data.has("other"):
-		result = _parse_data(data["other"])
-		if result.is_err():
-			return result
-		other = result.unwrap()
+	var data: Dictionary = str2var(text)
 
 	for key in data.keys():
-		if key == "other":
-			continue
-		var value = data[key]
+		if get(key) != null:
+			set(key, data[key])
+		else:
+			other[key] = data[key]
 
-		match typeof(value):
-			TYPE_DICTIONARY, TYPE_ARRAY:
-				result = _parse_data(value)
-				if result.is_err():
-					return result
-				if get(key) != null:
-					set(key, result.unwrap())
-				else:
-					other[key] = result.unwrap()
-			TYPE_VECTOR2:
-				pass
-			_:
-				if get(key) != null: # All fields will be initialized with a value
-					set(key, value)
-				else:
-					other[key] = value
-	
 	return Safely.ok()
-
-func parse_string(data: String) -> Result:
-	var json_result := JSON.parse(data)
-	if json_result.error != OK:
-		return Safely.err(Error.Code.BASE_CONFIG_PARSE_FAILURE, json_result.error_string)
-
-	var json_data = json_result.result
-	if typeof(json_data) != TYPE_DICTIONARY:
-		return Safely.err(Error.Code.BASE_CONFIG_UNEXPECTED_DATA, str(json_data))
-
-	return parse_dict(json_data)
-
-#endregion
 
 #region Data getter/setter
 

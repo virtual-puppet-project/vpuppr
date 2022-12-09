@@ -1,0 +1,68 @@
+{
+"additional_bone_damping": 0.3,
+"additional_bones": {
+},
+"apply_rotation": true,
+"apply_translation": false,
+"base_interpolation_rate": 0.1,
+"blend_shape_actions": {
+},
+"blend_shapes": {
+},
+"blink_threshold": 0.2,
+"blinks_interpolation_rate": 0.1,
+"bone_interpolation_rate": 0.1,
+"bone_interpolation_rates": {
+},
+"bone_rotation_damping": 0.02,
+"bone_transforms": {
+},
+"bone_translation_damping": 0.3,
+"bones_to_interpolate": {
+},
+"config_name": "duck",
+"description": "",
+"eyebrow_interpolation_rate": 0.1,
+"eyebrow_quirk_left_damping": 1.0,
+"eyebrow_quirk_right_damping": 1.0,
+"eyebrow_steepness_left_damping": 1.0,
+"eyebrow_steepness_right_damping": 1.0,
+"eyebrow_up_down_left_damping": 1.0,
+"eyebrow_up_down_right_damping": 1.0,
+"gaze_interpolation_rate": 0.1,
+"gaze_strength": 0.5,
+"head_bone": "head",
+"hotkey": "",
+"instanced_props": {
+},
+"interpolate_blinks": false,
+"interpolate_bones": false,
+"interpolate_eyebrows": false,
+"interpolate_gaze": false,
+"interpolate_global": true,
+"interpolate_mouth": true,
+"is_default_dirty": true,
+"is_default_for_model": true,
+"left_blink_damping": 1.0,
+"left_gaze_damping": 1.0,
+"link_eye_blinks": false,
+"main_light": {
+},
+"main_world_environment": {
+},
+"model_name": "duck",
+"model_parent_transform": Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 ),
+"model_path": "res://entities/duck/duck.tscn",
+"model_transform": Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 ),
+"mouth_interpolation_rate": 0.8,
+"mouth_open_damping": 1.0,
+"mouth_wide_damping": 1.0,
+"notes": "",
+"other": {
+},
+"right_blink_damping": 1.0,
+"right_gaze_damping": 1.0,
+"should_track_eye": true,
+"use_blend_shapes_for_blinking": false,
+"use_raw_eye_rotation": false
+}

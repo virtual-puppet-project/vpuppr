@@ -79,13 +79,13 @@ func test_get_set_data_pass():
 
 func test_save_pass():
 	var metadata_file := File.new()
-	assert_eq(metadata_file.open("res://tests/test_resources/test_metadata.json", File.READ), OK)
+	assert_eq(metadata_file.open("res://tests/test_resources/test_metadata.vpuppr", File.READ), OK)
 
 	var model_config_file := File.new()
-	assert_eq(model_config_file.open("res://tests/test_resources/test_model_config.json", File.READ), OK)
+	assert_eq(model_config_file.open("res://tests/test_resources/test_model_config.vpuppr", File.READ), OK)
 
-	cm.metadata.parse_string(metadata_file.get_as_text())
-	cm.model_config.parse_string(model_config_file.get_as_text())
+	cm.metadata.from_string(metadata_file.get_as_text())
+	cm.model_config.from_string(model_config_file.get_as_text())
 
 	cm.model_config.config_name = "test_config"
 
@@ -97,13 +97,13 @@ func test_save_pass():
 	model_config_file.close()
 
 	assert_eq(metadata_file.open("%s/%s" % [temp_folder_path, cm.METADATA_FILE_NAME], File.READ), OK)
-	assert_eq(model_config_file.open("%s/%s" % [temp_folder_path, "test_config.json"], File.READ), OK)
+	assert_eq(model_config_file.open("%s/%s" % [temp_folder_path, "test_config.vpuppr"], File.READ), OK)
 
 	var md := Metadata.new()
 	var mc := ModelConfig.new()
 
-	assert_true(md.parse_string(metadata_file.get_as_text()).is_ok())
-	assert_true(mc.parse_string(model_config_file.get_as_text()).is_ok())
+	assert_true(md.from_string(metadata_file.get_as_text()).is_ok())
+	assert_true(mc.from_string(model_config_file.get_as_text()).is_ok())
 
 	assert_eq(md.msaa_value, cm.get_data("msaa_value"))
 	

@@ -7,16 +7,16 @@ var logger: Logger
 
 var env := Env.new()
 
-var ps: PubSub
-var lm: LogManager
-var cm: ConfigManager
-var em: ExtensionManager
-var tm: TranslationManager
-var nm: NotificationManager
-var tcm: TempCacheManager
+var ps: PubSub = null
+var lm: LogManager = null
+var cm: ConfigManager = null
+var em: ExtensionManager = null
+var tm: TranslationManager = null
+var nm: NotificationManager = null
+var tcm: TempCacheManager = null
 # Not girl, you weirdo
 var grl = preload("res://addons/gdnative-runtime-loader/gdnative_runtime_loader.gd").new()
-var hp: HotkeyProvider
+var hp: HotkeyProvider = null
 
 #region Debounce
 
