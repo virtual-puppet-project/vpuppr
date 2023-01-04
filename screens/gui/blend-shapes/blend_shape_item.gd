@@ -21,6 +21,9 @@ var blend_shape_value: float = 0.0
 onready var value_line_edit := $Value/Value
 onready var value_slider := $HSlider
 
+var is_slider_dragging := false
+var last_slider_ratio: float = 0.0
+
 #-----------------------------------------------------------------------------#
 # Builtin functions                                                           #
 #-----------------------------------------------------------------------------#
@@ -28,11 +31,17 @@ onready var value_slider := $HSlider
 func _ready() -> void:
 	$BlendShapeName/Value.text = blend_shape_name
 	value_line_edit.text = str(blend_shape_value)
+	value_line_edit.connect("text_changed", self, "_on_value_line_edit_changed")
 
 	$Hotkeys/AddSequence.connect("pressed", self, "_on_add_sequence")
 	
 	value_slider.value = blend_shape_value
 	value_slider.connect("value_changed", self, "_on_slider_value_changed")
+#	value_slider.connect("drag_started", self, "_on_slider_drag_started")
+#	value_slider.connect("drag_ended", self, "_on_slider_drag_ended")
+
+	AM.ps.subscribe(self, Globals.BLEND_SHAPES, "_on_blend_shape_modified")
+	AM.ps.subscribe(self, "action_pressed")
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
@@ -70,6 +79,19 @@ func _on_value_line_edit_changed(text: String) -> void:
 
 func _on_slider_value_changed(_value: float) -> void:
 	AM.ps.publish(Globals.BLEND_SHAPES, value_slider.ratio, blend_shape_name)
+
+func _on_blend_shape_modified(payload: SignalPayload) -> void:
+	if payload.id != blend_shape_name:
+		return
+	
+	value_line_edit.text = str(payload.data)
+	value_slider.value = payload.data
+
+func _on_action_pressed(action_name: String) -> void:
+	if action_name != blend_shape_name:
+		return
+
+	# TODO implement hotkey support
 
 #-----------------------------------------------------------------------------#
 # Private functions                                                           #

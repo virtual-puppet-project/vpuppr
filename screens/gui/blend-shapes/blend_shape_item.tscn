@@ -27,35 +27,40 @@ size_flags_horizontal = 3
 [node name="Value" type="HBoxContainer" parent="."]
 margin_top = 18.0
 margin_right = 1600.0
-margin_bottom = 32.0
+margin_bottom = 42.0
 
 [node name="Label" type="Label" parent="Value"]
+margin_top = 5.0
 margin_right = 798.0
-margin_bottom = 14.0
+margin_bottom = 19.0
 size_flags_horizontal = 3
 text = "DEFAULT_GUI_BLEND_SHAPE_ITEM_VALUE"
 
-[node name="Value" type="Label" parent="Value"]
+[node name="Value" type="LineEdit" parent="Value"]
 margin_left = 802.0
 margin_right = 1600.0
-margin_bottom = 14.0
+margin_bottom = 24.0
 size_flags_horizontal = 3
 
 [node name="HSlider" type="HSlider" parent="."]
-margin_top = 36.0
+margin_top = 46.0
 margin_right = 1600.0
-margin_bottom = 52.0
+margin_bottom = 62.0
+max_value = 1.0
+step = 0.01
 scrollable = false
+tick_count = 10
+ticks_on_borders = true
 
 [node name="ReplaceType" type="OptionButton" parent="."]
-margin_top = 56.0
+margin_top = 66.0
 margin_right = 1600.0
-margin_bottom = 76.0
+margin_bottom = 86.0
 
 [node name="Hotkeys" type="VBoxContainer" parent="."]
-margin_top = 80.0
+margin_top = 90.0
 margin_right = 1600.0
-margin_bottom = 138.0
+margin_bottom = 148.0
 
 [node name="Label" type="Label" parent="Hotkeys"]
 margin_right = 1600.0
