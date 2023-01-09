@@ -19,8 +19,8 @@ jobs:
             os-name: windows
           - os: ubuntu-latest
             os-name: linux
-          - os: macos-latest
-            os-name: osx
+#          - os: macos-latest
+#            os-name: osx
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repo
