@@ -9,11 +9,6 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "VBoxContainer",
-"class": "AbstractActionsSelection",
-"language": "GDScript",
-"path": "res://screens/gui/actions/abstract_actions_selection.gd"
-}, {
 "base": "Reference",
 "class": "AbstractManager",
 "language": "GDScript",
@@ -43,11 +38,6 @@ _global_script_classes=[ {
 "class": "BasePopup",
 "language": "GDScript",
 "path": "res://screens/gui/popups/base_popup.gd"
-}, {
-"base": "Spatial",
-"class": "BaseProp",
-"language": "GDScript",
-"path": "res://entities/BaseProp.gd"
 }, {
 "base": "BaseLayout",
 "class": "BaseTreeLayout",
@@ -215,14 +205,12 @@ _global_script_classes=[ {
 "path": "res://addons/vrm/vrm_toplevel.gd"
 } ]
 _global_script_class_icons={
-"AbstractActionsSelection": "",
 "AbstractManager": "",
 "Action": "",
 "AppManager": "",
 "BaseConfig": "",
 "BaseLayout": "",
 "BasePopup": "",
-"BaseProp": "",
 "BaseTreeLayout": "",
 "ConfigManager": "",
 "ControlUtil": "",

@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://screens/landing_screen.gd" type="Script" id=1]
 [ext_resource path="res://assets/default.theme" type="Theme" id=2]
 [ext_resource path="res://screens/gui/settings.tscn" type="PackedScene" id=3]
 [ext_resource path="res://screens/gui/runner.tscn" type="PackedScene" id=4]
+[ext_resource path="res://screens/gui/popups/about.tscn" type="PackedScene" id=5]
 
 [node name="LandingScreen" type="CanvasLayer"]
 script = ExtResource( 1 )
@@ -97,3 +98,5 @@ margin_right = -7.5
 margin_bottom = -7.5
 size_flags_horizontal = 3
 size_flags_vertical = 3
+
+[node name="About" parent="RootControl/TabContainer/DEFAULT_GUI_LANDING_SCREEN_ABOUT" instance=ExtResource( 5 )]

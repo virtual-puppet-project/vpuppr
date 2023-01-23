@@ -9,7 +9,7 @@ script = ExtResource( 1 )
 
 [node name="TopBar" type="VBoxContainer" parent="."]
 margin_right = 1600.0
-margin_bottom = 56.0
+margin_bottom = 32.0
 
 [node name="Filter" type="LineEdit" parent="TopBar"]
 margin_right = 1600.0
@@ -18,23 +18,13 @@ placeholder_text = "Filter"
 caret_blink = true
 caret_blink_speed = 0.5
 
-[node name="HBoxContainer" type="HBoxContainer" parent="TopBar"]
+[node name="HSeparator" type="HSeparator" parent="TopBar"]
 margin_top = 28.0
 margin_right = 1600.0
-margin_bottom = 48.0
-
-[node name="ResetAll" type="Button" parent="TopBar/HBoxContainer"]
-margin_right = 67.0
-margin_bottom = 20.0
-text = "Reset all"
-
-[node name="HSeparator" type="HSeparator" parent="TopBar"]
-margin_top = 52.0
-margin_right = 1600.0
-margin_bottom = 56.0
+margin_bottom = 32.0
 
 [node name="ScrollContainer" type="ScrollContainer" parent="."]
-margin_top = 60.0
+margin_top = 36.0
 margin_right = 1600.0
 margin_bottom = 900.0
 size_flags_horizontal = 3

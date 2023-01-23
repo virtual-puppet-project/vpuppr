@@ -16,3 +16,8 @@ margin_bottom = 900.0
 margin_left = 313.0
 margin_right = 1600.0
 margin_bottom = 900.0
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+margin_right = 1287.0
+margin_bottom = 14.0
+text = "Under construction"

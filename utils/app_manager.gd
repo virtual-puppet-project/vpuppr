@@ -34,7 +34,7 @@ var all_logs := false
 var environment: String = Env.Envs.DEFAULT
 var screen_scaling: float = 0.75
 var stay_on_splash := false
-var resource_path := "res://resources" setget , get_resource_path
+var resource_path := "" setget , get_resource_path
 var version := "0.9.0"
 
 #endregion

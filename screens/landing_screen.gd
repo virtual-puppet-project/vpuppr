@@ -90,6 +90,8 @@ func _ready() -> void:
 	
 	for child in $RootControl/TabContainer.get_children():
 		child.name = tr(child.name)
+	
+	AM.tcm.clear()
 
 #-----------------------------------------------------------------------------#
 # Connections                                                                 #
