@@ -15,7 +15,6 @@ const Model = preload("res://screens/gui/popups/model.tscn")
 const Bones = preload("res://screens/gui/popups/bones.tscn")
 const Tracking = preload("res://screens/gui/popups/tracking.tscn")
 const BlendShapes = preload("res://screens/gui/blend-shapes/blend_shapes.tscn")
-const Props = preload("res://screens/gui/popups/props.tscn")
 const Presets = preload("res://screens/gui/popups/presets.tscn")
 
 const BUILTIN_MENUS := {
@@ -23,7 +22,6 @@ const BUILTIN_MENUS := {
 	"DEFAULT_GUI_BONES": Bones,
 	"DEFAULT_GUI_TRACKING": Tracking,
 	"DEFAULT_GUI_BLEND_SHAPES": BlendShapes,
-	"DEFAULT_GUI_PROPS": Props,
 	"DEFAULT_GUI_PRESETS": Presets
 }
 
