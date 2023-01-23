@@ -20,7 +20,7 @@ const MODEL_INITIAL_TRANSFORM := "model_initial_transform"
 const MODEL_PARENT_INITIAL_TRANSFORM := "model_parent_initial_transform"
 
 # TODO this might be bad?
-var model_viewport := Viewport.new()
+#var model_viewport := Viewport.new()
 
 var model: PuppetTrait
 var model_parent: Spatial
@@ -133,33 +133,36 @@ func _pre_setup_scene() -> void:
 	
 	AM.ps.subscribe(self, Globals.EVENT_PUBLISHED)
 
-	var viewport_container := ViewportContainer.new()
-	viewport_container.anchor_bottom = 1.0
-	viewport_container.anchor_right = 1.0
-	viewport_container.stretch = true
-	viewport_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
-
-	add_child(viewport_container)
-	move_child(viewport_container, 0)
-
-	model_viewport.size = viewport_container.rect_size
-	model_viewport.own_world = true
-
-	viewport_container.add_child(model_viewport)
+#	var viewport_container := ViewportContainer.new()
+#	viewport_container.anchor_bottom = 1.0
+#	viewport_container.anchor_right = 1.0
+#	viewport_container.stretch = true
+#	viewport_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+#
+#	add_child(viewport_container)
+#	move_child(viewport_container, 0)
+#
+#	model_viewport.size = viewport_container.rect_size
+#	model_viewport.own_world = true
+#
+#	viewport_container.add_child(model_viewport)
 
 	# TODO pull settings from config
 	var light := DirectionalLight.new()
 	light.light_energy = 0.5
-	model_viewport.add_child(light)
+#	model_viewport.add_child(light)
+	add_child(light)
 
 	var camera := Camera.new()
 	camera.current = true
 	camera.translate(Vector3(0.0, 0.0, 3.0))
-	model_viewport.add_child(camera)
+#	model_viewport.add_child(camera)
+	add_child(camera)
 
 	var world := World.new()
 	world.environment = load("res://assets/default_env.tres")
-	model_viewport.world = world
+#	model_viewport.world = world
+	get_viewport().world = world
 
 	model_parent = Spatial.new()
 
@@ -187,7 +190,8 @@ func _setup_scene() -> void:
 		logger.error(res)
 		return
 
-	model_viewport.call_deferred("add_child", model_parent)
+#	model_viewport.call_deferred("add_child", model_parent)
+	call_deferred("add_child", model_parent)
 
 	yield(model, "ready")
 
@@ -231,7 +235,8 @@ func _teardown() -> void:
 func _generate_preview() -> void:
 	logger.info("Generating preview")
 	
-	var image := model_viewport.get_texture().get_data()
+#	var image := model_viewport.get_texture().get_data()
+	var image := get_viewport().get_texture().get_data()
 	image.flip_y()
 
 	var dir := Directory.new()
@@ -269,15 +274,15 @@ func _on_config_changed(payload: SignalPayload, signal_name: String) -> void:
 			ProjectSettings.set_setting("display/window/per_pixel_transparency/allowed", payload.data)
 			ProjectSettings.set_setting("display/window/per_pixel_transparency/enabled", payload.data)
 			get_viewport().transparent_bg = payload.data
-			model_viewport.transparent_bg = payload.data
+#			model_viewport.transparent_bg = payload.data
 		"use_fxaa":
 			ProjectSettings.set_setting("rendering/quality/filters/use_fxaa", payload.data)
 			get_viewport().fxaa = payload.data
-			model_viewport.fxaa = payload.data
+#			model_viewport.fxaa = payload.data
 		"msaa_value":
 			ProjectSettings.set_setting("rendering/quality/filters/msaa", payload.data)
 			get_viewport().msaa = payload.data
-			model_viewport.msaa = payload.data
+#			model_viewport.msaa = payload.data
 		
 		#endregion
 
