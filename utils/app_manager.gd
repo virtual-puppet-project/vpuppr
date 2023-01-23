@@ -16,7 +16,6 @@ var nm: NotificationManager = null
 var tcm: TempCacheManager = null
 # Not girl, you weirdo
 var grl = preload("res://addons/gdnative-runtime-loader/gdnative_runtime_loader.gd").new()
-var hp: HotkeyProvider = null
 
 #region Debounce
 
@@ -66,29 +65,6 @@ func _ready() -> void:
 	
 	# Must be initialized AFTER ExtensionManager because it can load translation files for extensions
 	tm = TranslationManager.new()
-
-	#region HotkeyProvider
-	
-	var hotkey_providers: Array = em.query_extensions_for_tag(
-			ExtensionManager.RecognizedTags.HOTKEY_PROVIDER)
-	
-	if OS.is_debug_build() or environment == Env.Envs.DEBUG:
-		for i in hotkey_providers:
-			logger.debug("Found hotkey provider: %s" % i.extension_name)
-	
-	if hotkey_providers.size() == 1:
-		var hotkey_ext: Extension.ExtensionResource = hotkey_providers.pop_back()
-		logger.debug("Using hotkey provider %s" % hotkey_ext.extension_name)
-		hp = load(hotkey_ext.entrypoint).new()
-	elif hotkey_providers.size() > 1:
-		logger.error("Too many hotkey providers found (%d), using dummy provider" %
-				hotkey_providers.size())
-		hp = DummyHotkeyProvider.new()
-	else: # No providers at all
-		logger.debug("No hotkey provider found, using dummy provider")
-		hp = DummyHotkeyProvider.new()
-
-	#endregion
 	
 	# Idk, this could really be anywhere
 	nm = NotificationManager.new()
