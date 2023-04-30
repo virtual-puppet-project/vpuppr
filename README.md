@@ -40,7 +40,7 @@ all supported operating systems are available via GitHub actions.
 1. Ensure that [Flathub is enabled on your system](https://flatpak.org/setup/)
 2. Using a graphical interface that supports Flatpak, search for "virtual puppet project"
    1. Alternatively, you can use `flatpak install vpuppr` to list any apps that have the same string
-   * VPupPr will be available under the name `com.github.virtual_puppet_project.vpuppr`
+   * VPupPr will be available under the name `pro.vpup.vpuppr`
    * For the latest (alpha, beta) builds of VPupPr, you can download them from [Flathub Beta](https://beta.flathub.org/)
 4. Hit the install button and run it just like any other app!
 
