@@ -1,0 +1,84 @@
+[gd_scene load_steps=4 format=3 uid="uid://mfgmero3gob3"]
+
+[ext_resource type="Script" path="res://screens/home/runner_item.gd" id="1_repxk"]
+[ext_resource type="Texture2D" uid="uid://c4rs20oqm2jq2" path="res://assets/Favorite.svg" id="2_r8fud"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7e7n4"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+bg_color = Color(0.0862745, 0.0862745, 0.0862745, 0.478431)
+
+[node name="RunnerItem" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_7e7n4")
+script = ExtResource("1_repxk")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Favorite" type="Button" parent="HBoxContainer"]
+unique_name_in_owner = true
+modulate = Color(0.392157, 0.392157, 0.392157, 1)
+layout_mode = 2
+focus_mode = 0
+toggle_mode = true
+icon = ExtResource("2_r8fud")
+
+[node name="VSeparator" type="VSeparator" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="Preview" type="TextureRect" parent="HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="VSeparator2" type="VSeparator" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Title" type="Label" parent="HBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+vertical_alignment = 1
+text_overrun_behavior = 3
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+text = "Model:"
+
+[node name="Model" type="Label" parent="HBoxContainer/VBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="HBoxContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Last used:"
+vertical_alignment = 1
+
+[node name="LastUsed" type="Label" parent="HBoxContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+vertical_alignment = 1

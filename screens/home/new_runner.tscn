@@ -1,0 +1,127 @@
+[gd_scene load_steps=3 format=3 uid="uid://dgvk2pv3f168e"]
+
+[ext_resource type="Script" path="res://screens/home/new_runner.gd" id="1_wwlyc"]
+[ext_resource type="Theme" uid="uid://dbf0d25iqye5y" path="res://assets/main.theme" id="2_q6tp2"]
+
+[node name="NewRunner" type="Window"]
+initial_position = 2
+title = "New Runner"
+size = Vector2i(1600, 900)
+transient = true
+exclusive = true
+theme = ExtResource("2_q6tp2")
+script = ExtResource("1_wwlyc")
+
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.113725, 0.133333, 0.160784, 1)
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Name" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/Name"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+
+[node name="NameInput" type="LineEdit" parent="ScrollContainer/VBoxContainer/Name"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RunnerType" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/RunnerType"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Runner Type"
+
+[node name="RunnerType" type="OptionButton" parent="ScrollContainer/VBoxContainer/RunnerType"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Model" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/Model"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Model"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/Model"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ModelPath" type="LineEdit" parent="ScrollContainer/VBoxContainer/Model/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ChooseModel" type="Button" parent="ScrollContainer/VBoxContainer/Model/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Open"
+
+[node name="GuiType" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/GuiType"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Gui Type"
+
+[node name="GuiType" type="OptionButton" parent="ScrollContainer/VBoxContainer/GuiType"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Spacer" type="Control" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Status" type="Label" parent="ScrollContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+
+[node name="Confirm" type="Button" parent="ScrollContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 0
+disabled = true
+text = "Confirm"
+
+[node name="Cancel" type="Button" parent="ScrollContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 0
+text = "Cancel"

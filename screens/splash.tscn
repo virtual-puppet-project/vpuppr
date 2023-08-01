@@ -1,0 +1,100 @@
+[gd_scene load_steps=6 format=3 uid="uid://x3eyv2t6alg4"]
+
+[ext_resource type="Script" path="res://screens/splash.gd" id="1_d26af"]
+[ext_resource type="Texture2D" uid="uid://vkx5v052kihu" path="res://assets/SplashIcon.png" id="2_yb2im"]
+
+[sub_resource type="Animation" id="Animation_6hqqi"]
+resource_name = "spin"
+length = 2.5
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Icon:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5, 1, 1.8, 2, 2.5),
+"transitions": PackedFloat32Array(1, 2, -2, -0.5, 0.5, 2),
+"update": 0,
+"values": [0.0, -0.349066, 0.0, 6.28319, 6.63225, 6.28319]
+}
+
+[sub_resource type="Animation" id="Animation_67qaa"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Icon:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [-0.349066]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_3nt42"]
+_data = {
+"RESET": SubResource("Animation_67qaa"),
+"spin": SubResource("Animation_6hqqi")
+}
+
+[node name="Splash" type="CanvasLayer"]
+script = ExtResource("1_d26af")
+
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.113281, 0.132813, 0.160156, 1)
+
+[node name="Icon" type="TextureRect" parent="."]
+unique_name_in_owner = true
+texture_filter = 1
+texture_repeat = 1
+anchors_preset = -1
+anchor_left = 0.4
+anchor_top = 0.4
+anchor_right = 0.6
+anchor_bottom = 0.6
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = -0.349066
+texture = ExtResource("2_yb2im")
+expand_mode = 1
+stretch_mode = 5
+flip_h = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchors_preset = -1
+anchor_left = 0.1
+anchor_top = 0.75
+anchor_right = 0.9
+anchor_bottom = 0.85
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="StatusLabel" type="RichTextLabel" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+fit_content = true
+
+[node name="LoadingBar" type="ProgressBar" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_3nt42")
+}

@@ -1,0 +1,196 @@
+[gd_scene load_steps=7 format=3 uid="uid://cvbgd8fsard4q"]
+
+[ext_resource type="Script" path="res://screens/home/home.gd" id="1_hu0ir"]
+[ext_resource type="Texture2D" uid="uid://dvtlk4wqdyh05" path="res://assets/VpupprDucksBG.png" id="2_k12s5"]
+[ext_resource type="Texture2D" uid="uid://du51kqu77gnem" path="res://assets/VpupprDuck.png" id="3_i0p7d"]
+[ext_resource type="Texture2D" uid="uid://m7qjuqot03a2" path="res://assets/VpupprLogo.png" id="4_07hvr"]
+[ext_resource type="Texture2D" uid="uid://ubjssg2mb0l" path="res://assets/VpupprSubLogo.png" id="5_rm36l"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r0xjd"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+bg_color = Color(0, 0, 0, 0.270588)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="RunnerSelection" type="CanvasLayer"]
+script = ExtResource("1_hu0ir")
+
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12549, 0.141176, 0.192157, 1)
+
+[node name="DucksBackgroundAnchor" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="DucksBackground" type="TextureRect" parent="DucksBackgroundAnchor"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = -1747.5
+offset_top = -1172.0
+offset_right = 1747.5
+offset_bottom = 1172.0
+scale = Vector2(0.75, 0.75)
+pivot_offset = Vector2(1747.5, 1172)
+mouse_filter = 2
+texture = ExtResource("2_k12s5")
+
+[node name="DuckAnchor" type="Control" parent="."]
+layout_mode = 3
+anchor_left = 0.23
+anchor_top = 0.5
+anchor_right = 0.23
+anchor_bottom = 0.5
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Duck" type="TextureRect" parent="DuckAnchor"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = -294.5
+offset_top = -420.0
+offset_right = 294.5
+offset_bottom = 420.0
+scale = Vector2(0.6, 0.6)
+pivot_offset = Vector2(294.5, 420)
+mouse_filter = 2
+texture = ExtResource("3_i0p7d")
+
+[node name="LogoAnchor" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 3
+anchor_left = 0.7
+anchor_top = 0.4
+anchor_right = 0.7
+anchor_bottom = 0.4
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Logo" type="TextureRect" parent="LogoAnchor"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = -492.5
+offset_top = -115.0
+offset_right = 492.5
+offset_bottom = 115.0
+scale = Vector2(0.5, 0.5)
+pivot_offset = Vector2(492.5, 115)
+mouse_filter = 2
+texture = ExtResource("4_07hvr")
+
+[node name="SubLogoAnchor" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 3
+anchor_left = 0.7
+anchor_top = 0.55
+anchor_right = 0.7
+anchor_bottom = 0.6
+mouse_filter = 2
+
+[node name="SubLogo" type="TextureRect" parent="SubLogoAnchor"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = -492.5
+offset_top = -27.5
+offset_right = 492.5
+offset_bottom = 27.5
+scale = Vector2(0.5, 0.5)
+pivot_offset = Vector2(492.5, 27.5)
+mouse_filter = 2
+texture = ExtResource("5_rm36l")
+
+[node name="RunnerContainer" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0)
+anchors_preset = -1
+anchor_left = 0.4
+anchor_top = 0.4
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_r0xjd")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="RunnerContainer"]
+layout_mode = 2
+
+[node name="HFlowContainer" type="HFlowContainer" parent="RunnerContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="NewRunner" type="Button" parent="RunnerContainer/VBoxContainer/HFlowContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "New"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="RunnerContainer/VBoxContainer/HFlowContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SortLabel" type="Label" parent="RunnerContainer/VBoxContainer/HFlowContainer/HBoxContainer"]
+layout_mode = 2
+text = "Sort:"
+
+[node name="SortRunners" type="OptionButton" parent="RunnerContainer/VBoxContainer/HFlowContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+item_count = 2
+selected = 0
+popup/item_0/text = "Last Used"
+popup/item_0/id = 0
+popup/item_1/text = "Name"
+popup/item_1/id = 1
+
+[node name="SortDirection" type="Button" parent="RunnerContainer/VBoxContainer/HFlowContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+
+[node name="Settings" type="Button" parent="RunnerContainer/VBoxContainer/HFlowContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Settings"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="RunnerContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Runners" type="VBoxContainer" parent="RunnerContainer/VBoxContainer/ScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="Fade" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+top_level = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+color = Color(0, 0, 0, 1)
