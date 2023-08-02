@@ -12,7 +12,9 @@ const SortDirection := {
 	"DESCENDING": "Descending"
 }
 
-var max_parallax_offset := Vector2(32.0, 18.0)
+var _logger := Logger.create("Home")
+
+var _max_parallax_offset := Vector2(32.0, 18.0)
 
 @onready
 var _viewport: Viewport = get_viewport()
@@ -58,6 +60,8 @@ var _settings_popup: Window = null
 #-----------------------------------------------------------------------------#
 
 func _ready() -> void:
+	_logger.info("starting ready!")
+	
 	_adapt_screen_size()
 	
 	var handle_popup_hide := func(node: Node) -> void:
@@ -286,8 +290,8 @@ func _notification(what: int) -> void:
 
 func _process(_delta: float) -> void:
 	var mouse_diff: Vector2 = _screen_center - _viewport.get_mouse_position()
-	mouse_diff.x = max(-max_parallax_offset.x, min(max_parallax_offset.x, mouse_diff.x))
-	mouse_diff.y = max(-max_parallax_offset.y, min(max_parallax_offset.y, mouse_diff.y))
+	mouse_diff.x = max(-_max_parallax_offset.x, min(_max_parallax_offset.x, mouse_diff.x))
+	mouse_diff.y = max(-_max_parallax_offset.y, min(_max_parallax_offset.y, mouse_diff.y))
 	
 	_ducks_background.position = _ducks_background.position.lerp(
 		_parallax_initial_positions[_ducks_background] - mouse_diff, 0.0025)
@@ -308,7 +312,7 @@ func _adapt_screen_size() -> void:
 	
 #	_logger.debug("Using scale factor %s" % str(scale_factor))
 	
-	max_parallax_offset *= scale_factor
+	_max_parallax_offset *= scale_factor
 	
 	for i in _parallax_elements:
 		i.size *= scale_factor

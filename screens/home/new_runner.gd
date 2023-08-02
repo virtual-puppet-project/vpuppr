@@ -12,7 +12,7 @@ const GuiType := {
 }
 var _gui_type_selection := GuiType.STANDARD_GUI
 
-var _logger := Logger.emplace("NewRunner")
+#var _logger := Logger.emplace("NewRunner")
 
 @onready
 var _name_input := %NameInput
@@ -43,52 +43,52 @@ func _ready() -> void:
 		if not visible:
 			close_requested.emit()
 	)
-	close_requested.connect(func(data: RunnerData = null) -> void:
-		queue_free()
-	)
+#	close_requested.connect(func(data: RunnerData = null) -> void:
+#		queue_free()
+#	)
 	
 	# TODO use default no preview image
 #	runner_data.preview_path = "C:/Users/theaz/Pictures/astro.png"
 	
-	_confirm.pressed.connect(func() -> void:
-		var data := RunnerData.new()
-		
-		data.name = _name_input.text
-		# TODO use default no preview image
-		data.preview_path = ""
-		
-		match _runner_type_selection:
-			RunnerType.VRM_RUNNER:
-				data.runner_path = "res://screens/runners/vrm_runner.tscn"
-				
-				var config := VrmConfig.new()
-				config.model_path = _model_path.text
-				
-				data.config = config
-				data.config_type = RunnerData.ConfigType.VRM
-				
-			RunnerType.PNG_TUBER_RUNNER:
-				data.runner_path = "res://screens/runners/png_tuber_runner.tscn"
-				
-				var config := PngTuberConfig.new()
-				# TODO stub
-				
-				data.config = config
-				data.config_type = RunnerData.ConfigType.PNG
-				
-				# TODO seems kind of weird to set gui stuff here instead of based off of gui type
-				data.gui_menus = [
-					GuiMenu.new("PNG Tuber", "res://gui/2d/png-tuber-config/png_tuber_config.tscn"),
-					GuiMenu.new("Tracking", "res://gui/tracking.tscn"),
-					GuiMenu.new("Mic Input", "res://gui/mic_input.tscn")
-				]
-		
-		match _gui_type_selection:
-			GuiType.STANDARD_GUI:
-				data.gui_path = "res://gui/standard_gui.tscn"
-		
-		close_requested.emit(data)
-	)
+#	_confirm.pressed.connect(func() -> void:
+#		var data := RunnerData.new()
+#
+#		data.name = _name_input.text
+#		# TODO use default no preview image
+#		data.preview_path = ""
+#
+#		match _runner_type_selection:
+#			RunnerType.VRM_RUNNER:
+#				data.runner_path = "res://screens/runners/vrm_runner.tscn"
+#
+#				var config := VrmConfig.new()
+#				config.model_path = _model_path.text
+#
+#				data.config = config
+#				data.config_type = RunnerData.ConfigType.VRM
+#
+#			RunnerType.PNG_TUBER_RUNNER:
+#				data.runner_path = "res://screens/runners/png_tuber_runner.tscn"
+#
+#				var config := PngTuberConfig.new()
+#				# TODO stub
+#
+#				data.config = config
+#				data.config_type = RunnerData.ConfigType.PNG
+#
+#				# TODO seems kind of weird to set gui stuff here instead of based off of gui type
+#				data.gui_menus = [
+#					GuiMenu.new("PNG Tuber", "res://gui/2d/png-tuber-config/png_tuber_config.tscn"),
+#					GuiMenu.new("Tracking", "res://gui/tracking.tscn"),
+#					GuiMenu.new("Mic Input", "res://gui/mic_input.tscn")
+#				]
+#
+#		match _gui_type_selection:
+#			GuiType.STANDARD_GUI:
+#				data.gui_path = "res://gui/standard_gui.tscn"
+#
+#		close_requested.emit(data)
+#	)
 	
 	_name_input.text_changed.connect(func(_text: String) -> void:
 		_validate()
@@ -138,9 +138,10 @@ func _ready() -> void:
 			RunnerType.PNG_TUBER_RUNNER:
 				_model_container.hide()
 			_:
-				_logger.error("Unhandled runner type: %s" % _runner_type_selection)
+#				_logger.error("Unhandled runner type: %s" % _runner_type_selection)
+				pass
 		
-		_validate()
+#		_validate()
 	)
 	runner_type.select(0)
 	runner_type_popup.index_pressed.emit(0)
@@ -156,7 +157,8 @@ func _ready() -> void:
 			GuiType.STANDARD_GUI:
 				pass
 			_:
-				_logger.error("Unhandled gui type: %s" % _gui_type_selection)
+#				_logger.error("Unhandled gui type: %s" % _gui_type_selection)
+				pass
 	)
 	gui_type.select(0)
 	gui_type_popup.index_pressed.emit(0)

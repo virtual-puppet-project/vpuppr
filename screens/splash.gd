@@ -14,6 +14,8 @@ const HOME_PATH := "res://screens/home/home.tscn"
 ## Spin animation name.
 const SPIN_ANIM := "spin"
 
+var _logger := Logger.create("Splash")
+
 @onready
 var _icon := %Icon
 @onready
@@ -62,6 +64,8 @@ func _ready() -> void:
 	_loadables_in_progress = _loadables.duplicate(true)
 	
 	_anim_player.play(SPIN_ANIM)
+	
+	_logger.debug("Splash ready!")
 
 func _process(delta: float) -> void:
 	var load_progress: float = float(_load_successes + _load_failures) / _loadables_size
@@ -71,14 +75,14 @@ func _process(delta: float) -> void:
 	for i in _loadables_in_progress:
 		match ResourceLoader.load_threaded_get_status(i, _status):
 			ResourceLoader.THREAD_LOAD_LOADED:
+				_logger.info("Successfully preloaded %s" % i)
 				_load_successes += 1
 				loadables_completed.append(i)
 			ResourceLoader.THREAD_LOAD_IN_PROGRESS:
 				load_progress += _status[0] / _loadables_size
 			_:
 				_load_failures += 1
-				loadables_completed.append(i)
-				printerr("Unable to preload resource %s" % i)
+				_logger.error("Unable to preload resource %s" % i)
 	
 	for i in loadables_completed:
 		_loadables_in_progress.erase(i)

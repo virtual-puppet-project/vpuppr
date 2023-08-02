@@ -31,6 +31,10 @@ window/subwindows/embed_subwindows=false
 
 script/templates_search_path="res://script-templates"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/GDMP/plugin.cfg")
+
 [gui]
 
 theme/default_theme_scale=1.5

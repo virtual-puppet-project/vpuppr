@@ -1,0 +1,3 @@
+[submodule "vpuppr-rust-lib"]
+	path = vpuppr-rust-lib
+	url = git@github.com:virtual-puppet-project/vpuppr-rust-lib.git

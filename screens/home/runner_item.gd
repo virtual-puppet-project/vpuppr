@@ -19,7 +19,7 @@ var model: Label = %Model
 @onready
 var last_used: Label = %LastUsed
 
-var last_used_datetime: Datetime = null
+#var last_used_datetime: Datetime = null
 
 var _panel: StyleBoxFlat = self.get_indexed("theme_override_styles/panel").duplicate()
 
@@ -79,12 +79,12 @@ func init_preview(path: String) -> void:
 			# TODO (Tim Yuen) check if this returns null if loading fails
 			var image := Image.load_from_file(path)
 			if image == null:
-				Logger.global(logger_id, "File not found %s" % path)
+#				Logger.global(logger_id, "File not found %s" % path)
 				return
 			
 			preview.texture = ImageTexture.create_from_image(image)
 		_:
-			Logger.global(logger_id, "Unhandled file type %s" % path)
+#			Logger.global(logger_id, "Unhandled file type %s" % path)
 			
 			var image := Image.create(64, 64, false, Image.FORMAT_RGB8)
 			preview.texture = ImageTexture.create_from_image(image)
