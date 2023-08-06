@@ -10,5 +10,5 @@ cargo build --manifest-path=vpuppr-rust-lib/Cargo.toml
 cargo build --release --manifest-path=vpuppr-rust-lib/Cargo.toml
 
 echo "Copying gdextension files"
-cp vpuppr-rust-lib/vpuppr_rust_lib.gdextension .
+cp libvpuppr/libvpuppr.gdextension .
 
