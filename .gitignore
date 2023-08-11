@@ -1,6 +1,11 @@
 # Godot 4+ specific ignores
 .godot/
 
+# libvpuppr
 *.gdextension
 **/*.dll
+
+# 3D models
+**/*.glb
+**/*.vrm
 

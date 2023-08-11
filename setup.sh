@@ -6,8 +6,7 @@ echo "Updating git submodules"
 git submodule update --recursive --remote
 
 echo "Building rust lib"
-cargo build --manifest-path=vpuppr-rust-lib/Cargo.toml
-cargo build --release --manifest-path=vpuppr-rust-lib/Cargo.toml
+python libvpuppr/build.py --debug
 
 echo "Copying gdextension files"
 cp libvpuppr/libvpuppr.gdextension .
