@@ -62,6 +62,12 @@ var _settings_popup: Window = null
 func _ready() -> void:
 	_logger.info("starting ready!")
 	
+#	mf = MeowFace.create({
+#		address = "192.168.88.51",
+#		port = "21412"
+#	})
+#	mf.start()
+	
 	_adapt_screen_size()
 	
 	var handle_popup_hide := func(node: Node) -> void:
@@ -170,48 +176,100 @@ func _ready() -> void:
 		sort_runners_popup.index_pressed.emit(_last_sort_type)
 	)
 	
-#	var init_runners_thread := Thread.new()
-#	init_runners_thread.start(func() -> void:
-#		# TODO testing only, need to pull these values from metadata
-#		for data in (func() -> Array:
-#			var r := []
-#
-#			const USER_DATA_DIR := "user://"
-#
-#			var dir := DirAccess.open(USER_DATA_DIR)
-#			if dir == null:
-#				_logger.error("Unable to access user directory to load configs")
-#				return r
-#
-#			dir.include_hidden = false
-#			dir.include_navigational = false
-#
-#			dir.list_dir_begin()
-#
-#			var file_name := ""
-#			while true:
-#				file_name = dir.get_next()
-#
-#				if file_name.is_empty():
-#					break
-#
-#				_logger.debug("Found file: %s" % file_name)
-#
-#				if dir.current_is_dir() or file_name.get_extension().to_lower() != "tres":
-#					continue
-#
-#				var config = load("%s%s" % [USER_DATA_DIR, file_name])
-#				if config == null or not config is RunnerData:
-#					continue
-#
-#				r.push_back(config)
-#
-#			dir.list_dir_end()
-#
-#			return r
-#		).call():
+	var init_runners_thread := Thread.new()
+	init_runners_thread.start(func() -> void:
+		# TODO testing only, need to pull these values from metadata
+		for data in (func() -> Array:
+			var r := []
+
+			const USER_DATA_DIR := "user://"
+			const FILE_EXT := "tot"
+
+			var dir := DirAccess.open(USER_DATA_DIR)
+			if dir == null:
+				_logger.error("Unable to access user directory to load configs")
+				return r
+
+			dir.include_hidden = false
+			dir.include_navigational = false
+
+			dir.list_dir_begin()
+
+			var file_name := ""
+			while true:
+				file_name = dir.get_next()
+
+				if file_name.is_empty():
+					break
+
+				_logger.debug("Found file: %s" % file_name)
+
+				if dir.current_is_dir() or file_name.get_extension().to_lower() != FILE_EXT:
+					continue
+
+				var data_path := "{dir}{file}".format({
+					dir = USER_DATA_DIR,
+					file = file_name
+				})
+				var runner_data: RunnerData = RunnerData.try_load(data_path)
+				if runner_data == null:
+					_logger.error("Unable to load data from {0}".format([data_path]))
+					continue
+				
+				r.push_back(runner_data)
+
+			dir.list_dir_end()
+			
+			# TODO testing
+			var test_data := RunnerData.new()
+			test_data.set_name("TestData")
+			test_data.set_runner_path("res://screens/test_viewer.tscn")
+			test_data.set_gui_path("res://screens/test_gui.tscn")
+			test_data.set_model_path("res://assets/alicia/AliciaSolid_vrm-0.51.vrm")
+			r.push_back(test_data)
+
+			return r
+		).call():
 #			_create_runner_item(data)
-#	)
+			# TODO testing
+			var button := Button.new()
+			button.text = data.get_name()
+			button.pressed.connect(func() -> void:
+				var context := await RunnerContext.new(data)
+				await context.loading_completed
+				
+				var st := get_tree()
+				
+				var tween := st.create_tween()
+				tween.tween_property(_fade, "color", Color.BLACK, START_RUNNER_TWEEN_TIME)
+				
+				await tween.finished
+				
+				st.root.add_child(context)
+				st.current_scene = context
+				
+				# TODO (Tim Yuen) weird hack to force the fade effect to continue when the
+				# current_scene has changed
+				remove_child(_fade)
+				var canvas_layer := CanvasLayer.new()
+				canvas_layer.add_child(_fade)
+				st.root.add_child(canvas_layer)
+				
+				self.visible = false
+				
+				tween = st.create_tween()
+				tween.tween_property(_fade, "color", CLEAR_COLOR, START_RUNNER_TWEEN_TIME)
+				
+				await tween.finished
+				
+				canvas_layer.queue_free()
+				
+				self.queue_free()
+			)
+			
+#			_runners.add_child(button)
+			_runners.call_deferred("add_child", button)
+	)
 	
 	_runner_container.hide()
 	
@@ -274,14 +332,15 @@ func _ready() -> void:
 	# Initially hidden because otherwise, the entire scene cannot be seen
 	_fade.show()
 	
-#	self.ready.connect(func() -> void:
-#		while init_runners_thread.is_alive():
-#			await get_tree().process_frame
-#		init_runners_thread.wait_to_finish()
-#		init_runners_thread = null
-#
+	self.ready.connect(func() -> void:
+		while init_runners_thread.is_alive():
+			await get_tree().process_frame
+		init_runners_thread.wait_to_finish()
+		init_runners_thread = null
+
+		# TODO reenable
 #		sort_runners_popup.index_pressed.emit(0)
-#	)
+	)
 
 func _notification(what: int) -> void:
 	match what:
@@ -292,14 +351,16 @@ func _process(_delta: float) -> void:
 	var mouse_diff: Vector2 = _screen_center - _viewport.get_mouse_position()
 	mouse_diff.x = max(-_max_parallax_offset.x, min(_max_parallax_offset.x, mouse_diff.x))
 	mouse_diff.y = max(-_max_parallax_offset.y, min(_max_parallax_offset.y, mouse_diff.y))
-	
+
 	_ducks_background.position = _ducks_background.position.lerp(
 		_parallax_initial_positions[_ducks_background] - mouse_diff, 0.0025)
-	
+
 	_duck.position = _duck.position.lerp(_parallax_initial_positions[_duck] + mouse_diff, 0.005)
 	_logo.position = _logo.position.lerp(_parallax_initial_positions[_logo] + mouse_diff, 0.005)
 	_sub_logo.position = _sub_logo.position.lerp(
 		_parallax_initial_positions[_sub_logo] + mouse_diff, 0.005)
+	
+#	mf.poll()
 
 #-----------------------------------------------------------------------------#
 # Private functions

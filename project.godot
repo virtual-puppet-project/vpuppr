@@ -33,7 +33,7 @@ script/templates_search_path="res://script-templates"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/GDMP/plugin.cfg")
+enabled=PackedStringArray("res://addons/GDMP/plugin.cfg", "res://addons/Godot-MToon-Shader/plugin.cfg", "res://addons/vrm/plugin.cfg")
 
 [gui]
 

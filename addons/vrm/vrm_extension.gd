@@ -10,255 +10,9 @@ const vrm_top_level = preload("./vrm_toplevel.gd")
 
 const importer_mesh_attributes = preload("./importer_mesh_attributes.gd")
 
-const vrmc_vrm_utils = preload("./1.0/VRMC_vrm.gd")
+const vrm_utils = preload("./vrm_utils.gd")
 
 var vrm_meta: Resource = null
-
-const ROTATE_180_BASIS = Basis(Vector3(-1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, -1))
-const ROTATE_180_TRANSFORM = Transform3D(ROTATE_180_BASIS, Vector3.ZERO)
-
-
-func adjust_mesh_zforward(mesh: ImporterMesh):
-	# MESH and SKIN data divide, to compensate for object position multiplying.
-	var surf_count: int = mesh.get_surface_count()
-	var surf_data_by_mesh = [].duplicate()
-	var blendshapes = []
-	for bsidx in mesh.get_blend_shape_count():
-		blendshapes.append(mesh.get_blend_shape_name(bsidx))
-	for surf_idx in range(surf_count):
-		var prim: int = mesh.get_surface_primitive_type(surf_idx)
-		var fmt_compress_flags: int = mesh.get_surface_format(surf_idx)
-		var arr: Array = mesh.get_surface_arrays(surf_idx)
-		var name: String = mesh.get_surface_name(surf_idx)
-		var bscount = mesh.get_blend_shape_count()
-		var bsarr: Array[Array] = []
-		for bsidx in range(bscount):
-			bsarr.append(mesh.get_surface_blend_shape_arrays(surf_idx, bsidx))
-		var lods: Dictionary = {}  # mesh.surface_get_lods(surf_idx) # get_lods(mesh, surf_idx)
-		var mat: Material = mesh.get_surface_material(surf_idx)
-		var vert_arr_len: int = len(arr[ArrayMesh.ARRAY_VERTEX])
-		var vertarr: PackedVector3Array = arr[ArrayMesh.ARRAY_VERTEX]
-		var invert_vector = Vector3(-1, 1, -1)
-		for i in range(vert_arr_len):
-			vertarr[i] = invert_vector * vertarr[i]
-		if typeof(arr[ArrayMesh.ARRAY_NORMAL]) == TYPE_PACKED_VECTOR3_ARRAY:
-			var normarr: PackedVector3Array = arr[ArrayMesh.ARRAY_NORMAL]
-			for i in range(vert_arr_len):
-				normarr[i] = invert_vector * normarr[i]
-		if typeof(arr[ArrayMesh.ARRAY_TANGENT]) == TYPE_PACKED_FLOAT32_ARRAY:
-			var tangarr: PackedFloat32Array = arr[ArrayMesh.ARRAY_TANGENT]
-			for i in range(vert_arr_len):
-				tangarr[i * 4] = -tangarr[i * 4]
-				tangarr[i * 4 + 2] = -tangarr[i * 4 + 2]
-		for bsidx in range(len(bsarr)):
-			vertarr = bsarr[bsidx][ArrayMesh.ARRAY_VERTEX]
-			for i in range(vert_arr_len):
-				vertarr[i] = invert_vector * vertarr[i]
-			if typeof(bsarr[bsidx][ArrayMesh.ARRAY_NORMAL]) == TYPE_PACKED_VECTOR3_ARRAY:
-				var normarr: PackedVector3Array = bsarr[bsidx][ArrayMesh.ARRAY_NORMAL]
-				for i in range(vert_arr_len):
-					normarr[i] = invert_vector * normarr[i]
-			if typeof(bsarr[bsidx][ArrayMesh.ARRAY_TANGENT]) == TYPE_PACKED_FLOAT32_ARRAY:
-				var tangarr: PackedFloat32Array = bsarr[bsidx][ArrayMesh.ARRAY_TANGENT]
-				for i in range(vert_arr_len):
-					tangarr[i * 4] = -tangarr[i * 4]
-					tangarr[i * 4 + 2] = -tangarr[i * 4 + 2]
-			bsarr[bsidx].resize(ArrayMesh.ARRAY_MAX)
-
-		surf_data_by_mesh.push_back({"prim": prim, "arr": arr, "bsarr": bsarr, "lods": lods, "fmt_compress_flags": fmt_compress_flags, "name": name, "mat": mat})
-	mesh.clear()
-	for blend_name in blendshapes:
-		mesh.add_blend_shape(blend_name)
-	for surf_idx in range(surf_count):
-		var prim: int = surf_data_by_mesh[surf_idx].get("prim")
-		var arr: Array = surf_data_by_mesh[surf_idx].get("arr")
-		var bsarr: Array[Array] = surf_data_by_mesh[surf_idx].get("bsarr")
-		var lods: Dictionary = surf_data_by_mesh[surf_idx].get("lods")
-		var fmt_compress_flags: int = surf_data_by_mesh[surf_idx].get("fmt_compress_flags")
-		var name: String = surf_data_by_mesh[surf_idx].get("name")
-		var mat: Material = surf_data_by_mesh[surf_idx].get("mat")
-		mesh.add_surface(prim, arr, bsarr, lods, mat, name, fmt_compress_flags)
-
-
-func skeleton_rename(gstate: GLTFState, p_base_scene: Node, p_skeleton: Skeleton3D, p_bone_map: BoneMap):
-	var original_bone_names_to_indices = {}
-	var original_indices_to_bone_names = {}
-	var original_indices_to_new_bone_names = {}
-	var skellen: int = p_skeleton.get_bone_count()
-
-	# Rename bones to their humanoid equivalents.
-	for i in range(skellen):
-		var bn: StringName = p_bone_map.find_profile_bone_name(p_skeleton.get_bone_name(i))
-		original_bone_names_to_indices[p_skeleton.get_bone_name(i)] = i
-		original_indices_to_bone_names[i] = p_skeleton.get_bone_name(i)
-		original_indices_to_new_bone_names[i] = bn
-		if bn != StringName():
-			p_skeleton.set_bone_name(i, bn)
-
-	var gnodes = gstate.nodes
-	var root_bone_name = "Root"
-	if p_skeleton.find_bone(root_bone_name) == -1:
-		p_skeleton.add_bone(root_bone_name)
-		var new_root_bone_id = p_skeleton.find_bone(root_bone_name)
-		for root_bone_id in p_skeleton.get_parentless_bones():
-			if root_bone_id != new_root_bone_id:
-				p_skeleton.set_bone_parent(root_bone_id, new_root_bone_id)
-	else:
-		push_warning("VRM0: Root bone already found despite rename")
-	for gnode in gnodes:
-		var bn: StringName = p_bone_map.find_profile_bone_name(gnode.resource_name)
-		if bn != StringName():
-			gnode.resource_name = bn
-
-	var nodes: Array[Node] = p_base_scene.find_children("*", "ImporterMeshInstance3D")
-	while not nodes.is_empty():
-		var mi: ImporterMeshInstance3D = nodes.pop_back() as ImporterMeshInstance3D
-		var skin: Skin = mi.skin
-		if skin:
-			var node = mi.get_node(mi.skeleton_path)
-			if node and node is Skeleton3D and node == p_skeleton:
-				skellen = skin.get_bind_count()
-				for i in range(skellen):
-					# Bone name from skin (un-remapped bone name)
-					var bind_bone_name = skin.get_bind_name(i)
-					var bone_name_from_skel: StringName = p_bone_map.find_profile_bone_name(bind_bone_name)
-					if not bone_name_from_skel.is_empty():
-						skin.set_bind_name(i, bone_name_from_skel)
-
-	# Rename bones in all Nodes by calling method.
-	nodes = p_base_scene.find_children("*")
-	while not nodes.is_empty():
-		var nd = nodes.pop_back()
-		if nd.has_method(&"_notify_skeleton_bones_renamed"):
-			nd.call(&"_notify_skeleton_bones_renamed", p_base_scene, p_skeleton, p_bone_map)
-
-	p_skeleton.name = "GeneralSkeleton"
-	p_skeleton.set_unique_name_in_owner(true)
-
-
-func rotate_scene_180_inner(p_node: Node3D, mesh_set: Dictionary, skin_set: Dictionary):
-	if p_node is Skeleton3D:
-		for bone_idx in range(p_node.get_bone_count()):
-			var rest: Transform3D = ROTATE_180_TRANSFORM * p_node.get_bone_rest(bone_idx) * ROTATE_180_TRANSFORM
-			p_node.set_bone_rest(bone_idx, rest)
-			p_node.set_bone_pose_rotation(bone_idx, Quaternion(ROTATE_180_BASIS) * p_node.get_bone_pose_rotation(bone_idx) * Quaternion(ROTATE_180_BASIS))
-			p_node.set_bone_pose_scale(bone_idx, Vector3.ONE)
-			p_node.set_bone_pose_position(bone_idx, rest.origin)
-	p_node.transform = ROTATE_180_TRANSFORM * p_node.transform * ROTATE_180_TRANSFORM
-	if p_node is ImporterMeshInstance3D:
-		mesh_set[p_node.mesh] = true
-		skin_set[p_node.skin] = true
-	for child in p_node.get_children():
-		rotate_scene_180_inner(child, mesh_set, skin_set)
-
-
-func xtmp(p_node: Node3D, mesh_set: Dictionary, skin_set: Dictionary):
-	if p_node is ImporterMeshInstance3D:
-		mesh_set[p_node.mesh] = true
-		skin_set[p_node.skin] = true
-	for child in p_node.get_children():
-		xtmp(child, mesh_set, skin_set)
-
-
-func rotate_scene_180(p_scene: Node3D):
-	var mesh_set: Dictionary = {}
-	var skin_set: Dictionary = {}
-	rotate_scene_180_inner(p_scene, mesh_set, skin_set)
-	for mesh in mesh_set:
-		adjust_mesh_zforward(mesh)
-	for skin in skin_set:
-		for b in range(skin.get_bind_count()):
-			skin.set_bind_pose(b, skin.get_bind_pose(b) * ROTATE_180_TRANSFORM)
-
-
-func skeleton_rotate(p_base_scene: Node, src_skeleton: Skeleton3D, p_bone_map: BoneMap) -> Array[Basis]:
-	# is_renamed: was skeleton_rename already invoked?
-	var is_renamed = true
-	var profile = p_bone_map.profile
-	var prof_skeleton = Skeleton3D.new()
-	for i in range(profile.bone_size):
-		# Add single bones.
-		prof_skeleton.add_bone(profile.get_bone_name(i))
-		prof_skeleton.set_bone_rest(i, profile.get_reference_pose(i))
-	for i in range(profile.bone_size):
-		# Set parents.
-		var parent = profile.find_bone(profile.get_bone_parent(i))
-		if parent >= 0:
-			prof_skeleton.set_bone_parent(i, parent)
-
-	# Overwrite axis.
-	var old_skeleton_rest: Array[Transform3D]
-	var old_skeleton_global_rest: Array[Transform3D]
-	for i in range(src_skeleton.get_bone_count()):
-		old_skeleton_rest.push_back(src_skeleton.get_bone_rest(i))
-		old_skeleton_global_rest.push_back(src_skeleton.get_bone_global_rest(i))
-
-	var diffs: Array[Basis]
-	diffs.resize(src_skeleton.get_bone_count())
-
-	var bones_to_process: PackedInt32Array = src_skeleton.get_parentless_bones()
-	var bpidx = 0
-	while bpidx < len(bones_to_process):
-		var src_idx: int = bones_to_process[bpidx]
-		bpidx += 1
-		var src_children: PackedInt32Array = src_skeleton.get_bone_children(src_idx)
-		for bone_idx in src_children:
-			bones_to_process.push_back(bone_idx)
-
-		var tgt_rot: Basis
-		var src_bone_name: StringName = StringName(src_skeleton.get_bone_name(src_idx)) if is_renamed else p_bone_map.find_profile_bone_name(src_skeleton.get_bone_name(src_idx))
-		if src_bone_name != StringName():
-			var src_pg: Basis
-			var src_parent_idx: int = src_skeleton.get_bone_parent(src_idx)
-			if src_parent_idx >= 0:
-				src_pg = src_skeleton.get_bone_global_rest(src_parent_idx).basis
-
-			var prof_idx: int = profile.find_bone(src_bone_name)
-			if prof_idx >= 0:
-				tgt_rot = src_pg.inverse() * prof_skeleton.get_bone_global_rest(prof_idx).basis  # Mapped bone uses reference pose.
-
-		if src_skeleton.get_bone_parent(src_idx) >= 0:
-			diffs[src_idx] = (tgt_rot.inverse() * diffs[src_skeleton.get_bone_parent(src_idx)] * src_skeleton.get_bone_rest(src_idx).basis)
-		else:
-			diffs[src_idx] = tgt_rot.inverse() * src_skeleton.get_bone_rest(src_idx).basis
-
-		var diff: Basis
-		if src_skeleton.get_bone_parent(src_idx) >= 0:
-			diff = diffs[src_skeleton.get_bone_parent(src_idx)]
-
-		src_skeleton.set_bone_rest(src_idx, Transform3D(tgt_rot, diff * src_skeleton.get_bone_rest(src_idx).origin))
-
-	prof_skeleton.queue_free()
-	return diffs
-
-
-func apply_rotation(p_base_scene: Node, src_skeleton: Skeleton3D):
-	# Fix skin.
-	var nodes: Array[Node] = p_base_scene.find_children("*", "ImporterMeshInstance3D")
-	while not nodes.is_empty():
-		var this_node = nodes.pop_back()
-		if this_node is ImporterMeshInstance3D:
-			var mi = this_node
-			var skin: Skin = mi.skin
-			var node = mi.get_node_or_null(mi.skeleton_path)
-			if skin and node and node is Skeleton3D and node == src_skeleton:
-				var skellen = skin.get_bind_count()
-				for i in range(skellen):
-					var bn: StringName = skin.get_bind_name(i)
-					var bone_idx: int = src_skeleton.find_bone(bn)
-					if bone_idx >= 0:
-						# silhouette_diff[i] *
-						# Normally would need to take bind-pose into account.
-						# However, in this case, it works because VRM files must be baked before export.
-						var new_rest: Transform3D = src_skeleton.get_bone_global_rest(bone_idx)
-						skin.set_bind_pose(i, new_rest.inverse())
-
-	# Init skeleton pose to new rest.
-	for i in range(src_skeleton.get_bone_count()):
-		var fixed_rest: Transform3D = src_skeleton.get_bone_rest(i)
-		src_skeleton.set_bone_pose_position(i, fixed_rest.origin)
-		src_skeleton.set_bone_pose_rotation(i, fixed_rest.basis.get_rotation_quaternion())
-		src_skeleton.set_bone_pose_scale(i, fixed_rest.basis.get_scale())
 
 
 enum DebugMode {
@@ -562,9 +316,79 @@ func _get_skel_godot_node(gstate: GLTFState, nodes: Array, skeletons: Array, ske
 	return null
 
 
-class SkelBone:
-	var skel: Skeleton3D
-	var bone_name: String
+func _first_person_head_hiding(vrm_extension: Dictionary, gstate: GLTFState, human_bone_to_idx: Dictionary):
+	var nodes = gstate.get_nodes()
+	var skeletons = gstate.get_skeletons()
+	var firstperson = vrm_extension.get("firstPerson", null)
+
+	var mesh_to_head_hidden_mesh: Dictionary = {}
+	var node_to_head_hidden_node: Dictionary = {}
+
+	var head_relative_bones: Dictionary = {}  # To determine which meshes to hide.
+
+	var head_bone_idx = firstperson.get("firstPersonBone", human_bone_to_idx.get("head", -1))
+	if head_bone_idx >= 0:
+		var headNode: GLTFNode = nodes[head_bone_idx]
+		var skel: Skeleton3D = _get_skel_godot_node(gstate, nodes, skeletons, headNode.skeleton)
+		vrm_utils._recurse_bones(head_relative_bones, skel, skel.find_bone(headNode.resource_name))  # FIXME: I forget if this is correct
+
+	var mesh_annotations_by_mesh = {}
+	for meshannotation in firstperson.get("meshAnnotations", []):
+		mesh_annotations_by_mesh[int(meshannotation["mesh"])] = meshannotation
+
+	for node_idx in range(len(nodes)):
+		var gltf_node: GLTFNode = nodes[node_idx]
+		var node: Node = gstate.get_scene_node(node_idx)
+		if node is ImporterMeshInstance3D:
+			var meshannotation = mesh_annotations_by_mesh.get(gltf_node.mesh, {})
+
+			var flag: String = meshannotation.get("firstPersonFlag", "Auto")
+
+			# Non-skinned meshes: use flag.
+			var mesh: ImporterMesh = node.mesh
+			var head_hidden_mesh: ImporterMesh = mesh
+			if flag == "Auto":
+				if node.skin == null:
+					var parent_node = node.get_parent()
+					if parent_node is BoneAttachment3D:
+						if head_relative_bones.has(parent_node.bone_name):
+							flag = "ThirdPersonOnly"
+				else:
+					head_hidden_mesh = vrm_utils._generate_hide_bone_mesh(mesh, node.skin, head_relative_bones)
+					if head_hidden_mesh == null:
+						flag = "ThirdPersonOnly"
+					if head_hidden_mesh == mesh:
+						flag = "Both"  # Nothing to do: No head verts.
+
+			var layer_mask: int = 6  # "both"
+			if flag == "ThirdPersonOnly":
+				layer_mask = 4
+			elif flag == "FirstPersonOnly":
+				layer_mask = 2
+
+			if flag == "Auto" and head_hidden_mesh != mesh:  # If it is still "auto", we have something to hide.
+				mesh_to_head_hidden_mesh[mesh] = head_hidden_mesh
+				var head_hidden_node: ImporterMeshInstance3D = ImporterMeshInstance3D.new()
+				head_hidden_node.name = node.name + " (Headless)"
+				head_hidden_node.skin = node.skin
+				head_hidden_node.mesh = head_hidden_mesh
+				head_hidden_node.skeleton_path = node.skeleton_path
+				head_hidden_node.script = importer_mesh_attributes
+				head_hidden_node.layers = 2  # ImporterMeshInstance3D is missing APIs.
+				head_hidden_node.first_person_flag = "head_removed"
+
+				node.add_sibling(head_hidden_node)
+				head_hidden_node.owner = node.owner
+				var gltf_mesh: GLTFMesh = GLTFMesh.new()
+				gltf_mesh.mesh = head_hidden_mesh
+				# FIXME: do we need to assign gltf_mesh.instance_materials?
+				gstate.meshes.append(gltf_mesh)
+				node_to_head_hidden_node[node] = head_hidden_node
+				layer_mask = 4
+
+			node.script = importer_mesh_attributes
+			node.layers = layer_mask
+			node.first_person_flag = flag.substr(0, 1).to_lower() + flag.substr(1)
 
 
 # https://github.com/vrm-c/vrm-specification/blob/master/specification/0.0/schema/vrm.humanoid.bone.schema.json
@@ -797,75 +621,6 @@ func _create_animation_player(animplayer: AnimationPlayer, vrm_extension: Dictio
 				push_warning("Unrecognized preset name " + str(shape))
 
 	var skeletons: Array[GLTFSkeleton] = gstate.get_skeletons()
-
-	var mesh_to_head_hidden_mesh: Dictionary = {}
-	var node_to_head_hidden_node: Dictionary = {}
-
-	var head_relative_bones: Dictionary = {}  # To determine which meshes to hide.
-
-	var head_bone_idx = firstperson.get("firstPersonBone", human_bone_to_idx.get("head", -1))
-	if head_bone_idx >= 0:
-		var headNode: GLTFNode = nodes[head_bone_idx]
-		var skel: Skeleton3D = _get_skel_godot_node(gstate, nodes, skeletons, headNode.skeleton)
-		vrmc_vrm_utils._recurse_bones(head_relative_bones, skel, skel.find_bone(headNode.resource_name))  # FIXME: I forget if this is correct
-
-	var mesh_annotations_by_mesh = {}
-	for meshannotation in firstperson.get("meshAnnotations", []):
-		mesh_annotations_by_mesh[int(meshannotation["mesh"])] = meshannotation
-
-	for node_idx in range(len(nodes)):
-		var gltf_node: GLTFNode = nodes[node_idx]
-		var node: Node = gstate.get_scene_node(node_idx)
-		if node is ImporterMeshInstance3D:
-			var meshannotation = mesh_annotations_by_mesh.get(gltf_node.mesh, {})
-
-			var flag: String = meshannotation.get("firstPersonFlag", "Auto")
-
-			# Non-skinned meshes: use flag.
-			var mesh: ImporterMesh = node.mesh
-			var head_hidden_mesh: ImporterMesh = mesh
-			if flag == "Auto":
-				if node.skin == null:
-					var parent_node = node.get_parent()
-					if parent_node is BoneAttachment3D:
-						if head_relative_bones.has(parent_node.bone_name):
-							flag = "ThirdPersonOnly"
-				else:
-					head_hidden_mesh = vrmc_vrm_utils._generate_hide_bone_mesh(mesh, node.skin, head_relative_bones)
-					if head_hidden_mesh == null:
-						flag = "ThirdPersonOnly"
-					if head_hidden_mesh == mesh:
-						flag = "Both"  # Nothing to do: No head verts.
-
-			var layer_mask: int = 6  # "both"
-			if flag == "ThirdPersonOnly":
-				layer_mask = 4
-			elif flag == "FirstPersonOnly":
-				layer_mask = 2
-
-			if flag == "Auto" and head_hidden_mesh != mesh:  # If it is still "auto", we have something to hide.
-				mesh_to_head_hidden_mesh[mesh] = head_hidden_mesh
-				var head_hidden_node: ImporterMeshInstance3D = ImporterMeshInstance3D.new()
-				head_hidden_node.name = node.name + " (Headless)"
-				head_hidden_node.skin = node.skin
-				head_hidden_node.mesh = head_hidden_mesh
-				head_hidden_node.skeleton_path = node.skeleton_path
-				head_hidden_node.script = importer_mesh_attributes
-				head_hidden_node.layers = 2  # ImporterMeshInstance3D is missing APIs.
-				head_hidden_node.first_person_flag = "head_removed"
-
-				node.add_sibling(head_hidden_node)
-				head_hidden_node.owner = node.owner
-				var gltf_mesh: GLTFMesh = GLTFMesh.new()
-				gltf_mesh.mesh = head_hidden_mesh
-				# FIXME: do we need to assign gltf_mesh.instance_materials?
-				gstate.meshes.append(gltf_mesh)
-				node_to_head_hidden_node[node] = head_hidden_node
-				layer_mask = 4
-
-			node.script = importer_mesh_attributes
-			node.layers = layer_mask
-			node.first_person_flag = flag.substr(0, 1).to_lower() + flag.substr(1)
 
 	var eye_bone_horizontal: Quaternion = Quaternion.from_euler(Vector3(PI / 2, 0, 0))
 	if firstperson.get("lookAtTypeName", "") == "Bone":
@@ -1163,21 +918,6 @@ func _import_preflight(gstate: GLTFState, extensions: PackedStringArray = Packed
 	return OK
 
 
-func apply_retarget(gstate: GLTFState, root_node: Node, skeleton: Skeleton3D, bone_map: BoneMap) -> Array[Basis]:
-	var skeletonPath: NodePath = root_node.get_path_to(skeleton)
-
-	skeleton_rename(gstate, root_node, skeleton, bone_map)
-	var hips_bone_idx = skeleton.find_bone("Hips")
-	if hips_bone_idx != -1:
-		skeleton.motion_scale = abs(skeleton.get_bone_global_rest(hips_bone_idx).origin.y)
-		if skeleton.motion_scale < 0.0001:
-			skeleton.motion_scale = 1.0
-
-	var poses = skeleton_rotate(root_node, skeleton, bone_map)
-	apply_rotation(root_node, skeleton)
-	return poses
-
-
 func _import_post(gstate: GLTFState, node: Node) -> Error:
 	var gltf: GLTFDocument = GLTFDocument.new()
 	var root_node: Node = node
@@ -1214,15 +954,13 @@ func _import_post(gstate: GLTFState, node: Node) -> Error:
 
 	if is_vrm_0:
 		# VRM 0.0 has models facing backwards due to a spec error (flipped z instead of x)
-		print("Pre-rotate")
-		rotate_scene_180(root_node)
-		print("Post-rotate")
+		vrm_utils.rotate_scene_180(root_node)
 
 	var do_retarget = true
 
 	var pose_diffs: Array[Basis]
 	if do_retarget:
-		pose_diffs = apply_retarget(gstate, root_node, skeleton, humanBones)
+		pose_diffs = vrm_utils.perform_retarget(gstate, root_node, skeleton, humanBones)
 	else:
 		# resize is busted for TypedArray and crashes Godot
 		for i in range(skeleton.get_bone_count()):
@@ -1231,6 +969,7 @@ func _import_post(gstate: GLTFState, node: Node) -> Error:
 	skeleton.set_meta("vrm_pose_diffs", pose_diffs)
 
 	_update_materials(vrm_extension, gstate)
+	_first_person_head_hiding(vrm_extension, gstate, human_bone_to_idx)
 
 	var animplayer: AnimationPlayer
 	if root_node.has_node("AnimationPlayer"):

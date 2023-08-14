@@ -14,4 +14,4 @@ func _on_replacing_by(p_node: Node):
 
 
 func _init():
-	replacing_by.connect(_on_replacing_by)
+	self.replacing_by.connect(_on_replacing_by)

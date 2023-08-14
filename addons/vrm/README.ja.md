@@ -2,7 +2,7 @@
 
 # VRM addon for Godot Engine
 
-このパッケージには VRM Addon として [VRM v0.0](https://github.com/vrm-c/vrm-specification/tree/master/specification/0.0) に準拠した VRM モデルのインポーターと、VRM を動かすためのスクリプトが含まれています。Godot Engine 3.2.2 stable 以降に対応しています。
+このパッケージには VRM Addon として [VRM v1.0](https://github.com/vrm-c/vrm-specification/tree/master/specification) に準拠した VRM モデルのインポーターやエクスポートと、VRM を動かすためのスクリプトが含まれています。Godot Engine 4.0 stable 以降に対応しています。
 
 [V-Sekai team](https://v-sekai.org/about) が自信を持ってお届けします。
 
@@ -21,43 +21,35 @@ VRM が持つデータは全てインポートされ、インスペクタに表�
 
 ## 現在 Godot で動作する VRM の機能
 
-* vrm.blendshape
-  * binds / blend shapes: 実装済み（AnimationTrack として追加）
-  * material binds: 実装済み（AnimationTrack として追加）
-* vrm.firstperson
-  * firstPersonBone: 実装済み（Metadata に追加）
-  * meshAnnotations / head shrinking: 実装済み（`TODO_scale_bone` というメソッドで AnimationMethodTrack として追加）
-  * lookAt: 実装済み（AnimationTrack として追加）
-* vrm.humanoid
-  * humanBones: 実装済み（Metadata に辞書として追加）
-  * Unity HumanDescription values: **サポート外**
-  * Automatic mesh retargeting: **検討中**
-  * humanBones renamer: **検討中**
-* vrm.material
-  * shader
-    * `VRM/MToon`: 実装済み
-    * `VRM/UnlitTransparentZWrite`: 実装済み
-    * `VRM_USE_GLTFSHADER` with PBR: 実装済み
-    * `VRM_USE_GLTFSHADER` with `KHR_materials_unlit`: 実装済み
-    * legacy UniVRM shaders (`VRM/Unlit*`): 実装済み
-    * legacy UniGLTF shaders (`UniGLTF/UniUnlit`, `Standard`): 既存の GLTF material を使用
-  * renderQueue: 実装済み（render_priority に割り当て、ただしモデル間での前後関係は保証されません）
-  * floatProperties, vectorProperties, textureProperties: 実装済み
-* vrm.meta (Metadata, including License information and screenshot): 実装済み
-* vrm.secondaryanimation (Springbone)
-  * boneGroups: 実装済み（ボーン操作最適化パッチの適用を推奨）
-  * colliderGroups: 実装済み（ボーン操作最適化パッチの適用を推奨）
+VRM 1.0をインポートとエクスポートをサポートをサポートします。機能の内訳は次のとおりです。
 
-エクスポートには未対応です。将来的に Godot 4.0 で GLTF Export 機能が実装された場合に対応する予定です。
+* VRM 0.0をインポート：✅実装済み; VRM 1.0への変換します。
+* VRM 1.0をインポート：✅実装済み
+* VRMをエクスポート（`.vrm`）：✅実装済み, エクスポートには全部のモデルをVRM 1.0になります。
+* VRM1.0の拡張子のglTFをエクスポート（`.gltf`）：✅`VRMC_node_constraint`, ✅`VRMC_materials_mtoon`
+	* ⚠️ VRMC_springBoneは、`.vrm`の代わりに`.gltf`を使用することはサポートされていません。
+	* ⚠️ 注意: When exporting .gltf, a clone of the scene root node is not made by Godot.
+	  Because some export operations are destructive, the export process will corrupt some of your materials.
+	  Please save the scene first and revert after export!
 
-## Godot 4.x
+* `VRMC_materials_mtoon`：✅実装済み
+* `VRMC_node_constraint`：⚠バグ: リターゲティングと️問題がある。
+* `VRMC_springBone`：✅実装済み（ボーン操作最適化パッチの適用を推奨）
+* `VRMC_materials_hdr_emissive`：✅実装済み
+* `VRMC_vrm`：✅実装済み
+	* `firstPerson`：⚠️Head hiding implemented (camera layers or runtime script needed)
+	* `eyeOffset`：✅実装済み（`Head`の`BoneAttachment3D`「`LookOffset`」）
+	* `lookAt`：⚠AnimationTrack として追加 (application must create `BlendSpace2D`)
+	* `expressions`（気分、口形素）：
+		* モーフ、ブレンドシェイプ、バインド: ✅実装済み（`BlendTree` `Add3` AnimationTrack として追加）
+		* マテリアルカラー、UVオフセット: ✅実装済み（`BlendTree` `Add3` AnimationTrack として追加）
+	* `humanoid`：✅実装済み (uses `%GeneralSkeleton` `SkeletonProfileHumanoid` compatible retargeting.)
+	* Metadata：✅実装済み, including License information and screenshot
 
-VRM は最新の Godot のマスターブランチでも動作しますが、現在、以下のパッチを適用する必要があります。
+## Future work
 
-* https://github.com/godotengine/godot/pull/48253
-* https://github.com/godotengine/godot/pull/48014
-
-警告：現在の実装において、リアルタイムのオムニライトやスポットライトがあるシーンで、どれが指向性のライトなのかを判別する事は出来ないため、クラスタリングでアーティファクトが発生します。この問題に関しては、いくつかの不足している変数が Godot 本体側で追加実装された場合に解決すると考えられます。
+* `VRMC_vrm_animation`のサポート
+	* サポートされていません。Intended use: humanoid AnimationLibrary import/export.
 
 ## Godot 3.x
 
@@ -71,18 +63,19 @@ VRM Addon を addons/vrm にインストールします。**生成された VRM 
 
 Godot-MToon-Shader を addons/Godot-MToon-Shader にインストールします。**マテリアルからパスを参照するので、決してリネームしないで下さい。**
 
-godot_gltf GDNative ヘルパーを addons/godot_gltf にインストールします。**GDNative C++ コードも同様にパスを参照するので、決してリネームしないで下さい。**
-
 「プロジェクト設定」→「プラグイン」で、「VRM」と「Godot-MToon-Shader」を探し、VRM と MToon プラグインを有効にします。
 
 ## 謝辞
 
 Godot-VRM のテストと開発にご協力頂きました [V-Sekai team](https://v-sekai.org/about) とコントリビューターの方々に感謝致します。
 
+- [The Mirror](https://www.themirror.space/)の https://github.com/aaronfranke
 - https://github.com/fire
 - https://github.com/TokageItLab
 - https://github.com/lyuma
 - https://github.com/SaracenOne
+
+For their extensive help testing and contributing code to Godot-VRM.
 
 また、UniVRM、MToon、その他 VRM ツールの開発者の方々に感謝致します。
 

@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://dsn5d7xv5nqqw"]
+
+[ext_resource type="Script" path="res://screens/test_viewer.gd" id="1_mrd64"]
+
+[node name="TestViewer" type="Node3D"]
+script = ExtResource("1_mrd64")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1)
+current = true
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 16, 11)

@@ -467,6 +467,9 @@ func _import_post(gstate, root):
 		var newmat: Material = oldmat
 		var mat_props: Dictionary = materials_json[i]
 		var vrm_mat_props: Dictionary = materials_vrm_json[i]
+		if not vrm_mat_props.has("specVersion"):
+			spatial_to_shader_mat[newmat] = newmat
+			continue
 		newmat = _process_vrm_material(newmat, images, gltf_textures, mat_props, vrm_mat_props)
 		spatial_to_shader_mat[oldmat] = newmat
 		spatial_to_shader_mat[newmat] = newmat
