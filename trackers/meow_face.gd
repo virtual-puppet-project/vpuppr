@@ -11,7 +11,6 @@ var _should_stop := true
 
 ## Puppet3d or Puppet2d
 var _puppet: Node = null
-var _mapper := MeowFaceMapper.new()
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
@@ -83,7 +82,10 @@ func start() -> Error:
 			if packet.size() < 1:
 				continue
 			
-			_mapper.handle_puppet3d(packet, _puppet)
+#			_mapper.handle_puppet3d(packet, _puppet)
+			
+			var data := MeowFaceData.from(packet)
+			data_received.emit(data)
 	)
 	
 	return OK

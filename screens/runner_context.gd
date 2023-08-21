@@ -71,11 +71,12 @@ func _init(p_runner_data: RunnerData) -> void:
 					logger.error("Failed to generate scene for model {0}".format([model_path]))
 					return r
 				
-				var puppet := Puppet3d.new()
-				puppet.name = model_path.get_file()
-				puppet.add_child(model)
-				
-				r.model = puppet
+				# TODO name changed
+#				var puppet := Glb.new()
+#				puppet.name = model_path.get_file()
+#				puppet.add_child(model)
+#
+#				r.model = puppet
 			"vrm":
 				logger.info("Loading vrm")
 				
@@ -97,9 +98,8 @@ func _init(p_runner_data: RunnerData) -> void:
 					logger.error("Failed to generate scene for model {0}".format([model_path]))
 					return r
 				
-				var puppet := Puppet3d.new()
+				var puppet := VrmPuppet.new()
 				puppet.name = model_path.get_file()
-				puppet.is_vrm = true
 				puppet.head_bone = "Head"
 				puppet.add_child(model)
 				
@@ -126,11 +126,6 @@ func _init(p_runner_data: RunnerData) -> void:
 		fail.call("Failed to load runner {0}".format([runner_data.get_runner_path()]))
 		return
 	
-#	var gui_result: Variant = load_results.get(GUI)
-#	if gui_result == SENTINEL:
-#		fail.call("Failed to load gui from {}".format(runner_data.get_gui_path()))
-#		return
-#	gui = gui_result
 	gui = load_results.get(GUI, null)
 	if gui == null:
 		fail.call("Failed to load gui from {0}".format([runner_data.get_gui_path()]))

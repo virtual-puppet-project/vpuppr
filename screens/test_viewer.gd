@@ -1,7 +1,7 @@
 extends Node3D
 
 var mf: MeowFace = null
-var puppet: Puppet3d = null
+var puppet: VrmPuppet = null
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
@@ -12,7 +12,7 @@ func _init() -> void:
 
 func _ready() -> void:
 	for child in get_children():
-		if child is Puppet3d:
+		if child is VrmPuppet:
 			puppet = child
 			break
 	
@@ -22,6 +22,9 @@ func _ready() -> void:
 		connect_port = 21412,
 		puppet = puppet
 	})
+	mf.data_received.connect(func(data: MeowFaceData) -> void:
+		puppet.handle_meow_face(data)
+	)
 	if mf.start() != OK:
 		printerr("asdf")
 

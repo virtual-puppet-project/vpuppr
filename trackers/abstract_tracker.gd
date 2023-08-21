@@ -1,6 +1,8 @@
 class_name AbstractTracker
 extends RefCounted
 
+signal data_received(data: RefCounted)
+
 #-----------------------------------------------------------------------------#
 # Builtin functions
 #-----------------------------------------------------------------------------#
