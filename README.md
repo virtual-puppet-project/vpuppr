@@ -2,6 +2,8 @@
 
 [![Chat on Discord](https://img.shields.io/discord/853476898071117865?label=chat&logo=discord)](https://discord.gg/6mcdWWBkrr)
 
+NOTE: Future development is happening on the `godot-4` branch. The Godot 3 version will eventually be split out into a separate repo.
+
 All models should work as long as they are in `.glb` or `.vrm` format. `.gltf` has not been tested but might work. `.scn` files created with Godot should all import correctly as well.
 
 The project status is tracked via a public [GitHub project here](https://github.com/orgs/virtual-puppet-project/projects/1/views/2).
