@@ -16,6 +16,8 @@ func _ready() -> void:
 			puppet = child
 			break
 	
+	puppet.a_pose()
+	
 	mf = MeowFace.create({
 		bind_port = 21412,
 		connect_address = "192.168.88.51",
