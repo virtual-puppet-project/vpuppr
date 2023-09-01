@@ -93,13 +93,24 @@ func _ready() -> void:
 						context.model.handle_meow_face(data)
 					)
 					if mf.start() != OK:
-						_logger.error("Unable to start Meow Face")
+						_logger.error("Unable to start MeowFace")
 						return
 					
 					context.active_trackers.push_back(mf)
 					_active_trackers.add_child(ActiveTracker.new(context, _logger, mf))
+				Trackers.MEDIA_PIPE:
+					var mp := MediaPipe.create(data)
+					mp.data_received.connect(func(projection: Projection, blend_shapes: Array[MediaPipeCategory]) -> void:
+						context.model.handle_media_pipe(projection, blend_shapes)
+					)
+					if mp.start() != OK:
+						_logger.error("Unable to start MediaPipe")
+						return
+
+					context.active_trackers.push_back(mp)
+					_active_trackers.add_child(ActiveTracker.new(context, _logger, mp))
 				_:
-					pass
+					_logger.error("Unhandled tracker: {0}".format([tracker]))
 		)
 	
 	tree.item_selected.connect(func() -> void:

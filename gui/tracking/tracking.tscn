@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://bh021kchsnxmp"]
+[gd_scene load_steps=4 format=3 uid="uid://bh021kchsnxmp"]
 
 [ext_resource type="Script" path="res://gui/tracking/tracking.gd" id="1_8t3ha"]
 [ext_resource type="PackedScene" uid="uid://0p3t1k53ylr0" path="res://gui/tracking/meow_face.tscn" id="2_r6snh"]
+[ext_resource type="PackedScene" uid="uid://dftm3gsyqsr2d" path="res://gui/tracking/media_pipe.tscn" id="3_lttak"]
 
 [node name="Tracking" type="VBoxContainer"]
 anchors_preset = 15
@@ -52,4 +53,7 @@ unique_name_in_owner = true
 layout_mode = 2
 
 [node name="Meow Face" parent="HSplitContainer/Trackers" instance=ExtResource("2_r6snh")]
+layout_mode = 2
+
+[node name="Media Pipe" parent="HSplitContainer/Trackers" instance=ExtResource("3_lttak")]
 layout_mode = 2

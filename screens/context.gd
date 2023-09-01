@@ -147,6 +147,8 @@ func _init(p_runner_data: RunnerData) -> void:
 	add_child(runner)
 	add_child(gui)
 	
+	logger.info("Completed loading")
+	
 	loading_completed.emit()
 
 #-----------------------------------------------------------------------------#

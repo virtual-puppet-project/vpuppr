@@ -29,3 +29,5 @@ Run `setup.sh` to:
 * build `libvpuppr`
 * copy `libvpuppr`'s `.gdextension` file into the main project
 
+In order to build GDMP, follow the instructions in [that repo](https://github.com/j20001970/GDMP).
+
