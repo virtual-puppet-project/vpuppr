@@ -1,15 +1,21 @@
-class_name AbstractTracker
-extends RefCounted
-
-signal data_received(data: RefCounted)
-
-enum Trackers {
-	MEOW_FACE = 0
-}
+extends TrackingGui
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
 #-----------------------------------------------------------------------------#
+
+func _ready() -> void:
+	var connect_address := %ConnectAddress
+	var connect_port := %ConnectPort
+	var bind_port := %BindPort
+	
+	%Start.pressed.connect(func() -> void:
+		started.emit(AbstractTracker.Trackers.MEOW_FACE, {
+			connect_address = connect_address.text,
+			connect_port = connect_port.text.to_int(),
+			bind_port = bind_port.text.to_int(),
+		})
+	)
 
 #-----------------------------------------------------------------------------#
 # Private functions
@@ -19,17 +25,3 @@ enum Trackers {
 # Public functions
 #-----------------------------------------------------------------------------#
 
-static func create(_data: Dictionary) -> AbstractTracker:
-	return null
-
-func get_name() -> StringName:
-	return &"AbstractTracker"
-
-func start() -> Error:
-	return ERR_UNCONFIGURED
-
-func stop() -> Error:
-	return ERR_UNCONFIGURED
-
-func poll() -> void:
-	pass

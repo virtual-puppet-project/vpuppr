@@ -17,7 +17,7 @@ var context: Context = null
 ## The model to apply tracking data to.
 var _model: Node3D = null
 # TODO testing
-var mf: MeowFace
+#var mf: MeowFace
 
 #-----------------------------------------------------------------------------#
 # Builtin functions

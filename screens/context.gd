@@ -11,6 +11,10 @@ var runner_data: RunnerData = null
 var runner: Node = null
 ## The gui for the [Context].
 var gui: Node = null
+## The model for the [Context].
+var model: Node = null
+
+var active_trackers: Array[AbstractTracker] = []
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
@@ -131,13 +135,14 @@ func _init(p_runner_data: RunnerData) -> void:
 		fail.call("Failed to load gui from {0}".format([runner_data.get_gui_path()]))
 		return
 	
-	var model: Node = load_results.get(MODEL, null)
+	model = load_results.get(MODEL, null)
 	if model == null:
 		fail.call("Failed to load model from {0}".format([runner_data.get_model_path()]))
 		return
 	# TODO testing
 	runner.add_child(model)
 	runner.set("context", self)
+	gui.set("context", self)
 	
 	add_child(runner)
 	add_child(gui)

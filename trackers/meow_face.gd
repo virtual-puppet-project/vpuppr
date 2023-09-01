@@ -61,6 +61,9 @@ static func create(data: Dictionary) -> AbstractTracker:
 	
 	return r
 
+func get_name() -> StringName:
+	return &"MeowFace"
+
 func start() -> Error:
 	_logger.info("Starting MeowFace!")
 	

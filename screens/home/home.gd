@@ -224,7 +224,7 @@ func _ready() -> void:
 			var test_data := RunnerData.new()
 			test_data.set_name("TestData")
 			test_data.set_runner_path("res://screens/runners/runner_3d.tscn")
-			test_data.set_gui_path("res://screens/test_gui.tscn")
+			test_data.set_gui_path("res://gui/default_gui.tscn")
 			test_data.set_model_path("res://assets/alicia/AliciaSolid_vrm-0.51.vrm")
 			r.push_back(test_data)
 

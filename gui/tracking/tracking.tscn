@@ -1,0 +1,55 @@
+[gd_scene load_steps=3 format=3 uid="uid://bh021kchsnxmp"]
+
+[ext_resource type="Script" path="res://gui/tracking/tracking.gd" id="1_8t3ha"]
+[ext_resource type="PackedScene" uid="uid://0p3t1k53ylr0" path="res://gui/tracking/meow_face.tscn" id="2_r6snh"]
+
+[node name="Tracking" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_8t3ha")
+
+[node name="HFlowContainer" type="HFlowContainer" parent="."]
+layout_mode = 2
+
+[node name="StopAll" type="Button" parent="HFlowContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Stop All"
+
+[node name="HSplitContainer" type="HSplitContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Tree" type="Tree" parent="HSplitContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+hide_root = true
+
+[node name="Trackers" type="MarginContainer" parent="HSplitContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Info" type="ScrollContainer" parent="HSplitContainer/Trackers"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/Trackers/Info"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="HSplitContainer/Trackers/Info/VBoxContainer"]
+layout_mode = 2
+text = "Active Trackers"
+horizontal_alignment = 1
+
+[node name="ActiveTrackers" type="VBoxContainer" parent="HSplitContainer/Trackers/Info/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Meow Face" parent="HSplitContainer/Trackers" instance=ExtResource("2_r6snh")]
+layout_mode = 2
