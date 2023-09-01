@@ -1,14 +1,20 @@
 # Vpuppr
 
+[![Chat on Discord](https://img.shields.io/discord/853476898071117865?label=chat&logo=discord)](https://discord.gg/6mcdWWBkrr)
+
 VTuber software made with Godot.
 
 Godot 4 rewrite in progress.
 
+The Godot 3 version is currently located on the `godot-3` branch.
+
 ## Status
 
 - [x] VRM model loading
-- [ ] Receive tracking data
-- [ ] Map tracking data onto a VRM model
+- [x] Receive tracking data
+- [x] Map tracking data onto a VRM model
+- [ ] GUI
+- [ ] Save data
 
 ## Building From Source
 
