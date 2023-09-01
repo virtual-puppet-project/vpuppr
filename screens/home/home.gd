@@ -223,7 +223,7 @@ func _ready() -> void:
 			# TODO testing
 			var test_data := RunnerData.new()
 			test_data.set_name("TestData")
-			test_data.set_runner_path("res://screens/test_viewer.tscn")
+			test_data.set_runner_path("res://screens/runners/runner_3d.tscn")
 			test_data.set_gui_path("res://screens/test_gui.tscn")
 			test_data.set_model_path("res://assets/alicia/AliciaSolid_vrm-0.51.vrm")
 			r.push_back(test_data)
@@ -235,7 +235,7 @@ func _ready() -> void:
 			var button := Button.new()
 			button.text = data.get_name()
 			button.pressed.connect(func() -> void:
-				var context := await RunnerContext.new(data)
+				var context := await Context.new(data)
 				await context.loading_completed
 				
 				var st := get_tree()
@@ -386,7 +386,7 @@ func _adapt_screen_size() -> void:
 #	var item := RunnerItem.instantiate()
 #	item.clicked.connect(func() -> void:
 #		_loading_spinner.start()
-#		var handler: RunnerContext = await RunnerContext.new(data)
+#		var handler: Context = await Context.new(data)
 #		await handler.finished_loading
 #		_loading_spinner.stop()
 #		if handler.get_child_count() < 1:

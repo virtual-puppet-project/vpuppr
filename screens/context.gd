@@ -1,15 +1,15 @@
-class_name RunnerContext
+class_name Context
 extends Node
 
 ## The context that a runner will be running in.
 
 signal loading_completed()
 
-## The [RunnerData] the [RunnerContext] is using.
+## The [RunnerData] the [Context] is using.
 var runner_data: RunnerData = null
-## The runner for the [RunnerContext].
+## The runner for the [Context].
 var runner: Node = null
-## The gui for the [RunnerContext].
+## The gui for the [Context].
 var gui: Node = null
 
 #-----------------------------------------------------------------------------#
@@ -17,7 +17,7 @@ var gui: Node = null
 #-----------------------------------------------------------------------------#
 
 func _init(p_runner_data: RunnerData) -> void:
-	var logger := Logger.create("RunnerContext:_init")
+	var logger := Logger.create("Context:_init")
 	
 	var fail := func(text: String) -> void:
 		logger.error(text)
@@ -137,6 +137,7 @@ func _init(p_runner_data: RunnerData) -> void:
 		return
 	# TODO testing
 	runner.add_child(model)
+	runner.set("context", self)
 	
 	add_child(runner)
 	add_child(gui)

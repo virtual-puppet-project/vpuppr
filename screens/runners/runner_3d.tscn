@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://c7v5kmkl2oxtu"]
+
+[ext_resource type="Script" path="res://screens/runners/runner_3d.gd" id="1_4040p"]
+[ext_resource type="PackedScene" uid="uid://cv1g3lb0c1xyh" path="res://entities/runner_camera_3d.tscn" id="2_wfrxy"]
+
+[node name="Runner3D" type="Node3D"]
+script = ExtResource("1_4040p")
+
+[node name="RunnerCamera3D" parent="." instance=ExtResource("2_wfrxy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 16, 11)

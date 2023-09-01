@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://cv1g3lb0c1xyh"]
+
+[ext_resource type="Script" path="res://entities/runner_camera_3d.gd" id="1_obhtr"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_nuau3"]
+
+[sub_resource type="PrismMesh" id="PrismMesh_dsosy"]
+
+[node name="RunnerCamera3D" type="Camera3D"]
+script = ExtResource("1_obhtr")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+visible = false
+mesh = SubResource("BoxMesh_nuau3")
+
+[node name="Pyramid" type="MeshInstance3D" parent="Mesh"]
+transform = Transform3D(-3.65873e-08, -2.19608e-09, 0.75, 0.75, -2.98023e-08, 3.65873e-08, 2.98023e-08, 0.75, 2.19608e-09, 0, 0, -0.5)
+mesh = SubResource("PrismMesh_dsosy")
+skeleton = NodePath("../..")
