@@ -51,8 +51,7 @@ order of importance:
 3. Performance
 
 [Unsafe Rust](https://doc.rust-lang.org/book/ch19-01-unsafe-rust.html) is _not_ a concern for this project
-and will be used wherever necessary, within reason. If a feature is possible to implement in safe Rust
-with a slight performance penalty, then the feature should be implemented in safe Rust.
+and will be used wherever necessary, within reason.
 
 ### Modules Loaded at Runtime
 
