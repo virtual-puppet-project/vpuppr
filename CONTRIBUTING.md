@@ -48,6 +48,8 @@ When opening a PR, make sure the following items are present/followed:
 - [ ] Test your changes
     - This item is here because untested PRs have been submitted before :)
 - [ ] Make sure the PR touches as few files as possible
+- [ ] Make sure the PR follows the code style of the existing code
+    - Refer to the [development guidelines](docs/DEVELOPMENT_GUIDELINES.md) for further information
 
 ## Communicating with Developers
 
