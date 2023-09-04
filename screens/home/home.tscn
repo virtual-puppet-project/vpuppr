@@ -142,6 +142,7 @@ layout_mode = 2
 [node name="NewRunner" type="Button" parent="RunnerContainer/VBoxContainer/HFlowContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+mouse_default_cursor_shape = 2
 text = "New"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="RunnerContainer/VBoxContainer/HFlowContainer"]
@@ -155,6 +156,7 @@ text = "Sort:"
 [node name="SortRunners" type="OptionButton" parent="RunnerContainer/VBoxContainer/HFlowContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+mouse_default_cursor_shape = 2
 item_count = 2
 selected = 0
 popup/item_0/text = "Last Used"
@@ -166,11 +168,13 @@ popup/item_1/id = 1
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
+mouse_default_cursor_shape = 2
 
 [node name="Settings" type="Button" parent="RunnerContainer/VBoxContainer/HFlowContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 8
+mouse_default_cursor_shape = 2
 text = "Settings"
 
 [node name="ScrollContainer" type="ScrollContainer" parent="RunnerContainer/VBoxContainer"]
