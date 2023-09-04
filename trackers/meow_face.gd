@@ -33,9 +33,6 @@ static func create(data: Dictionary) -> AbstractTracker:
 	if not data.has("connect_port"):
 		r._logger.error("Missing connect_port")
 		return null
-	if not data.has("puppet"):
-		r._logger.error("Missing puppet")
-		return null
 	
 	var bind_port: int = data["bind_port"]
 	
@@ -45,7 +42,6 @@ static func create(data: Dictionary) -> AbstractTracker:
 	socket.set_broadcast_enabled(true)
 	
 	r._socket = socket
-	r._puppet = data["puppet"]
 	
 	r._data_request = JSON.stringify({
 		"messageType": "iOSTrackingDataRequest", # HMMMM

@@ -62,34 +62,36 @@ var _settings_popup: Window = null
 func _ready() -> void:
 	_logger.info("starting ready!")
 	
-#	mf = MeowFace.create({
-#		address = "192.168.88.51",
-#		port = "21412"
-#	})
-#	mf.start()
-	
 	_adapt_screen_size()
 	
 	var handle_popup_hide := func(node: Node) -> void:
 		node.queue_free()
 	
-#	%NewRunner.pressed.connect(func() -> void:
-#		var popup := NewRunner.instantiate()
-#
-#		add_child(popup)
-#		popup.popup_centered_ratio()
-#
-#		var config: RunnerData = await popup.close_requested
-#		if config == null:
-#			return
-#
+	%NewRunner.pressed.connect(func() -> void:
+		var popup := PopupWindow.new("New Runner", NewRunner.instantiate())
+
+		add_child(popup)
+		popup.popup_centered_ratio()
+		
+		var data: Variant = await popup.close_requested
+		if data == null:
+			return
+		if not data is RunnerData:
+			_logger.error(
+				"New runner popup returned someting that wasn't a RunnerData {0}".format([data]))
+			return
+		
+		_run_from_data(data)
+
+		# TODO maybe save data before running?
+
 #		_create_runner_item(config)
 #		ResourceSaver.save(
 #			config,
 #			"user://%s.tres" % config.name,
 #			ResourceSaver.FLAG_OMIT_EDITOR_PROPERTIES
 #		)
-#	)
+	)
 #	%Settings.pressed.connect(func() -> void:
 #		# Reuse the old settings popup
 #		if _settings_popup != null:
@@ -219,14 +221,6 @@ func _ready() -> void:
 				r.push_back(runner_data)
 
 			dir.list_dir_end()
-			
-			# TODO testing
-			var test_data := RunnerData.new()
-			test_data.set_name("TestData")
-			test_data.set_runner_path("res://screens/runners/runner_3d.tscn")
-			test_data.set_gui_path("res://gui/default_gui.tscn")
-			test_data.set_model_path("res://assets/alicia/AliciaSolid_vrm-0.51.vrm")
-			r.push_back(test_data)
 
 			return r
 		).call():
@@ -359,8 +353,6 @@ func _process(_delta: float) -> void:
 	_logo.position = _logo.position.lerp(_parallax_initial_positions[_logo] + mouse_diff, 0.005)
 	_sub_logo.position = _sub_logo.position.lerp(
 		_parallax_initial_positions[_sub_logo] + mouse_diff, 0.005)
-	
-#	mf.poll()
 
 #-----------------------------------------------------------------------------#
 # Private functions
@@ -382,59 +374,46 @@ func _adapt_screen_size() -> void:
 		
 		_parallax_initial_positions[i] = i.position
 
-#func _create_runner_item(data: RunnerData) -> void:
-#	var item := RunnerItem.instantiate()
-#	item.clicked.connect(func() -> void:
-#		_loading_spinner.start()
-#		var handler: Context = await Context.new(data)
-#		await handler.finished_loading
-#		_loading_spinner.stop()
-#		if handler.get_child_count() < 1:
-#			_logger.error(
-#				"An error occurred while loading the runner, declining to start handler")
-#			handler.queue_free()
-#			return
-#
-#		var st := get_tree()
-#
-#		var tween := st.create_tween()
-#		tween.tween_property(_fade, "color", Color.BLACK, START_RUNNER_TWEEN_TIME)
-#
-#		await tween.finished
-#
-#		st.root.add_child(handler)
-#		st.current_scene = handler
-#
-#		# TODO (Tim Yuen) weird hack to force the fade effect to continue when the
-#		# current_scene has changed
-#		remove_child(_fade)
-#		var canvas_layer := CanvasLayer.new()
-#		canvas_layer.add_child(_fade)
-#		st.root.add_child(canvas_layer)
-#
-#		self.visible = false
-#
-#		tween = st.create_tween()
-#		tween.tween_property(_fade, "color", CLEAR_COLOR, START_RUNNER_TWEEN_TIME)
-#
-#		await tween.finished
-#
-#		canvas_layer.queue_free()
-#
-#		self.queue_free()
-#	)
-#
-#	_runners.add_child(item)
-#
-#	item.init_favorite(data.favorite)
-#	item.title.text = data.name
-#	# TODO think about how to set this value from a RunnerData
-##	item.model.text = data.model_path.get_file()
-#	item.last_used.text = data.last_used.to_string()
-#	item.last_used_datetime = data.last_used
-#	# TODO (Tim Yuen) currently needed since Godot threads don't like it when a function
-#	# directly throws an error in a thread. An indirect error is fine though
-#	item.init_preview(data.preview_path)
+func _create_runner_item(data: RunnerData) -> void:
+	var item := RunnerItem.instantiate()
+	item.data = data
+	item.clicked.connect(_run_from_data.bind(data))
+
+	_runners.add_child(item)
+
+# TODO should this return an [Error]?
+## Start a runner from a [RunnerData].
+func _run_from_data(data: RunnerData) -> void:
+	var context := await Context.new(data)
+	await context.loading_completed
+	
+	var st := get_tree()
+	
+	var tween := st.create_tween()
+	tween.tween_property(_fade, "color", Color.BLACK, START_RUNNER_TWEEN_TIME)
+	
+	await tween.finished
+	
+	st.root.add_child(context)
+	st.current_scene = context
+	
+	# TODO (Tim Yuen) weird hack to force the fade effect to continue when the
+	# current_scene has changed
+	remove_child(_fade)
+	var canvas_layer := CanvasLayer.new()
+	canvas_layer.add_child(_fade)
+	st.root.add_child(canvas_layer)
+	
+	self.visible = false
+	
+	tween = st.create_tween()
+	tween.tween_property(_fade, "color", CLEAR_COLOR, START_RUNNER_TWEEN_TIME)
+	
+	await tween.finished
+	
+	canvas_layer.queue_free()
+	
+	self.queue_free()
 
 #-----------------------------------------------------------------------------#
 # Public functions

@@ -1,127 +1,208 @@
-[gd_scene load_steps=3 format=3 uid="uid://dgvk2pv3f168e"]
+[gd_scene load_steps=2 format=3 uid="uid://cxsdcgyit01qk"]
 
 [ext_resource type="Script" path="res://screens/home/new_runner.gd" id="1_wwlyc"]
-[ext_resource type="Theme" uid="uid://dbf0d25iqye5y" path="res://assets/main.theme" id="2_q6tp2"]
 
-[node name="NewRunner" type="Window"]
-initial_position = 2
-title = "New Runner"
-size = Vector2i(1600, 900)
-transient = true
-exclusive = true
-theme = ExtResource("2_q6tp2")
+[node name="NewRunner" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_wwlyc")
 
-[node name="Background" type="ColorRect" parent="."]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.113725, 0.133333, 0.160784, 1)
-
 [node name="ScrollContainer" type="ScrollContainer" parent="."]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = 10.0
-offset_right = -10.0
-offset_bottom = -10.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 2
+size_flags_vertical = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 3
 
-[node name="Name" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+[node name="RunnerName" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
+tooltip_text = "Name of the runner. Defaults to the model name. Useful if multiple runners for the same model are needed."
+mouse_filter = 0
 
-[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/Name"]
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/RunnerName"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Name"
+text = "Runner Name"
 
-[node name="NameInput" type="LineEdit" parent="ScrollContainer/VBoxContainer/Name"]
+[node name="RunnerName" type="LineEdit" parent="ScrollContainer/VBoxContainer/RunnerName"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 1
+text = "New Runner"
 
-[node name="RunnerType" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+[node name="ModelPath" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
+tooltip_text = "File path to the model to use with the runner."
+mouse_filter = 0
 
-[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/RunnerType"]
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/ModelPath"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Runner Type"
+text = "Model Path"
 
-[node name="RunnerType" type="OptionButton" parent="ScrollContainer/VBoxContainer/RunnerType"]
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/ModelPath"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ModelPath" type="LineEdit" parent="ScrollContainer/VBoxContainer/ModelPath/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 1
 
-[node name="Model" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-
-[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/Model"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Model"
-
-[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/Model"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="ModelPath" type="LineEdit" parent="ScrollContainer/VBoxContainer/Model/HBoxContainer"]
+[node name="SelectModelPath" type="Button" parent="ScrollContainer/VBoxContainer/ModelPath/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
+mouse_filter = 1
+text = "Select"
 
-[node name="ChooseModel" type="Button" parent="ScrollContainer/VBoxContainer/Model/HBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Open"
-
-[node name="GuiType" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/GuiType"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Gui Type"
-
-[node name="GuiType" type="OptionButton" parent="ScrollContainer/VBoxContainer/GuiType"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Spacer" type="Control" parent="ScrollContainer/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="Status" type="Label" parent="ScrollContainer/VBoxContainer"]
+[node name="Options3d" type="VBoxContainer" parent="ScrollContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+[node name="ModelType3d" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/Options3d"]
 layout_mode = 2
-size_flags_vertical = 8
+tooltip_text = "The type of model that is being loaded.
 
-[node name="Confirm" type="Button" parent="ScrollContainer/VBoxContainer/HBoxContainer"]
+VRM models can either be \"Base\" or \"Perfect Sync\". If you are not sure, select \"Base\"."
+mouse_filter = 0
+
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/Options3d/ModelType3d"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Model Type"
+
+[node name="ModelType3d" type="OptionButton" parent="ScrollContainer/VBoxContainer/Options3d/ModelType3d"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 1
+
+[node name="Options2d" type="VBoxContainer" parent="ScrollContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ModelType2d" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/Options2d"]
+layout_mode = 2
+tooltip_text = "The type of model that is being loaded."
+mouse_filter = 0
+
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/Options2d/ModelType2d"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Model Type"
+
+[node name="ModelType2d" type="OptionButton" parent="ScrollContainer/VBoxContainer/Options2d/ModelType2d"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 1
+
+[node name="HSeparator" type="HSeparator" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="AdvancedOptionsToggle" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+tooltip_text = "Show advanced configuration options. Do not change any of these unless you know what you are doing!"
+mouse_filter = 0
+
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/AdvancedOptionsToggle"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Advanced Options"
+
+[node name="AdvancedOptionsToggle" type="CheckButton" parent="ScrollContainer/VBoxContainer/AdvancedOptionsToggle"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 1
+
+[node name="AdvancedOptions" type="VBoxContainer" parent="ScrollContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Warning" type="RichTextLabel" parent="ScrollContainer/VBoxContainer/AdvancedOptions"]
+layout_mode = 2
+bbcode_enabled = true
+text = "[center][wave amp=50.0][color=red]Only modify these options if you know what you are doing![/color][/wave][/center]"
+fit_content = true
+
+[node name="Gui" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/AdvancedOptions"]
+layout_mode = 2
+tooltip_text = "The GUI to use with the runner.
+
+GUIs can either be selected from the dropdown or manually selected from the user's file system."
+mouse_filter = 0
+
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/AdvancedOptions/Gui"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "GUI"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/AdvancedOptions/Gui"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Gui" type="OptionButton" parent="ScrollContainer/VBoxContainer/AdvancedOptions/Gui/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 1
+
+[node name="SelectGui" type="Button" parent="ScrollContainer/VBoxContainer/AdvancedOptions/Gui/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 1
+text = "Select"
+
+[node name="CustomRunner" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/AdvancedOptions"]
+layout_mode = 2
+tooltip_text = "Custom runner to use for the model."
+mouse_filter = 0
+
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/AdvancedOptions/CustomRunner"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Custom Runner"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/AdvancedOptions/CustomRunner"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CustomRunnerPath" type="LineEdit" parent="ScrollContainer/VBoxContainer/AdvancedOptions/CustomRunner/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 1
+
+[node name="SelectRunnerPath" type="Button" parent="ScrollContainer/VBoxContainer/AdvancedOptions/CustomRunner/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 1
+text = "Select"
+
+[node name="Status" type="RichTextLabel" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 2
+bbcode_enabled = true
+fit_content = true
+selection_enabled = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+alignment = 1
+
+[node name="Accept" type="Button" parent="HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 6
-size_flags_vertical = 0
-disabled = true
-text = "Confirm"
+text = "Accept"
 
-[node name="Cancel" type="Button" parent="ScrollContainer/VBoxContainer/HBoxContainer"]
+[node name="Cancel" type="Button" parent="HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 6
-size_flags_vertical = 0
 text = "Cancel"

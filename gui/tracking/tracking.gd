@@ -84,8 +84,6 @@ func _ready() -> void:
 		child.started.connect(func(tracker: Trackers, data: Dictionary) -> void:
 			match tracker:
 				Trackers.MEOW_FACE:
-					data["puppet"] = context.model
-					
 					_logger.debug(data)
 					
 					var mf := MeowFace.create(data)

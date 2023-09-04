@@ -57,7 +57,7 @@ func add_side_bar_item(button_name: StringName, button_resource_path: StringName
 		
 		instance.set("context", context)
 		
-		var popup := PopupWindow.new(context, button_name, instance)
+		var popup := PopupWindow.new(button_name, instance)
 		add_child(popup)
 		# TODO configure size somehow?
 		popup.popup_centered_ratio()

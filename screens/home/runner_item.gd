@@ -8,16 +8,19 @@ const NOT_HOVER_COLOR := Color(0.08, 0.08, 0.08, 0.47)
 const FAVORITE_COLOR := Color(1.0, 1.0, 1.0, 1.0)
 const NOT_FAVORITE_COLOR := Color(0.5, 0.5, 0.5, 1.0)
 
+## The data this UI element represents.
+var data: RunnerData = null
+
 @onready
-var preview: TextureRect = %Preview
+var _preview: TextureRect = %Preview
 @onready
-var favorite: Button = %Favorite
+var _favorite: Button = %Favorite
 @onready
-var title: Label = %Title
+var _title: Label = %Title
 @onready
-var model: Label = %Model
+var _model: Label = %Model
 @onready
-var last_used: Label = %LastUsed
+var _last_used: Label = %LastUsed
 
 #var last_used_datetime: Datetime = null
 
@@ -28,13 +31,18 @@ var _panel: StyleBoxFlat = self.get_indexed("theme_override_styles/panel").dupli
 #-----------------------------------------------------------------------------#
 
 func _ready() -> void:
+	var logger := Logger.create("RunnerItem:_ready:{0}".format([data.get_name()]))
+	if data == null:
+		logger.error("Data was null for RunnerItem {0}, aborting ready!".format([self]))
+		return
+
 	self.set_indexed("theme_override_styles/panel", _panel)
-	favorite.toggled.connect(func(state: bool) -> void:
+	_favorite.toggled.connect(func(state: bool) -> void:
 		# TODO add logic for adding favorites to metadata
 		if state:
-			favorite.modulate = FAVORITE_COLOR
+			_favorite.modulate = FAVORITE_COLOR
 		else:
-			favorite.modulate = NOT_FAVORITE_COLOR
+			_favorite.modulate = NOT_FAVORITE_COLOR
 	)
 	
 	mouse_entered.connect(func() -> void:
@@ -46,10 +54,10 @@ func _ready() -> void:
 
 func _to_string() -> String:
 	return JSON.stringify({
-		"favorite": favorite.button_pressed,
-		"title": title.text,
-		"model": model.text,
-		"last_used": last_used.text
+		"favorite": _favorite.button_pressed,
+		"title": _title.text,
+		"model": _model.text,
+		"last_used": _last_used.text
 	}, "\t")
 
 func _gui_input(event: InputEvent) -> void:
@@ -69,11 +77,11 @@ func _gui_input(event: InputEvent) -> void:
 #-----------------------------------------------------------------------------#
 
 func init_favorite(is_favorite: bool) -> void:
-	favorite.modulate = FAVORITE_COLOR if is_favorite else NOT_FAVORITE_COLOR
-	favorite.set_pressed_no_signal(is_favorite)
+	_favorite.modulate = FAVORITE_COLOR if is_favorite else NOT_FAVORITE_COLOR
+	_favorite.set_pressed_no_signal(is_favorite)
 
 func init_preview(path: String) -> void:
-	var logger_id := "RunnerItem[%s]" % title.text
+	# var logger_id := "RunnerItem[%s]" % _title.text
 	match path.get_extension().to_lower():
 		"png", "jpg", "jpeg", "tga", "webp":
 			# TODO (Tim Yuen) check if this returns null if loading fails
@@ -82,9 +90,9 @@ func init_preview(path: String) -> void:
 #				Logger.global(logger_id, "File not found %s" % path)
 				return
 			
-			preview.texture = ImageTexture.create_from_image(image)
+			_preview.texture = ImageTexture.create_from_image(image)
 		_:
 #			Logger.global(logger_id, "Unhandled file type %s" % path)
 			
 			var image := Image.create(64, 64, false, Image.FORMAT_RGB8)
-			preview.texture = ImageTexture.create_from_image(image)
+			_preview.texture = ImageTexture.create_from_image(image)

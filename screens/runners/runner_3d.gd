@@ -1,6 +1,8 @@
 class_name Runner3D
 extends Node3D
 
+## A runner for 3D models.
+
 ## The main camera in use.
 @onready
 var _camera: RunnerCamera3D = $RunnerCamera3D

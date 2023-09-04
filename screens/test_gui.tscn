@@ -1,9 +1,0 @@
-[gd_scene format=3 uid="uid://ltns3glvgw1n"]
-
-[node name="TestGui" type="CanvasLayer"]
-
-[node name="Label" type="Label" parent="."]
-offset_right = 40.0
-offset_bottom = 34.0
-text = "Test Gui!
-Delete this later :)"
