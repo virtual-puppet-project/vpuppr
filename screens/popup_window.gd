@@ -1,5 +1,5 @@
-class_name PopupWindow
 extends Window
+class_name PopupWindow
 
 const BG_COLOR := Color("1d2229")
 

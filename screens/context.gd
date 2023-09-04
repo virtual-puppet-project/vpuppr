@@ -1,5 +1,5 @@
-class_name Context
 extends Node
+class_name Context
 
 ## The context that a runner will be running in.
 
