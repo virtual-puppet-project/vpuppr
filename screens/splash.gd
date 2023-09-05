@@ -47,6 +47,9 @@ var _status := []
 #-----------------------------------------------------------------------------#
 
 func _ready() -> void:
+	if LibVpuppr.init_rust_log() != OK:
+		_logger.error("Unable to initialize Rust logging, this is highly unexpected!")
+	
 	var current_screen := DisplayServer.window_get_current_screen()
 	var current_screen_size := DisplayServer.screen_get_size(current_screen)
 	var new_window_size := current_screen_size * 0.75
@@ -64,6 +67,23 @@ func _ready() -> void:
 	_loadables_in_progress = _loadables.duplicate(true)
 	
 	_anim_player.play(SPIN_ANIM)
+	
+	ready.connect(func() -> void:
+		# TODO I don't think autoloads are guaranteed to be initialized at this point,
+		# so try and spin until the AppManager is ready
+		var st := get_tree()
+		while st.root.get_node("AM") == null:
+			await st.process_frame
+		
+		var metadata: Variant = Metadata.try_load()
+		if metadata == null:
+			_logger.error("Unable to load metadata!")
+			metadata = Metadata.new()
+		AM.metadata = metadata
+		
+		if AM.metadata.scan("user://") != OK:
+			_logger.error("Failed to complete scanning of user data directory")
+	)
 	
 	_logger.debug("Splash ready!")
 
@@ -88,6 +108,8 @@ func _process(delta: float) -> void:
 		_loadables_in_progress.erase(i)
 	
 	if _load_successes + _load_failures == _loadables_size:
+		_logger.debug("Switching to home screen")
+		
 		var home_scene: PackedScene = ResourceLoader.load_threaded_get(HOME_PATH)
 		var home: Node = home_scene.instantiate()
 		

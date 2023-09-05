@@ -81,6 +81,9 @@ func _ready() -> void:
 				"New runner popup returned someting that wasn't a RunnerData {0}".format([data]))
 			return
 		
+		if data.try_save() != OK:
+			_logger.error("Unable to save RunnerData, this is a major bug!")
+		
 		_run_from_data(data)
 
 		# TODO maybe save data before running?
@@ -180,89 +183,8 @@ func _ready() -> void:
 	
 	var init_runners_thread := Thread.new()
 	init_runners_thread.start(func() -> void:
-		# TODO testing only, need to pull these values from metadata
-		for data in (func() -> Array:
-			var r := []
-
-			const USER_DATA_DIR := "user://"
-			const FILE_EXT := "tot"
-
-			var dir := DirAccess.open(USER_DATA_DIR)
-			if dir == null:
-				_logger.error("Unable to access user directory to load configs")
-				return r
-
-			dir.include_hidden = false
-			dir.include_navigational = false
-
-			dir.list_dir_begin()
-
-			var file_name := ""
-			while true:
-				file_name = dir.get_next()
-
-				if file_name.is_empty():
-					break
-
-				_logger.debug("Found file: %s" % file_name)
-
-				if dir.current_is_dir() or file_name.get_extension().to_lower() != FILE_EXT:
-					continue
-
-				var data_path := "{dir}{file}".format({
-					dir = USER_DATA_DIR,
-					file = file_name
-				})
-				var runner_data: RunnerData = RunnerData.try_load(data_path)
-				if runner_data == null:
-					_logger.error("Unable to load data from {0}".format([data_path]))
-					continue
-				
-				r.push_back(runner_data)
-
-			dir.list_dir_end()
-
-			return r
-		).call():
-#			_create_runner_item(data)
-			# TODO testing
-			var button := Button.new()
-			button.text = data.get_name()
-			button.pressed.connect(func() -> void:
-				var context := await Context.new(data)
-				await context.loading_completed
-				
-				var st := get_tree()
-				
-				var tween := st.create_tween()
-				tween.tween_property(_fade, "color", Color.BLACK, START_RUNNER_TWEEN_TIME)
-				
-				await tween.finished
-				
-				st.root.add_child(context)
-				st.current_scene = context
-				
-				# TODO (Tim Yuen) weird hack to force the fade effect to continue when the
-				# current_scene has changed
-				remove_child(_fade)
-				var canvas_layer := CanvasLayer.new()
-				canvas_layer.add_child(_fade)
-				st.root.add_child(canvas_layer)
-				
-				self.visible = false
-				
-				tween = st.create_tween()
-				tween.tween_property(_fade, "color", CLEAR_COLOR, START_RUNNER_TWEEN_TIME)
-				
-				await tween.finished
-				
-				canvas_layer.queue_free()
-				
-				self.queue_free()
-			)
-			
-#			_runners.add_child(button)
-			_runners.call_deferred("add_child", button)
+		for data in AM.metadata.get_known_runner_data():
+			_create_runner_item(data)
 	)
 	
 	_runner_container.hide()
