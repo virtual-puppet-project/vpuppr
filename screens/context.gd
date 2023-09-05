@@ -1,7 +1,6 @@
 class_name Context
 extends Node
 
-
 ## The context that a runner will be running in.
 
 signal loading_completed()

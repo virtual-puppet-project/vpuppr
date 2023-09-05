@@ -6,24 +6,6 @@ extends VBoxContainer
 ## [br]
 ## Data passed back via [signal Window.close_requested] will either be null or a [RunnerData].
 
-## The type of 3d puppet to use.
-const ModelType3d := {
-	NONE = "None",
-	## A GLTF model. Only binary GLTF (GLB) is allowed.
-	GLB = "GLB",
-	## A VRM model.
-	VRM = "VRM",
-}
-var _model_type_3d := ModelType3d.NONE
-
-## The type of 2d puppet to use.
-const ModelType2d := {
-	NONE = "None",
-	## A PNGTuber made up of 2d images.
-	PNGTUBER = "PNGTuber"
-}
-var _model_type_2d := ModelType2d.NONE
-
 ## The type of model to load.
 enum ModelType {
 	NONE = 0, ## Model type has not been set.
@@ -57,22 +39,45 @@ var _runner_name := %RunnerName
 ## Path to the model to use for the runner.
 @onready
 var _model_path := %ModelPath
-## Path to a custom runner resource.
-@onready
-var _custom_runner_path := %CustomRunnerPath
 
 ## Grouping for 3D model options. Hidden by default.
 @onready
 var _options_3d := %Options3d
+## The type of 3d puppet to use.
+const ModelType3d := {
+	NONE = "None",
+	## A GLTF model. Only binary GLTF (GLB) is allowed.
+	GLB = "GLB",
+	## A VRM model.
+	VRM = "VRM",
+}
+@onready
+var _model_type_3d := %ModelType3d
+
 ## Grouping for 2D model options. Hidden by default.
 @onready
 var _options_2d := %Options2d
+## The type of 2d puppet to use.
+const ModelType2d := {
+	NONE = "None",
+	## A PNGTuber made up of 2d images.
+	PNGTUBER = "PNGTuber"
+}
+@onready
+var _model_type_2d := %ModelType2d
+
 ## Toggle for showing advanced options.
 @onready
 var _advanced_options_toggle := %AdvancedOptionsToggle
 ## Grouping for advanced options. Hidden by default.
 @onready
 var _advanced_options := %AdvancedOptions
+## Path to a custom GUI resource.
+@onready
+var _custom_gui_path := %CustomGuiPath
+## Path to a custom runner resource.
+@onready
+var _custom_runner_path := %CustomRunnerPath
 
 ## Validation statuses. If any of these exist in [_invalid_statuses], the form cannot be submitted.
 const Status := {
@@ -158,22 +163,24 @@ func _ready() -> void:
 			_validate_model_path(model_path)
 	)
 	
-	var model_type_3d := %ModelType3d as OptionButton
-	for i in ModelType3d.keys():
-		model_type_3d.add_item(i)
-	model_type_3d.item_selected.connect(func(idx: int) -> void:
-		_validate_model_type_3d(model_type_3d.get_item_text(idx))
-	)
+	for i in ModelType3d.values():
+		_model_type_3d.add_item(i)
 	
-	var model_type_2d := %ModelType2d as OptionButton
-	for i in ModelType2d.keys():
-		model_type_2d.add_item(i)
-	model_type_2d.item_selected.connect(func(idx: int) -> void:
-		_validate_model_type_2d(model_type_2d.get_item_text(idx))
-	)
+	for i in ModelType2d.values():
+		_model_type_2d.add_item(i)
 	
 	_advanced_options_toggle.toggled.connect(func(state: bool) -> void:
 		_advanced_options.visible = state
+	)
+
+	_custom_gui_path.text_changed.connect(_validate_custom_gui_path)
+	%SelectCustomGuiPath.pressed.connect(func() -> void:
+		pass
+	)
+
+	_custom_runner_path.text_changed.connect(_validate_custom_runner_path)
+	%SelectCustomRunnerPath.pressed.connect(func() -> void:
+		pass
 	)
 	
 	_accept.pressed.connect(func() -> void:
@@ -261,11 +268,17 @@ func _validate_model_path(text: String) -> void:
 		_add_invalid_status(Status.ModelPath.OPEN_FMT1.format([text]))
 		return
 	
-	match text.get_extension().to_lower():
-		"glb", "vrm":
+	var ext := text.get_extension().to_lower()
+	match ext:
+		"glb":
 			_model_type = ModelType.PUPPET_3D
+			_model_type_3d.select(ModelType3d.values().find(ModelType3d.GLB))
+		"vrm":
+			_model_type = ModelType.PUPPET_3D
+			_model_type_3d.select(ModelType3d.values().find(ModelType3d.VRM))
 		"png", "jpg", "jpeg", "bmp", "webp":
 			_model_type = ModelType.PUPPET_2D
+			_model_type_2d.select(ModelType2d.values().find(ModelType2d.PNGTUBER))
 		_:
 			_logger.info("Could not automatically handle extension for file {0}".format([text]))
 			_model_type = ModelType.CUSTOM
@@ -273,30 +286,8 @@ func _validate_model_path(text: String) -> void:
 	for i in Status.ModelPath.values():
 		_remove_invalid_status(i)
 
-func _validate_model_type_3d(text: String) -> void:
-	match text:
-		ModelType3d.NONE:
-			_model_type_3d = ModelType3d.NONE
-			_add_invalid_status(Status.ModelType3d.NONE)
-		ModelType3d.GLB:
-			_model_type_3d = ModelType3d.GLB
-		ModelType3d.VRM:
-			_model_type_3d = ModelType3d.VRM
-		_:
-			_logger.error("Unhandled ModelType3d {0}".format(text))
-	
-	_update_status()
+func _validate_custom_gui_path(text: String) -> void:
 
-func _validate_model_type_2d(text: String) -> void:
-	match text:
-		ModelType2d.NONE:
-			_model_type_2d = ModelType2d.NONE
-			_add_invalid_status(Status.ModelType2d.NONE)
-		ModelType2d.PNGTUBER:
-			_model_type_2d = ModelType2d.PNGTUBER
-		_:
-			_logger.error("Unhandled ModelType2d {0}".format(text))
-	
 	_update_status()
 
 func _validate_custom_runner_path(text: String) -> void:

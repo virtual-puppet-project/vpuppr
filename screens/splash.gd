@@ -47,7 +47,22 @@ var _status := []
 #-----------------------------------------------------------------------------#
 
 func _ready() -> void:
-	if LibVpuppr.init_rust_log() != OK:
+	var args := LibVpuppr.parse_user_args()
+	# Quick sanity check. If this fails, then there's a bug with libvpuppr
+	if not args.has("quiet"):
+		printerr("Godot args was missing \"quiet\", this is a major bug! ")
+	if not args.has("verbose"):
+		printerr("Godot args was missing \"verbose\", this is a major bug! ")
+	if args.get("has_command", false):
+		# TODO stub
+		pass
+	
+	# TODO passing flags works, just force it on for now AFTER the sanity check
+	if OS.is_debug_build():
+		args["quiet"] = false
+		args["verbose"] = true
+	
+	if LibVpuppr.init_rust_log(args.get("quiet", false), args.get("verbose", false)) != OK:
 		_logger.error("Unable to initialize Rust logging, this is highly unexpected!")
 	
 	var current_screen := DisplayServer.window_get_current_screen()

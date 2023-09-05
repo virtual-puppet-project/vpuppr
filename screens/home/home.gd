@@ -71,7 +71,7 @@ func _ready() -> void:
 		var popup := PopupWindow.new("New Runner", NewRunner.instantiate())
 
 		add_child(popup)
-		popup.popup_centered_ratio()
+		popup.popup_centered_ratio(0.5)
 		
 		var data: Variant = await popup.close_requested
 		if data == null:

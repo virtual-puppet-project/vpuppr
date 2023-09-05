@@ -54,6 +54,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 1
+placeholder_text = "Path to file"
 
 [node name="SelectModelPath" type="Button" parent="ScrollContainer/VBoxContainer/ModelPath/HBoxContainer"]
 unique_name_in_owner = true
@@ -129,29 +130,30 @@ bbcode_enabled = true
 text = "[center][wave amp=50.0][color=red]Only modify these options if you know what you are doing![/color][/wave][/center]"
 fit_content = true
 
-[node name="Gui" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/AdvancedOptions"]
+[node name="CustomGui" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/AdvancedOptions"]
 layout_mode = 2
-tooltip_text = "The GUI to use with the runner.
+tooltip_text = "A custom GUI to use.
 
-GUIs can either be selected from the dropdown or manually selected from the user's file system."
+This will override the vpuppr default GUI."
 mouse_filter = 0
 
-[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/AdvancedOptions/Gui"]
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/AdvancedOptions/CustomGui"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "GUI"
+text = "Custom GUI"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/AdvancedOptions/Gui"]
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/AdvancedOptions/CustomGui"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Gui" type="OptionButton" parent="ScrollContainer/VBoxContainer/AdvancedOptions/Gui/HBoxContainer"]
+[node name="CustomGuiPath" type="LineEdit" parent="ScrollContainer/VBoxContainer/AdvancedOptions/CustomGui/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 1
+placeholder_text = "Path to custom GUI"
 
-[node name="SelectGui" type="Button" parent="ScrollContainer/VBoxContainer/AdvancedOptions/Gui/HBoxContainer"]
+[node name="SelectCustomGuiPath" type="Button" parent="ScrollContainer/VBoxContainer/AdvancedOptions/CustomGui/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 1
@@ -159,7 +161,9 @@ text = "Select"
 
 [node name="CustomRunner" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/AdvancedOptions"]
 layout_mode = 2
-tooltip_text = "Custom runner to use for the model."
+tooltip_text = "Custom runner to use for the model.
+
+This will override the vpuppr default runner."
 mouse_filter = 0
 
 [node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/AdvancedOptions/CustomRunner"]
@@ -176,8 +180,9 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 1
+placeholder_text = "Path to custom runner"
 
-[node name="SelectRunnerPath" type="Button" parent="ScrollContainer/VBoxContainer/AdvancedOptions/CustomRunner/HBoxContainer"]
+[node name="SelectCustomRunnerPath" type="Button" parent="ScrollContainer/VBoxContainer/AdvancedOptions/CustomRunner/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 1
