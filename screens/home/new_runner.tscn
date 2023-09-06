@@ -60,6 +60,7 @@ placeholder_text = "Path to file"
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 1
+mouse_default_cursor_shape = 2
 text = "Select"
 
 [node name="Options3d" type="VBoxContainer" parent="ScrollContainer/VBoxContainer"]
@@ -119,6 +120,7 @@ text = "Advanced Options"
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 1
+mouse_default_cursor_shape = 2
 
 [node name="AdvancedOptions" type="VBoxContainer" parent="ScrollContainer/VBoxContainer"]
 unique_name_in_owner = true
@@ -204,10 +206,12 @@ alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 6
+mouse_default_cursor_shape = 2
 text = "Accept"
 
 [node name="Cancel" type="Button" parent="HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 6
+mouse_default_cursor_shape = 2
 text = "Cancel"
