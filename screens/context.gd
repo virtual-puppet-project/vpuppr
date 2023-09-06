@@ -76,11 +76,11 @@ func _init(p_runner_data: RunnerData) -> void:
 					return r
 				
 				# TODO name changed
-#				var puppet := Glb.new()
-#				puppet.name = model_path.get_file()
-#				puppet.add_child(model)
+				var puppet := GlbPuppet.new()
+				puppet.name = model_path.get_file()
+				puppet.add_child(model)
 #
-#				r.model = puppet
+				r.model = puppet
 			"vrm":
 				logger.info("Loading vrm")
 				
