@@ -11,6 +11,7 @@ class ActiveTracker extends HBoxContainer:
 		var button := Button.new()
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.text = &"Stop"
+		# TODO move this logic back to the context?
 		button.pressed.connect(func() -> void:
 			if tracker.stop() != OK:
 				parent_logger.error("Unable to stop tracker {0}".format([tracker.get_name()]))
@@ -40,6 +41,13 @@ var _active_trackers := %ActiveTrackers
 #-----------------------------------------------------------------------------#
 
 func _ready() -> void:
+	if context == null:
+		_logger.error("Context was not set, bailing out")
+		return
+	
+	for t in context.active_trackers:
+		_active_trackers.add_child(ActiveTracker.new(context, _logger, t))
+	
 	ready.connect(func() -> void:
 		await get_tree().process_frame
 		await get_tree().process_frame
@@ -80,35 +88,14 @@ func _ready() -> void:
 		
 		_trackers[child.name] = child
 		
-		# TODO maybe centralize this logic in Context?
+		# TODO move more logic back to the context
 		child.started.connect(func(tracker: Trackers, data: Dictionary) -> void:
-			match tracker:
-				Trackers.MEOW_FACE:
-					_logger.debug(data)
-					
-					var mf := MeowFace.create(data)
-					mf.data_received.connect(func(data: MeowFaceData) -> void:
-						context.model.handle_meow_face(data)
-					)
-					if mf.start() != OK:
-						_logger.error("Unable to start MeowFace")
-						return
-					
-					context.active_trackers.push_back(mf)
-					_active_trackers.add_child(ActiveTracker.new(context, _logger, mf))
-				Trackers.MEDIA_PIPE:
-					var mp := MediaPipe.create(data)
-					mp.data_received.connect(func(projection: Projection, blend_shapes: Array[MediaPipeCategory]) -> void:
-						context.model.handle_media_pipe(projection, blend_shapes)
-					)
-					if mp.start() != OK:
-						_logger.error("Unable to start MediaPipe")
-						return
-
-					context.active_trackers.push_back(mp)
-					_active_trackers.add_child(ActiveTracker.new(context, _logger, mp))
-				_:
-					_logger.error("Unhandled tracker: {0}".format([tracker]))
+			var tracker_ref = context.start_tracker(tracker, data)
+			if tracker_ref == null:
+				_logger.error("Unable to start tracker")
+				return
+			
+			_active_trackers.add_child(ActiveTracker.new(context, _logger, tracker_ref))
 		)
 	
 	tree.item_selected.connect(func() -> void:

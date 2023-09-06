@@ -18,8 +18,6 @@ var context: Context = null
 
 ## The model to apply tracking data to.
 var _model: Node3D = null
-# TODO testing
-#var mf: MeowFace
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
@@ -29,26 +27,6 @@ func _ready() -> void:
 	if context == null:
 		_logger.error("No context was found, bailing out of _ready")
 		return
-#	for child in get_children():
-#		if child is VrmPuppet:
-#			_model = child
-#			break
-#
-#	_model.a_pose()
-#
-#	mf = MeowFace.create({
-#		bind_port = 21412,
-#		connect_address = "192.168.88.51",
-#		connect_port = 21412,
-#		puppet = _model
-#	})
-#	mf.data_received.connect(func(data: MeowFaceData) -> void:
-#		_model.handle_meow_face(data)
-#	)
-#	if mf.start() != OK:
-#		printerr("asdf")
-	
-	pass
 
 func _input(event: InputEvent) -> void:
 	if not event is InputEventKey:

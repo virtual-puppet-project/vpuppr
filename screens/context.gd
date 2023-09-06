@@ -158,3 +158,38 @@ func _init(p_runner_data: RunnerData) -> void:
 #-----------------------------------------------------------------------------#
 # Public functions
 #-----------------------------------------------------------------------------#
+
+func start_tracker(tracker: AbstractTracker.Trackers, data: Dictionary) -> AbstractTracker:
+	var logger := Logger.create("Logger::start_tracker")
+
+	match tracker:
+		AbstractTracker.Trackers.MEOW_FACE:
+			logger.debug(data)
+
+			var mf := MeowFace.create(data)
+			mf.data_received.connect(func(data: MeowFaceData) -> void:
+				model.handle_meow_face(data)
+			)
+			if mf.start() != OK:
+				logger.error("Unable to start MeowFace")
+				return
+
+			active_trackers.push_back(mf)
+			
+			return mf
+		AbstractTracker.Trackers.MEDIA_PIPE:
+			var mp := MediaPipe.create(data)
+			mp.data_received.connect(func(projection: Projection, blend_shapes: Array[MediaPipeCategory]) -> void:
+				model.handle_media_pipe(projection, blend_shapes)
+			)
+			if mp.start() != OK:
+				logger.error("Unable to start MediaPipe")
+				return
+
+			active_trackers.push_back(mp)
+
+			return mp
+		_:
+			logger.error("Unhandled tracker: {0}".format([tracker]))
+			
+			return null
