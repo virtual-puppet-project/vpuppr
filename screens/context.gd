@@ -3,7 +3,7 @@ extends Node
 
 ## The context that a runner will be running in.
 
-signal loading_completed()
+signal loading_completed(success: bool)
 
 ## The [RunnerData] the [Context] is using.
 var runner_data: RunnerData = null
@@ -25,7 +25,7 @@ func _init(p_runner_data: RunnerData) -> void:
 	
 	var fail := func(text: String) -> void:
 		logger.error(text)
-		loading_completed.emit()
+		loading_completed.emit(false)
 	
 	if p_runner_data == null:
 		fail.call("No runner data received, bailing out!")
@@ -149,7 +149,7 @@ func _init(p_runner_data: RunnerData) -> void:
 	
 	logger.info("Completed loading")
 	
-	loading_completed.emit()
+	loading_completed.emit(true)
 
 #-----------------------------------------------------------------------------#
 # Private functions

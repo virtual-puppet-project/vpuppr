@@ -184,7 +184,8 @@ func _ready() -> void:
 	var init_runners_thread := Thread.new()
 	init_runners_thread.start(func() -> void:
 		for data in AM.metadata.get_known_runner_data():
-			_create_runner_item(data)
+			_logger.debug("Creating runner item {0}".format([data]))
+			call_deferred(&"_create_runner_item", data)
 	)
 	
 	_runner_container.hide()
@@ -299,15 +300,23 @@ func _adapt_screen_size() -> void:
 func _create_runner_item(data: RunnerData) -> void:
 	var item := RunnerItem.instantiate()
 	item.data = data
-	item.clicked.connect(_run_from_data.bind(data))
+	item.clicked.connect(_run_from_data.bind(data, item))
 
 	_runners.add_child(item)
 
 # TODO should this return an [Error]?
 ## Start a runner from a [RunnerData].
-func _run_from_data(data: RunnerData) -> void:
+func _run_from_data(data: RunnerData, runner_item: Control = null) -> void:
+	if runner_item != null:
+		runner_item.clicked.disconnect(_run_from_data)
+	
 	var context := await Context.new(data)
-	await context.loading_completed
+	var success: Variant = await context.loading_completed
+	if runner_item != null and (not success is bool or success != true):
+		if context != null:
+			context.queue_free()
+		runner_item.clicked.connect(_run_from_data.bind(data, runner_item))
+		return
 	
 	var st := get_tree()
 	

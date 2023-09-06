@@ -35,6 +35,10 @@ func _ready() -> void:
 	if data == null:
 		logger.error("Data was null for RunnerItem {0}, aborting ready!".format([self]))
 		return
+	
+	_title.text = data.get_name()
+	_model.text = data.get_model_path().get_file()
+	_last_used.text = Time.get_datetime_string_from_unix_time(data.get_last_used_int())
 
 	self.set_indexed("theme_override_styles/panel", _panel)
 	_favorite.toggled.connect(func(state: bool) -> void:
