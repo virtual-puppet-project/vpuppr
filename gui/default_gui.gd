@@ -1,6 +1,30 @@
 class_name DefaultGui
 extends CanvasLayer
 
+const SPACER := "__spacer__"
+
+const AppMenu := {
+	HOME = "Home",
+	s0 = SPACER,
+	LOGS = "Logs",
+	SETTINGS = "Settings",
+	s1 = SPACER,
+	QUIT = "Quit"
+}
+
+const DebugMenu := {
+	TERMINAL = "Terminal",
+}
+
+const HelpMenu := {
+	ABOUT = "About",
+	s0 = SPACER,
+	GITHUB = "GitHub",
+	DISCORD = "Discord",
+	s1 = SPACER,
+	LICENSES = "Licenses"
+}
+
 var _logger := Logger.create("DefaultGui")
 
 var context: Context = null
@@ -13,6 +37,68 @@ var _side_bar: VBoxContainer = %SideBar
 #-----------------------------------------------------------------------------#
 
 func _ready() -> void:
+	var app_menu := %App.get_popup() as PopupMenu
+	for val in AppMenu.values():
+		if val == SPACER:
+			app_menu.add_separator()
+		else:
+			app_menu.add_item(val)
+	app_menu.index_pressed.connect(func(idx: int) -> void:
+		match app_menu.get_item_text(idx):
+			AppMenu.HOME:
+				get_tree().change_scene_to_file("res://screens/home/home.tscn")
+				return
+			AppMenu.LOGS:
+				_logger.error("Not yet implemented!")
+				pass
+			AppMenu.SETTINGS:
+				_logger.error("Not yet implemented!")
+				pass
+			AppMenu.QUIT:
+				get_tree().quit()
+				return
+	)
+	
+	var debug_menu := %Debug.get_popup() as PopupMenu
+	for val in DebugMenu.values():
+		if val == SPACER:
+			debug_menu.add_separator()
+		else:
+			debug_menu.add_item(val)
+	debug_menu.index_pressed.connect(func(idx: int) -> void:
+		match debug_menu.get_item_text(idx):
+			DebugMenu.TERMINAL:
+				_logger.error("Not yet implemented!")
+				pass
+	)
+	
+	var help_menu := %Help.get_popup() as PopupMenu
+	for val in HelpMenu.values():
+		if val == SPACER:
+			help_menu.add_separator()
+		else:
+			help_menu.add_item(val)
+	help_menu.index_pressed.connect(func(idx: int) -> void:
+		match help_menu.get_item_text(idx):
+			HelpMenu.ABOUT:
+				_logger.error("Not yet implemented!")
+				pass
+			HelpMenu.GITHUB:
+				if OS.shell_open("https://github.com/virtual-puppet-project/vpuppr") != OK:
+					_logger.error("Unable to open link to GitHub")
+				return
+			HelpMenu.DISCORD:
+				if OS.shell_open("https://discord.gg/6mcdWWBkrr") != OK:
+					_logger.error("Unable to open link to Discord")
+				return
+			HelpMenu.LICENSES:
+				var popup := PopupWindow.new("Licenses", preload("res://gui/licenses.tscn").instantiate())
+				
+				add_child(popup)
+				popup.popup_centered_ratio(0.5)
+				return
+	)
+	
 	var h_split_container := $VBoxContainer/HSplitContainer
 	h_split_container.split_offset = get_viewport().size.x * 0.15
 	
