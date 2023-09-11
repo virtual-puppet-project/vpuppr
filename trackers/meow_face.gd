@@ -63,7 +63,6 @@ func start() -> Error:
 	_should_stop = false
 	
 	_thread = Thread.new()
-	
 	_thread.start(func() -> void:
 		while not _should_stop:
 			OS.delay_msec(10)

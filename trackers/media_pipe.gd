@@ -10,13 +10,25 @@ var _camera_helper: MediaPipeCameraHelper = null
 
 var _logger := Logger.create("MediaPipe")
 
+## Starting the camera helper takes a while, so use a thread instead.
+var _start_thread: Thread = null
+
 #-----------------------------------------------------------------------------#
 # Builtin functions
 #-----------------------------------------------------------------------------#
 
+func _notification(what: int) -> void:
+	match what:
+		NOTIFICATION_PREDELETE:
+			_clean_up_thread()
+
 #-----------------------------------------------------------------------------#
 # Private functions
 #-----------------------------------------------------------------------------#
+
+func _clean_up_thread() -> void:
+	if _start_thread != null and _start_thread.is_alive():
+		_start_thread.wait_to_finish()
 
 #-----------------------------------------------------------------------------#
 # Public functions
@@ -57,11 +69,24 @@ func get_name() -> StringName:
 
 func start() -> Error:
 	_task.result_callback.connect(func(result: MediaPipeFaceLandmarkerResult, _image: MediaPipeImage, timestamp_ms: int) -> void:
-		# TODO update to use properties after submitting pr to gdmp
-		data_received.emit(result.get_facial_transformation_matrixes()[0], result.get_face_blendshapes()[0].categories)
+		var r := {}
+		for i in result.face_blendshapes[0].categories:
+			r["name"] = i.category_name
+			r["score"] = i.score
+	
+		
+		data_received.emit(
+			result.facial_transformation_matrixes[0] as Projection,
+			r
+		)
 	)
 	
-	_camera_helper.start(MediaPipeCameraHelper.FACING_FRONT, Vector2(640, 480))
+	_clean_up_thread()
+	
+	_start_thread = Thread.new()
+	_start_thread.start(func() -> void:
+		_camera_helper.start(MediaPipeCameraHelper.FACING_FRONT, Vector2(640, 480))
+	)
 	
 	return OK
 

@@ -31,14 +31,14 @@ var _panel: StyleBoxFlat = self.get_indexed("theme_override_styles/panel").dupli
 #-----------------------------------------------------------------------------#
 
 func _ready() -> void:
-	var logger := Logger.create("RunnerItem:_ready:{0}".format([data.get_name()]))
+	var logger := Logger.create("RunnerItem:_ready:{0}".format([data.name]))
 	if data == null:
 		logger.error("Data was null for RunnerItem {0}, aborting ready!".format([self]))
 		return
 	
-	_title.text = data.get_name()
-	_model.text = data.get_model_path().get_file()
-	_last_used.text = Time.get_datetime_string_from_unix_time(data.get_last_used_int())
+	_title.text = data.name
+	_model.text = data.model_path.get_file()
+	_last_used.text = Time.get_datetime_string_from_unix_time(data.last_used)
 
 	self.set_indexed("theme_override_styles/panel", _panel)
 	_favorite.toggled.connect(func(state: bool) -> void:

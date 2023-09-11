@@ -179,7 +179,7 @@ func start_tracker(tracker: AbstractTracker.Trackers, data: Dictionary) -> Abstr
 			return mf
 		AbstractTracker.Trackers.MEDIA_PIPE:
 			var mp := MediaPipe.create(data)
-			mp.data_received.connect(func(projection: Projection, blend_shapes: Array[MediaPipeCategory]) -> void:
+			mp.data_received.connect(func(projection: Projection, blend_shapes: Dictionary) -> void:
 				model.handle_media_pipe(projection, blend_shapes)
 			)
 			if mp.start() != OK:
