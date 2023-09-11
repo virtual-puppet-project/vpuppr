@@ -71,9 +71,7 @@ func start() -> Error:
 	_task.result_callback.connect(func(result: MediaPipeFaceLandmarkerResult, _image: MediaPipeImage, timestamp_ms: int) -> void:
 		var r := {}
 		for i in result.face_blendshapes[0].categories:
-			r["name"] = i.category_name
-			r["score"] = i.score
-	
+			r[i.category_name] = i.score
 		
 		data_received.emit(
 			result.facial_transformation_matrixes[0] as Projection,
