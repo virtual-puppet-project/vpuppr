@@ -24,8 +24,22 @@ TODO you-win September 1, 2023: need to reconfirm all data examples.
 
 ## MediaPipe
 
-Data is received as `Projection` and `Array<MediaPipeCategory>` which is roughly equivalent to
-`Matrix4` and `Array<Dictionary<Name, Value>>`.
+Data is received as a `MediaPipeFaceLandmarkerResult`.
+
+This struct contains data for 0-n detected faces and can be configured to detect a maximum
+of 1 face.
+
+`MediaPipeFaceLandmarkerResult.face_blendshapes` and
+`MediaPipeFaceLandmarkerResult.facial_transformation_matrixes` are both arrays containing
+0-n results.
+
+- `MediaPipeFaceLandmarkerResult.face_blendshapes[0]` is an array of
+`MediaPipeClassifications`.
+    - `MediaPipeClassifications.categories` is an array of `MediaPipeCategory`
+        - `MediaPipeCategory.category_name` and `MediaPipeCategory.score` contains the actual data
+            - `category_name` is a name like `mouthLowerDownLeft`
+            - `score` is a value from 0-1
+- `MediaPipeFaceLandmarkerResult.facial_transformation_matrixes` is an array of `Projection`
 
 ## iFacialMocap
 
