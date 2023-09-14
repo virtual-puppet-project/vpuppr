@@ -77,7 +77,7 @@ func start() -> Error:
 			if packet.size() < 1:
 				continue
 			
-			var data := MeowFaceData.from(packet)
+			var data := VTubeStudioData.from(packet)
 			data_received.emit(data)
 	)
 	

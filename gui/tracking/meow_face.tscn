@@ -16,7 +16,7 @@ size_flags_horizontal = 3
 
 [node name="RichTextLabel" type="RichTextLabel" parent="VBoxContainer"]
 layout_mode = 2
-text = "TODO add description"
+text = "Start MeowFace tracking."
 fit_content = true
 
 [node name="ConnectAddress" type="HBoxContainer" parent="VBoxContainer"]

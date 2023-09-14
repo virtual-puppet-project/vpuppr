@@ -14,6 +14,13 @@ script = ExtResource("1_fck51")
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="RichTextLabel" type="RichTextLabel" parent="VBoxContainer"]
+layout_mode = 2
+focus_mode = 2
+text = "Start MediaPipe tracking."
+fit_content = true
+selection_enabled = true
+
 [node name="Start" type="Button" parent="VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
