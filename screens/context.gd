@@ -37,14 +37,14 @@ func _init(p_runner_data: RunnerData) -> void:
 	const GUI := "gui"
 	const MODEL := "model"
 	
+	var r := {
+		RUNNER = null,
+		GUI = null,
+		MODEL = null
+	}
+	
 	var loading_thread := Thread.new()
 	loading_thread.start(func() -> Dictionary:
-		var r := {
-			RUNNER = null,
-			GUI = null,
-			MODEL = null
-		}
-		
 		var try_load := func(path: String) -> Variant:
 			var res: Resource = load(path)
 			if res == null:
@@ -85,16 +85,12 @@ func _init(p_runner_data: RunnerData) -> void:
 				logger.info("Loading vrm")
 				
 				var gltf := GLTFDocument.new()
-				var vrm_extension: GLTFDocumentExtension = preload("res://addons/vrm/vrm_extension.gd").new()
-				gltf.register_gltf_document_extension(vrm_extension, true)
-				
 				var state := GLTFState.new()
 				state.handle_binary_image = GLTFState.HANDLE_BINARY_EMBED_AS_BASISU
 				
 				var err := gltf.append_from_file(model_path, state)
 				if err != OK:
 					logger.error("Unable to load model from path {0}".format([model_path]))
-					gltf.unregister_gltf_document_extension(vrm_extension)
 					return r
 				
 				var model: Node = gltf.generate_scene(state)

@@ -3,7 +3,7 @@
 cd $(dirname "$0")
 
 echo "Updating git submodules"
-git submodule update --recursive --remote
+git submodule update --init --recursive --remote
 
 echo "Building rust lib"
 python libvpuppr/build.py --debug

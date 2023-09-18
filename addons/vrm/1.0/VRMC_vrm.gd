@@ -985,8 +985,6 @@ func _export_post(gstate: GLTFState) -> Error:
 			json_gltf_nodes[gltf_node_idx]["name"] = orig_bone_name_dict[json_gltf_nodes[gltf_node_idx]["name"]]
 	vrm_extension["humanoid"] = humanoid
 
-	var ei: EditorInspector = EditorInspector.new()
-
 	if not _add_vrm_nodes_to_skin(json):
 		push_error("Export post failed to find vrm humanBones in VRMC_vrm extension")
 		return ERR_INVALID_DATA

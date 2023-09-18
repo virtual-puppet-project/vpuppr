@@ -83,6 +83,7 @@ func _ready() -> void:
 	
 	_anim_player.play(SPIN_ANIM)
 	
+	# TODO maybe run all of this on a thread?
 	ready.connect(func() -> void:
 		# TODO I don't think autoloads are guaranteed to be initialized at this point,
 		# so try and spin until the AppManager is ready
@@ -98,6 +99,13 @@ func _ready() -> void:
 		
 		if AM.metadata.scan("user://") != OK:
 			_logger.error("Failed to complete scanning of user data directory")
+		
+		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/vrm_extension.gd").new(), true)
+		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_materials_hdr_emissiveMultiplier.gd").new())
+		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_materials_mtoon.gd").new())
+		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_node_constraint.gd").new())
+		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_springBone.gd").new())
+		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_vrm.gd").new())
 	)
 	
 	_logger.debug("Splash ready!")

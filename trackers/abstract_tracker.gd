@@ -4,9 +4,14 @@ extends RefCounted
 ## Indicate that data has been received. Parameters can vary per tracker.
 signal data_received()
 
+## List of all builtin trackers.
 enum Trackers {
-	MEOW_FACE = 0,
-	MEDIA_PIPE
+	MEDIA_PIPE = 0,
+	I_FACIAL_MOCAP,
+	VTUBE_STUDIO,
+	MEOW_FACE,
+	OPEN_SEE_FACE,
+	CUSTOM ## A tracker that provides its own GUI and data applier.
 }
 
 #-----------------------------------------------------------------------------#
@@ -32,6 +37,3 @@ func start() -> Error:
 
 func stop() -> Error:
 	return ERR_UNCONFIGURED
-
-func poll() -> void:
-	pass
