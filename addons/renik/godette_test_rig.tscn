@@ -1,0 +1,220 @@
+[gd_scene load_steps=9 format=3 uid="uid://c5xqckkutm44a"]
+
+[ext_resource type="PackedScene" uid="uid://bp7s8m7jegpy1" path="res://addons/renik/sample_models/godette.glb" id="1_hi3e7"]
+[ext_resource type="Script" path="res://addons/renik/renik.gd" id="2_eba7d"]
+[ext_resource type="Script" path="res://addons/renik/renik_placement.gd" id="3_lrlos"]
+[ext_resource type="Script" path="res://addons/renik/renik_placement_gait.gd" id="4_ipr1b"]
+
+[sub_resource type="Resource" id="Resource_ho7uw"]
+resource_name = "ForwardGait"
+script = ExtResource("4_ipr1b")
+speed_scalar_min = 1.0
+speed_scalar_max = 0.5
+ground_time = 5.0
+lift_time_base = 10.0
+lift_time_scalar = 5.0
+apex_in_time_base = 10.0
+apex_in_time_scalar = 5.0
+apex_out_time_base = 5.0
+apex_out_time_scalar = 5.0
+drop_time_base = 5.0
+drop_time_scalar = 0.0
+tip_toe_distance_scalar = 1.5708
+tip_toe_speed_scalar = 0.785398
+tip_toe_angle_max = 1.0472
+lift_vertical = 0.0
+lift_vertical_scalar = 0.4
+lift_horizontal_scalar = 0.7
+lift_angle = 1.5708
+apex_vertical = 0.0
+apex_vertical_scalar = 0.1
+apex_angle = 0.392699
+drop_vertical = 0.0
+drop_vertical_scalar = 0.05
+drop_horizontal_scalar = 0.25
+drop_angle = -0.392699
+contact_point_ease = 0.05
+contact_point_ease_scalar = 0.4
+scaling_ease = 0.85
+
+[sub_resource type="Resource" id="Resource_rpm34"]
+resource_name = "BackwardGait"
+script = ExtResource("4_ipr1b")
+speed_scalar_min = 0.5
+speed_scalar_max = 0.75
+ground_time = 5.0
+lift_time_base = 5.0
+lift_time_scalar = 5.0
+apex_in_time_base = 10.0
+apex_in_time_scalar = 5.0
+apex_out_time_base = 10.0
+apex_out_time_scalar = 5.0
+drop_time_base = 5.0
+drop_time_scalar = 5.0
+tip_toe_distance_scalar = 0.0
+tip_toe_speed_scalar = 0.0
+tip_toe_angle_max = 0.0
+lift_vertical = 0.025
+lift_vertical_scalar = 0.1
+lift_horizontal_scalar = 0.33
+lift_angle = -0.392699
+apex_vertical = 0.1
+apex_vertical_scalar = 0.1
+apex_angle = 0.392699
+drop_vertical = 0.0
+drop_vertical_scalar = 0.1
+drop_horizontal_scalar = 0.25
+drop_angle = 0.392699
+contact_point_ease = 0.1
+contact_point_ease_scalar = 0.4
+scaling_ease = 0.85
+
+[sub_resource type="Resource" id="Resource_6b5vk"]
+resource_name = "SidewaysGait"
+script = ExtResource("4_ipr1b")
+speed_scalar_min = 0.75
+speed_scalar_max = 0.75
+ground_time = 10.0
+lift_time_base = 5.0
+lift_time_scalar = 5.0
+apex_in_time_base = 10.0
+apex_in_time_scalar = 5.0
+apex_out_time_base = 10.0
+apex_out_time_scalar = 5.0
+drop_time_base = 5.0
+drop_time_scalar = 5.0
+tip_toe_distance_scalar = 0.0
+tip_toe_speed_scalar = 0.0
+tip_toe_angle_max = 0.0
+lift_vertical = 0.05
+lift_vertical_scalar = 0.05
+lift_horizontal_scalar = 0.2
+lift_angle = 0.0
+apex_vertical = 0.01
+apex_vertical_scalar = 0.1
+apex_angle = 0.392699
+drop_vertical = 0.01
+drop_vertical_scalar = 0.05
+drop_horizontal_scalar = 0.25
+drop_angle = 0.0
+contact_point_ease = 0.1
+contact_point_ease_scalar = 0.4
+scaling_ease = 0.85
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_itlrt"]
+size = Vector3(10, 0, 10)
+
+[node name="test_rig" type="Node3D"]
+
+[node name="Godette_vrm_v4" parent="." instance=ExtResource("1_hi3e7")]
+
+[node name="GeneralSkeleton" parent="Godette_vrm_v4" index="0"]
+bones/1/position = Vector3(-7.16312e-09, 0.597844, 0.0420817)
+bones/2/rotation = Quaternion(-0.00524524, 0, -3.49029e-09, 0.999986)
+bones/3/rotation = Quaternion(-0.0155222, 0, -1.91356e-10, 0.99988)
+bones/4/rotation = Quaternion(0.0970225, 0, -1.05563e-08, 0.995282)
+bones/5/rotation = Quaternion(-0.0763329, 5.23458e-10, 1.4223e-08, 0.997083)
+bones/25/rotation = Quaternion(0.496098, 0.503883, 0.497957, -0.502024)
+bones/26/rotation = Quaternion(0.00808146, 0.996729, 0.0103467, -0.0797483)
+bones/27/rotation = Quaternion(0.0294326, -0.470999, -0.014115, 0.88153)
+bones/28/rotation = Quaternion(-0.0182093, 0.417993, -2.81081e-05, 0.908268)
+bones/41/rotation = Quaternion(0.496098, -0.503883, -0.497957, -0.502024)
+bones/42/rotation = Quaternion(-0.00808171, 0.996729, 0.0103508, 0.0797482)
+bones/43/rotation = Quaternion(0.0294411, 0.470999, 0.0141191, 0.88153)
+bones/44/rotation = Quaternion(-0.0182139, -0.417993, 2.55138e-05, 0.908267)
+bones/61/rotation = Quaternion(2.88424e-06, -0.0037425, 0.999993, -5.04324e-06)
+bones/62/rotation = Quaternion(0, 1, 0, 2.25844e-06)
+bones/63/rotation = Quaternion(7.15531e-06, -0.704455, 0.709748, 1.07435e-08)
+bones/65/rotation = Quaternion(-2.77274e-06, -0.00374252, 0.999993, 5.00887e-06)
+bones/66/rotation = Quaternion(0, 1, 0, -2.27083e-06)
+bones/67/rotation = Quaternion(-7.17574e-06, -0.704455, 0.709748, -8.05611e-08)
+
+[node name="LogicContainer" type="Node3D" parent="."]
+transform = Transform3D(0.898533, 0.432097, -0.077013, -0.433652, 0.84693, -0.307663, -0.067716, 0.309842, 0.948374, 0, 0, 0)
+
+[node name="RenIK" type="Node3D" parent="LogicContainer"]
+transform = Transform3D(1, 9.31323e-09, 0, -6.89179e-08, 1, 2.98023e-08, -7.45058e-09, -2.98023e-08, 1, 0, 0, 0)
+script = ExtResource("2_eba7d")
+live_preview = true
+armature_skeleton_path = NodePath("../../Godette_vrm_v4/GeneralSkeleton")
+armature_head_target = NodePath("../../Targets/Head")
+armature_left_hand_target = NodePath("../../Targets/LeftHand")
+armature_right_hand_target = NodePath("../../Targets/RightHand")
+armature_hip_target = NodePath("../../Targets/Hips")
+armature_left_foot_target = NodePath("../../Targets/LeftFoot")
+armature_right_foot_target = NodePath("../../Targets/RightFoot")
+arm_elbow_direction_offset = 1.22173
+arm_upper_arm_twisting = 0.5
+arm_upper_arm_twist_offset = -0.872665
+arm_forearm_twisting = 0.66666
+arm_forearm_twist_offset = -0.872665
+arm_twist_inflection_point = 0.349066
+arm_twist_overflow = 0.785398
+arm_pole_offset = Quaternion(0.113039, -0.0652631, 0.495722, 0.858616)
+arm_target_position_influence = Vector3(2, -1.5, -1)
+arm_target_rotation_influence = 0.33
+arm_shoulder_offset = Quaternion(0, 0, 0, 1)
+arm_shoulder_pole_offset = Quaternion(0, 0, 0, 1)
+leg_thigh_twisting = 0.25
+leg_lower_leg_twisting = 0.25
+leg_lower_leg_twist_offset = 3.14159
+leg_twist_overflow = 0.785398
+leg_pole_offset = Quaternion(0, 0, 1, -4.37114e-08)
+leg_target_rotation_influence = 0.5
+torso_spine_curve = Vector3(0, 15, -15)
+torso_upper_spine_stiffness = 0.5
+torso_lower_spine_stiffness = 0.5
+torso_spine_twist = 1.0
+
+[node name="RenIKFootPlacement" type="Node3D" parent="LogicContainer"]
+transform = Transform3D(1, 1.11759e-08, 0, -6.70552e-08, 1, 0, -7.45058e-09, 0, 1, 0, 0, 0)
+script = ExtResource("3_lrlos")
+forward_gait = SubResource("Resource_ho7uw")
+backward_gait = SubResource("Resource_rpm34")
+sideways_gait = SubResource("Resource_6b5vk")
+left_hip_offset = Vector3(0.109996, -0.149882, -0.047796)
+right_hip_offset = Vector3(-0.109996, -0.149882, -0.047796)
+live_preview = true
+armature_skeleton_path = NodePath("../../Godette_vrm_v4/GeneralSkeleton")
+enable_left_foot_placement = false
+enable_right_foot_placement = false
+armature_head_target = NodePath("../../Targets/Head")
+armature_hip_target = NodePath("../../Targets/Hips")
+armature_left_foot_target = NodePath("../../Targets/LeftFoot")
+armature_right_foot_target = NodePath("../../Targets/RightFoot")
+
+[node name="Targets" type="Node3D" parent="."]
+
+[node name="Head" type="Marker3D" parent="Targets"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.34462e-09, 0.940317, 0.0437589)
+
+[node name="Hips" type="Marker3D" parent="Targets"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.191e-09, 0.595343, 0.0420695)
+
+[node name="LeftHand" type="Marker3D" parent="Targets"]
+transform = Transform3D(-1.62921e-07, 1, -4.37114e-08, 0, -4.37114e-08, -1, -1, -1.62921e-07, 7.12149e-15, 0.454643, 0.8601, 0.00588896)
+
+[node name="RightHand" type="Marker3D" parent="Targets"]
+transform = Transform3D(1.31134e-07, -1, 4.37114e-08, 0, -4.37114e-08, -1, 1, 1.31134e-07, -5.73206e-15, -0.454643, 0.8601, 0.00588913)
+
+[node name="LeftFoot" type="Marker3D" parent="Targets"]
+transform = Transform3D(-1, 1.50996e-07, 6.60024e-15, 0, -4.37114e-08, 1, 1.50996e-07, 1, 4.37114e-08, 0.11, 0.009, -0.009)
+
+[node name="RightFoot" type="Marker3D" parent="Targets"]
+transform = Transform3D(-1, 1.74846e-07, 7.64274e-15, 0, -4.37114e-08, 1, 1.74846e-07, 1, 4.37114e-08, -0.11, 0.009, -0.009)
+
+[node name="BoneAttachment3D" type="Node3D" parent="Targets"]
+transform = Transform3D(-1, 0, 0, 0, 0, 1, 0, 1, 0, 0.16152, 0.0643738, 0.00805585)
+
+[node name="BoneAttachment3D2" type="Node3D" parent="Targets"]
+transform = Transform3D(-1, 0, 0, 0, 0, 1, 0, 1, 0, -0.161519, 0.0643737, 0.00805577)
+
+[node name="BoneAttachment3D3" type="Node3D" parent="Targets"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.78326e-09, 0.645653, 0.0411277)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("BoxShape3D_itlrt")
+
+[editable path="Godette_vrm_v4"]
