@@ -5,15 +5,13 @@ extends TrackingGui
 #-----------------------------------------------------------------------------#
 
 func _ready() -> void:
-	var connect_address := %ConnectAddress
-	var connect_port := %ConnectPort
-	var bind_port := %BindPort
+	var address := %Address
+	var port := %Port
 	
 	%Start.pressed.connect(func() -> void:
 		started.emit(AbstractTracker.Trackers.MEOW_FACE, {
-			connect_address = connect_address.text,
-			connect_port = connect_port.text.to_int(),
-			bind_port = bind_port.text.to_int(),
+			address = address.text,
+			port = port.text.to_int(),
 		})
 	)
 
@@ -25,3 +23,5 @@ func _ready() -> void:
 # Public functions
 #-----------------------------------------------------------------------------#
 
+func display_name() -> String:
+	return "Meow Face"

@@ -52,8 +52,8 @@ horizontal_alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="Meow Face" parent="HSplitContainer/Trackers" instance=ExtResource("2_r6snh")]
+[node name="MeowFace" parent="HSplitContainer/Trackers" instance=ExtResource("2_r6snh")]
 layout_mode = 2
 
-[node name="Media Pipe" parent="HSplitContainer/Trackers" instance=ExtResource("3_lttak")]
+[node name="MediaPipe" parent="HSplitContainer/Trackers" instance=ExtResource("3_lttak")]
 layout_mode = 2

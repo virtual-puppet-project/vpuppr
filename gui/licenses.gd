@@ -1,5 +1,7 @@
 extends HSplitContainer
 
+const APP_LICENSE_PATH := "res://LICENSE"
+const APP_LICENSE_PAGE_NAME := "vpuppr"
 const LICENSE_DIR := "res://licenses"
 const TREE_COL: int = 0
 const ALL_ITEM := "All"
@@ -7,7 +9,7 @@ const ALL_ITEM := "All"
 var _logger := Logger.create("Licenses")
 
 @onready
-var _tree := %Tree
+var _tree: Tree = %Tree
 @onready
 var _license_container := %LicenseContainer
 
@@ -36,53 +38,63 @@ func _ready() -> void:
 	var all_item: TreeItem = _tree.create_item(root)
 	all_item.set_text(TREE_COL, ALL_ITEM)
 	
+	var app_license := FileAccess.open(APP_LICENSE_PATH, FileAccess.READ)
+	if app_license == null:
+		_logger.error("Unable to read app license, this is a major bug!")
+		return
+
+	_create_page(APP_LICENSE_PAGE_NAME, app_license.get_as_text())
+
 	var dir := DirAccess.open(LICENSE_DIR)
 	if dir == null:
 		_logger.error("Unable to open {0}, this is a major bug!".format([LICENSE_DIR]))
 		return
-	
+
 	dir.list_dir_begin()
-	
+
 	var file_name := dir.get_next()
 	while not file_name.is_empty():
 		_logger.debug("Handling license {0}".format([file_name]))
-		
+
 		if _pages.has(file_name):
 			_logger.error("Found duplicate file for {0} somehow, skipping".format([file_name]))
 			file_name = dir.get_next()
 			continue
-		
+
 		var file_path := "{0}/{1}".format([LICENSE_DIR, file_name])
 		var file := FileAccess.open(file_path, FileAccess.READ)
 		if file == null:
 			_logger.error("Unable to open license file at {0}, skipping".format([file_path]))
 			file_name = dir.get_next()
 			continue
-		
-		var item: TreeItem = _tree.create_item(root)
-		item.set_text(TREE_COL, file_name)
-		
-		var page := RichTextLabel.new()
-		page.bbcode_enabled = true
-		page.text = file.get_as_text()
-		page.name = file_name
-		page.fit_content = true
-		page.selection_enabled = true
-		
-		_pages[file_name] = page
-		_license_container.add_child(page)
-		
+
+		_create_page(file_name, file.get_as_text())
+
 		file_name = dir.get_next()
-	
+
 	if _pages.size() < 1:
 		_logger.error("No license pages created, this is a major bug!")
 		return
-	
+
 	_tree.set_selected(all_item, TREE_COL)
 
 #-----------------------------------------------------------------------------#
 # Private functions
 #-----------------------------------------------------------------------------#
+
+func _create_page(page_name: String, content: String) -> void:
+	var item := _tree.create_item(_tree.get_root())
+	item.set_text(TREE_COL, page_name)
+	
+	var page := RichTextLabel.new()
+	page.bbcode_enabled = true
+	page.text = content
+	page.name = page_name
+	page.fit_content = true
+	page.selection_enabled = true
+	
+	_pages[page_name] = page
+	_license_container.add_child(page)
 
 func _show_page(text: String) -> void:
 	if text == ALL_ITEM:

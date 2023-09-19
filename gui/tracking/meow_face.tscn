@@ -19,41 +19,28 @@ layout_mode = 2
 text = "Start MeowFace tracking."
 fit_content = true
 
-[node name="ConnectAddress" type="HBoxContainer" parent="VBoxContainer"]
+[node name="Address" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/ConnectAddress"]
+[node name="Label" type="Label" parent="VBoxContainer/Address"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Connect Address"
 
-[node name="ConnectAddress" type="LineEdit" parent="VBoxContainer/ConnectAddress"]
+[node name="Address" type="LineEdit" parent="VBoxContainer/Address"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ConnectPort" type="HBoxContainer" parent="VBoxContainer"]
+[node name="Port" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/ConnectPort"]
+[node name="Label" type="Label" parent="VBoxContainer/Port"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Connect Port"
 
-[node name="ConnectPort" type="LineEdit" parent="VBoxContainer/ConnectPort"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="BindPort" type="HBoxContainer" parent="VBoxContainer"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="VBoxContainer/BindPort"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Bind Port"
-
-[node name="BindPort" type="LineEdit" parent="VBoxContainer/BindPort"]
+[node name="Port" type="LineEdit" parent="VBoxContainer/Port"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3

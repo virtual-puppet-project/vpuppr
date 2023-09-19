@@ -24,21 +24,19 @@ var _should_stop := true
 static func create(data: Dictionary) -> AbstractTracker:
 	var r := MeowFace.new()
 	
-	if not data.has("bind_port"):
-		r._logger.error("Missing bind_port")
+	if not data.has("address"):
+		r._logger.error("Missing address")
 		return null
-	if not data.has("connect_address"):
-		r._logger.error("Missing connect_address")
-		return null
-	if not data.has("connect_port"):
-		r._logger.error("Missing connect_port")
+	if not data.has("port"):
+		r._logger.error("Missing port")
 		return null
 	
-	var bind_port: int = data["bind_port"]
+	var address: String = data["address"]
+	var port: int = data["port"]
 	
 	var socket := PacketPeerUDP.new()
-	socket.bind(bind_port)
-	socket.set_dest_address(data["connect_address"], data["connect_port"])
+	socket.bind(port)
+	socket.set_dest_address(address, port)
 	socket.set_broadcast_enabled(true)
 	
 	r._socket = socket
@@ -48,7 +46,7 @@ static func create(data: Dictionary) -> AbstractTracker:
 		"time": 1.0,
 		"sentBy": "vpuppr",
 		"ports": [
-			bind_port
+			port
 		]
 	}).to_utf8_buffer()
 	

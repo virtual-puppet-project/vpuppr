@@ -31,6 +31,13 @@ var context: Context = null
 
 @onready
 var _side_bar: VBoxContainer = %SideBar
+## Button name to resource path. Used for configuring side bar buttons. [br]
+## [br]
+## [b]THESE MUST ONLY BE [code]res://[/code] PATHS.[b]
+@export
+var side_bar_items := {
+	Tracking = "res://gui/tracking/tracking.tscn"
+}
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
@@ -102,7 +109,8 @@ func _ready() -> void:
 	var h_split_container := $VBoxContainer/HSplitContainer
 	h_split_container.split_offset = get_viewport().size.x * 0.15
 	
-	add_side_bar_item("Tracking", "res://gui/tracking/tracking.tscn")
+	for key in side_bar_items.keys():
+		add_side_bar_item(key, side_bar_items[key])
 
 #-----------------------------------------------------------------------------#
 # Private functions
@@ -117,6 +125,10 @@ func _ready() -> void:
 func add_side_bar_item(button_name: StringName, button_resource_path: StringName) -> Error:
 	_logger.debug("Adding side bar item {0} for {1}".format([button_name, button_resource_path]))
 	
+	if not ResourceLoader.exists(button_resource_path):
+		_logger.error("Resource does not exist for {0} at path {1}".format([
+			button_name, button_resource_path]))
+		return ERR_DOES_NOT_EXIST
 	if _side_bar.has_node(NodePath(button_name)):
 		_logger.error("Side bar item {0} already exists".format([button_name]))
 		return ERR_ALREADY_EXISTS

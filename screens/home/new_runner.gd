@@ -196,11 +196,17 @@ func _ready() -> void:
 				match _model_type_3d:
 					ModelType3d.GLB:
 						data.set_puppet_class("GlbPuppet")
+						# TODO hardcoded for testing
+						data.set_gui_path("res://gui/default_gui.tscn")
 					ModelType3d.VRM:
 						data.set_puppet_class("VrmPuppet")
+						# TODO hardcoded for testing
+						data.set_gui_path("res://gui/vrm_gui.tscn")
 			ModelType.PUPPET_2D:
 				# TODO hardcoded for testing + this is the wrong file
 				data.set_runner_path("res://screens/runners/runner_3d.tscn")
+				# TODO hardcoded for testing
+				data.set_gui_path("res://gui/default_gui.tscn")
 				match _model_type_2d:
 					ModelType2d.PNGTUBER:
 						data.set_puppet_class("PngPuppet")
@@ -208,8 +214,6 @@ func _ready() -> void:
 				# TODO stub
 				_logger.error("Not yet implemented!")
 				return
-		# TODO hardcoded for testing
-		data.set_gui_path("res://gui/default_gui.tscn")
 		data.set_model_path(_model_path.text)
 		
 		window.close_requested.emit(data)

@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://c2i6gepv5i7kv"]
+
+[ext_resource type="Script" path="res://gui/model/vrm_model.gd" id="1_56edu"]
+
+[node name="VrmModel" type="HSplitContainer"]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_56edu")

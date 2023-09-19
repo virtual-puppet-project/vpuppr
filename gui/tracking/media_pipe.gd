@@ -17,3 +17,5 @@ func _ready() -> void:
 # Public functions
 #-----------------------------------------------------------------------------#
 
+func display_name() -> String:
+	return "Media Pipe"

@@ -83,10 +83,12 @@ func _ready() -> void:
 			_logger.error("Tracking GUI tried to process invalid GUI item")
 			continue
 		
-		var ti := tree.create_item(root)
-		ti.set_text(TREE_COL, child.name)
+		var display_name: String = child.display_name()
 		
-		_trackers[child.name] = child
+		var ti := tree.create_item(root)
+		ti.set_text(TREE_COL, display_name)
+		
+		_trackers[display_name] = child
 		
 		# TODO move more logic back to the context
 		child.started.connect(func(tracker: Trackers, data: Dictionary) -> void:
