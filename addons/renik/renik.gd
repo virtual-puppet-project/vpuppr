@@ -35,11 +35,11 @@ const DEFAULT_THRESHOLD: float = 0.0005
 const DEFAULT_LOOP_LIMIT: int = 16
 
 var spine_chain: renik_chain_class = renik_chain_class.new(Vector3(0, 15, -15), 0.5, 0.5, 1, 0)
-var limb_arm_left: renik_limb_class = renik_limb_class.new(-0.27777*PI, -0.27777*PI, deg_to_rad(70.0), 0.5, 0.66666,
+var limb_arm_left: renik_limb_class = renik_limb_class.new(-0.27777*PI, -0.27777*PI, deg_to_rad(-70.0), 0.5, 0.66666,
 			deg_to_rad(20.0), deg_to_rad(45.0), 0.33,
 			Vector3(deg_to_rad(15.0), 0, deg_to_rad(60.0)),
 			Vector3(2.0, -1.5, -1.0))
-var limb_arm_right: renik_limb_class = renik_limb_class.new(0.27777*PI, 0.27777*PI, deg_to_rad(-70.0), 0.5, 0.66666,
+var limb_arm_right: renik_limb_class = renik_limb_class.new(0.27777*PI, 0.27777*PI, deg_to_rad(70.0), 0.5, 0.66666,
 			deg_to_rad(-20.0), deg_to_rad(45.0), 0.33,
 			Vector3(deg_to_rad(15.0), 0, deg_to_rad(-60.0)),
 			Vector3(2.0, 1.5, 1.0))
