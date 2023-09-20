@@ -15,15 +15,15 @@ General:
 - [x] VRM model loading
 - [x] Receive tracking data
 - [x] Map tracking data onto a VRM model
-- [ ] GUI
+- [ ] GUI (half-implemented)
 - [ ] Save data
 
 Tracking
 
-- [ ] [MediaPipe](https://github.com/google/mediapipe)
-- [ ] [iFacialMocap](https://www.ifacialmocap.com/)
+- [x] [MediaPipe](https://github.com/google/mediapipe)
+- [x] [iFacialMocap](https://www.ifacialmocap.com/)
 - [x] [MeowFace](https://play.google.com/store/apps/details?id=com.suvidriel.meowface)
-- [ ] [VTube Studio](https://denchisoft.com/)
+- [x] [VTube Studio](https://denchisoft.com/)
 - [ ] [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace)
 - [ ] [Mouse tracking](https://github.com/virtual-puppet-project/mouse-tracker)
 - [ ] [Lip sync](https://github.com/virtual-puppet-project/real-time-lip-sync-gd)
