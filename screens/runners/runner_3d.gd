@@ -58,34 +58,48 @@ func _setup_vrm(model: VrmPuppet) -> Error:
 	add_child(armature_targets)
 	
 	if ik_targets.head != null:
-		armature_targets.add_child(ik_targets.head)
+		var marker_offset = Marker3D.new()
+		marker_offset.name = "HeadAdjust"
+		armature_targets.add_child(marker_offset)
+		marker_offset.add_child(ik_targets.head)
 		ren_ik.armature_head_target = ik_targets.head.get_path()
 	if ik_targets.left_hand != null:
 		var target := ik_targets.left_hand
-		armature_targets.add_child(target)
 		target.position.y = 0
 		target.rotation_degrees.x = 164
-		
 		ik_targets.left_hand_starting_transform = target.transform
-		
-		ren_ik.armature_left_hand_target = ik_targets.left_hand.get_path()
+		var marker_offset = Marker3D.new()
+		marker_offset.name = "LeftHandAdjust"
+		armature_targets.add_child(marker_offset)
+		marker_offset.add_child(target)
+		ren_ik.armature_left_hand_target = target.get_path()
 	if ik_targets.right_hand != null:
 		var target := ik_targets.right_hand
-		armature_targets.add_child(ik_targets.right_hand)
 		target.position.y = 0
 		target.rotation_degrees.x = 164
-		
 		ik_targets.right_hand_starting_transform = target.transform
-		
-		ren_ik.armature_right_hand_target = ik_targets.right_hand.get_path()
+		var marker_offset = Marker3D.new()
+		marker_offset.name = "RightHandAdjust"
+		armature_targets.add_child(marker_offset)
+		marker_offset.add_child(target)
+		ren_ik.armature_right_hand_target = target.get_path()
 	if ik_targets.hips != null:
-		armature_targets.add_child(ik_targets.hips)
+		var marker_offset = Marker3D.new()
+		marker_offset.name = "HipsAdjust"
+		armature_targets.add_child(marker_offset)
+		marker_offset.add_child(ik_targets.hips)
 		ren_ik.armature_hip_target = ik_targets.hips.get_path()
 	if ik_targets.left_foot != null:
-		armature_targets.add_child(ik_targets.left_foot)
+		var marker_offset = Marker3D.new()
+		marker_offset.name = "LeftFootAdjust"
+		armature_targets.add_child(marker_offset)
+		marker_offset.add_child(ik_targets.left_foot)
 		ren_ik.armature_left_foot_target = ik_targets.left_foot.get_path()
 	if ik_targets.right_foot != null:
-		armature_targets.add_child(ik_targets.right_foot)
+		var marker_offset = Marker3D.new()
+		marker_offset.name = "RightFootAdjust"
+		armature_targets.add_child(marker_offset)
+		marker_offset.add_child(ik_targets.right_foot)
 		ren_ik.armature_right_foot_target = ik_targets.right_foot.get_path()
 	
 	add_child(ren_ik)

@@ -86,7 +86,7 @@ func _init(p_runner_data: RunnerData) -> void:
 				
 				var gltf := GLTFDocument.new()
 				var state := GLTFState.new()
-				state.handle_binary_image = GLTFState.HANDLE_BINARY_EMBED_AS_BASISU
+				state.handle_binary_image = GLTFState.HANDLE_BINARY_EMBED_AS_UNCOMPRESSED
 				
 				var err := gltf.append_from_file(model_path, state)
 				if err != OK:

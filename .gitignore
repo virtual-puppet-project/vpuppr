@@ -7,5 +7,7 @@
 
 # 3D models
 **/*.glb
+**/*.glb.import
 **/*.vrm
+**/*.vrm.import
 
