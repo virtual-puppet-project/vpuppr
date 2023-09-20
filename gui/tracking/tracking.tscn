@@ -1,8 +1,11 @@
-[gd_scene load_steps=4 format=3 uid="uid://bh021kchsnxmp"]
+[gd_scene load_steps=7 format=3 uid="uid://bh021kchsnxmp"]
 
 [ext_resource type="Script" path="res://gui/tracking/tracking.gd" id="1_8t3ha"]
+[ext_resource type="Script" path="res://gui/h_split_tree.gd" id="2_3hpoo"]
 [ext_resource type="PackedScene" uid="uid://0p3t1k53ylr0" path="res://gui/tracking/meow_face.tscn" id="2_r6snh"]
 [ext_resource type="PackedScene" uid="uid://dftm3gsyqsr2d" path="res://gui/tracking/media_pipe.tscn" id="3_lttak"]
+[ext_resource type="PackedScene" uid="uid://dhpmnehqrnqpg" path="res://gui/tracking/vtube_studio.tscn" id="5_nod0u"]
+[ext_resource type="PackedScene" uid="uid://b3dxeudwr6rlg" path="res://gui/tracking/i_facial_mocap.tscn" id="6_cbemn"]
 
 [node name="Tracking" type="VBoxContainer"]
 anchors_preset = 15
@@ -20,40 +23,39 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Stop All"
 
-[node name="HSplitContainer" type="HSplitContainer" parent="."]
+[node name="HSplitTree" type="HSplitContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
+script = ExtResource("2_3hpoo")
 
-[node name="Tree" type="Tree" parent="HSplitContainer"]
+[node name="Tree" type="Tree" parent="HSplitTree"]
+layout_mode = 2
+
+[node name="Pages" type="ScrollContainer" parent="HSplitTree"]
 unique_name_in_owner = true
 layout_mode = 2
-hide_root = true
 
-[node name="Trackers" type="MarginContainer" parent="HSplitContainer"]
-unique_name_in_owner = true
+[node name="Info" type="VBoxContainer" parent="HSplitTree/Pages"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Info" type="ScrollContainer" parent="HSplitContainer/Trackers"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-
-[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/Trackers/Info"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Label" type="Label" parent="HSplitContainer/Trackers/Info/VBoxContainer"]
+[node name="Label" type="Label" parent="HSplitTree/Pages/Info"]
 layout_mode = 2
 text = "Active Trackers"
 horizontal_alignment = 1
 
-[node name="ActiveTrackers" type="VBoxContainer" parent="HSplitContainer/Trackers/Info/VBoxContainer"]
+[node name="ActiveTrackers" type="VBoxContainer" parent="HSplitTree/Pages/Info"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="MeowFace" parent="HSplitContainer/Trackers" instance=ExtResource("2_r6snh")]
+[node name="MediaPipe" parent="HSplitTree/Pages" instance=ExtResource("3_lttak")]
 layout_mode = 2
 
-[node name="MediaPipe" parent="HSplitContainer/Trackers" instance=ExtResource("3_lttak")]
+[node name="MeowFace" parent="HSplitTree/Pages" instance=ExtResource("2_r6snh")]
+layout_mode = 2
+
+[node name="VTubeStudio" parent="HSplitTree/Pages" instance=ExtResource("5_nod0u")]
+layout_mode = 2
+
+[node name="IFacialMocap" parent="HSplitTree/Pages" instance=ExtResource("6_cbemn")]
 layout_mode = 2

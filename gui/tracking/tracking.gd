@@ -32,7 +32,6 @@ var context: Context = null
 
 var _logger := Logger.create("Tracking")
 
-var _trackers := {}
 @onready
 var _active_trackers := %ActiveTrackers
 
@@ -47,12 +46,6 @@ func _ready() -> void:
 	
 	for t in context.active_trackers:
 		_active_trackers.add_child(ActiveTracker.new(context, _logger, t))
-	
-	ready.connect(func() -> void:
-		await get_tree().process_frame
-		await get_tree().process_frame
-		$HSplitContainer.split_offset = get_window().size.x * 0.15
-	)
 	
 	%StopAll.pressed.connect(func() -> void:
 		var stopped_trackers := []
@@ -69,26 +62,14 @@ func _ready() -> void:
 			_logger.error("Unable to stop all trackers")
 	)
 	
-	var tree := %Tree as Tree
-	var root: TreeItem = tree.create_item()
-	
-	var info_ti := tree.create_item(root)
-	info_ti.set_text(TREE_COL, &"Info")
-	_trackers[&"Info"] = %Info
-	
-	for child in %Trackers.get_children():
-		if child.name == &"Info":
+	var pages := %Pages.get_children()
+	# The info page is always first
+	pages.pop_front()
+	for child in pages:
+		if not child.has_signal("started"):
+			_logger.error(
+				"Tracking GUI tried to process invalid GUI item, missing signal 'started'")
 			continue
-		if not child is TrackingGui:
-			_logger.error("Tracking GUI tried to process invalid GUI item")
-			continue
-		
-		var display_name: String = child.display_name()
-		
-		var ti := tree.create_item(root)
-		ti.set_text(TREE_COL, display_name)
-		
-		_trackers[display_name] = child
 		
 		# TODO move more logic back to the context
 		child.started.connect(func(tracker: Trackers, data: Dictionary) -> void:
@@ -99,14 +80,6 @@ func _ready() -> void:
 			
 			_active_trackers.add_child(ActiveTracker.new(context, _logger, tracker_ref))
 		)
-	
-	tree.item_selected.connect(func() -> void:
-		for i in _trackers.values():
-			i.hide()
-		
-		_trackers[tree.get_selected().get_text(TREE_COL)].show()
-	)
-	tree.set_selected(info_ti, TREE_COL)
 
 #-----------------------------------------------------------------------------#
 # Private functions

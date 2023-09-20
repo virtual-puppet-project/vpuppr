@@ -4,6 +4,6 @@
 
 [node name="VrmGui" instance=ExtResource("1_vdci5")]
 side_bar_items = {
-"Model": "res://gui/model/vrm_model.tscn",
-"Tracking": "res://gui/model/vrm_model.tscn"
+"Model": "res://gui/model/vrm.tscn",
+"Tracking": "res://gui/tracking/tracking.tscn"
 }

@@ -2,26 +2,23 @@
 
 [ext_resource type="Script" path="res://gui/tracking/media_pipe.gd" id="1_fck51"]
 
-[node name="MediaPipe" type="ScrollContainer"]
+[node name="MediaPipe" type="VBoxContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+size_flags_horizontal = 3
 script = ExtResource("1_fck51")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="RichTextLabel" type="RichTextLabel" parent="VBoxContainer"]
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
 layout_mode = 2
 focus_mode = 2
-text = "Start MediaPipe tracking."
+text = "Start Media Pipe tracking."
 fit_content = true
 selection_enabled = true
 
-[node name="Start" type="Button" parent="VBoxContainer"]
+[node name="Start" type="Button" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Start"

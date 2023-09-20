@@ -1,4 +1,4 @@
-extends TrackingGui
+extends "res://gui/tracking/tracking_gui.gd"
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
@@ -16,6 +16,3 @@ func _ready() -> void:
 #-----------------------------------------------------------------------------#
 # Public functions
 #-----------------------------------------------------------------------------#
-
-func display_name() -> String:
-	return "Media Pipe"

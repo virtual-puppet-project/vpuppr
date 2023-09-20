@@ -1,4 +1,3 @@
-class_name MediaPipe
 extends AbstractTracker
 
 # TODO camera helper on MacOS needs to work with permissions
@@ -35,7 +34,7 @@ func _clean_up_thread() -> void:
 #-----------------------------------------------------------------------------#
 
 static func create(data: Dictionary) -> AbstractTracker:
-	var r := MediaPipe.new()
+	var r := preload("res://trackers/media_pipe.gd").new()
 
 	# TODO switch based off of OS, Linux can use GPU i think
 	var delegate := MediaPipeTaskBaseOptions.DELEGATE_CPU
@@ -47,7 +46,6 @@ static func create(data: Dictionary) -> AbstractTracker:
 
 	var task := MediaPipeFaceLandmarker.new()
 	task.initialize(base_options, MediaPipeTask.RUNNING_MODE_LIVE_STREAM, 1, 0.5, 0.5, 0.5, true, true)
-	
 
 	var camera_helper := MediaPipeCameraHelper.new()
 	camera_helper.new_frame.connect(func(image: MediaPipeImage) -> void:
@@ -64,7 +62,7 @@ static func create(data: Dictionary) -> AbstractTracker:
 	
 	return r
 
-func get_name() -> StringName:
+static func get_name() -> StringName:
 	return &"MediaPipe"
 
 func start() -> Error:

@@ -21,6 +21,10 @@ config/icon="res://assets/icon.svg"
 
 AM="*res://utils/app_manager.gd"
 
+[debug]
+
+gdscript/warnings/static_called_on_instance=0
+
 [display]
 
 window/size/viewport_width=1600

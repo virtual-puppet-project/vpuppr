@@ -50,11 +50,6 @@ func _setup_vrm(model: VrmPuppet) -> Error:
 	ren_ik.name = "RenIK3D"
 	
 	var ik_targets := model.ik_targets_3d
-	
-#	var skeleton: Skeleton3D = model.skeleton
-#	if skeleton == null:
-#		_logger.error("No skeleton was found, bailing out of _ready")
-#		return ERR_UNCONFIGURED
 #
 	ren_ik.armature_skeleton_path = model.skeleton.get_path()
 #
@@ -66,10 +61,22 @@ func _setup_vrm(model: VrmPuppet) -> Error:
 		armature_targets.add_child(ik_targets.head)
 		ren_ik.armature_head_target = ik_targets.head.get_path()
 	if ik_targets.left_hand != null:
-		armature_targets.add_child(ik_targets.left_hand)
+		var target := ik_targets.left_hand
+		armature_targets.add_child(target)
+		target.position.y = 0
+		target.rotation_degrees.x = 164
+		
+		ik_targets.left_hand_starting_transform = target.transform
+		
 		ren_ik.armature_left_hand_target = ik_targets.left_hand.get_path()
 	if ik_targets.right_hand != null:
+		var target := ik_targets.right_hand
 		armature_targets.add_child(ik_targets.right_hand)
+		target.position.y = 0
+		target.rotation_degrees.x = 164
+		
+		ik_targets.right_hand_starting_transform = target.transform
+		
 		ren_ik.armature_right_hand_target = ik_targets.right_hand.get_path()
 	if ik_targets.hips != null:
 		armature_targets.add_child(ik_targets.hips)

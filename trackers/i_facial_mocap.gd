@@ -1,8 +1,6 @@
 extends AbstractTracker
 
-var _logger := Logger.create("MeowFace")
-
-var _data_request: PackedByteArray = []
+var _logger := Logger.create("iFacialMocap")
 
 var _socket: PacketPeerUDP = null
 var _thread: Thread = null
@@ -21,41 +19,26 @@ var _should_stop := true
 #-----------------------------------------------------------------------------#
 
 static func create(data: Dictionary) -> AbstractTracker:
-	var r := preload("res://trackers/meow_face.gd").new()
+	var r := preload("res://trackers/i_facial_mocap.gd").new()
 	
-	if not data.has("address"):
-		r._logger.error("Missing address")
-		return null
 	if not data.has("port"):
 		r._logger.error("Missing port")
 		return null
 	
-	var address: String = data["address"]
 	var port: int = data["port"]
 	
 	var socket := PacketPeerUDP.new()
 	socket.bind(port)
-	socket.set_dest_address(address, port)
-	socket.set_broadcast_enabled(true)
 	
 	r._socket = socket
-	
-	r._data_request = JSON.stringify({
-		"messageType": "iOSTrackingDataRequest", # HMMMM
-		"time": 1.0,
-		"sentBy": "vpuppr",
-		"ports": [
-			port
-		]
-	}).to_utf8_buffer()
 	
 	return r
 
 static func get_name() -> StringName:
-	return &"MeowFace"
+	return &"iFacialMocap"
 
 func start() -> Error:
-	_logger.info("Starting MeowFace!")
+	_logger.info("Starting iFacialMocap")
 	
 	_should_stop = false
 	
@@ -64,9 +47,6 @@ func start() -> Error:
 		while not _should_stop:
 			OS.delay_msec(10)
 			
-			# TODO only need to send this once
-			_socket.put_packet(_data_request)
-			
 			if _socket.get_available_packet_count() < 1:
 				continue
 			
@@ -74,7 +54,7 @@ func start() -> Error:
 			if packet.size() < 1:
 				continue
 			
-			var data := VTubeStudioData.from(packet)
+			var data := IFacialMocapData.from(packet)
 			data_received.emit(data)
 	)
 	

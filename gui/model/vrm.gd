@@ -1,15 +1,11 @@
-extends Control
-
-## A pseudo-interface that all tracking GUIs should extend.
-
-## The tracker was started.
-signal started(tracker: AbstractTracker.Trackers, data: Dictionary)
-## The tracker was stopped.
-signal stopped(tracker: AbstractTracker.Trackers)
+extends HSplitTree
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
 #-----------------------------------------------------------------------------#
+
+func _ready() -> void:
+	super._ready()
 
 #-----------------------------------------------------------------------------#
 # Private functions
@@ -18,3 +14,4 @@ signal stopped(tracker: AbstractTracker.Trackers)
 #-----------------------------------------------------------------------------#
 # Public functions
 #-----------------------------------------------------------------------------#
+

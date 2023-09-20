@@ -53,9 +53,6 @@ func _ready() -> void:
 		printerr("Godot args was missing \"quiet\", this is a major bug! ")
 	if not args.has("verbose"):
 		printerr("Godot args was missing \"verbose\", this is a major bug! ")
-	if args.get("has_command", false):
-		# TODO stub
-		pass
 	
 	# TODO passing flags works, just force it on for now AFTER the sanity check
 	if OS.is_debug_build():
@@ -65,6 +62,15 @@ func _ready() -> void:
 	if LibVpuppr.init_rust_log(args.get("quiet", false), args.get("verbose", false)) != OK:
 		_logger.error("Unable to initialize Rust logging, this is highly unexpected!")
 	
+	if args.get("max_fps", 0) != 0:
+		var max_fps: int = args["max_fps"]
+		_logger.info("\n---\nSetting max fps to {0}\n---\n".format([max_fps]))
+		Engine.max_fps = max_fps
+	
+	if args.get("has_command", false):
+		# TODO stub
+		pass
+	
 	var current_screen := DisplayServer.window_get_current_screen()
 	var current_screen_size := DisplayServer.screen_get_size(current_screen)
 	var new_window_size := current_screen_size * 0.75
@@ -73,6 +79,8 @@ func _ready() -> void:
 	DisplayServer.window_set_position((current_screen_size * 0.5) - (new_window_size * 0.5))
 	# TODO August 1, 2023 Godot still moves the window to screen 1 instead of screen 0
 	DisplayServer.window_set_current_screen(current_screen)
+	
+	# TODO add heuristic for automatically setting the theme scale?
 	
 	_icon.pivot_offset = _icon.size / 2
 	

@@ -15,11 +15,7 @@ unique_name_in_owner = true
 layout_mode = 2
 hide_root = true
 
-[node name="ScrollContainer" type="ScrollContainer" parent="."]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="LicenseContainer" type="VBoxContainer" parent="ScrollContainer"]
+[node name="Pages" type="ScrollContainer" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3

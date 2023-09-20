@@ -1,15 +1,17 @@
-extends Control
-
-## A pseudo-interface that all tracking GUIs should extend.
-
-## The tracker was started.
-signal started(tracker: AbstractTracker.Trackers, data: Dictionary)
-## The tracker was stopped.
-signal stopped(tracker: AbstractTracker.Trackers)
+extends "res://gui/tracking/tracking_gui.gd"
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
 #-----------------------------------------------------------------------------#
+
+func _ready() -> void:
+	var port := %Port
+	
+	%Start.pressed.connect(func() -> void:
+		started.emit(AbstractTracker.Trackers.I_FACIAL_MOCAP, {
+			port = port.text.to_int()
+		})
+	)
 
 #-----------------------------------------------------------------------------#
 # Private functions

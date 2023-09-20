@@ -1,34 +1,22 @@
-[gd_scene load_steps=2 format=3 uid="uid://0p3t1k53ylr0"]
+[gd_scene load_steps=2 format=3 uid="uid://b3dxeudwr6rlg"]
 
-[ext_resource type="Script" path="res://gui/tracking/meow_face.gd" id="1_roj7o"]
+[ext_resource type="Script" path="res://gui/tracking/i_facial_mocap.gd" id="1_2jxr8"]
 
-[node name="MeowFace" type="VBoxContainer"]
+[node name="IFacialMocap" type="VBoxContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
-script = ExtResource("1_roj7o")
+script = ExtResource("1_2jxr8")
 
 [node name="RichTextLabel" type="RichTextLabel" parent="."]
 layout_mode = 2
-text = "Start Meow Face tracking."
+focus_mode = 2
+text = "Start Media Pipe tracking."
 fit_content = true
-
-[node name="Address" type="HBoxContainer" parent="."]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="Address"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Connect Address"
-
-[node name="Address" type="LineEdit" parent="Address"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "192.168.88.51"
+selection_enabled = true
 
 [node name="Port" type="HBoxContainer" parent="."]
 layout_mode = 2
@@ -42,7 +30,6 @@ text = "Connect Port"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-text = "21412"
 
 [node name="Start" type="Button" parent="."]
 unique_name_in_owner = true
