@@ -62,6 +62,21 @@ var _settings_popup: Window = null
 func _ready() -> void:
 	_logger.info("starting ready!")
 	
+#	(func() -> void:
+#		var gltf := GLTFDocument.new()
+#		var state := GLTFState.new()
+##		state.handle_binary_image = GLTFState.HANDLE_BINARY_EMBED_AS_BASISU
+#
+#		_logger.debug("scuff start {0}".format(["C:/Users/theaz/Downloads/Alicia_perfectsync-exported_Sa06.vrm"]))
+#
+#		var err := gltf.append_from_file("C:\\Users\\theaz\\Downloads\\Alicia_perfectsync-exported_Sa06.vrm", state)
+#		if err != OK:
+#			_logger.error("Unable to load model from path {0}".format(["C:/Users/theaz/Downloads/Alicia_perfectsync-exported_Sa06.vrm"]))
+#			return
+#
+#		_logger.info("Success!")
+#	).call()
+	
 	_adapt_screen_size()
 	
 	var handle_popup_hide := func(node: Node) -> void:
@@ -73,10 +88,10 @@ func _ready() -> void:
 		add_child(popup)
 		popup.popup_centered_ratio(0.5)
 		
-		var data: Variant = await popup.close_requested
+		var data: NewRunnerData = await popup.close_requested
 		if data == null:
 			return
-		if not data is RunnerData:
+		if not data is NewRunnerData:
 			_logger.error(
 				"New runner popup returned someting that wasn't a RunnerData {0}".format([data]))
 			return
@@ -84,7 +99,7 @@ func _ready() -> void:
 		if data.try_save() != OK:
 			_logger.error("Unable to save RunnerData, this is a major bug!")
 		
-		_run_from_data(data)
+		_run_from_data(data.to_runner_data())
 
 		# TODO maybe save data before running?
 
@@ -183,9 +198,11 @@ func _ready() -> void:
 	
 	var init_runners_thread := Thread.new()
 	init_runners_thread.start(func() -> void:
-		for data in AM.metadata.get_known_runner_data():
-			_logger.debug("Creating runner item {0}".format([data]))
-			call_deferred(&"_create_runner_item", data)
+		# TODO stub
+		pass
+#		for data in AM.metadata.get_known_runner_data():
+#			_logger.debug("Creating runner item {0}".format([data]))
+#			call_deferred(&"_create_runner_item", data)
 	)
 	
 	_runner_container.hide()

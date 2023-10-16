@@ -3,7 +3,7 @@ extends Node
 
 const DEFAULT_SCREEN_SIZE := Vector2i(1600, 900)
 
-var metadata: Metadata = null
+var database: Database = null
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
@@ -12,9 +12,9 @@ var metadata: Metadata = null
 func _init() -> void:
 	pass
 
-func _exit_tree() -> void:
-	if metadata.try_save():
-		printerr("Failed to save metadata before exiting")
+#func _exit_tree() -> void:
+#	if metadata.try_save():
+#		printerr("Failed to save metadata before exiting")
 
 #-----------------------------------------------------------------------------#
 # Private functions

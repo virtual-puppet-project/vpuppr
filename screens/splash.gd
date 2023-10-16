@@ -99,21 +99,30 @@ func _ready() -> void:
 		while st.root.get_node("AM") == null:
 			await st.process_frame
 		
-		var metadata: Variant = Metadata.try_load()
-		if metadata == null:
-			_logger.error("Unable to load metadata!")
-			metadata = Metadata.new()
-		AM.metadata = metadata
+		var db = Database.create()
+		if db == null:
+			_logger.error("Unable to create database, this session will be ephemeral")
+		AM.database = db
 		
-		if AM.metadata.scan("user://") != OK:
-			_logger.error("Failed to complete scanning of user data directory")
+#		AM.database.run("insert into Metadata values (now(), now(), generate_uuid(), generate_uuid())")
+		for i in AM.database.select("select * from Metadata"):
+			print(i)
+		
+#		var metadata: Variant = Metadata.try_load()
+#		if metadata == null:
+#			_logger.error("Unable to load metadata!")
+#			metadata = Metadata.new()
+#		AM.metadata = metadata
+#
+#		if AM.metadata.scan("user://") != OK:
+#			_logger.error("Failed to complete scanning of user data directory")
 		
 		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/vrm_extension.gd").new(), true)
-		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_materials_hdr_emissiveMultiplier.gd").new())
-		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_materials_mtoon.gd").new())
-		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_node_constraint.gd").new())
-		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_springBone.gd").new())
-		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_vrm.gd").new())
+		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_materials_hdr_emissiveMultiplier.gd").new(), true)
+		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_materials_mtoon.gd").new(), true)
+		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_node_constraint.gd").new(), true)
+		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_springBone.gd").new(), true)
+		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_vrm.gd").new(), true)
 	)
 	
 	_logger.debug("Splash ready!")
