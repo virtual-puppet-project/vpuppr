@@ -108,12 +108,14 @@ func _ready() -> void:
 		if AM.metadata.scan("user://") != OK:
 			_logger.error("Failed to complete scanning of user data directory")
 		
+		# true argument is required to ensure extensions run before the
+		# built-in GLTFDocumentExtensionConvertImporterMesh extension used at runtime.
 		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/vrm_extension.gd").new(), true)
-		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_materials_hdr_emissiveMultiplier.gd").new())
-		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_materials_mtoon.gd").new())
-		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_node_constraint.gd").new())
-		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_springBone.gd").new())
-		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_vrm.gd").new())
+		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_materials_mtoon.gd").new(), true)
+		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_materials_hdr_emissiveMultiplier.gd").new(), true)
+		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_node_constraint.gd").new(), true)
+		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_springBone.gd").new(), true)
+		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_vrm.gd").new(), true)
 	)
 	
 	_logger.debug("Splash ready!")
