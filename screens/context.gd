@@ -53,10 +53,10 @@ func _init(p_runner_data: RunnerData) -> void:
 			
 			return res.new() if res is GDScript else res.instantiate()
 		
-		r.runner = try_load.call(runner_data.get_runner_path())
-		r.gui = try_load.call(runner_data.get_gui_path())
+		r.runner = try_load.call(runner_data.runner_path)
+		r.gui = try_load.call(runner_data.gui_path)
 		
-		var model_path := runner_data.get_model_path()
+		var model_path := runner_data.model_path
 		# TODO glb/vrm load logic can probably be consolidated
 		match model_path.get_extension().to_lower():
 			"glb":
@@ -76,7 +76,7 @@ func _init(p_runner_data: RunnerData) -> void:
 					return r
 				
 				# TODO name changed
-				var puppet := GlbPuppet.new()
+				var puppet := GLBPuppet.new()
 				puppet.name = model_path.get_file()
 				puppet.add_child(model)
 #
@@ -98,7 +98,7 @@ func _init(p_runner_data: RunnerData) -> void:
 					logger.error("Failed to generate scene for model {0}".format([model_path]))
 					return r
 				
-				var puppet := VrmPuppet.new()
+				var puppet := VRMPuppet.new()
 				puppet.name = model_path.get_file()
 				puppet.head_bone = "Head"
 				puppet.add_child(model)

@@ -54,8 +54,7 @@ func start() -> Error:
 			if packet.size() < 1:
 				continue
 			
-			var data := IFacialMocapData.from(packet)
-			data_received.emit(data)
+			data_received.emit(packet)
 	)
 	
 	return OK

@@ -1,5 +1,5 @@
 class_name MeowFaceOptions
-extends VTubeStudioData
+extends VTubeStudioOptions
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
