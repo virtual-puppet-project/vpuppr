@@ -26,17 +26,13 @@ enum Trackers {
 # Public functions
 #-----------------------------------------------------------------------------#
 
-## Create a new instance of the tracker.
-static func create(_data: Dictionary) -> AbstractTracker:
-	return null
-
 ## Get the name of the tracker.
 static func get_name() -> StringName:
 	return &"AbstractTracker"
 
 ## Start the tracker.
-func start() -> Error:
-	return ERR_UNCONFIGURED
+static func start(_data: Dictionary) -> AbstractTracker:
+	return null
 
 ## Stop the tracker.
 func stop() -> Error:

@@ -1,3 +1,4 @@
+class_name VTubeStudio
 extends AbstractTracker
 
 var _logger := Logger.create("VTubeStudio")
@@ -12,9 +13,6 @@ var _should_stop := true
 # Builtin functions
 #-----------------------------------------------------------------------------#
 
-func _init() -> void:
-	pass
-
 #-----------------------------------------------------------------------------#
 # Private functions
 #-----------------------------------------------------------------------------#
@@ -23,8 +21,11 @@ func _init() -> void:
 # Public functions
 #-----------------------------------------------------------------------------#
 
-static func create(data: Dictionary) -> AbstractTracker:
-	var r := preload("res://trackers/vtube_studio.gd").new()
+static func get_name() -> StringName:
+	return &"VTubeStudio"
+
+static func start(data: Dictionary) -> AbstractTracker:
+	var r := VTubeStudio.new()
 	
 	if not data.has("address"):
 		r._logger.error("Missing address")
@@ -52,13 +53,37 @@ static func create(data: Dictionary) -> AbstractTracker:
 		]
 	}).to_utf8_buffer()
 	
+	r._logger.info("Starting MeowFace!")
+	
+	r._should_stop = false
+	
+	r._thread = Thread.new()
+	r._thread.start(func() -> void:
+		while not r._should_stop:
+			OS.delay_msec(10)
+			
+			# TODO only need to send this once
+			r._socket.put_packet(r._data_request)
+			
+			if r._socket.get_available_packet_count() < 1:
+				continue
+			
+			var packet := r._socket.get_packet()
+			if packet.size() < 1:
+				continue
+			
+			r.data_received.emit(packet)
+	)
+	
 	return r
 
-static func get_name() -> StringName:
-	return &"VTubeStudio"
-
-func start() -> Error:
-	return ERR_UNCONFIGURED
-
 func stop() -> Error:
-	return ERR_UNCONFIGURED
+	_should_stop = true
+	
+	_thread.wait_to_finish()
+	_thread = null
+	
+	_socket.close()
+	_socket = null
+	
+	return OK

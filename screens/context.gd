@@ -159,38 +159,38 @@ func start_tracker(tracker: AbstractTracker.Trackers, data: Dictionary) -> Abstr
 	var logger := Logger.create("Logger::start_tracker")
 
 	match tracker:
-		AbstractTracker.Trackers.MEOW_FACE:
-			logger.debug(data)
-
-			var mf := preload("res://trackers/meow_face.gd").create(data)
-			mf.data_received.connect(model.handle_meow_face)
-			if mf.start() != OK:
-				logger.error("Unable to start MeowFace")
-				return null
-
-			active_trackers.push_back(mf)
-			
-			return mf
-		AbstractTracker.Trackers.MEDIA_PIPE:
-			var mp := preload("res://trackers/media_pipe.gd").create(data)
-			mp.data_received.connect(model.handle_media_pipe)
-			if mp.start() != OK:
-				logger.error("Unable to start MediaPipe")
-				return null
-
-			active_trackers.push_back(mp)
-
-			return mp
-		AbstractTracker.Trackers.I_FACIAL_MOCAP:
-			var ifm := preload("res://trackers/i_facial_mocap.gd").create(data)
-			ifm.data_received.connect(model.handle_i_facial_mocap)
-			if ifm.start() != OK:
-				logger.error("Unable to start iFacialMocap")
-				return null
-			
-			active_trackers.push_back(ifm)
-			
-			return ifm
+#		AbstractTracker.Trackers.MEOW_FACE:
+#			logger.debug(data)
+#
+#			var mf := MediaPipe.create(data)
+#			mf.data_received.connect(model.handle_meow_face)
+#			if mf.start() != OK:
+#				logger.error("Unable to start MeowFace")
+#				return null
+#
+#			active_trackers.push_back(mf)
+#
+#			return mf
+#		AbstractTracker.Trackers.MEDIA_PIPE:
+#			var mp := preload("res://trackers/media_pipe.gd").create(data)
+#			mp.data_received.connect(model.handle_media_pipe)
+#			if mp.start() != OK:
+#				logger.error("Unable to start MediaPipe")
+#				return null
+#
+#			active_trackers.push_back(mp)
+#
+#			return mp
+#		AbstractTracker.Trackers.I_FACIAL_MOCAP:
+#			var ifm := preload("res://trackers/i_facial_mocap.gd").create(data)
+#			ifm.data_received.connect(model.handle_i_facial_mocap)
+#			if ifm.start() != OK:
+#				logger.error("Unable to start iFacialMocap")
+#				return null
+#
+#			active_trackers.push_back(ifm)
+#
+#			return ifm
 		_:
 			logger.error("Unhandled tracker: {0}".format([tracker]))
 			

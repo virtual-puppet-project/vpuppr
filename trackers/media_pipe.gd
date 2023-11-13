@@ -1,3 +1,4 @@
+class_name MediaPipe
 extends AbstractTracker
 
 # TODO camera helper on MacOS needs to work with permissions
@@ -33,8 +34,11 @@ func _clean_up_thread() -> void:
 # Public functions
 #-----------------------------------------------------------------------------#
 
-static func create(data: Dictionary) -> AbstractTracker:
-	var r := preload("res://trackers/media_pipe.gd").new()
+static func get_name() -> StringName:
+	return &"MediaPipe"
+
+static func start(_data: Dictionary) -> AbstractTracker:
+	var r := MediaPipe.new()
 
 	# TODO switch based off of OS, Linux can use GPU i think
 	var delegate := MediaPipeTaskBaseOptions.DELEGATE_CPU
@@ -60,27 +64,21 @@ static func create(data: Dictionary) -> AbstractTracker:
 	r._task = task
 	r._camera_helper = camera_helper
 	
-	return r
-
-static func get_name() -> StringName:
-	return &"MediaPipe"
-
-func start() -> Error:
-	_task.result_callback.connect(func(result: MediaPipeFaceLandmarkerResult, _image: MediaPipeImage, timestamp_ms: int) -> void:
-		data_received.emit(
+	r._task.result_callback.connect(func(result: MediaPipeFaceLandmarkerResult, _image: MediaPipeImage, timestamp_ms: int) -> void:
+		r.data_received.emit(
 			result.facial_transformation_matrixes[0],
 			result.face_blendshapes[0].categories
 		)
 	)
 	
-	_clean_up_thread()
+	r._clean_up_thread()
 	
-	_start_thread = Thread.new()
-	_start_thread.start(func() -> void:
-		_camera_helper.start(MediaPipeCameraHelper.FACING_FRONT, Vector2(640, 480))
+	r._start_thread = Thread.new()
+	r._start_thread.start(func() -> void:
+		r._camera_helper.start(MediaPipeCameraHelper.FACING_FRONT, Vector2(640, 480))
 	)
 	
-	return OK
+	return r
 
 func stop() -> Error:
 	_camera_helper.close()
