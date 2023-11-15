@@ -95,11 +95,11 @@ void vertex() {
 
 	if (isOutline == 1.0) {
 		float outlineTex = textureLod(_OutlineWidthTexture, UV, 0).r;
+		vec3 worldNormalLength = vec3(1.0/length(mat3(transpose(MODEL_MATRIX)) * NORMAL));
+		vec3 outlineOffset = 0.01 * _OutlineWidth * outlineTex * worldNormalLength * NORMAL;
+		vec3 conventional_outlined_vertex = (MODELVIEW_MATRIX * vec4(VERTEX + outlineOffset, 1.0)).xyz;
 		if (_OutlineWidthMode < 1.5) {
-			vec3 worldNormalLength = vec3(1.0/length(mat3(transpose(MODEL_MATRIX)) * NORMAL));
-			vec3 outlineOffset = 0.01 * _OutlineWidth * outlineTex * worldNormalLength * NORMAL;
-			VERTEX += outlineOffset;
-			VERTEX = (MODELVIEW_MATRIX * vec4(VERTEX, 1.0)).xyz;
+			VERTEX = conventional_outlined_vertex;
 		} else { // #elif defined(MTOON_OUTLINE_WIDTH_SCREEN)
 			// 1. Create the clip-space position
 			// 2. Get the normal direction, normalized, in clip space.
@@ -116,7 +116,7 @@ void vertex() {
 			projectedNormal *= min(clipPos.w, _OutlineScaledMaxDistance);
 			projectedNormal.x *= aspect;
 			clipPos.xy += 0.01 * _OutlineWidth * outlineTex * projectedNormal.xy * clamp(1.0 - abs(normalize(viewNormal).z), 0.0, 1.0); // ignore offset when normal toward camera
-			VERTEX = (INV_PROJECTION_MATRIX * clipPos).xyz;
+			VERTEX = vec3((INV_PROJECTION_MATRIX * clipPos).xy, conventional_outlined_vertex.z);
 		}
 	} else {
 		VERTEX = (MODELVIEW_MATRIX * vec4(VERTEX, 1.0)).xyz;
@@ -263,7 +263,16 @@ void fragment() {
 	float LIGHT_COME_FROM_UP_RATIO = mix(0.8, 1.0, sin(_IndirectLightIntensity));
 	fragment_albedo_output = max(lit.rgb, vec3(0.0001));
 
-	rim = pow(clamp(1.0 - dot(viewNormal, viewView) + _RimLift, 0.0, 1.0), _RimFresnelPower) * _RimColor.rgb * texture(_RimTexture, mainUv).rgb;
+	rim = pow(clamp(1.0 - dot(viewNormal, viewView) + _RimLift, 0.0, 1.0), max(_RimFresnelPower, 0.001)) * _RimColor.rgb;
+
+	// additive matcap
+	vec3 viewCameraUp = vec3(0.0,1.0,0.0);//normalize(INV_VIEW_MATRIX[1].xyz); // FIXME!!
+	vec3 viewViewUp = normalize(viewCameraUp - viewView * dot(viewView, viewCameraUp));
+	vec3 viewViewRight = normalize(cross(viewView, viewViewUp));
+	vec2 matcapUv = vec2(-dot(viewViewRight, viewNormal), dot(viewViewUp, viewNormal)) * 0.5 + 0.5;
+	vec3 matcapLighting = _MatcapColor.rgb * texture(_SphereAdd, matcapUv).rgb;
+
+	rim = (rim + matcapLighting) * texture(_RimTexture, mainUv).rgb;
 
 	emission += mix(rim * (1.0 - _RimLightingMix), vec3(0, 0, 0), isOutline);
 	fragment_albedo_output += mix(rim * _RimLightingMix, vec3(0, 0, 0), isOutline);
@@ -272,14 +281,6 @@ void fragment() {
 
 	// Emission
 	emission = mix(emission, vec3(0, 0, 0), isOutline);
-
-	// additive matcap
-	vec3 viewCameraUp = vec3(0.0,1.0,0.0);//normalize(INV_VIEW_MATRIX[1].xyz); // FIXME!!
-	vec3 viewViewUp = normalize(viewCameraUp - viewView * dot(viewView, viewCameraUp));
-	vec3 viewViewRight = normalize(cross(viewView, viewViewUp));
-	vec2 matcapUv = vec2(-dot(viewViewRight, viewNormal), dot(viewViewUp, viewNormal)) * 0.5 + 0.5;
-	vec3 matcapLighting = _MatcapColor.rgb * texture(_SphereAdd, matcapUv).rgb;
-	emission += mix(matcapLighting, vec3(0, 0, 0), isOutline);
 
 	// outline
 	if (isOutline == 1.0) {

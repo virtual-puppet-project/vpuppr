@@ -3,7 +3,7 @@ extends Node3D
 
 var puppet_data: Puppet3DData = null
 
-var _skeleton: Skeleton3D = null
+var skeleton: Skeleton3D = null
 var _logger: Logger = null
 
 #-----------------------------------------------------------------------------#
@@ -18,24 +18,24 @@ func _init() -> void:
 #-----------------------------------------------------------------------------#
 
 func _find_skeleton() -> Skeleton3D:
-	return find_child("Skeleton3D")
+	return find_child("*Skeleton*", true, false)
 
 #-----------------------------------------------------------------------------#
 # Public functions
 #-----------------------------------------------------------------------------#
 
-func handle_ifacial_mocap(data: Dictionary) -> void:
+func handle_ifacial_mocap(raw_data: PackedByteArray) -> void:
 
 	pass
 
-func handle_mediapipe(data: Dictionary) -> void:
+func handle_mediapipe(raw_data: PackedByteArray) -> void:
 	pass
 
-func handle_vtube_studio(data: Dictionary) -> void:
+func handle_vtube_studio(raw_data: PackedByteArray) -> void:
 	pass
 
-func handle_meow_face(data: Dictionary) -> void:
+func handle_meow_face(raw_data: PackedByteArray) -> void:
 	pass
 
-func handle_open_see_face(data: Dictionary) -> void:
+func handle_open_see_face(raw_data: PackedByteArray) -> void:
 	pass

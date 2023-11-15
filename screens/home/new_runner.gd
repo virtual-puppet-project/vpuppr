@@ -193,17 +193,24 @@ func _ready() -> void:
 			ModelType.PUPPET_3D:
 				# TODO hardcoded for testing
 				data.runner_path = "res://screens/runners/runner_3d.tscn"
-				match _model_type_3d:
+				# TODO Why the fuck is this so hard
+				match _model_type_3d.get_item_text(_model_type_3d.get_item_index(_model_type_3d.get_selected_id())):
 					ModelType3d.GLB:
 						# TODO hardcoded for testing
 						data.gui_path = "res://gui/default_gui.tscn"
+						data.puppet_data = Puppet3DData.new()
 					ModelType3d.VRM:
-						data.set_gui_path("res://gui/vrm_gui.tscn")
+						data.gui_path = "res://gui/vrm_gui.tscn"
+						data.puppet_data = VRMPuppetData.new()
 			ModelType.PUPPET_2D:
 				# TODO hardcoded for testing + this is the wrong file
 				data.runner_path = "res://screens/runners/runner_3d.tscn"
-				# TODO hardcoded for testing
-				data.gui_path = "res://gui/default_gui.tscn"
+				# TODO this sucks
+				match _model_type_2d.get_item_text(_model_type_2d.get_item_index(_model_type_2d.get_selected_id())):
+					ModelType2d.PNGTUBER:
+						# TODO hardcoded for testing
+						data.gui_path = "res://gui/default_gui.tscn"
+						data.puppet_data = Puppet2DData.new()
 			ModelType.CUSTOM:
 				# TODO stub
 				_logger.error("Not yet implemented!")

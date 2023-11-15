@@ -49,44 +49,46 @@ func _setup_vrm(model: VRMPuppet) -> Error:
 	var ren_ik: RenIK3D = RenIK.new()
 	ren_ik.name = "RenIK3D"
 	
-#	var ik_targets := model.ik_targets_3d
-##
-#	ren_ik.armature_skeleton_path = model.skeleton.get_path()
-##
-#	var armature_targets := Node3D.new()
-#	armature_targets.name = "ArmatureTargets"
-#	add_child(armature_targets)
-#
-#	if ik_targets.head != null:
-#		armature_targets.add_child(ik_targets.head)
-#		ren_ik.armature_head_target = ik_targets.head.get_path()
-#	if ik_targets.left_hand != null:
-#		var target := ik_targets.left_hand
-#		armature_targets.add_child(target)
-#		target.position.y = 0
-#		target.rotation_degrees.x = 164
-#
-#		ik_targets.left_hand_starting_transform = target.transform
-#
-#		ren_ik.armature_left_hand_target = ik_targets.left_hand.get_path()
-#	if ik_targets.right_hand != null:
-#		var target := ik_targets.right_hand
-#		armature_targets.add_child(ik_targets.right_hand)
-#		target.position.y = 0
-#		target.rotation_degrees.x = 164
-#
-#		ik_targets.right_hand_starting_transform = target.transform
-#
-#		ren_ik.armature_right_hand_target = ik_targets.right_hand.get_path()
-#	if ik_targets.hips != null:
-#		armature_targets.add_child(ik_targets.hips)
-#		ren_ik.armature_hip_target = ik_targets.hips.get_path()
-#	if ik_targets.left_foot != null:
-#		armature_targets.add_child(ik_targets.left_foot)
-#		ren_ik.armature_left_foot_target = ik_targets.left_foot.get_path()
-#	if ik_targets.right_foot != null:
-#		armature_targets.add_child(ik_targets.right_foot)
-#		ren_ik.armature_right_foot_target = ik_targets.right_foot.get_path()
+	var ik_targets := model.ik_targets
+	ren_ik.armature_skeleton_path = model.skeleton.get_path()
+
+	var armature_targets := Node3D.new()
+	armature_targets.name = "ArmatureTargets"
+	add_child(armature_targets)
+
+	if ik_targets.head != null:
+		armature_targets.add_child(ik_targets.head)
+		ren_ik.armature_head_target = ik_targets.head.get_path()
+	if ik_targets.left_hand != null:
+		var target: Node3D = ik_targets.left_hand
+		armature_targets.add_child(target)
+		target.position.y = 0
+		target.rotation_degrees.x = 164
+
+		ik_targets.left_hand_starting_transform = target.transform
+
+		ren_ik.armature_left_hand_target = ik_targets.left_hand.get_path()
+	if ik_targets.right_hand != null:
+		var target: Node3D= ik_targets.right_hand
+		armature_targets.add_child(ik_targets.right_hand)
+		target.position.y = 0
+		target.rotation_degrees.x = 164
+
+		ik_targets.right_hand_starting_transform = target.transform
+
+		ren_ik.armature_right_hand_target = ik_targets.right_hand.get_path()
+	if ik_targets.hips != null:
+		# TODO stub
+		armature_targets.add_child(ik_targets.hips)
+		ren_ik.armature_hip_target = ik_targets.hips.get_path()
+	if ik_targets.left_foot != null:
+		# TODO stub
+		armature_targets.add_child(ik_targets.left_foot)
+		ren_ik.armature_left_foot_target = ik_targets.left_foot.get_path()
+	if ik_targets.right_foot != null:
+		# TODO stub
+		armature_targets.add_child(ik_targets.right_foot)
+		ren_ik.armature_right_foot_target = ik_targets.right_foot.get_path()
 	
 	add_child(ren_ik)
 	ren_ik.live_preview = true

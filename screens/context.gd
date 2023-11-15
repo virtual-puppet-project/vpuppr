@@ -16,15 +16,15 @@ var model: Node = null
 
 var active_trackers: Array[AbstractTracker] = []
 
+var _logger := Logger.create("Context")
+
 #-----------------------------------------------------------------------------#
 # Builtin functions
 #-----------------------------------------------------------------------------#
 
 func _init(p_runner_data: RunnerData) -> void:
-	var logger := Logger.create("Context:_init")
-	
 	var fail := func(text: String) -> void:
-		logger.error(text)
+		_logger.error(text)
 		loading_completed.emit(false)
 	
 	if p_runner_data == null:
@@ -48,68 +48,75 @@ func _init(p_runner_data: RunnerData) -> void:
 		var try_load := func(path: String) -> Variant:
 			var res: Resource = load(path)
 			if res == null:
-				logger.error("Unable to load resource {0}".format([path]))
+				_logger.error("Unable to load resource {0}".format([path]))
 				return null
 			
 			return res.new() if res is GDScript else res.instantiate()
 		
+		_logger.debug("runner")
 		r.runner = try_load.call(runner_data.runner_path)
+		_logger.debug("gui")
 		r.gui = try_load.call(runner_data.gui_path)
 		
 		var model_path := runner_data.model_path
 		# TODO glb/vrm load logic can probably be consolidated
 		match model_path.get_extension().to_lower():
 			"glb":
-				logger.info("Loading glb")
+				_logger.info("Loading glb")
 				
 				var gltf := GLTFDocument.new()
 				var state := GLTFState.new()
 				
 				var err := gltf.append_from_file(model_path, state)
 				if err != OK:
-					logger.error("Unable to load model from path {0}".format([model_path]))
+					_logger.error("Unable to load model from path {0}".format([model_path]))
 					return r
 				
 				var model: Node = gltf.generate_scene(state)
 				if model == null:
-					logger.error("Failed to generate scene for model {0}".format([model_path]))
+					_logger.error("Failed to generate scene for model {0}".format([model_path]))
 					return r
 				
 				# TODO name changed
 				var puppet := GLBPuppet.new()
 				puppet.name = model_path.get_file()
+				puppet.puppet_data = runner_data.puppet_data
 				puppet.add_child(model)
 #
 				r.model = puppet
 			"vrm":
-				logger.info("Loading vrm")
+				_logger.info("Loading vrm")
 				
 				var gltf := GLTFDocument.new()
 				var state := GLTFState.new()
-				state.handle_binary_image = GLTFState.HANDLE_BINARY_EMBED_AS_BASISU
 				
+				_logger.debug("append from file")
 				var err := gltf.append_from_file(model_path, state)
 				if err != OK:
-					logger.error("Unable to load model from path {0}".format([model_path]))
+					_logger.error("Unable to load model from path {0}".format([model_path]))
 					return r
 				
+				_logger.debug("generate scene")
 				var model: Node = gltf.generate_scene(state)
 				if model == null:
-					logger.error("Failed to generate scene for model {0}".format([model_path]))
+					_logger.error("Failed to generate scene for model {0}".format([model_path]))
 					return r
 				
+				_logger.debug("VRMPuppet")
 				var puppet := VRMPuppet.new()
 				puppet.name = model_path.get_file()
-				puppet.head_bone = "Head"
+				puppet.puppet_data = runner_data.puppet_data
 				puppet.add_child(model)
 				
 				r.model = puppet
+				
+				_logger.info("Loaded vrm")
 			"png":
-				logger.debug("Loading png")
+				_logger.debug("Loading png")
 				# TODO stub
 				pass
 			_:
-				logger.error("Unhandled file type for model {0}".format([model_path]))
+				_logger.error("Unhandled file type for model {0}".format([model_path]))
 				return r
 		
 		return r
@@ -123,19 +130,19 @@ func _init(p_runner_data: RunnerData) -> void:
 	
 	runner = load_results.get(RUNNER, null)
 	if runner == null:
-		fail.call("Failed to load runner {0}".format([runner_data.get_runner_path()]))
+		fail.call("Failed to load runner {0}".format([runner_data.runner_path]))
 		return
 	
 	gui = load_results.get(GUI, null)
 	if gui == null:
-		fail.call("Failed to load gui from {0}".format([runner_data.get_gui_path()]))
+		fail.call("Failed to load gui from {0}".format([runner_data.gui_path]))
 		return
 	
 	model = load_results.get(MODEL, null)
 	if model == null:
-		fail.call("Failed to load model from {0}".format([runner_data.get_model_path()]))
+		fail.call("Failed to load model from {0}".format([runner_data.model_path]))
 		return
-	# TODO testing
+	
 	runner.add_child(model)
 	runner.set("context", self)
 	gui.set("context", self)
@@ -143,9 +150,13 @@ func _init(p_runner_data: RunnerData) -> void:
 	add_child(runner)
 	add_child(gui)
 	
-	logger.info("Completed loading")
+	_logger.info("Completed loading")
 	
 	loading_completed.emit(true)
+
+func _exit_tree() -> void:
+	if runner_data.try_save() != OK:
+		_logger.error("Unable to save runner data")
 
 #-----------------------------------------------------------------------------#
 # Private functions
@@ -156,42 +167,40 @@ func _init(p_runner_data: RunnerData) -> void:
 #-----------------------------------------------------------------------------#
 
 func start_tracker(tracker: AbstractTracker.Trackers, data: Dictionary) -> AbstractTracker:
-	var logger := Logger.create("Logger::start_tracker")
+	_logger.info("Starting tracker: {0}".format([tracker]))
 
 	match tracker:
-#		AbstractTracker.Trackers.MEOW_FACE:
-#			logger.debug(data)
-#
-#			var mf := MediaPipe.create(data)
-#			mf.data_received.connect(model.handle_meow_face)
-#			if mf.start() != OK:
-#				logger.error("Unable to start MeowFace")
-#				return null
-#
-#			active_trackers.push_back(mf)
-#
-#			return mf
-#		AbstractTracker.Trackers.MEDIA_PIPE:
-#			var mp := preload("res://trackers/media_pipe.gd").create(data)
-#			mp.data_received.connect(model.handle_media_pipe)
-#			if mp.start() != OK:
-#				logger.error("Unable to start MediaPipe")
-#				return null
-#
-#			active_trackers.push_back(mp)
-#
-#			return mp
-#		AbstractTracker.Trackers.I_FACIAL_MOCAP:
-#			var ifm := preload("res://trackers/i_facial_mocap.gd").create(data)
-#			ifm.data_received.connect(model.handle_i_facial_mocap)
-#			if ifm.start() != OK:
-#				logger.error("Unable to start iFacialMocap")
-#				return null
-#
-#			active_trackers.push_back(ifm)
-#
-#			return ifm
+		AbstractTracker.Trackers.MEOW_FACE:
+			var mf := MeowFace.start(data)
+			if mf == null:
+				_logger.error("Unable to start MeowFace")
+				return null
+			
+			mf.data_received.connect(model.handle_meow_face)
+			active_trackers.push_back(mf)
+
+			return mf
+		AbstractTracker.Trackers.MEDIA_PIPE:
+			var mp = MediaPipe.start(data)
+			if mp == null:
+				_logger.error("Unable to start MediaPipe")
+				return null
+
+			mp.data_received.connect(model.handle_media_pipe)
+			active_trackers.push_back(mp)
+
+			return mp
+		AbstractTracker.Trackers.I_FACIAL_MOCAP:
+			var ifm := IFacialMocap.start(data)
+			if ifm == null:
+				_logger.error("Unable to start iFacialMocap")
+				return
+
+			ifm.data_received.connect(model.handle_i_facial_mocap)
+			active_trackers.push_back(ifm)
+
+			return ifm
 		_:
-			logger.error("Unhandled tracker: {0}".format([tracker]))
+			_logger.error("Unhandled tracker: {0}".format([tracker]))
 			
 			return null

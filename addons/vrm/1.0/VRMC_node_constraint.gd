@@ -24,19 +24,19 @@ func _import_post_parse(gltf_state: GLTFState) -> Error:
 	var applier: bone_node_constraint_applier = bone_node_constraint_applier.new()
 	applier.name = &"BoneNodeConstraintApplier"
 	gltf_state.set_additional_data(&"BoneNodeConstraintApplier", applier)
-	# Add the constraint applier to the real root, next to the AnimationPlayer.
-	var gltf_root: Node = gltf_state.get_scene_node(gltf_state.root_nodes[0])
-	var real_root = gltf_root.get_parent()
-	real_root.add_child(applier)
-	applier.owner = real_root
 	return OK
 
 
-func _import_post(gstate: GLTFState, node: Node) -> Error:
-	var nodes: Array = gstate.nodes
-	var json_nodes: Array = gstate.json["nodes"]
+func _import_post(gltf_state: GLTFState, root: Node) -> Error:
+	# Add the constraint applier to the real root, next to the AnimationPlayer.
+	var applier: BoneNodeConstraintApplier = gltf_state.get_additional_data(&"BoneNodeConstraintApplier")
+	root.add_child(applier)
+	applier.owner = root
+	# Set up the constraints.
+	var nodes: Array = gltf_state.nodes
+	var json_nodes: Array = gltf_state.json["nodes"]
 	for i in range(len(nodes)):
-		var err: Error = my_import_node(gstate, nodes[i], json_nodes[i], gstate.get_scene_node(i))
+		var err: Error = my_import_node(gltf_state, nodes[i], json_nodes[i], gltf_state.get_scene_node(i))
 		if err != OK:
 			return err
 	return OK

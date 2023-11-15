@@ -69,14 +69,17 @@ func _process_khr_material(orig_mat: StandardMaterial3D, gltf_mat_props: Diction
 	return orig_mat
 
 
-func _vrm_get_texture_info(gltf_images: Array, vrm_mat_props: Dictionary, unity_tex_name: String) -> Dictionary:
+func _vrm_get_texture_info(gstate : GLTFState, vrm_mat_props: Dictionary, unity_tex_name: String) -> Dictionary:
+	var gltf_images: Array = gstate.get_images()
+	var gltf_textures: Array = gstate.get_textures()
 	var texture_info: Dictionary = {}
 	texture_info["tex"] = null
 	texture_info["offset"] = Vector3(0.0, 0.0, 0.0)
 	texture_info["scale"] = Vector3(1.0, 1.0, 1.0)
 	if vrm_mat_props["textureProperties"].has(unity_tex_name):
 		var mainTexId: int = vrm_mat_props["textureProperties"][unity_tex_name]
-		var mainTexImage: Texture2D = gltf_images[mainTexId]
+		var mainTexImageId = gltf_textures[mainTexId].src_image
+		var mainTexImage: Texture2D = gltf_images[mainTexImageId]
 		texture_info["tex"] = mainTexImage
 	if vrm_mat_props["vectorProperties"].has(unity_tex_name):
 		var offsetScale: Array = vrm_mat_props["vectorProperties"][unity_tex_name]
@@ -89,7 +92,11 @@ func _vrm_get_float(vrm_mat_props: Dictionary, key: String, def: float) -> float
 	return vrm_mat_props["floatProperties"].get(key, def)
 
 
-func _process_vrm_material(orig_mat: Material, gltf_images: Array, vrm_mat_props: Dictionary) -> Material:
+func _process_vrm_material(orig_mat: Material, gstate : GLTFState, vrm_mat_props: Dictionary) -> Material:
+
+	var gltf_images: Array = gstate.get_images()
+	var gltf_textures: Array = gstate.get_textures()
+
 	var vrm_shader_name: String = vrm_mat_props["shader"]
 	if vrm_shader_name == "VRM_USE_GLTFSHADER":
 		return orig_mat  # It's already correct!
@@ -98,7 +105,7 @@ func _process_vrm_material(orig_mat: Material, gltf_images: Array, vrm_mat_props
 		printerr("Unsupported legacy VRM shader " + vrm_shader_name + " on material " + str(orig_mat.resource_name))
 		return orig_mat
 
-	var maintex_info: Dictionary = _vrm_get_texture_info(gltf_images, vrm_mat_props, "_MainTex")
+	var maintex_info: Dictionary = _vrm_get_texture_info(gstate, vrm_mat_props, "_MainTex")
 
 	if vrm_shader_name == "VRM/UnlitTransparentZWrite" or vrm_shader_name == "VRM/UnlitTransparent" or vrm_shader_name == "VRM/UnlitTexture" or vrm_shader_name == "VRM/UnlitCutout":
 		if maintex_info["tex"] != null:
@@ -182,7 +189,7 @@ func _process_vrm_material(orig_mat: Material, gltf_images: Array, vrm_mat_props
 		outline_mat.set_shader_parameter("_MainTex_ST", texture_repeat)
 
 	for param_name in ["_MainTex", "_ShadeTexture", "_BumpMap", "_RimTexture", "_SphereAdd", "_EmissionMap", "_OutlineWidthTexture", "_UvAnimMaskTexture"]:
-		var tex_info: Dictionary = _vrm_get_texture_info(gltf_images, vrm_mat_props, param_name)
+		var tex_info: Dictionary = _vrm_get_texture_info(gstate, vrm_mat_props, param_name)
 		if tex_info.get("tex", null) != null:
 			new_mat.set_shader_parameter(param_name, tex_info["tex"])
 			if outline_mat != null:
@@ -259,7 +266,7 @@ func _update_materials(vrm_extension: Dictionary, gstate: GLTFState) -> void:
 			continue
 		var newmat: Material = _process_khr_material(oldmat, gstate.json["materials"][i])
 		var vrm_mat_props: Dictionary = vrm_extension["materialProperties"][i]
-		newmat = _process_vrm_material(newmat, images, vrm_mat_props)
+		newmat = _process_vrm_material(newmat, gstate, vrm_mat_props)
 		spatial_to_shader_mat[oldmat] = newmat
 		spatial_to_shader_mat[newmat] = newmat
 		# print("Replacing shader " + str(oldmat) + "/" + str(oldmat.resource_name) + " with " + str(newmat) + "/" + str(newmat.resource_name))

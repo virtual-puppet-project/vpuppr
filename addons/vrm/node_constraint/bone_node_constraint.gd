@@ -161,7 +161,8 @@ func _get_posed_source_transform() -> Transform3D:
 	if source_bone_index == -1:
 		return source_rest_transform.affine_inverse() * source_node.transform
 	var skeleton: Skeleton3D = source_node as Skeleton3D
-	return skeleton.get_bone_pose(source_bone_index)
+	var rest_inverse: Transform3D = skeleton.get_bone_rest(source_bone_index).affine_inverse()
+	return rest_inverse * skeleton.get_bone_pose(source_bone_index)
 
 
 func _get_source_global_transform() -> Transform3D:
@@ -187,7 +188,8 @@ func _set_weighted_posed_target_rotation(rotation_quat: Quaternion) -> void:
 		target_node.quaternion = rest_quat * rotation_quat
 		return
 	var skeleton: Skeleton3D = target_node as Skeleton3D
-	skeleton.set_bone_pose_rotation(target_bone_index, rotation_quat)
+	var rest_quat: Quaternion = target_rest_transform.basis.get_rotation_quaternion()
+	skeleton.set_bone_pose_rotation(target_bone_index, rest_quat * rotation_quat)
 
 
 func _set_weighted_global_target_rotation(rotation_quat: Quaternion) -> void:

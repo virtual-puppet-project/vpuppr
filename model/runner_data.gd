@@ -44,3 +44,6 @@ var meow_face_options := MeowFaceOptions.new()
 #-----------------------------------------------------------------------------#
 # Public functions
 #-----------------------------------------------------------------------------#
+
+func try_save() -> Error:
+	return ResourceSaver.save(self, "user://{name}".format({name = name}))

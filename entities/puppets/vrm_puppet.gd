@@ -5,7 +5,7 @@ extends GLBPuppet
 
 var _animation_player: AnimationPlayer = null
 
-var _ik_targets := {}
+var ik_targets := {}
 var _ik_target_offsets := {}
 # TODO refactor into class
 var _blend_shape_mappings := {}
@@ -21,9 +21,13 @@ func _init() -> void:
 
 func _ready() -> void:
 	_logger.debug("Starting ready")
+	
+	if puppet_data == null:
+		_logger.error("Puppet data was not set, bailing out early")
+		return
 
-	_skeleton = _find_skeleton()
-	if _skeleton == null:
+	skeleton = _find_skeleton()
+	if skeleton == null:
 		_logger.error("Unable to find skeleton, bailing out early")
 		return
 	_animation_player = _find_animation_player()
@@ -56,19 +60,19 @@ func _find_animation_player() -> AnimationPlayer:
 	return find_child("AnimationPlayer", true, false)
 
 func _create_ik_armature(armature_name: String, bone_name: String) -> void:
-	var bone_idx := _skeleton.find_bone(bone_name)
+	var bone_idx := skeleton.find_bone(bone_name)
 	if bone_idx < 0:
 		_logger.error("Unable to find bone {bone}".format({bone = bone_name}))
 		return
 
-	var tx := _skeleton.get_bone_global_pose(bone_idx)
+	var tx := skeleton.get_bone_global_pose(bone_idx)
 	tx.origin = self.to_global(tx.origin)
 
 	var armature := Node3D.new()
 	armature.name = armature_name
 	armature.transform = tx
 
-	_ik_targets[armature_name] = armature
+	ik_targets[armature_name] = armature
 
 	var initial_tx = puppet_data.ik_targets.get(armature_name)
 	if initial_tx == null:
@@ -79,13 +83,13 @@ func _create_ik_armature(armature_name: String, bone_name: String) -> void:
 		return
 	
 	if initial_tx == Transform3D.IDENTITY:
-		initial_tx = _skeleton.get_bone_global_pose(_skeleton.find_bone(bone_name))
+		initial_tx = skeleton.get_bone_global_pose(skeleton.find_bone(bone_name))
 		initial_tx.origin = self.to_global(initial_tx.origin)
 		
 	_ik_target_offsets[armature_name] = initial_tx
 
 func _populate_blend_shape_mappings() -> void:
-	for child in _skeleton.get_children():
+	for child in skeleton.get_children():
 		if not child is MeshInstance3D:
 			_logger.debug("Child {child_name} was not a MeshInstance3D, skipping".format({child_name = child.name}))
 			continue
@@ -102,7 +106,7 @@ func _populate_blend_shape_mappings() -> void:
 			var blend_shape_property_path := "blend_shapes/{shape_name}".format({shape_name = blend_shape_name})
 			var value := mi.get_blend_shape_value(idx)
 
-			_blend_shape_mappings[blend_shape_name] = {
+			_blend_shape_mappings[blend_shape_name.to_lower()] = {
 				child = child,
 				property_path = blend_shape_property_path,
 				value = value
@@ -147,14 +151,14 @@ func _populate_and_modify_expression_mappings() -> void:
 					}))
 					continue
 
-		_expression_mappings[animation_name] = morphs
+		_expression_mappings[animation_name.to_lower()] = morphs
 
 #-----------------------------------------------------------------------------#
 # Public functions
 #-----------------------------------------------------------------------------#
 
 func a_pose() -> Error:
-	if _skeleton == null:
+	if skeleton == null:
 		_logger.error("Skeleton was None while trying to A-pose, this is a bug!")
 		return ERR_UNCONFIGURED
 
@@ -164,7 +168,7 @@ func a_pose() -> Error:
 	const R_UPPER_ARM := "RightUpperArm"
 
 	for bone_name in [L_SHOULDER, R_SHOULDER, L_UPPER_ARM, R_UPPER_ARM]:
-		var bone_idx := _skeleton.find_bone(bone_name)
+		var bone_idx := skeleton.find_bone(bone_name)
 		if bone_idx < 0:
 			_logger.error("Bone not found while trying to A-pose: {bone_name}".format({bone_name = bone_name}))
 			continue
@@ -189,28 +193,61 @@ func a_pose() -> Error:
 				_logger.error("This should never happen, this is a major bug!")
 				return ERR_BUG
 		
-		_skeleton.set_bone_pose_rotation(bone_idx, Quaternion(axis_angle, angle))
+		skeleton.set_bone_pose_rotation(bone_idx, Quaternion(axis_angle, angle))
 
 	return OK
 
-func handle_ifacial_mocap(data: Dictionary) -> void:
-	_ik_targets.head.rotation_degrees = Vector3(data.rotation.x, data.rotation.y, data.rotation.z)
+func handle_ifacial_mocap(raw_data: PackedByteArray) -> void:
+	var data := DataParser.ifacial_mocap(raw_data)
 
-	_ik_targets.head.position = _ik_target_offsets.head + data.position
-	_ik_targets.left_hand.position = _ik_target_offsets.left_hand + data.position
-	_ik_targets.right_hand.position = _ik_target_offsets.right_hand + data.position
-	_ik_targets.hips.position = _ik_target_offsets.hips + data.position
-	_ik_targets.left_foot.position = _ik_target_offsets.left_foot + data.position
-	_ik_targets.right_foot.position = _ik_target_offsets.right_foot + data.position
+	ik_targets.head.rotation_degrees = Vector3(data.rotation.x, data.rotation.y, data.rotation.z)
 
-func handle_mediapipe(data: Dictionary) -> void:
+	ik_targets.head.position = _ik_target_offsets.head + data.position
+	# TODO commented out for use later
+	# ik_targets.left_hand.position = _ik_target_offsets.left_hand + data.position
+	# ik_targets.right_hand.position = _ik_target_offsets.right_hand + data.position
+	# ik_targets.hips.position = _ik_target_offsets.hips + data.position
+	# ik_targets.left_foot.position = _ik_target_offsets.left_foot + data.position
+	# ik_targets.right_foot.position = _ik_target_offsets.right_foot + data.position
+
+	for shape in data.blend_shapes:
+		var mappings = _expression_mappings.get(shape.k, null)
+		if mappings == null:
+			continue
+		
+		for mapping in mappings:
+			var blend_shape_mapping = _blend_shape_mappings.get(mapping, null)
+			if blend_shape_mapping == null:
+				continue
+			
+			blend_shape_mapping.child.set_indexed(blend_shape_mapping.property_path, shape.v)
+
+func handle_mediapipe(raw_data: PackedByteArray) -> void:
 	pass
 
-func handle_vtube_studio(data: Dictionary) -> void:
+func handle_vtube_studio(raw_data: PackedByteArray) -> void:
 	pass
 
-func handle_meow_face(data: Dictionary) -> void:
-	pass
+func handle_meow_face(raw_data: PackedByteArray) -> void:
+	var data := DataParser.vtube_studio(raw_data)
+	
+	ik_targets.head.call_deferred(
+		"set_rotation_degrees",
+		Vector3(data.rotation.y, data.rotation.x, data.rotation.z) - _ik_target_offsets.head.basis.get_euler(EULER_ORDER_YXZ)
+	)
+	ik_targets.head.call_deferred("set_position", _ik_target_offsets.head + data.position)
 
-func handle_open_see_face(data: Dictionary) -> void:
+	for shape in data.blend_shapes:
+		var mappings = _expression_mappings.get(shape.k, null)
+		if mappings == null:
+			continue
+		
+		for mapping in mappings:
+			var blend_shape_mapping = _blend_shape_mappings.get(mapping, null)
+			if blend_shape_mapping == null:
+				continue
+			
+			blend_shape_mapping.child.set_indexed(blend_shape_mapping.property_path, shape.v)
+
+func handle_open_see_face(raw_data: PackedByteArray) -> void:
 	pass
