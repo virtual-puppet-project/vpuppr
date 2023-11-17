@@ -1,7 +1,8 @@
 class_name DefaultGui
 extends CanvasLayer
 
-const SPACER := "__spacer__"
+const SPACER := &"__spacer__"
+const MESSAGE_RECEIVED := &"message_received"
 
 const AppMenu := {
 	HOME = "Home",
@@ -14,6 +15,8 @@ const AppMenu := {
 
 const DebugMenu := {
 	TERMINAL = "Terminal",
+	s0 = SPACER,
+	DEBUG_CHECKS = "Debug Checks"
 }
 
 const HelpMenu := {
@@ -31,13 +34,8 @@ var context: Context = null
 
 @onready
 var _side_bar: VBoxContainer = %SideBar
-## Button name to resource path. Used for configuring side bar buttons. [br]
-## [br]
-## [b]THESE MUST ONLY BE [code]res://[/code] PATHS.[b]
-@export
-var side_bar_items := {
-	Tracking = "res://gui/tracking/tracking.tscn"
-}
+
+var _active_popups: Array[PopupWindow] = []
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
@@ -68,14 +66,19 @@ func _ready() -> void:
 	
 	var debug_menu := %Debug.get_popup() as PopupMenu
 	for val in DebugMenu.values():
-		if val == SPACER:
-			debug_menu.add_separator()
-		else:
-			debug_menu.add_item(val)
+		match val:
+			SPACER:
+				debug_menu.add_separator()
+			DebugMenu.DEBUG_CHECKS:
+				debug_menu.add_check_item(val)
+			_:
+				debug_menu.add_item(val)
 	debug_menu.index_pressed.connect(func(idx: int) -> void:
 		match debug_menu.get_item_text(idx):
 			DebugMenu.TERMINAL:
 				_logger.error("Not yet implemented!")
+				pass
+			DebugMenu.DEBUG_CHECKS:
 				pass
 	)
 	
@@ -109,12 +112,30 @@ func _ready() -> void:
 	var h_split_container := $VBoxContainer/HSplitContainer
 	h_split_container.split_offset = get_viewport().size.x * 0.15
 	
-	for key in side_bar_items.keys():
-		add_side_bar_item(key, side_bar_items[key])
+	for child in _side_bar.get_children():
+		if not child is Button:
+			_logger.error("Side bar item {item_name} was not a button, skipping".format({
+				item_name = child.name
+			}))
+			continue
+		child.focus_mode = Control.FOCUS_NONE
 
 #-----------------------------------------------------------------------------#
 # Private functions
 #-----------------------------------------------------------------------------#
+
+func _handle_message_received(message: GUIMessage) -> void:
+	match message.action:
+		GUIMessage.TRACKER_START:
+			context.start_tracker(message.key, message.value)
+		GUIMessage.TRACKER_STOP:
+			context.stop_tracker(message.key)
+		GUIMessage.TRACKER_STOP_ALL:
+			pass
+		GUIMessage.CUSTOM:
+			pass
+	
+	message.caller.update(context)
 
 #-----------------------------------------------------------------------------#
 # Public functions
@@ -137,31 +158,74 @@ func add_side_bar_item(button_name: StringName, button_resource_path: StringName
 	button.name = button_name
 	button.text = button_name
 	button.focus_mode = Control.FOCUS_NONE
-	button.pressed.connect(func() -> void:
-		var resource: Variant = load(String(button_resource_path))
-		if resource == null:
-			_logger.error("Unable to load resource at {0}".format([button_resource_path]))
-			return
-		
-		# TODO add more checks
-		var instance: Node = null
-		if resource is PackedScene:
-			instance = resource.instantiate()
-		elif resource is GDScript:
-			instance = resource.new()
-		else:
-			_logger.error("Unhandled resource type at {0}".format([button_resource_path]))
-			return
-		
-		instance.set("context", context)
-		
-		var popup := PopupWindow.new(button_name, instance)
-		popup.name = button_name
-		add_child(popup)
-		# TODO configure size somehow?
-		popup.popup_centered_ratio(0.5)
-	)
+	button.pressed.connect(add_popup.bind(String(button_name), String(button_resource_path)))
 	
 	_side_bar.add_child(button)
 	
 	return OK
+
+## Add a popup to the scene.
+func add_popup(popup_name: String, file_path: String) -> Error:
+	var resource: Resource = load(file_path)
+	if resource == null:
+		_logger.error("Unable to load resource at path {file_path}".format({file_path = file_path}))
+		return ERR_FILE_NOT_FOUND
+	
+	# TODO add more checks
+	var instance: Node = null
+	if resource is PackedScene:
+		instance = resource.instantiate()
+	elif resource is GDScript:
+		instance = resource.new()
+	else:
+		_logger.error("Unhandled resource type at {0}".format({file_path = file_path}))
+		return ERR_FILE_UNRECOGNIZED
+	
+	if AM.debug_mode:
+		if not instance.has_signal(MESSAGE_RECEIVED):
+			_logger.error("Popup does not expose signal {signal_name}, bailing out".format({
+				signal_name = MESSAGE_RECEIVED
+			}))
+			return ERR_UNCONFIGURED
+		
+		var update_method_found := false
+		for method in instance.get_method_list():
+			if method.get("name", "") != "update":
+				continue
+			
+			var args: Array[Dictionary] = method.get("args", [])
+			if args.size() != 1:
+				_logger.error("Invalid update method for {gui_name}, must take exactly 1 argument of type Context".format({
+					gui_name = instance.name
+				}))
+				return ERR_UNCONFIGURED
+			
+			update_method_found = true
+		
+		if not update_method_found:
+			_logger.error("Update method not found for {gui_name}".format({
+				gui_name = instance.name
+			}))
+			return ERR_UNCONFIGURED
+	instance.message_received.connect(_handle_message_received)
+	
+	var popup := PopupWindow.new(popup_name, instance)
+	popup.name = popup_name
+	
+	add_child(popup)
+	# TODO configure size somehow?
+	popup.popup_centered_ratio(0.5)
+	
+	instance.update(context)
+	
+	_active_popups.push_back(popup)
+	
+	return OK
+
+func close_popups() -> void:
+	for popup in _active_popups:
+		popup.queue_free()
+
+func update_popups() -> void:
+	for popup in _active_popups:
+		popup.gui.update(context)

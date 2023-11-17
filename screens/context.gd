@@ -14,7 +14,7 @@ var gui: Node = null
 ## The model for the [Context].
 var model: Node = null
 
-var active_trackers: Array[AbstractTracker] = []
+var active_trackers := {}
 
 var _logger := Logger.create("Context")
 
@@ -166,41 +166,69 @@ func _exit_tree() -> void:
 # Public functions
 #-----------------------------------------------------------------------------#
 
-func start_tracker(tracker: AbstractTracker.Trackers, data: Dictionary) -> AbstractTracker:
-	_logger.info("Starting tracker: {0}".format([tracker]))
+func start_tracker(tracker: AbstractTracker.Trackers, data: Dictionary) -> Error:
+	var tracker_name: String = AbstractTracker.Trackers.keys()[tracker]
+	
+	_logger.info("Starting tracker: {tracker}".format({tracker = tracker_name}))
+	
+	if active_trackers.has(tracker):
+		_logger.error("Tried starting tracker {tracker}, but it was already running".format({
+			tracker = tracker_name
+		}))
 
+	var tracker_instance: AbstractTracker = null
 	match tracker:
 		AbstractTracker.Trackers.MEOW_FACE:
-			var mf := MeowFace.start(data)
-			if mf == null:
+			tracker_instance = MeowFace.start(data)
+			if tracker_instance == null:
 				_logger.error("Unable to start MeowFace")
-				return null
+				return ERR_CANT_CREATE
 			
-			mf.data_received.connect(model.handle_meow_face)
-			active_trackers.push_back(mf)
-
-			return mf
+			tracker_instance.data_received.connect(model.handle_meow_face)
+		AbstractTracker.Trackers.VTUBE_STUDIO:
+			tracker_instance = VTubeStudio.start(data)
+			if tracker_instance == null:
+				_logger.error("Unable to start VTubeStudio")
+				return ERR_CANT_CREATE
+			
+			tracker_instance.data_received.connect(model.handle_vtube_studio)
 		AbstractTracker.Trackers.MEDIA_PIPE:
-			var mp = MediaPipe.start(data)
-			if mp == null:
+			tracker_instance = MediaPipe.start(data)
+			if tracker_instance == null:
 				_logger.error("Unable to start MediaPipe")
-				return null
+				return ERR_CANT_CREATE
 
-			mp.data_received.connect(model.handle_media_pipe)
-			active_trackers.push_back(mp)
-
-			return mp
+			tracker_instance.data_received.connect(model.handle_media_pipe)
 		AbstractTracker.Trackers.I_FACIAL_MOCAP:
-			var ifm := IFacialMocap.start(data)
-			if ifm == null:
+			tracker_instance = IFacialMocap.start(data)
+			if tracker_instance == null:
 				_logger.error("Unable to start iFacialMocap")
-				return
+				return ERR_CANT_CREATE
 
-			ifm.data_received.connect(model.handle_ifacial_mocap)
-			active_trackers.push_back(ifm)
-
-			return ifm
+			tracker_instance.data_received.connect(model.handle_ifacial_mocap)
 		_:
 			_logger.error("Unhandled tracker: {0}".format([tracker]))
 			
-			return null
+			return ERR_UNCONFIGURED
+	
+	active_trackers[tracker] = tracker_instance
+	
+	return OK
+
+func stop_tracker(tracker: AbstractTracker.Trackers) -> Error:
+	var tracker_name: String = AbstractTracker.Trackers.keys()[tracker]
+	
+	_logger.info("Stopping tracker: {tracker}".format({tracker = tracker_name}))
+	
+	var tracker_instance: AbstractTracker = active_trackers.get(tracker, null)
+	if tracker_instance == null:
+		_logger.error("Tracker {tracker} was not running".format({tracker = tracker_name}))
+		return ERR_DOES_NOT_EXIST
+	
+	if tracker_instance.stop() != OK:
+		_logger.error("Failed to stop {tracker}, there might be a memory leak".format({
+			tracker = tracker_name
+		}))
+	active_trackers.erase(tracker)
+	
+	return OK

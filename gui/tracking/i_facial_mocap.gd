@@ -7,7 +7,7 @@ extends "res://gui/tracking/tracking_gui.gd"
 func _ready() -> void:
 	var port := %Port
 	
-	%Start.pressed.connect(func() -> void:
+	start.pressed.connect(func() -> void:
 		started.emit(AbstractTracker.Trackers.I_FACIAL_MOCAP, {
 			port = port.text.to_int()
 		})
@@ -20,3 +20,6 @@ func _ready() -> void:
 #-----------------------------------------------------------------------------#
 # Public functions
 #-----------------------------------------------------------------------------#
+
+func get_type() -> Trackers:
+	return Trackers.I_FACIAL_MOCAP

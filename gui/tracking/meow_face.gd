@@ -8,7 +8,7 @@ func _ready() -> void:
 	var address := %Address
 	var port := %Port
 	
-	%Start.pressed.connect(func() -> void:
+	start.pressed.connect(func() -> void:
 		started.emit(AbstractTracker.Trackers.MEOW_FACE, {
 			address = address.text,
 			port = port.text.to_int(),
@@ -22,3 +22,6 @@ func _ready() -> void:
 #-----------------------------------------------------------------------------#
 # Public functions
 #-----------------------------------------------------------------------------#
+
+func get_type() -> Trackers:
+	return Trackers.MEOW_FACE

@@ -1,91 +1,103 @@
 extends VBoxContainer
 
 class ActiveTracker extends HBoxContainer:
-	func _init(context: Context, parent_logger: Logger, tracker: AbstractTracker) -> void:
+	signal stop_pressed(tracker: AbstractTracker.Trackers)
+	
+	var tracker_name := ""
+	
+	func _init(p_parent_logger: Logger, p_tracker_name: String, p_tracker: AbstractTracker.Trackers) -> void:
 		size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		tracker_name = p_tracker_name
 		
 		var label := Label.new()
 		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		label.text = tracker.get_name()
+		label.text = p_tracker_name
 		
 		var button := Button.new()
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.text = &"Stop"
 		# TODO move this logic back to the context?
 		button.pressed.connect(func() -> void:
-			if tracker.stop() != OK:
-				parent_logger.error("Unable to stop tracker {0}".format([tracker.get_name()]))
-				return
+			p_parent_logger.info("Stopping tracker {tracker}".format({tracker = tracker_name}))
 			
-			context.active_trackers.erase(tracker)
-			queue_free()
+			stop_pressed.emit(p_tracker)
 		)
 		
 		add_child(label)
 		add_child(button)
 
+signal message_received(message: GUIMessage)
+
 const TREE_COL: int = 0
-
 const Trackers := AbstractTracker.Trackers
-
-var context: Context = null
 
 var _logger := Logger.create("Tracking")
 
 @onready
 var _active_trackers := %ActiveTrackers
+@onready
+var _pages := %Pages
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
 #-----------------------------------------------------------------------------#
 
 func _ready() -> void:
-	if context == null:
-		_logger.error("Context was not set, bailing out")
-		return
-	
-	for t in context.active_trackers:
-		_active_trackers.add_child(ActiveTracker.new(context, _logger, t))
-	
 	%StopAll.pressed.connect(func() -> void:
-		var stopped_trackers := []
-		for tracker in context.active_trackers:
-			if tracker.stop() != OK:
-				_logger.error("Unable to stop tracker {0}".format([tracker.get_name()]))
-				continue
-			stopped_trackers.push_back(tracker)
-		
-		for tracker in stopped_trackers:
-			context.active_trackers.erase(tracker)
-		
-		if not context.active_trackers.is_empty():
-			_logger.error("Unable to stop all trackers")
+		message_received.emit(GUIMessage.new(self, GUIMessage.TRACKER_STOP_ALL))
 	)
 	
-	var pages := %Pages.get_children()
-	# The info page is always first
-	pages.pop_front()
-	for child in pages:
+	for child in _get_tracker_pages():
 		if not child.has_signal("started"):
 			_logger.error(
-				"Tracking GUI tried to process invalid GUI item, missing signal 'started'")
+				"Tracking GUI tried to process invalid GUI item, missing signal 'started'"
+			)
 			continue
 		
-		# TODO move more logic back to the context
 		child.started.connect(func(tracker: Trackers, data: Dictionary) -> void:
-			var tracker_ref = context.start_tracker(tracker, data)
-			if tracker_ref == null:
-				_logger.error("Unable to start tracker")
-				return
-			
-			_active_trackers.add_child(ActiveTracker.new(context, _logger, tracker_ref))
+			# TODO you-win (nov 19 2023): setting this field here is not good
+			match child.start.text:
+				"Start":
+					message_received.emit(GUIMessage.new(self, GUIMessage.TRACKER_START, tracker, data))
+					child.start.text = "Stop"
+				"Stop":
+					message_received.emit(GUIMessage.new(self, GUIMessage.TRACKER_STOP, tracker))
+					child.start.text = "Start"
 		)
 
 #-----------------------------------------------------------------------------#
 # Private functions
 #-----------------------------------------------------------------------------#
 
+func _get_tracker_pages() -> Array:
+	var pages := _pages.get_children()
+	# The info page is always first
+	pages.pop_front()
+	
+	return pages
+
 #-----------------------------------------------------------------------------#
 # Public functions
 #-----------------------------------------------------------------------------#
 
+# TODO you-win (nov 19 2023): clearing all the children every time this is updated sucks
+func update(context: Context) -> void:
+	for child in _active_trackers.get_children():
+		child.queue_free()
+	
+	var active_tracker_types: Array[AbstractTracker.Trackers] = []
+	for tracker in context.active_trackers.values():
+		var tracker_type: AbstractTracker.Trackers = tracker.get_type()
+		active_tracker_types.push_back(tracker_type)
+		
+		var active_tracker := ActiveTracker.new(_logger, tracker.get_name(), tracker_type)
+		active_tracker.stop_pressed.connect(func(tracker: AbstractTracker.Trackers) -> void:
+			message_received.emit(GUIMessage.new(self, GUIMessage.TRACKER_STOP, tracker))
+			active_tracker.queue_free()
+		)
+		
+		_active_trackers.add_child(active_tracker)
+	
+	# TODO you-win (nov 19 2023): this is horrible
+	for child in _get_tracker_pages():
+		child.start.text = "Start" if not child.get_type() in active_tracker_types else "Stop"
