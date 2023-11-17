@@ -88,6 +88,8 @@ func _create_ik_armature(armature_name: String, bone_name: String) -> void:
 		
 	_ik_target_offsets[armature_name] = initial_tx
 
+## Iterate through every child node of a [Skeleton3D] and, if that node is a
+## [MeshInstance3D], register every blend shape present on the mesh.
 func _populate_blend_shape_mappings() -> void:
 	for child in skeleton.get_children():
 		if not child is MeshInstance3D:
@@ -137,7 +139,7 @@ func _populate_and_modify_expression_mappings() -> void:
 			if track_name_split.size() != 2:
 				_logger.error("Unable to split track {track_name}, this is slightly unexpected")
 				continue
-			var morph_name := track_name_split[0]
+			var morph_name := track_name_split[1]
 
 			match track_type:
 				Animation.TYPE_ROTATION_3D:
@@ -200,9 +202,12 @@ func a_pose() -> Error:
 func handle_ifacial_mocap(raw_data: PackedByteArray) -> void:
 	var data := DataParser.ifacial_mocap(raw_data)
 
-	ik_targets.head.rotation_degrees = Vector3(data.rotation.x, data.rotation.y, data.rotation.z)
-
-	ik_targets.head.position = _ik_target_offsets.head + data.position
+	ik_targets.head.call_deferred(
+		"set_rotation_degrees",
+		Vector3(data.rotation.x, data.rotation.y, data.rotation.z) - _ik_target_offsets.head.basis.get_euler(EULER_ORDER_XYZ)
+	)
+	ik_targets.head.call_deferred("set_position", _ik_target_offsets.head.origin + data.position)
+	
 	# TODO commented out for use later
 	# ik_targets.left_hand.position = _ik_target_offsets.left_hand + data.position
 	# ik_targets.right_hand.position = _ik_target_offsets.right_hand + data.position
@@ -210,9 +215,9 @@ func handle_ifacial_mocap(raw_data: PackedByteArray) -> void:
 	# ik_targets.left_foot.position = _ik_target_offsets.left_foot + data.position
 	# ik_targets.right_foot.position = _ik_target_offsets.right_foot + data.position
 
-	for shape in data.blend_shapes:
-		var mappings = _expression_mappings.get(shape.k, null)
-		if mappings == null:
+	for shape in data.blend_shapes.keys():
+		var mappings: Array = _expression_mappings.get(shape, [])
+		if mappings.is_empty():
 			continue
 		
 		for mapping in mappings:
@@ -220,26 +225,23 @@ func handle_ifacial_mocap(raw_data: PackedByteArray) -> void:
 			if blend_shape_mapping == null:
 				continue
 			
-			blend_shape_mapping.child.set_indexed(blend_shape_mapping.property_path, shape.v)
+			blend_shape_mapping.child.set_indexed(blend_shape_mapping.property_path, data.blend_shapes[shape])
 
 func handle_mediapipe(raw_data: PackedByteArray) -> void:
 	pass
 
 func handle_vtube_studio(raw_data: PackedByteArray) -> void:
-	pass
-
-func handle_meow_face(raw_data: PackedByteArray) -> void:
 	var data := DataParser.vtube_studio(raw_data)
 	
 	ik_targets.head.call_deferred(
 		"set_rotation_degrees",
 		Vector3(data.rotation.y, data.rotation.x, data.rotation.z) - _ik_target_offsets.head.basis.get_euler(EULER_ORDER_YXZ)
 	)
-	ik_targets.head.call_deferred("set_position", _ik_target_offsets.head + data.position)
+	ik_targets.head.call_deferred("set_position", _ik_target_offsets.head.origin + data.position)
 
 	for shape in data.blend_shapes:
-		var mappings = _expression_mappings.get(shape.k, null)
-		if mappings == null:
+		var mappings: Array = _expression_mappings.get(shape.k, [])
+		if mappings.is_empty():
 			continue
 		
 		for mapping in mappings:
@@ -248,6 +250,9 @@ func handle_meow_face(raw_data: PackedByteArray) -> void:
 				continue
 			
 			blend_shape_mapping.child.set_indexed(blend_shape_mapping.property_path, shape.v)
+
+func handle_meow_face(raw_data: PackedByteArray) -> void:
+	handle_vtube_studio(raw_data)
 
 func handle_open_see_face(raw_data: PackedByteArray) -> void:
 	pass

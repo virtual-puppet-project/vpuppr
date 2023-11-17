@@ -196,7 +196,7 @@ func start_tracker(tracker: AbstractTracker.Trackers, data: Dictionary) -> Abstr
 				_logger.error("Unable to start iFacialMocap")
 				return
 
-			ifm.data_received.connect(model.handle_i_facial_mocap)
+			ifm.data_received.connect(model.handle_ifacial_mocap)
 			active_trackers.push_back(ifm)
 
 			return ifm
