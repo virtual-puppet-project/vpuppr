@@ -60,7 +60,7 @@ var _settings_popup: Window = null
 #-----------------------------------------------------------------------------#
 
 func _ready() -> void:
-	_logger.info("starting ready!")
+	_logger.debug("starting ready!")
 	
 	_adapt_screen_size()
 	
@@ -194,10 +194,16 @@ func _ready() -> void:
 		while not file_name.is_empty():
 			var file_path := "user://{file_name}".format({file_name = file_name})
 			
-			var runner_data: RunnerData = load(file_path)
-			if runner_data == null:
+			_logger.debug("Trying to load {file_path}".format({file_path = file_path}))
+			
+			var runner_data: Resource = load(file_path)
+			if runner_data == null or not runner_data is RunnerData:
+				_logger.debug("Unable to load {file_path}, skipping".format({file_path = file_path}))
+				
 				file_name = dir.get_next()
 				continue
+			
+			_logger.debug("Loaded RunnerData from {file_path}".format({file_path = file_path}))
 			
 			_logger.debug("Creating runner item {data}".format({data = runner_data}))
 			call_deferred(&"_create_runner_item", runner_data)

@@ -33,6 +33,10 @@ var vtube_studio_options := VTubeStudioOptions.new()
 @export
 var meow_face_options := MeowFaceOptions.new()
 
+## Last used datetime from [Time].
+@export
+var last_used := Time.get_datetime_dict_from_system()
+
 #-----------------------------------------------------------------------------#
 # Builtin functions
 #-----------------------------------------------------------------------------#
@@ -45,5 +49,8 @@ var meow_face_options := MeowFaceOptions.new()
 # Public functions
 #-----------------------------------------------------------------------------#
 
+## Try and save this data in the user data directory using the [member name] as the file name.
 func try_save() -> Error:
-	return ResourceSaver.save(self, "user://{name}".format({name = name}))
+	last_used = Time.get_datetime_dict_from_system()
+	
+	return ResourceSaver.save(self, "user://{name}.tres".format({name = name}))
