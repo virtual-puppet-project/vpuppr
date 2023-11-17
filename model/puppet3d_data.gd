@@ -1,9 +1,11 @@
-class_name AppManager
-extends Node
+class_name Puppet3DData
+extends PuppetData
 
-const DEFAULT_SCREEN_SIZE := Vector2i(1600, 900)
-
-var metadata: Metadata = null
+## The name of the head bone.
+@export
+var head_bone := ""
+@export
+var ik_targets := IKTargets3D.new()
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
@@ -11,10 +13,6 @@ var metadata: Metadata = null
 
 func _init() -> void:
 	pass
-
-func _exit_tree() -> void:
-	if metadata.try_save() != OK:
-		printerr("Failed to save metadata before exiting")
 
 #-----------------------------------------------------------------------------#
 # Private functions

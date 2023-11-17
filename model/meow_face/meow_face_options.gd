@@ -1,20 +1,9 @@
-class_name AppManager
-extends Node
-
-const DEFAULT_SCREEN_SIZE := Vector2i(1600, 900)
-
-var metadata: Metadata = null
+class_name MeowFaceOptions
+extends VTubeStudioOptions
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
 #-----------------------------------------------------------------------------#
-
-func _init() -> void:
-	pass
-
-func _exit_tree() -> void:
-	if metadata.try_save() != OK:
-		printerr("Failed to save metadata before exiting")
 
 #-----------------------------------------------------------------------------#
 # Private functions
@@ -23,4 +12,3 @@ func _exit_tree() -> void:
 #-----------------------------------------------------------------------------#
 # Public functions
 #-----------------------------------------------------------------------------#
-

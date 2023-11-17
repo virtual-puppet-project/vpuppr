@@ -60,7 +60,7 @@ var _settings_popup: Window = null
 #-----------------------------------------------------------------------------#
 
 func _ready() -> void:
-	_logger.info("starting ready!")
+	_logger.debug("starting ready!")
 	
 	_adapt_screen_size()
 	
@@ -183,9 +183,32 @@ func _ready() -> void:
 	
 	var init_runners_thread := Thread.new()
 	init_runners_thread.start(func() -> void:
-		for data in AM.metadata.get_known_runner_data():
-			_logger.debug("Creating runner item {0}".format([data]))
-			call_deferred(&"_create_runner_item", data)
+		var dir := DirAccess.open("user://")
+		if dir == null:
+			_logger.error("Unable to open user directory, save data won't be loaded")
+			return
+		
+		dir.list_dir_begin()
+		
+		var file_name := dir.get_next()
+		while not file_name.is_empty():
+			var file_path := "user://{file_name}".format({file_name = file_name})
+			
+			_logger.debug("Trying to load {file_path}".format({file_path = file_path}))
+			
+			var runner_data: Resource = load(file_path)
+			if runner_data == null or not runner_data is RunnerData:
+				_logger.debug("Unable to load {file_path}, skipping".format({file_path = file_path}))
+				
+				file_name = dir.get_next()
+				continue
+			
+			_logger.debug("Loaded RunnerData from {file_path}".format({file_path = file_path}))
+			
+			_logger.debug("Creating runner item {data}".format({data = runner_data}))
+			call_deferred(&"_create_runner_item", runner_data)
+			
+			file_name = dir.get_next()
 	)
 	
 	_runner_container.hide()

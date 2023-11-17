@@ -1,20 +1,16 @@
-class_name AppManager
-extends Node
+class_name VTubeStudioOptions
+extends Resource
 
-const DEFAULT_SCREEN_SIZE := Vector2i(1600, 900)
-
-var metadata: Metadata = null
+## The IP address to connect to.
+@export
+var address := "127.0.0.1"
+## The port to connect to.
+@export
+var port: int = 21412
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
 #-----------------------------------------------------------------------------#
-
-func _init() -> void:
-	pass
-
-func _exit_tree() -> void:
-	if metadata.try_save() != OK:
-		printerr("Failed to save metadata before exiting")
 
 #-----------------------------------------------------------------------------#
 # Private functions
@@ -23,4 +19,3 @@ func _exit_tree() -> void:
 #-----------------------------------------------------------------------------#
 # Public functions
 #-----------------------------------------------------------------------------#
-

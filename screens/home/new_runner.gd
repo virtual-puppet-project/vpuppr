@@ -187,34 +187,35 @@ func _ready() -> void:
 		_logger.debug("accept pressed!")
 		
 		var data := RunnerData.new()
+		data.name = _runner_name.text
 		
-		data.set_name(_runner_name.text)
 		match _model_type:
 			ModelType.PUPPET_3D:
 				# TODO hardcoded for testing
-				data.set_runner_path("res://screens/runners/runner_3d.tscn")
-				match _model_type_3d:
+				data.runner_path = "res://screens/runners/runner_3d.tscn"
+				# TODO Why the fuck is this so hard
+				match _model_type_3d.get_item_text(_model_type_3d.get_item_index(_model_type_3d.get_selected_id())):
 					ModelType3d.GLB:
-						data.set_puppet_class("GlbPuppet")
 						# TODO hardcoded for testing
-						data.set_gui_path("res://gui/default_gui.tscn")
+						data.gui_path = "res://gui/default_gui.tscn"
+						data.puppet_data = Puppet3DData.new()
 					ModelType3d.VRM:
-						data.set_puppet_class("VrmPuppet")
-						# TODO hardcoded for testing
-						data.set_gui_path("res://gui/vrm_gui.tscn")
+						data.gui_path = "res://gui/vrm_gui.tscn"
+						data.puppet_data = VRMPuppetData.new()
 			ModelType.PUPPET_2D:
 				# TODO hardcoded for testing + this is the wrong file
-				data.set_runner_path("res://screens/runners/runner_3d.tscn")
-				# TODO hardcoded for testing
-				data.set_gui_path("res://gui/default_gui.tscn")
-				match _model_type_2d:
+				data.runner_path = "res://screens/runners/runner_3d.tscn"
+				# TODO this sucks
+				match _model_type_2d.get_item_text(_model_type_2d.get_item_index(_model_type_2d.get_selected_id())):
 					ModelType2d.PNGTUBER:
-						data.set_puppet_class("PngPuppet")
+						# TODO hardcoded for testing
+						data.gui_path = "res://gui/default_gui.tscn"
+						data.puppet_data = Puppet2DData.new()
 			ModelType.CUSTOM:
 				# TODO stub
 				_logger.error("Not yet implemented!")
 				return
-		data.set_model_path(_model_path.text)
+		data.model_path = _model_path.text
 		
 		window.close_requested.emit(data)
 	)

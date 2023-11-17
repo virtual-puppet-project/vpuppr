@@ -1,9 +1,10 @@
-class_name AppManager
-extends Node
+class_name GLBPuppet
+extends Node3D
 
-const DEFAULT_SCREEN_SIZE := Vector2i(1600, 900)
+var puppet_data: Puppet3DData = null
 
-var metadata: Metadata = null
+var skeleton: Skeleton3D = null
+var _logger: Logger = null
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
@@ -12,15 +13,29 @@ var metadata: Metadata = null
 func _init() -> void:
 	pass
 
-func _exit_tree() -> void:
-	if metadata.try_save() != OK:
-		printerr("Failed to save metadata before exiting")
-
 #-----------------------------------------------------------------------------#
 # Private functions
 #-----------------------------------------------------------------------------#
+
+func _find_skeleton() -> Skeleton3D:
+	return find_child("*Skeleton*", true, false)
 
 #-----------------------------------------------------------------------------#
 # Public functions
 #-----------------------------------------------------------------------------#
 
+func handle_ifacial_mocap(raw_data: PackedByteArray) -> void:
+
+	pass
+
+func handle_mediapipe(raw_data: PackedByteArray) -> void:
+	pass
+
+func handle_vtube_studio(raw_data: PackedByteArray) -> void:
+	pass
+
+func handle_meow_face(raw_data: PackedByteArray) -> void:
+	pass
+
+func handle_open_see_face(raw_data: PackedByteArray) -> void:
+	pass

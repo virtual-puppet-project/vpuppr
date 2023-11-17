@@ -105,9 +105,6 @@ func _ready() -> void:
 			metadata = Metadata.new()
 		AM.metadata = metadata
 		
-		if AM.metadata.scan("user://") != OK:
-			_logger.error("Failed to complete scanning of user data directory")
-		
 		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/vrm_extension.gd").new(), true)
 		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_materials_hdr_emissiveMultiplier.gd").new())
 		GLTFDocument.register_gltf_document_extension(preload("res://addons/vrm/1.0/VRMC_materials_mtoon.gd").new())

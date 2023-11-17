@@ -1,9 +1,5 @@
-class_name AppManager
-extends Node
-
-const DEFAULT_SCREEN_SIZE := Vector2i(1600, 900)
-
-var metadata: Metadata = null
+class_name IFacialMocapData
+extends RefCounted
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
@@ -11,10 +7,6 @@ var metadata: Metadata = null
 
 func _init() -> void:
 	pass
-
-func _exit_tree() -> void:
-	if metadata.try_save() != OK:
-		printerr("Failed to save metadata before exiting")
 
 #-----------------------------------------------------------------------------#
 # Private functions

@@ -1,20 +1,16 @@
-class_name AppManager
-extends Node
+class_name Metadata
+extends Resource
 
-const DEFAULT_SCREEN_SIZE := Vector2i(1600, 900)
+## App metadata.
 
-var metadata: Metadata = null
+const SAVE_PATH := "user://metadata.tres"
+
+@export
+var last_used := Time.get_datetime_dict_from_system()
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
 #-----------------------------------------------------------------------------#
-
-func _init() -> void:
-	pass
-
-func _exit_tree() -> void:
-	if metadata.try_save() != OK:
-		printerr("Failed to save metadata before exiting")
 
 #-----------------------------------------------------------------------------#
 # Private functions
@@ -24,3 +20,15 @@ func _exit_tree() -> void:
 # Public functions
 #-----------------------------------------------------------------------------#
 
+static func try_load() -> Metadata:
+	if not FileAccess.file_exists(SAVE_PATH):
+		return null
+	
+	return load(SAVE_PATH)
+
+func try_save() -> Error:
+	return ResourceSaver.save(self, SAVE_PATH)
+
+## Update the [member last_used] value using the system datetime.
+func timestamp() -> void:
+	last_used = Time.get_datetime_dict_from_system()

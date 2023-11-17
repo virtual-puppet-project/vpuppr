@@ -38,7 +38,15 @@ func _ready() -> void:
 	
 	_title.text = data.name
 	_model.text = data.model_path.get_file()
-	_last_used.text = Time.get_datetime_string_from_unix_time(data.last_used)
+	_last_used.text = "{year}/{month}/{day} {hour}:{minute}:{second}".format({
+		year = data.last_used.get("year", "unknown"),
+		month = data.last_used.get("month","unknown"),
+		day = data.last_used.get("day", "unknown"),
+		
+		hour = data.last_used.get("hour", "unknown"),
+		minute = data.last_used.get("minute", "unknown"),
+		second = data.last_used.get("second", "unknown")
+	})
 
 	self.set_indexed("theme_override_styles/panel", _panel)
 	_favorite.toggled.connect(func(state: bool) -> void:

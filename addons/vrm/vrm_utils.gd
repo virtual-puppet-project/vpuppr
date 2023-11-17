@@ -370,14 +370,15 @@ static func _generate_hide_bone_mesh(mesh: ImporterMesh, skin: Skin, bone_names_
 		var hide_verts: PackedInt32Array
 		hide_verts.resize(vert_arr_len)
 		var did_hide_verts: bool = false
-		if typeof(arr[ArrayMesh.ARRAY_BONES]) == TYPE_PACKED_INT32_ARRAY:
+		if typeof(arr[ArrayMesh.ARRAY_BONES]) == TYPE_PACKED_INT32_ARRAY and typeof(arr[ArrayMesh.ARRAY_WEIGHTS]) == TYPE_PACKED_FLOAT32_ARRAY:
 			var bonearr: PackedInt32Array = arr[ArrayMesh.ARRAY_BONES]
+			var weightarr: PackedFloat32Array = arr[ArrayMesh.ARRAY_WEIGHTS]
 			var bones_per_vert = len(bonearr) / vert_arr_len
 			var outidx = 0
 			for i in range(vert_arr_len):
 				var keepvert = true
 				for j in range(bones_per_vert):
-					if bind_indices_to_hide.has(bonearr[i * bones_per_vert + j]):
+					if not is_zero_approx(weightarr[i * bones_per_vert + j]) and bind_indices_to_hide.has(bonearr[i * bones_per_vert + j]):
 						hide_verts[i] = 1
 						did_hide_verts = true
 						did_hide_any_surface_verts = true

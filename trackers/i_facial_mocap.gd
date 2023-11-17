@@ -1,3 +1,4 @@
+class_name IFacialMocap
 extends AbstractTracker
 
 var _logger := Logger.create("iFacialMocap")
@@ -18,8 +19,11 @@ var _should_stop := true
 # Public functions
 #-----------------------------------------------------------------------------#
 
-static func create(data: Dictionary) -> AbstractTracker:
-	var r := preload("res://trackers/i_facial_mocap.gd").new()
+static func get_name() -> StringName:
+	return &"iFacialMocap"
+
+static func start(data: Dictionary) -> AbstractTracker:
+	var r := IFacialMocap.new()
 	
 	if not data.has("port"):
 		r._logger.error("Missing port")
@@ -32,33 +36,26 @@ static func create(data: Dictionary) -> AbstractTracker:
 	
 	r._socket = socket
 	
-	return r
-
-static func get_name() -> StringName:
-	return &"iFacialMocap"
-
-func start() -> Error:
-	_logger.info("Starting iFacialMocap")
+	r._logger.info("Starting iFacialMocap")
 	
-	_should_stop = false
+	r._should_stop = false
 	
-	_thread = Thread.new()
-	_thread.start(func() -> void:
-		while not _should_stop:
+	r._thread = Thread.new()
+	r._thread.start(func() -> void:
+		while not r._should_stop:
 			OS.delay_msec(10)
 			
-			if _socket.get_available_packet_count() < 1:
+			if r._socket.get_available_packet_count() < 1:
 				continue
 			
-			var packet := _socket.get_packet()
+			var packet := r._socket.get_packet()
 			if packet.size() < 1:
 				continue
 			
-			var data := IFacialMocapData.from(packet)
-			data_received.emit(data)
+			r.data_received.emit(packet)
 	)
 	
-	return OK
+	return r
 
 func stop() -> Error:
 	_should_stop = true
