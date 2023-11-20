@@ -1,14 +1,21 @@
 extends "res://gui/tracking/tracking_gui.gd"
 
+@onready
+var port := %Port
+
 #-----------------------------------------------------------------------------#
 # Builtin functions
 #-----------------------------------------------------------------------------#
 
 func _ready() -> void:
-	var port := %Port
+	port.text_changed.connect(func(text: String) -> void:
+		if not text.is_valid_int():
+			return
+		property_changed.emit(Trackers.I_FACIAL_MOCAP, &"port", text.to_int())
+	)
 	
 	start.pressed.connect(func() -> void:
-		started.emit(AbstractTracker.Trackers.I_FACIAL_MOCAP, {
+		started.emit(Trackers.I_FACIAL_MOCAP, {
 			port = port.text.to_int()
 		})
 	)

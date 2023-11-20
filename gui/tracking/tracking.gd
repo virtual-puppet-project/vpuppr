@@ -53,6 +53,11 @@ func _ready() -> void:
 				"Tracking GUI tried to process invalid GUI item, missing signal 'started'"
 			)
 			continue
+		if not child.has_signal("property_changed"):
+			_logger.error(
+				"Tracking GUI tried to process invalid GUI item, missing signal 'property_changed'"
+			)
+			continue
 		
 		child.started.connect(func(tracker: Trackers, data: Dictionary) -> void:
 			# TODO you-win (nov 19 2023): setting this field here is not good
@@ -63,6 +68,12 @@ func _ready() -> void:
 				"Stop":
 					message_received.emit(GUIMessage.new(self, GUIMessage.TRACKER_STOP, tracker))
 					child.start.text = "Start"
+		)
+		child.property_changed.connect(func(tracker: Trackers, key: String, value: Variant) -> void:
+			message_received.emit(GUIMessage.new(self, GUIMessage.DATA_UPDATE, tracker, {
+				key = key,
+				value = value
+			}))
 		)
 
 #-----------------------------------------------------------------------------#
@@ -98,6 +109,26 @@ func update(context: Context) -> void:
 		
 		_active_trackers.add_child(active_tracker)
 	
+	var runner_data := context.runner_data
 	# TODO you-win (nov 19 2023): this is horrible
 	for child in _get_tracker_pages():
-		child.start.text = "Start" if not child.get_type() in active_tracker_types else "Stop"
+		const Trackers := AbstractTracker.Trackers
+		
+		var tracker_type: Trackers = child.get_type()
+		child.start.text = "Start" if not tracker_type in active_tracker_types else "Stop"
+		
+		match tracker_type:
+			Trackers.I_FACIAL_MOCAP:
+				child.port.text = str(runner_data.ifacial_mocap_options.port)
+			Trackers.MEDIA_PIPE:
+				pass
+			Trackers.MEOW_FACE:
+				child.address.text = runner_data.meow_face_options.address
+				child.port.text = str(runner_data.meow_face_options.port)
+			Trackers.VTUBE_STUDIO:
+				child.address.text = runner_data.vtube_studio_options.address
+				child.port.text = str(runner_data.vtube_studio_options.port)
+			Trackers.OPEN_SEE_FACE:
+				pass
+			Trackers.CUSTOM:
+				pass
