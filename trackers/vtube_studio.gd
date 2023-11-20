@@ -24,6 +24,9 @@ var _should_stop := true
 static func get_name() -> StringName:
 	return &"VTubeStudio"
 
+static func get_type() -> Trackers:
+	return Trackers.VTUBE_STUDIO
+
 static func start(data: Dictionary) -> AbstractTracker:
 	var r := VTubeStudio.new()
 	
@@ -53,7 +56,7 @@ static func start(data: Dictionary) -> AbstractTracker:
 		]
 	}).to_utf8_buffer()
 	
-	r._logger.info("Starting MeowFace!")
+	r._logger.info("Starting VTubeStudio!")
 	
 	r._should_stop = false
 	

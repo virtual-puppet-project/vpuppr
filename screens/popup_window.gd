@@ -1,14 +1,29 @@
 class_name PopupWindow
 extends Window
 
+signal message_received(message: GUIMessage)
+
 const BG_COLOR := Color("1d2229")
+const UPDATE := &"update"
+
+var gui: Node = null
+
+var _logger: Logger = null
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
 #-----------------------------------------------------------------------------#
 
-func _init(window_name: StringName, gui: Node) -> void:
+func _init(window_name: StringName, p_gui: Node) -> void:
+	_logger = Logger.create("Popup::{window_name}".format({window_name = window_name}))
+	
+	gui = p_gui
+	
 	gui.set("window", self)
+	if gui.has_signal(message_received.get_name()):
+		gui.message_received.connect(func(message: GUIMessage) -> void:
+			message_received.emit(message)
+		)
 	
 	title = window_name
 	
@@ -39,4 +54,3 @@ func _init(window_name: StringName, gui: Node) -> void:
 #-----------------------------------------------------------------------------#
 # Public functions
 #-----------------------------------------------------------------------------#
-

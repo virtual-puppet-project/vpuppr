@@ -1,13 +1,34 @@
-extends "res://gui/tracking/tracking_gui.gd"
+class_name GUIMessage
+extends RefCounted
+
+enum {
+	NONE = 0,
+	
+	DATA_UPDATE,
+	
+	TRACKER_START,
+	TRACKER_STOP,
+	TRACKER_STOP_ALL,
+	
+	REFRESH,
+	
+	CUSTOM,
+}
+
+var caller: Object = null
+var action := NONE
+var key: Variant = null
+var value: Variant = null
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
 #-----------------------------------------------------------------------------#
 
-func _ready() -> void:
-	start.pressed.connect(func() -> void:
-		started.emit(AbstractTracker.Trackers.MEDIA_PIPE, {})
-	)
+func _init(p_caller: Object, p_action: int, p_key: Variant = null, p_value: Variant = null) -> void:
+	caller = p_caller
+	action = p_action
+	key = p_key
+	value = p_value
 
 #-----------------------------------------------------------------------------#
 # Private functions
@@ -16,6 +37,3 @@ func _ready() -> void:
 #-----------------------------------------------------------------------------#
 # Public functions
 #-----------------------------------------------------------------------------#
-
-func get_type() -> Trackers:
-	return Trackers.MEDIA_PIPE

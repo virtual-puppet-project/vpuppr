@@ -22,6 +22,9 @@ var _should_stop := true
 static func get_name() -> StringName:
 	return &"iFacialMocap"
 
+static func get_type() -> Trackers:
+	return Trackers.I_FACIAL_MOCAP
+
 static func start(data: Dictionary) -> AbstractTracker:
 	var r := IFacialMocap.new()
 	

@@ -37,6 +37,9 @@ func _clean_up_thread() -> void:
 static func get_name() -> StringName:
 	return &"MediaPipe"
 
+static func get_type() -> Trackers:
+	return Trackers.MEDIA_PIPE
+
 static func start(_data: Dictionary) -> AbstractTracker:
 	var r := MediaPipe.new()
 

@@ -6,7 +6,9 @@ signal data_received()
 
 ## List of all builtin trackers.
 enum Trackers {
-	MEDIA_PIPE = 0,
+	NONE = 0,
+	
+	MEDIA_PIPE,
 	I_FACIAL_MOCAP,
 	VTUBE_STUDIO,
 	MEOW_FACE,
@@ -29,6 +31,10 @@ enum Trackers {
 ## Get the name of the tracker.
 static func get_name() -> StringName:
 	return &"AbstractTracker"
+
+## Get the type of the tracker.
+static func get_type() -> Trackers:
+	return Trackers.NONE
 
 ## Start the tracker.
 static func start(_data: Dictionary) -> AbstractTracker:
