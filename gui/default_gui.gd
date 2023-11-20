@@ -1,6 +1,12 @@
 class_name DefaultGui
 extends CanvasLayer
 
+const Home := preload("res://screens/home/home.tscn")
+const Licenses := preload("res://gui/licenses.tscn")
+
+const GITHUB_REPO := "https://github.com/virtual-puppet-project/vpuppr"
+const DISCORD_URL := "https://discord.gg/6mcdWWBkrr"
+
 const SPACER := &"__spacer__"
 const MESSAGE_RECEIVED := &"message_received"
 
@@ -35,6 +41,8 @@ var context: Context = null
 @onready
 var _side_bar: VBoxContainer = %SideBar
 
+# TODO you-win (nov 19 2023): restrict to 1 popup per type? or somehow update all popup
+# windows of a specific type
 var _active_popups: Array[PopupWindow] = []
 
 #-----------------------------------------------------------------------------#
@@ -51,7 +59,7 @@ func _ready() -> void:
 	app_menu.index_pressed.connect(func(idx: int) -> void:
 		match app_menu.get_item_text(idx):
 			AppMenu.HOME:
-				get_tree().change_scene_to_file("res://screens/home/home.tscn")
+				get_tree().change_scene_to_packed(Home)
 				return
 			AppMenu.LOGS:
 				_logger.error("Not yet implemented!")
@@ -94,15 +102,15 @@ func _ready() -> void:
 				_logger.error("Not yet implemented!")
 				pass
 			HelpMenu.GITHUB:
-				if OS.shell_open("https://github.com/virtual-puppet-project/vpuppr") != OK:
+				if OS.shell_open(GITHUB_REPO) != OK:
 					_logger.error("Unable to open link to GitHub")
 				return
 			HelpMenu.DISCORD:
-				if OS.shell_open("https://discord.gg/6mcdWWBkrr") != OK:
+				if OS.shell_open(DISCORD_URL) != OK:
 					_logger.error("Unable to open link to Discord")
 				return
 			HelpMenu.LICENSES:
-				var popup := PopupWindow.new("Licenses", preload("res://gui/licenses.tscn").instantiate())
+				var popup := PopupWindow.new("Licenses", Licenses.instantiate())
 				
 				add_child(popup)
 				popup.popup_centered_ratio(0.5)
