@@ -120,6 +120,15 @@ func _ready() -> void:
 			continue
 		child.focus_mode = Control.FOCUS_NONE
 
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey:
+		if not event.pressed:
+			return
+		if event.keycode == KEY_ESCAPE:
+			visible = not visible
+	elif event is InputEventMouseMotion:
+		pass
+
 #-----------------------------------------------------------------------------#
 # Private functions
 #-----------------------------------------------------------------------------#
