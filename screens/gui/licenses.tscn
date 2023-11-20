@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://byhj3itwn7hrs"]
 
-[ext_resource type="Script" path="res://gui/licenses.gd" id="1_5s75j"]
+[ext_resource type="Script" path="res://screens/gui/licenses.gd" id="1_5s75j"]
 
 [node name="Licenses" type="HSplitContainer"]
 anchors_preset = 15

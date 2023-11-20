@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dftm3gsyqsr2d"]
 
-[ext_resource type="Script" path="res://gui/tracking/media_pipe.gd" id="1_fck51"]
+[ext_resource type="Script" path="res://screens/gui/tracking/media_pipe.gd" id="1_fck51"]
 
 [node name="MediaPipe" type="VBoxContainer"]
 anchors_preset = 15

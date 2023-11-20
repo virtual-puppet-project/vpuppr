@@ -1,11 +1,11 @@
 [gd_scene load_steps=7 format=3 uid="uid://bh021kchsnxmp"]
 
-[ext_resource type="Script" path="res://gui/tracking/tracking.gd" id="1_8t3ha"]
-[ext_resource type="Script" path="res://gui/h_split_tree.gd" id="2_3hpoo"]
-[ext_resource type="PackedScene" uid="uid://0p3t1k53ylr0" path="res://gui/tracking/meow_face.tscn" id="2_r6snh"]
-[ext_resource type="PackedScene" uid="uid://dftm3gsyqsr2d" path="res://gui/tracking/media_pipe.tscn" id="3_lttak"]
-[ext_resource type="PackedScene" uid="uid://dhpmnehqrnqpg" path="res://gui/tracking/vtube_studio.tscn" id="5_nod0u"]
-[ext_resource type="PackedScene" uid="uid://b3dxeudwr6rlg" path="res://gui/tracking/i_facial_mocap.tscn" id="6_cbemn"]
+[ext_resource type="Script" path="res://screens/gui/tracking/tracking.gd" id="1_8t3ha"]
+[ext_resource type="Script" path="res://screens/gui/h_split_tree.gd" id="2_3hpoo"]
+[ext_resource type="PackedScene" uid="uid://0p3t1k53ylr0" path="res://screens/gui/tracking/meow_face.tscn" id="2_r6snh"]
+[ext_resource type="PackedScene" uid="uid://dftm3gsyqsr2d" path="res://screens/gui/tracking/media_pipe.tscn" id="3_lttak"]
+[ext_resource type="PackedScene" uid="uid://dhpmnehqrnqpg" path="res://screens/gui/tracking/vtube_studio.tscn" id="5_nod0u"]
+[ext_resource type="PackedScene" uid="uid://b3dxeudwr6rlg" path="res://screens/gui/tracking/i_facial_mocap.tscn" id="6_cbemn"]
 
 [node name="Tracking" type="VBoxContainer"]
 anchors_preset = 15

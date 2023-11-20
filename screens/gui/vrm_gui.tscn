@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://gg1hntm6dt8i"]
+
+[ext_resource type="PackedScene" uid="uid://3y1n8ykhvy81" path="res://screens/gui/default_gui.tscn" id="1_85n4u"]
+[ext_resource type="Script" path="res://screens/gui/vrm_gui.gd" id="1_jfvtx"]
+
+[node name="VrmGui" instance=ExtResource("1_85n4u")]
+script = ExtResource("1_jfvtx")
+
+[node name="Model" type="Button" parent="VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer/SideBar" index="0"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Model"
+
+[node name="Tracking" type="Button" parent="VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer/SideBar" index="1"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Tracking"

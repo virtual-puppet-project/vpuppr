@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bthie56xut78y"]
 
-[ext_resource type="Script" path="res://gui/model/vrm.gd" id="1_rgdm2"]
+[ext_resource type="Script" path="res://screens/gui/model/vrm.gd" id="1_rgdm2"]
 
 [node name="Vrm" type="HSplitContainer"]
 anchors_preset = 15

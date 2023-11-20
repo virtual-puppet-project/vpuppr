@@ -1,19 +1,19 @@
-[gd_scene load_steps=2 format=3 uid="uid://dhpmnehqrnqpg"]
+[gd_scene load_steps=2 format=3 uid="uid://0p3t1k53ylr0"]
 
-[ext_resource type="Script" path="res://gui/tracking/vtube_studio.gd" id="1_ju3ec"]
+[ext_resource type="Script" path="res://screens/gui/tracking/meow_face.gd" id="1_ymgwy"]
 
-[node name="VTubeStudio" type="VBoxContainer"]
+[node name="MeowFace" type="VBoxContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
-script = ExtResource("1_ju3ec")
+script = ExtResource("1_ymgwy")
 
 [node name="RichTextLabel" type="RichTextLabel" parent="."]
 layout_mode = 2
-text = "Start VTube Studio tracking."
+text = "Start Meow Face tracking."
 fit_content = true
 
 [node name="Address" type="HBoxContainer" parent="."]
@@ -41,6 +41,7 @@ text = "Connect Port"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+text = "21412"
 
 [node name="Start" type="Button" parent="."]
 unique_name_in_owner = true

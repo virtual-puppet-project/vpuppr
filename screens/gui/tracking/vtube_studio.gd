@@ -1,4 +1,4 @@
-extends "res://gui/tracking/tracking_gui.gd"
+extends "res://screens/gui/tracking/tracking_gui.gd"
 
 @onready
 var address := %Address

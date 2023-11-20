@@ -2,7 +2,7 @@ class_name DefaultGui
 extends CanvasLayer
 
 const Home := preload("res://screens/home/home.tscn")
-const Licenses := preload("res://gui/licenses.tscn")
+const Licenses := preload("res://screens/gui/licenses.tscn")
 
 const GITHUB_REPO := "https://github.com/virtual-puppet-project/vpuppr"
 const DISCORD_URL := "https://discord.gg/6mcdWWBkrr"

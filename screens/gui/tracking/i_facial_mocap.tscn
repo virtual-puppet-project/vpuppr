@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://b3dxeudwr6rlg"]
 
-[ext_resource type="Script" path="res://gui/tracking/i_facial_mocap.gd" id="1_2jxr8"]
+[ext_resource type="Script" path="res://screens/gui/tracking/i_facial_mocap.gd" id="1_vtx7n"]
 
 [node name="IFacialMocap" type="VBoxContainer"]
 anchors_preset = 15
@@ -9,7 +9,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
-script = ExtResource("1_2jxr8")
+script = ExtResource("1_vtx7n")
 
 [node name="RichTextLabel" type="RichTextLabel" parent="."]
 layout_mode = 2

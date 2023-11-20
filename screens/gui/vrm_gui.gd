@@ -1,13 +1,14 @@
-extends "res://gui/tracking/tracking_gui.gd"
+extends DefaultGui
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
 #-----------------------------------------------------------------------------#
 
 func _ready() -> void:
-	start.pressed.connect(func() -> void:
-		started.emit(AbstractTracker.Trackers.MEDIA_PIPE, {})
-	)
+	%Model.pressed.connect(add_popup.bind("Model", "res://screens/gui/model/vrm.tscn"))
+	%Tracking.pressed.connect(add_popup.bind("Tracking", "res://screens/gui/tracking/tracking.tscn"))
+	
+	super._ready()
 
 #-----------------------------------------------------------------------------#
 # Private functions
@@ -16,6 +17,3 @@ func _ready() -> void:
 #-----------------------------------------------------------------------------#
 # Public functions
 #-----------------------------------------------------------------------------#
-
-func get_type() -> Trackers:
-	return Trackers.MEDIA_PIPE
