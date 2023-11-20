@@ -1,10 +1,25 @@
-[gd_scene load_steps=3 format=3 uid="uid://c7v5kmkl2oxtu"]
+[gd_scene load_steps=6 format=3 uid="uid://c7v5kmkl2oxtu"]
 
 [ext_resource type="Script" path="res://screens/runners/runner_3d.gd" id="1_4040p"]
 [ext_resource type="PackedScene" uid="uid://cv1g3lb0c1xyh" path="res://entities/runner_camera_3d.tscn" id="2_wfrxy"]
 
+[sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_6mx1d"]
+
+[sub_resource type="Sky" id="Sky_v47yd"]
+sky_material = SubResource("PhysicalSkyMaterial_6mx1d")
+
+[sub_resource type="Environment" id="Environment_srds5"]
+background_mode = 1
+background_color = Color(0, 1, 0, 1)
+sky = SubResource("Sky_v47yd")
+ambient_light_source = 1
+reflected_light_source = 1
+
 [node name="Runner3D" type="Node3D"]
 script = ExtResource("1_4040p")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_srds5")
 
 [node name="RunnerCamera3D" parent="." instance=ExtResource("2_wfrxy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1)
