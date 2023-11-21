@@ -15,3 +15,8 @@ text = "Model"
 unique_name_in_owner = true
 layout_mode = 2
 text = "Tracking"
+
+[node name="Scene" type="Button" parent="VBoxContainer/HSplitContainer/PanelContainer/PanelContainer/ScrollContainer/SideBar" index="2"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Scene"

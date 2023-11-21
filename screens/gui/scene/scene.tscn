@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://b716hvbju65hv"]
+
+[ext_resource type="Script" path="res://screens/gui/scene/scene.gd" id="1_ngo0w"]
+
+[node name="Scene" type="HSplitContainer"]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_ngo0w")

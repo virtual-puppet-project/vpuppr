@@ -5,6 +5,8 @@ extends Node
 
 signal loading_completed(success: bool)
 
+const NAME := &"Context"
+
 ## The [RunnerData] the [Context] is using.
 var runner_data: RunnerData = null
 ## The runner for the [Context].
@@ -16,13 +18,14 @@ var model: Node = null
 
 var active_trackers := {}
 
-var _logger := Logger.create("Context")
+var _logger := Logger.create(String(NAME))
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
 #-----------------------------------------------------------------------------#
 
 func _init(p_runner_data: RunnerData) -> void:
+	name = NAME
 	var fail := func(text: String) -> void:
 		_logger.error(text)
 		loading_completed.emit(false)
@@ -154,6 +157,13 @@ func _init(p_runner_data: RunnerData) -> void:
 	
 	loading_completed.emit(true)
 
+func _ready() -> void:
+	if Context.singleton() == null:
+		_logger.error("An error occurred while verifying Context singleton, bailing out")
+		get_tree().change_scene_to_file("res://screens/home/home.tscn")
+	
+	_logger.debug("Ready!")
+
 func _exit_tree() -> void:
 	if runner_data.try_save() != OK:
 		_logger.error("Unable to save runner data")
@@ -165,6 +175,21 @@ func _exit_tree() -> void:
 #-----------------------------------------------------------------------------#
 # Public functions
 #-----------------------------------------------------------------------------#
+
+static func singleton() -> Context:
+	var found_contexts := []
+	for child in Engine.get_main_loop().root.get_children():
+		if child is Context:
+			found_contexts.push_back(child)
+	
+	if found_contexts.size() < 1:
+		printerr("No Contexts were found while trying to get singleton")
+		return null
+	if found_contexts.size() > 1:
+		printerr("Too many Contexts were found while trying to get singleton, this is a major bug!")
+		return null
+	
+	return found_contexts.pop_back()
 
 func start_tracker(tracker: AbstractTracker.Trackers, data: Dictionary) -> Error:
 	var tracker_name: String = AbstractTracker.Trackers.keys()[tracker]

@@ -87,7 +87,10 @@ func _ready() -> void:
 				_logger.error("Not yet implemented!")
 				pass
 			DebugMenu.DEBUG_CHECKS:
-				pass
+				var new_checked_state := not debug_menu.is_item_checked(idx)
+				# TODO maybe move this logic elsewhere?
+				debug_menu.set_item_checked(idx, new_checked_state)
+				AM.debug_mode = new_checked_state
 	)
 	
 	var help_menu := %Help.get_popup() as PopupMenu
@@ -141,6 +144,7 @@ func _input(event: InputEvent) -> void:
 # Private functions
 #-----------------------------------------------------------------------------#
 
+## Main message handler. May or may not request that popups update themselves.
 func _handle_message_received(message: GUIMessage) -> void:
 	match message.action:
 		GUIMessage.DATA_UPDATE:
@@ -204,6 +208,11 @@ func add_side_bar_item(button_name: StringName, button_resource_path: StringName
 
 ## Add a popup to the scene.
 func add_popup(popup_name: String, file_path: String) -> Error:
+	for popup in _active_popups:
+		if popup.name == popup_name:
+			popup.move_to_foreground()
+			return OK
+	
 	var resource: Resource = load(file_path)
 	if resource == null:
 		_logger.error("Unable to load resource at path {file_path}".format({file_path = file_path}))
@@ -260,10 +269,14 @@ func add_popup(popup_name: String, file_path: String) -> Error:
 	
 	return OK
 
+## Close all popups that are currently open.
 func close_popups() -> void:
 	for popup in _active_popups:
 		popup.queue_free()
+	
+	_active_popups.clear()
 
+## Update the content in all popups that are currently open.
 func update_popups() -> void:
 	for popup in _active_popups:
 		popup.gui.update(context)

@@ -1,4 +1,4 @@
-extends HSplitTree
+extends HSplitContainer
 
 signal message_received(message: GUIMessage)
 
@@ -6,8 +6,8 @@ signal message_received(message: GUIMessage)
 # Builtin functions
 #-----------------------------------------------------------------------------#
 
-func _ready() -> void:
-	super._ready()
+func _init() -> void:
+	pass
 
 #-----------------------------------------------------------------------------#
 # Private functions

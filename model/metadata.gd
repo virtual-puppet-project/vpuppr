@@ -5,6 +5,13 @@ extends Resource
 
 const SAVE_PATH := "user://metadata.tres"
 
+## Common options to be used as defaults across runners. Is initially null and
+## is only set once the first runner is created. It can optionally be adjusted
+## in the settings menu.
+@export
+var common_options: CommonOptions = null
+
+## The last time the application was used.
 @export
 var last_used := Time.get_datetime_dict_from_system()
 
