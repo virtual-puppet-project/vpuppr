@@ -85,15 +85,6 @@ func _ready() -> void:
 			_logger.error("Unable to save RunnerData, this is a major bug!")
 		
 		_run_from_data(data)
-
-		# TODO maybe save data before running?
-
-#		_create_runner_item(config)
-#		ResourceSaver.save(
-#			config,
-#			"user://%s.tres" % config.name,
-#			ResourceSaver.FLAG_OMIT_EDITOR_PROPERTIES
-#		)
 	)
 #	%Settings.pressed.connect(func() -> void:
 #		# Reuse the old settings popup
@@ -277,6 +268,16 @@ func _ready() -> void:
 			await get_tree().process_frame
 		init_runners_thread.wait_to_finish()
 		init_runners_thread = null
+		
+		if _runners.get_child_count() < 1:
+			var import_model_placeholder := Button.new()
+			import_model_placeholder.text = "Import your first model!"
+			import_model_placeholder.focus_mode = Control.FOCUS_NONE
+			import_model_placeholder.pressed.connect(func() -> void:
+				%NewRunner.pressed.emit()
+			)
+			
+			_runners.add_child(import_model_placeholder)
 
 		# TODO reenable
 #		sort_runners_popup.index_pressed.emit(0)

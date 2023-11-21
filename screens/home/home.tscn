@@ -142,8 +142,9 @@ layout_mode = 2
 [node name="NewRunner" type="Button" parent="RunnerContainer/VBoxContainer/HFlowContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+focus_mode = 0
 mouse_default_cursor_shape = 2
-text = "New"
+text = "Import Model"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="RunnerContainer/VBoxContainer/HFlowContainer"]
 layout_mode = 2
@@ -174,6 +175,7 @@ mouse_default_cursor_shape = 2
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 8
+focus_mode = 0
 mouse_default_cursor_shape = 2
 text = "Settings"
 
