@@ -223,7 +223,7 @@ func start_tracker(tracker: AbstractTracker.Trackers, data: Dictionary) -> Error
 				_logger.error("Unable to start MediaPipe")
 				return ERR_CANT_CREATE
 
-			tracker_instance.data_received.connect(model.handle_media_pipe)
+			tracker_instance.data_received.connect(model.handle_mediapipe)
 		AbstractTracker.Trackers.I_FACIAL_MOCAP:
 			tracker_instance = IFacialMocap.start(data)
 			if tracker_instance == null:

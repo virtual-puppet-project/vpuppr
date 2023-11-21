@@ -227,8 +227,32 @@ func handle_ifacial_mocap(raw_data: PackedByteArray) -> void:
 			
 			blend_shape_mapping.child.set_indexed(blend_shape_mapping.property_path, data.blend_shapes[shape])
 
-func handle_mediapipe(raw_data: PackedByteArray) -> void:
-	pass
+func handle_mediapipe(projection: Projection, blend_shapes: Array[MediaPipeCategory]) -> void:
+	var tx := Transform3D(projection.inverse())
+	
+	print("rotation")
+	ik_targets.head.call_deferred(
+		"set_rotation",
+		tx.basis.get_euler() - _ik_target_offsets.head.basis.get_euler()
+	)
+	_logger.debug("position")
+	ik_targets.head.call_deferred(
+		"set_position",
+		_ik_target_offsets.head.origin + tx.origin
+	)
+	
+	_logger.debug("blend shapes")
+	for shape in blend_shapes:
+		var mappings: Array = _expression_mappings.get(shape.category_name.to_lower(), [])
+		if mappings.is_empty():
+			continue
+		
+		for mapping in mappings:
+			var blend_shape_mapping = _blend_shape_mappings.get(mapping, null)
+			if blend_shape_mapping == null:
+				continue
+			
+			blend_shape_mapping.child.set_indexed(blend_shape_mapping.property_path, shape.score)
 
 func handle_vtube_studio(raw_data: PackedByteArray) -> void:
 	var data := DataParser.vtube_studio(raw_data)

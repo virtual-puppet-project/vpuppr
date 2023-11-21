@@ -28,7 +28,7 @@ func handle_ifacial_mocap(raw_data: PackedByteArray) -> void:
 
 	pass
 
-func handle_mediapipe(raw_data: PackedByteArray) -> void:
+func handle_mediapipe(projection: Projection, blend_shapes: Array[MediaPipeCategory]) -> void:
 	pass
 
 func handle_vtube_studio(raw_data: PackedByteArray) -> void:
