@@ -149,6 +149,7 @@ text = "Import Model"
 [node name="HBoxContainer" type="HBoxContainer" parent="RunnerContainer/VBoxContainer/HFlowContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+alignment = 1
 
 [node name="SortLabel" type="Label" parent="RunnerContainer/VBoxContainer/HFlowContainer/HBoxContainer"]
 layout_mode = 2
