@@ -25,14 +25,10 @@ static func get_name() -> StringName:
 static func get_type() -> Trackers:
 	return Trackers.I_FACIAL_MOCAP
 
-static func start(data: Dictionary) -> AbstractTracker:
+static func start(data: Resource) -> AbstractTracker:
 	var r := IFacialMocap.new()
 	
-	if not data.has("port"):
-		r._logger.error("Missing port")
-		return null
-	
-	var port: int = data["port"]
+	var port: int = data.port
 	
 	var socket := PacketPeerUDP.new()
 	socket.bind(port)

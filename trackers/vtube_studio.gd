@@ -27,18 +27,11 @@ static func get_name() -> StringName:
 static func get_type() -> Trackers:
 	return Trackers.VTUBE_STUDIO
 
-static func start(data: Dictionary) -> AbstractTracker:
+static func start(data: Resource) -> AbstractTracker:
 	var r := VTubeStudio.new()
 	
-	if not data.has("address"):
-		r._logger.error("Missing address")
-		return null
-	if not data.has("port"):
-		r._logger.error("Missing port")
-		return null
-	
-	var address: String = data["address"]
-	var port: int = data["port"]
+	var address: String = data.address
+	var port: int = data.port
 	
 	var socket := PacketPeerUDP.new()
 	socket.bind(port)

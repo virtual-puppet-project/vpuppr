@@ -149,17 +149,18 @@ func _handle_message_received(message: GUIMessage) -> void:
 	match message.action:
 		GUIMessage.DATA_UPDATE:
 			const Trackers := AbstractTracker.Trackers
+			var opts := context.runner_data.common_options
 			
 			var data: Variant = null
 			match message.key:
 				Trackers.I_FACIAL_MOCAP:
-					data = context.runner_data.ifacial_mocap_options
+					data = opts.ifacial_mocap_options
 				Trackers.MEDIA_PIPE:
-					data = context.runner_data.mediapipe_options
+					data = opts.mediapipe_options
 				Trackers.VTUBE_STUDIO:
-					data = context.runner_data.vtube_studio_options
+					data = opts.vtube_studio_options
 				Trackers.MEOW_FACE:
-					data = context.runner_data.meow_face_options
+					data = opts.meow_face_options
 				Trackers.OPEN_SEE_FACE:
 					_logger.error("not yet implemented")
 					return
@@ -169,7 +170,7 @@ func _handle_message_received(message: GUIMessage) -> void:
 			
 			data.set_indexed(message.value.key, message.value.value)
 		GUIMessage.TRACKER_START:
-			context.start_tracker(message.key, message.value)
+			context.start_tracker(message.key)
 			message.caller.update(context)
 		GUIMessage.TRACKER_STOP:
 			context.stop_tracker(message.key)

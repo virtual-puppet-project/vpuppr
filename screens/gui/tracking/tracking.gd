@@ -59,11 +59,11 @@ func _ready() -> void:
 			)
 			continue
 		
-		child.started.connect(func(tracker: Trackers, data: Dictionary) -> void:
+		child.started.connect(func(tracker: Trackers) -> void:
 			# TODO you-win (nov 19 2023): setting this field here is not good
 			match child.start.text:
 				"Start":
-					message_received.emit(GUIMessage.new(self, GUIMessage.TRACKER_START, tracker, data))
+					message_received.emit(GUIMessage.new(self, GUIMessage.TRACKER_START, tracker))
 					child.start.text = "Stop"
 				"Stop":
 					message_received.emit(GUIMessage.new(self, GUIMessage.TRACKER_STOP, tracker))
@@ -109,7 +109,7 @@ func update(context: Context) -> void:
 		
 		_active_trackers.add_child(active_tracker)
 	
-	var runner_data := context.runner_data
+	var opts := context.runner_data.common_options
 	# TODO you-win (nov 19 2023): this is horrible
 	for child in _get_tracker_pages():
 		const Trackers := AbstractTracker.Trackers
@@ -119,15 +119,15 @@ func update(context: Context) -> void:
 		
 		match tracker_type:
 			Trackers.I_FACIAL_MOCAP:
-				child.port.text = str(runner_data.ifacial_mocap_options.port)
+				child.port.text = str(opts.ifacial_mocap_options.port)
 			Trackers.MEDIA_PIPE:
 				pass
 			Trackers.MEOW_FACE:
-				child.address.text = runner_data.meow_face_options.address
-				child.port.text = str(runner_data.meow_face_options.port)
+				child.address.text = opts.meow_face_options.address
+				child.port.text = str(opts.meow_face_options.port)
 			Trackers.VTUBE_STUDIO:
-				child.address.text = runner_data.vtube_studio_options.address
-				child.port.text = str(runner_data.vtube_studio_options.port)
+				child.address.text = opts.vtube_studio_options.address
+				child.port.text = str(opts.vtube_studio_options.port)
 			Trackers.OPEN_SEE_FACE:
 				pass
 			Trackers.CUSTOM:

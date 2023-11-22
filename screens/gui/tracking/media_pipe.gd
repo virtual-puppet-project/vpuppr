@@ -6,7 +6,7 @@ extends "res://screens/gui/tracking/tracking_gui.gd"
 
 func _ready() -> void:
 	start.pressed.connect(func() -> void:
-		started.emit(AbstractTracker.Trackers.MEDIA_PIPE, {})
+		started.emit(AbstractTracker.Trackers.MEDIA_PIPE)
 	)
 
 #-----------------------------------------------------------------------------#

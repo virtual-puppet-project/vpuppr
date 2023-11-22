@@ -191,7 +191,7 @@ static func singleton() -> Context:
 	
 	return found_contexts.pop_back()
 
-func start_tracker(tracker: AbstractTracker.Trackers, data: Dictionary) -> Error:
+func start_tracker(tracker: AbstractTracker.Trackers) -> Error:
 	var tracker_name: String = AbstractTracker.Trackers.keys()[tracker]
 	
 	_logger.info("Starting tracker: {tracker}".format({tracker = tracker_name}))
@@ -204,28 +204,28 @@ func start_tracker(tracker: AbstractTracker.Trackers, data: Dictionary) -> Error
 	var tracker_instance: AbstractTracker = null
 	match tracker:
 		AbstractTracker.Trackers.MEOW_FACE:
-			tracker_instance = MeowFace.start(data)
+			tracker_instance = MeowFace.start(runner_data.common_options.meow_face_options)
 			if tracker_instance == null:
 				_logger.error("Unable to start MeowFace")
 				return ERR_CANT_CREATE
 			
 			tracker_instance.data_received.connect(model.handle_meow_face)
 		AbstractTracker.Trackers.VTUBE_STUDIO:
-			tracker_instance = VTubeStudio.start(data)
+			tracker_instance = VTubeStudio.start(runner_data.common_options.vtube_studio_options)
 			if tracker_instance == null:
 				_logger.error("Unable to start VTubeStudio")
 				return ERR_CANT_CREATE
 			
 			tracker_instance.data_received.connect(model.handle_vtube_studio)
 		AbstractTracker.Trackers.MEDIA_PIPE:
-			tracker_instance = MediaPipe.start(data)
+			tracker_instance = MediaPipe.start(runner_data.common_options.mediapipe_options)
 			if tracker_instance == null:
 				_logger.error("Unable to start MediaPipe")
 				return ERR_CANT_CREATE
 
 			tracker_instance.data_received.connect(model.handle_mediapipe)
 		AbstractTracker.Trackers.I_FACIAL_MOCAP:
-			tracker_instance = IFacialMocap.start(data)
+			tracker_instance = IFacialMocap.start(runner_data.common_options.ifacial_mocap_options)
 			if tracker_instance == null:
 				_logger.error("Unable to start iFacialMocap")
 				return ERR_CANT_CREATE

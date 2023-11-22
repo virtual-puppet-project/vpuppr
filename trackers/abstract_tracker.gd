@@ -37,7 +37,7 @@ static func get_type() -> Trackers:
 	return Trackers.NONE
 
 ## Start the tracker.
-static func start(_data: Dictionary) -> AbstractTracker:
+static func start(_data: Resource) -> AbstractTracker:
 	return null
 
 ## Stop the tracker.

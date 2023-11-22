@@ -15,9 +15,7 @@ func _ready() -> void:
 	)
 	
 	start.pressed.connect(func() -> void:
-		started.emit(Trackers.I_FACIAL_MOCAP, {
-			port = port.text.to_int()
-		})
+		started.emit(Trackers.I_FACIAL_MOCAP)
 	)
 
 #-----------------------------------------------------------------------------#

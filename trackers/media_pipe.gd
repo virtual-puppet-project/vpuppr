@@ -40,7 +40,7 @@ static func get_name() -> StringName:
 static func get_type() -> Trackers:
 	return Trackers.MEDIA_PIPE
 
-static func start(_data: Dictionary) -> AbstractTracker:
+static func start(_data: Resource) -> AbstractTracker:
 	var r := MediaPipe.new()
 
 	# TODO switch based off of OS, Linux can use GPU i think

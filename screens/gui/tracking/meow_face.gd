@@ -20,10 +20,7 @@ func _ready() -> void:
 	)
 	
 	start.pressed.connect(func() -> void:
-		started.emit(AbstractTracker.Trackers.MEOW_FACE, {
-			address = address.text,
-			port = port.text.to_int(),
-		})
+		started.emit(AbstractTracker.Trackers.MEOW_FACE)
 	)
 
 #-----------------------------------------------------------------------------#
