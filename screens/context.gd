@@ -75,8 +75,8 @@ func _init(p_runner_data: RunnerData) -> void:
 					_logger.error("Unable to load model from path {0}".format([model_path]))
 					return r
 				
-				var model: Node = gltf.generate_scene(state)
-				if model == null:
+				var loaded_model: Node = gltf.generate_scene(state)
+				if loaded_model == null:
 					_logger.error("Failed to generate scene for model {0}".format([model_path]))
 					return r
 				
@@ -84,7 +84,7 @@ func _init(p_runner_data: RunnerData) -> void:
 				var puppet := GLBPuppet.new()
 				puppet.name = model_path.get_file()
 				puppet.puppet_data = runner_data.puppet_data
-				puppet.add_child(model)
+				puppet.add_child(loaded_model)
 #
 				r.model = puppet
 			"vrm":
@@ -100,8 +100,8 @@ func _init(p_runner_data: RunnerData) -> void:
 					return r
 				
 				_logger.debug("generate scene")
-				var model: Node = gltf.generate_scene(state)
-				if model == null:
+				var loaded_model: Node = gltf.generate_scene(state)
+				if loaded_model == null:
 					_logger.error("Failed to generate scene for model {0}".format([model_path]))
 					return r
 				
@@ -109,7 +109,7 @@ func _init(p_runner_data: RunnerData) -> void:
 				var puppet := VRMPuppet.new()
 				puppet.name = model_path.get_file()
 				puppet.puppet_data = runner_data.puppet_data
-				puppet.add_child(model)
+				puppet.add_child(loaded_model)
 				
 				r.model = puppet
 				

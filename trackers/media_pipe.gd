@@ -67,7 +67,7 @@ static func start(_data: Resource) -> AbstractTracker:
 	r._task = task
 	r._camera_helper = camera_helper
 	
-	r._task.result_callback.connect(func(result: MediaPipeFaceLandmarkerResult, _image: MediaPipeImage, timestamp_ms: int) -> void:
+	r._task.result_callback.connect(func(result: MediaPipeFaceLandmarkerResult, _image: MediaPipeImage, _timestamp_ms: int) -> void:
 		r.data_received.emit(
 			result.facial_transformation_matrixes[0],
 			result.face_blendshapes[0].categories

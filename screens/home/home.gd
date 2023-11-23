@@ -107,65 +107,61 @@ func _ready() -> void:
 #	)
 	var sort_direction: Button = %SortDirection
 	var sort_runners_popup: PopupMenu = %SortRunners.get_popup()
-#	sort_runners_popup.index_pressed.connect(func(idx: int) -> void:
-#		var reversed := idx == _last_sort_type
-#		if _last_sort_type == _last_last_sort_type:
-#			_last_last_sort_type = -1
-#			reversed = false
-#		else:
-#			_last_last_sort_type = _last_sort_type
-#		_last_sort_type = idx
-#
-#		var children := _runners.get_children()
-#		for c in children:
-#			_runners.remove_child(c)
-#
-#		match idx:
-#			0: # Last used
-#				children.sort_custom(func(a: Control, b: Control) -> bool:
-#					var dt_a: Datetime = a.last_used_datetime
-#					var dt_b: Datetime = b.last_used_datetime
-#
-#					if (
-#						dt_a.year < dt_b.year or
-#						dt_a.month < dt_b.month or
-#						dt_a.day < dt_b.day or
-#						dt_a.hour < dt_b.hour or
-#						dt_a.minute < dt_b.minute or
-#						dt_a.second < dt_b.second
-#					):
-#						return true
-#
-#					return false
-#				)
-#			1: # Name
-#				var titles: Array[String] = []
-#				children.sort_custom(func(a: Control, b: Control) -> bool:
-#					titles.clear()
-#
-#					# Empty values displayed first
-#					if a.title.text.is_empty():
-#						return false
-#					if b.title.text.is_empty():
-#						return false
-#					if a.title.text == b.title.text:
-#						return false
-#
-#					titles = [a.title.text, b.title.text]
-#					titles.sort()
-#
-#					return titles.back() == b.title.text
-#				)
-#
-#		if reversed:
-#			children.reverse()
-#			sort_direction.text = SortDirection.DESCENDING
-#		else:
-#			sort_direction.text = SortDirection.ASCENDING
-#
-#		for c in children:
-#			_runners.add_child(c)
-#	)
+	sort_runners_popup.index_pressed.connect(func(idx: int) -> void:
+		var reversed := idx == _last_sort_type
+		if _last_sort_type == _last_last_sort_type:
+			_last_last_sort_type = -1
+			reversed = false
+		else:
+			_last_last_sort_type = _last_sort_type
+		_last_sort_type = idx
+
+		var children := _runners.get_children()
+		for c in children:
+			_runners.remove_child(c)
+
+		match idx:
+			0: # Last used
+				children.sort_custom(func(a: Control, b: Control) -> bool:
+					var dt_a: Dictionary = a.runner_data.last_used_datetime
+					var dt_b: Dictionary = b.runner_data.last_used_datetime
+
+					return (
+						dt_a.year < dt_b.year or
+						dt_a.month < dt_b.month or
+						dt_a.day < dt_b.day or
+						dt_a.hour < dt_b.hour or
+						dt_a.minute < dt_b.minute or
+						dt_a.second < dt_b.second
+					)
+				)
+			1: # Name
+				var titles: Array[String] = []
+				children.sort_custom(func(a: Control, b: Control) -> bool:
+					titles.clear()
+					
+					var a_title: String = a.title.text
+					var b_title: String = b.title.text
+					
+					# Empty values displayed first
+					if a_title.is_empty() or b_title.is_empty() or a_title == b_title:
+						return false
+
+					titles = [a.title.text, b.title.text]
+					titles.sort()
+
+					return titles.back() == b.title.text
+				)
+
+		if reversed:
+			children.reverse()
+			sort_direction.text = SortDirection.DESCENDING
+		else:
+			sort_direction.text = SortDirection.ASCENDING
+
+		for c in children:
+			_runners.add_child(c)
+	)
 	sort_direction.pressed.connect(func() -> void:
 		# Basically virtually press the last option again, resulting in it being reversed
 		_last_last_sort_type = -1 if _last_last_sort_type != _last_sort_type else _last_sort_type
@@ -183,6 +179,17 @@ func _ready() -> void:
 		
 		var file_name := dir.get_next()
 		while not file_name.is_empty():
+			if dir.current_is_dir():
+				_logger.debug("Skipping directory {file_name}".format({file_name = file_name}))
+				
+				file_name = dir.get_next()
+				continue
+			if not file_name.ends_with("tres"):
+				_logger.debug("Skipping file {file_name}".format({file_name = file_name}))
+				
+				file_name = dir.get_next()
+				continue
+			
 			var file_path := "user://{file_name}".format({file_name = file_name})
 			
 			_logger.debug("Trying to load {file_path}".format({file_path = file_path}))

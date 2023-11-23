@@ -26,6 +26,7 @@ var value: Variant = null
 
 func _init(p_caller: Object, p_action: int, p_key: Variant = null, p_value: Variant = null) -> void:
 	caller = p_caller
+	@warning_ignore("int_as_enum_without_cast")
 	action = p_action
 	key = p_key
 	value = p_value
