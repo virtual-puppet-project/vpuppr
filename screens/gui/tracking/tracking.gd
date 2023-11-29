@@ -70,10 +70,26 @@ func _ready() -> void:
 					child.start.text = "Start"
 		)
 		child.property_changed.connect(func(tracker: Trackers, key: String, value: Variant) -> void:
-			message_received.emit(GUIMessage.new(self, GUIMessage.DATA_UPDATE, tracker, {
-				key = key,
-				value = value
-			}))
+			var option_name := "common_options:{v}"
+			match tracker:
+				Trackers.MEDIA_PIPE:
+					option_name = option_name.format({v = "mediapipe_options"})
+				Trackers.I_FACIAL_MOCAP:
+					option_name = option_name.format({v = "ifacial_mocap_options"})
+				Trackers.VTUBE_STUDIO:
+					option_name = option_name.format({v = "vtube_studio_options"})
+				Trackers.MEOW_FACE:
+					option_name = option_name.format({v = "meow_face_options"})
+				_:
+					_logger.error("Unhandled update for {tracker}".format({tracker = tracker}))
+					return
+			
+			message_received.emit(GUIMessage.new(self, GUIMessage.DATA_UPDATE, option_name,
+				{
+					key = key,
+					value = value
+				}
+			))
 		)
 
 #-----------------------------------------------------------------------------#

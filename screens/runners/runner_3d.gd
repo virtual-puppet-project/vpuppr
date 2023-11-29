@@ -5,6 +5,8 @@ extends Node3D
 
 const RenIK: GDScript = preload("res://addons/renik/renik.gd")
 
+@onready
+var _world_environment: WorldEnvironment = $WorldEnvironment
 ## The main camera in use.
 @onready
 var _camera: RunnerCamera3D = $RunnerCamera3D
@@ -30,6 +32,8 @@ func _ready() -> void:
 	var model: Node3D = context.model
 	if model is VRMPuppet:
 		_setup_vrm(model)
+	
+	update_from_config()
 
 func _input(event: InputEvent) -> void:
 	if not event is InputEventKey:
@@ -126,3 +130,8 @@ func fly_camera(enabled: bool) -> Error:
 		_camera.display(false)
 	
 	return OK
+
+func update_from_config() -> void:
+	var data := context.runner_data
+	
+	_world_environment.environment = data.common_options.environment_options

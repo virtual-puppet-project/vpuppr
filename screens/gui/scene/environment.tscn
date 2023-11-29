@@ -1,0 +1,35 @@
+[gd_scene load_steps=3 format=3 uid="uid://dtvcp7676vusj"]
+
+[ext_resource type="Script" path="res://screens/gui/scene/environment.gd" id="1_ol034"]
+[ext_resource type="Script" path="res://screens/gui/settings_option.gd" id="2_6xw4s"]
+
+[node name="Environment" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_ol034")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+text = "TRANSPARENCY IS DISABLED AND WON'T DO ANYTHING RIGHT NOW"
+
+[node name="BackgroundType" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("2_6xw4s")
+
+[node name="OptionButton" type="OptionButton" parent="BackgroundType"]
+layout_mode = 2
+
+[node name="ChromakeyColor" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("2_6xw4s")
+
+[node name="ColorPickerButton" type="ColorPickerButton" parent="ChromakeyColor"]
+layout_mode = 2
+text = "Select"

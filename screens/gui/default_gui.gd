@@ -148,27 +148,31 @@ func _input(event: InputEvent) -> void:
 func _handle_message_received(message: GUIMessage) -> void:
 	match message.action:
 		GUIMessage.DATA_UPDATE:
-			const Trackers := AbstractTracker.Trackers
-			var opts := context.runner_data.common_options
-			
-			var data: Variant = null
-			match message.key:
-				Trackers.I_FACIAL_MOCAP:
-					data = opts.ifacial_mocap_options
-				Trackers.MEDIA_PIPE:
-					data = opts.mediapipe_options
-				Trackers.VTUBE_STUDIO:
-					data = opts.vtube_studio_options
-				Trackers.MEOW_FACE:
-					data = opts.meow_face_options
-				Trackers.OPEN_SEE_FACE:
-					_logger.error("not yet implemented")
-					return
-				Trackers.CUSTOM:
-					_logger.error("not yet implemented")
-					return
+			var data = context.runner_data.get_indexed(message.key)
+			if data == null:
+				_logger.error("Tried to update invalid key {key}".format({key = message.key}))
+				return
 			
 			data.set_indexed(message.value.key, message.value.value)
+			
+			var split_key: PackedStringArray = message.key.split(":")
+			if split_key.size() != 2:
+				_logger.error("Invalid key {message_key}".format({message_key = message.key}))
+				return
+			
+			match split_key[1]:
+				&"environment_options":
+					match message.value.key:
+						&"background_mode":
+							# TODO you-win (nov 28 2023): stub, maybe call custom method
+							# on runner depending on which thing needs to be updated?
+							pass
+						_:
+							_logger.debug("Unhandled key {key}".format({key = split_key[1]}))
+				_:
+					_logger.error("Unhandled key {key}".format({key = split_key[1]}))
+			
+			context.runner.update_from_config()
 		GUIMessage.TRACKER_START:
 			context.start_tracker(message.key)
 			message.caller.update(context)
@@ -177,6 +181,14 @@ func _handle_message_received(message: GUIMessage) -> void:
 			message.caller.update(context)
 		GUIMessage.TRACKER_STOP_ALL:
 			pass
+		GUIMessage.REQUEST_UPDATE:
+			message.caller.update(context)
+		GUIMessage.FLY_CAMERA:
+			if not message.value is bool:
+				_logger.error("Fly camera value should be a boolean")
+				return
+			
+			context.runner.fly_camera(message.value)
 		GUIMessage.CUSTOM:
 			pass
 
@@ -259,6 +271,9 @@ func add_popup(popup_name: String, file_path: String) -> Error:
 	
 	var popup := PopupWindow.new(popup_name, instance)
 	popup.name = popup_name
+	popup.close_requested.connect(func() -> void:
+		_active_popups.erase(popup)
+	)
 	
 	add_child(popup)
 	# TODO configure size somehow?

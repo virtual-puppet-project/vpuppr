@@ -6,6 +6,8 @@ extends HSplitContainer
 ## Helper class that automatically resizes the [HSplitContainer] according to its
 ## window size. Expects a [Tree] and [ScrollContainer] as children.
 
+signal message_received(message: GUIMessage)
+
 ## The [TreeItem] column that contains the name of the item.
 const TREE_NAME_COL: int = 0
 ## The [Tree] managed by this node.
@@ -37,6 +39,7 @@ class PageListing:
 	## Changes the [TreeItem] name for the page.
 	func change_name(text: String) -> void:
 		tree_item.set_text(TREE_NAME_COL, text)
+
 ## File name -> [HSplitTree.PageListing]. Used for toggling pages on and off.
 var _pages := {}
 ## The currently selected page.
@@ -140,4 +143,14 @@ func add_page(page_name: String, page: Control) -> Error:
 	_pages[page_name] = PageListing.new(item, page)
 	page.hide()
 	
+	if page.has_signal(&"message_received"):
+		page.message_received.connect(func(message: GUIMessage) -> void:
+			message_received.emit(message)
+		)
+	
 	return OK
+
+func update(context: Context) -> void:
+	for page in _pages.values():
+		if page.control.has_signal(&"message_received"):
+			page.control.update(context)

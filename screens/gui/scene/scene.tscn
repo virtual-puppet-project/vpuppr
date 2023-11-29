@@ -1,8 +1,25 @@
-[gd_scene load_steps=2 format=3 uid="uid://b716hvbju65hv"]
+[gd_scene load_steps=4 format=3 uid="uid://b716hvbju65hv"]
 
 [ext_resource type="Script" path="res://screens/gui/scene/scene.gd" id="1_ngo0w"]
+[ext_resource type="PackedScene" uid="uid://bhx8kwdd4s71q" path="res://screens/gui/scene/general.tscn" id="2_7j4k4"]
+[ext_resource type="PackedScene" uid="uid://dtvcp7676vusj" path="res://screens/gui/scene/environment.tscn" id="2_yucd0"]
 
 [node name="Scene" type="HSplitContainer"]
-offset_right = 40.0
-offset_bottom = 40.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_ngo0w")
+
+[node name="Tree" type="Tree" parent="."]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 2
+
+[node name="General" parent="ScrollContainer" instance=ExtResource("2_7j4k4")]
+layout_mode = 2
+
+[node name="Environment" parent="ScrollContainer" instance=ExtResource("2_yucd0")]
+layout_mode = 2

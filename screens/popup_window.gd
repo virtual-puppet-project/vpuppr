@@ -46,6 +46,12 @@ func _init(window_name: StringName, p_gui: Node) -> void:
 		if not visible:
 			close_requested.emit()
 	)
+	
+	# Pretend like the inner gui is requesting an update
+	focus_entered.connect(func() -> void:
+		if gui.has_method(&"update"):
+			message_received.emit(GUIMessage.new(gui, GUIMessage.REQUEST_UPDATE))
+	)
 
 #-----------------------------------------------------------------------------#
 # Private functions

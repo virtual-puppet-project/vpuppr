@@ -1,25 +1,20 @@
-class_name AppManager
-extends Node
+extends VBoxContainer
 
-const DEFAULT_SCREEN_SIZE := Vector2i(1600, 900)
+signal message_received(message: GUIMessage)
 
-var logger := Logger.create("AppManager")
-
-var metadata: Metadata = null
-
-## Whether debug checks should be enabled. Can be overridden in production builds.
-var debug_mode := OS.is_debug_build()
+@onready
+var _enable_fly_camera := %EnableFlyCamera
 
 #-----------------------------------------------------------------------------#
 # Builtin functions
 #-----------------------------------------------------------------------------#
 
-func _init() -> void:
-	pass
-
-func _exit_tree() -> void:
-	if metadata.try_save() != OK:
-		printerr("Failed to save metadata before exiting")
+func _ready() -> void:
+	_enable_fly_camera.message_received.connect(func(message: GUIMessage) -> void:
+		message.action = GUIMessage.FLY_CAMERA
+		
+		message_received.emit(message)
+	)
 
 #-----------------------------------------------------------------------------#
 # Private functions
@@ -29,5 +24,5 @@ func _exit_tree() -> void:
 # Public functions
 #-----------------------------------------------------------------------------#
 
-func display_message_popup(text: String, title: String = "Notice!") -> void:
-	OS.alert(text, title)
+func update(context: Context) -> void:
+	pass
