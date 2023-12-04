@@ -19,3 +19,54 @@ script = ExtResource("2_uswrr")
 
 [node name="CheckButton" type="CheckButton" parent="EnableFlyCamera"]
 layout_mode = 2
+
+[node name="ModelXPosition" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("2_uswrr")
+
+[node name="Button" type="Button" parent="ModelXPosition"]
+layout_mode = 2
+text = "<"
+
+[node name="LineEdit" type="LineEdit" parent="ModelXPosition"]
+layout_mode = 2
+text = "0"
+
+[node name="Button2" type="Button" parent="ModelXPosition"]
+layout_mode = 2
+text = ">"
+
+[node name="ModelYPosition" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("2_uswrr")
+
+[node name="Button" type="Button" parent="ModelYPosition"]
+layout_mode = 2
+text = "<"
+
+[node name="LineEdit" type="LineEdit" parent="ModelYPosition"]
+layout_mode = 2
+text = "0"
+
+[node name="Button2" type="Button" parent="ModelYPosition"]
+layout_mode = 2
+text = ">"
+
+[node name="ModelZPosition" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("2_uswrr")
+
+[node name="Button" type="Button" parent="ModelZPosition"]
+layout_mode = 2
+text = "<"
+
+[node name="LineEdit" type="LineEdit" parent="ModelZPosition"]
+layout_mode = 2
+text = "0"
+
+[node name="Button2" type="Button" parent="ModelZPosition"]
+layout_mode = 2
+text = ">"

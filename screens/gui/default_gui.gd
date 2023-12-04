@@ -156,23 +156,21 @@ func _handle_message_received(message: GUIMessage) -> void:
 			data.set_indexed(message.value.key, message.value.value)
 			
 			var split_key: PackedStringArray = message.key.split(":")
-			if split_key.size() != 2:
-				_logger.error("Invalid key {message_key}".format({message_key = message.key}))
-				return
-			
-			match split_key[1]:
-				&"environment_options":
-					match message.value.key:
-						&"background_mode":
-							# TODO you-win (nov 28 2023): stub, maybe call custom method
-							# on runner depending on which thing needs to be updated?
-							pass
-						_:
-							_logger.debug("Unhandled key {key}".format({key = split_key[1]}))
-				_:
-					_logger.error("Unhandled key {key}".format({key = split_key[1]}))
+			if split_key.size() == 2:
+				match split_key[1]:
+					&"environment_options":
+						match message.value.key:
+							&"background_mode":
+								# TODO you-win (nov 28 2023): stub, maybe call custom method
+								# on runner depending on which thing needs to be updated?
+								pass
+							_:
+								_logger.debug("Unhandled key {key}".format({key = split_key[1]}))
+					_:
+						_logger.error("Unhandled key {key}".format({key = split_key[1]}))
 			
 			context.runner.update_from_config()
+			context.model.update_from_config(context.runner_data.puppet_data)
 		GUIMessage.TRACKER_START:
 			context.start_tracker(message.key)
 			message.caller.update(context)

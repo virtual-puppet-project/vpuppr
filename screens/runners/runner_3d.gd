@@ -32,8 +32,6 @@ func _ready() -> void:
 	var model: Node3D = context.model
 	if model is VRMPuppet:
 		_setup_vrm(model)
-	
-	update_from_config()
 
 func _input(event: InputEvent) -> void:
 	if not event is InputEventKey:

@@ -1,6 +1,9 @@
 class_name Puppet3DData
 extends PuppetData
 
+@export
+var position := Vector3.ZERO
+
 ## The name of the head bone.
 @export
 var head_bone := ""

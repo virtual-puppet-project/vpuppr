@@ -162,6 +162,9 @@ func _ready() -> void:
 		_logger.error("An error occurred while verifying Context singleton, bailing out")
 		get_tree().change_scene_to_file("res://screens/home/home.tscn")
 	
+	model.update_from_config(runner_data.puppet_data)
+	runner.update_from_config()
+	
 	_logger.debug("Ready!")
 
 func _exit_tree() -> void:

@@ -159,6 +159,9 @@ func _populate_and_modify_expression_mappings() -> void:
 # Public functions
 #-----------------------------------------------------------------------------#
 
+func update_from_config(data: VRMPuppetData) -> void:
+	transform.origin = data.position
+
 func a_pose() -> Error:
 	if skeleton == null:
 		_logger.error("Skeleton was None while trying to A-pose, this is a bug!")
