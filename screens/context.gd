@@ -147,7 +147,6 @@ func _init(p_runner_data: RunnerData) -> void:
 		return
 	
 	runner.add_child(model)
-	runner.set("context", self)
 	gui.set("context", self)
 	
 	add_child(runner)
@@ -163,7 +162,7 @@ func _ready() -> void:
 		get_tree().change_scene_to_file("res://screens/home/home.tscn")
 	
 	model.update_from_config(runner_data.puppet_data)
-	runner.update_from_config()
+	runner.update_from_config(runner_data)
 	
 	_logger.debug("Ready!")
 

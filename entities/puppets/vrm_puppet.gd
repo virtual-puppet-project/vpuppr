@@ -1,6 +1,8 @@
 class_name VRMPuppet
 extends GLBPuppet
 
+const RenIK: GDScript = preload("res://addons/renik/renik.gd")
+
 # var vrm_meta
 
 var _animation_player: AnimationPlayer = null
@@ -49,6 +51,7 @@ func _ready() -> void:
 
 	_populate_blend_shape_mappings()
 	_populate_and_modify_expression_mappings()
+	_setup_ik()
 
 	_logger.debug("Finished ready")
 
@@ -154,6 +157,55 @@ func _populate_and_modify_expression_mappings() -> void:
 					continue
 
 		_expression_mappings[animation_name.to_lower()] = morphs
+
+func _setup_ik() -> Error:
+	var ren_ik: RenIK3D = RenIK.new()
+	ren_ik.name = "RenIK3D"
+	
+	ren_ik.armature_skeleton_path = skeleton.get_path()
+
+	var armature_targets := Node3D.new()
+	armature_targets.name = "ArmatureTargets"
+	add_child(armature_targets)
+
+	if ik_targets.head != null:
+		armature_targets.add_child(ik_targets.head)
+		ren_ik.armature_head_target = ik_targets.head.get_path()
+	if ik_targets.left_hand != null:
+		var target: Node3D = ik_targets.left_hand
+		armature_targets.add_child(target)
+		target.position.y = 0
+		target.rotation_degrees.x = 164
+
+		ik_targets.left_hand_starting_transform = target.transform
+
+		ren_ik.armature_left_hand_target = ik_targets.left_hand.get_path()
+	if ik_targets.right_hand != null:
+		var target: Node3D= ik_targets.right_hand
+		armature_targets.add_child(ik_targets.right_hand)
+		target.position.y = 0
+		target.rotation_degrees.x = 164
+
+		ik_targets.right_hand_starting_transform = target.transform
+
+		ren_ik.armature_right_hand_target = ik_targets.right_hand.get_path()
+	if ik_targets.hips != null:
+		# TODO stub
+		armature_targets.add_child(ik_targets.hips)
+		ren_ik.armature_hip_target = ik_targets.hips.get_path()
+	if ik_targets.left_foot != null:
+		# TODO stub
+		armature_targets.add_child(ik_targets.left_foot)
+		ren_ik.armature_left_foot_target = ik_targets.left_foot.get_path()
+	if ik_targets.right_foot != null:
+		# TODO stub
+		armature_targets.add_child(ik_targets.right_foot)
+		ren_ik.armature_right_foot_target = ik_targets.right_foot.get_path()
+	
+	add_child(ren_ik)
+	ren_ik.live_preview = true
+	
+	return OK
 
 #-----------------------------------------------------------------------------#
 # Public functions
