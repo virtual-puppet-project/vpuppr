@@ -17,29 +17,15 @@ var _chromakey_color := %ChromakeyColor
 
 func _ready() -> void:
 	_background_type.message_received.connect(func(message: GUIMessage) -> void:
-		var new_message := message.to_data_update(
+		message_received.emit(message.to_data_update(
 			OPTION_KEY,
 			"background_mode",
 			EnvironmentUtil.background_mode_string_to_enum(message.value)
-		)
-		if new_message == null:
-			_logger.error("Failed to convert {message} to DATA_UPDATE".format({
-				message = message
-			}))
-			return
-		
-		message_received.emit(new_message)
+		))
 	)
 	
 	_chromakey_color.message_received.connect(func(message: GUIMessage) -> void:
-		var new_message := message.to_data_update(OPTION_KEY, "background_color", message.value)
-		if new_message == null:
-			_logger.error("Failed to convert {message} to DATA_UPDATE".format({
-				message = message
-			}))
-			return
-		
-		message_received.emit(new_message)
+		message_received.emit(message.to_data_update(OPTION_KEY, "background_color", message.value))
 	)
 
 #-----------------------------------------------------------------------------#

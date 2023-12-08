@@ -146,6 +146,10 @@ func _input(event: InputEvent) -> void:
 
 ## Main message handler. May or may not request that popups update themselves.
 func _handle_message_received(message: GUIMessage) -> void:
+	if message == null:
+		_logger.error("An error occurred while handling GUI message")
+		return
+	
 	match message.action:
 		GUIMessage.DATA_UPDATE:
 			var data = context.runner_data.get_indexed(message.key)
@@ -156,21 +160,16 @@ func _handle_message_received(message: GUIMessage) -> void:
 			data.set_indexed(message.value.key, message.value.value)
 			
 			var split_key: PackedStringArray = message.key.split(":")
-			if split_key.size() == 2:
-				match split_key[1]:
-					&"environment_options":
-						match message.value.key:
-							&"background_mode":
-								# TODO you-win (nov 28 2023): stub, maybe call custom method
-								# on runner depending on which thing needs to be updated?
-								pass
-							_:
-								_logger.debug("Unhandled key {key}".format({key = split_key[1]}))
-					_:
-						_logger.error("Unhandled key {key}".format({key = split_key[1]}))
 			
-			context.runner.update_from_config()
-			context.model.update_from_config(context.runner_data.puppet_data)
+			match split_key[split_key.size() - 1]:
+				&"puppet_data":
+					context.model.update_from_config(context.runner_data.puppet_data)
+				&"environment_options":
+					context.runner.update_from_config()
+				_:
+					_logger.debug("Unhandled data update key for updating {key}".format({
+						key = split_key[split_key.size() -1]
+					}))
 		GUIMessage.TRACKER_START:
 			context.start_tracker(message.key)
 			message.caller.update(context)
