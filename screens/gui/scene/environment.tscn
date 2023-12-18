@@ -21,6 +21,8 @@ text = "TRANSPARENCY IS DISABLED AND WON'T DO ANYTHING RIGHT NOW"
 unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("2_6xw4s")
+config_path = &"common_options:environment_options"
+key = &"background_mode"
 
 [node name="OptionButton" type="OptionButton" parent="BackgroundType"]
 layout_mode = 2
@@ -29,6 +31,8 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("2_6xw4s")
+config_path = &"common_options:environment_options"
+key = &"background_color"
 
 [node name="ColorPickerButton" type="ColorPickerButton" parent="ChromakeyColor"]
 layout_mode = 2

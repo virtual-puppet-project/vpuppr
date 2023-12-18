@@ -35,11 +35,16 @@ var _logger := Logger.create("SettingsOption:{n}".format({n = name}))
 ## Value used for stepping if a child control supports stepping.
 @export
 var step: float = 1.0
+## The index path to use when modifying a [RunnerData].
+@export
+var config_path := &""
+@export
+## The key used for updating settings. Will be automatically generated from the node name or
+## child [Label] if not set.
+var key := &""
 
 ## The parent of this node. This is used for message callbacks.
 var _parent: Node = null
-## The key used for updating settings.
-var key := ""
 ## The control managed by this node.
 var control: Control = null
 
@@ -61,6 +66,9 @@ func _ready() -> void:
 	_parent = get_parent()
 	if _parent == null:
 		_logger.error("No parent found")
+		return
+	if config_path.is_empty():
+		_logger.error("config_path must be set")
 		return
 	
 	match get_child_count():
@@ -117,6 +125,12 @@ func _create_implicit_name_label() -> void:
 	add_child(label)
 	move_child(label, 0)
 
+func _create_payload(key: String, value: Variant) -> Dictionary:
+	return {
+		key = key,
+		value = value
+	}
+
 ## Setup a single control node managed by the [SettingsOption].
 func _setup_single() -> Error:
 	if get_child_count() != 2:
@@ -142,7 +156,8 @@ func _setup_single() -> Error:
 ## A [LineEdit] by itself is interpreted to be a [String] field.
 func _setup_text_field(line_edit: LineEdit) -> void:
 	var text_received := func(text: String) -> void:
-		message_received.emit(GUIMessage.new(_parent, GUIMessage.SETTING_CHANGED, key, text))
+		message_received.emit(GUIMessage.new(
+			_parent, GUIMessage.DATA_UPDATE, config_path, _create_payload(key, text)))
 	
 	line_edit.text_changed.connect(text_received)
 	line_edit.text_submitted.connect(text_received)
@@ -150,7 +165,8 @@ func _setup_text_field(line_edit: LineEdit) -> void:
 ## A [CheckButton] is a togglable field.
 func _setup_toggle_button(check_button: CheckButton) -> void:
 	check_button.toggled.connect(func(state: bool) -> void:
-		message_received.emit(GUIMessage.new(_parent, GUIMessage.SETTING_CHANGED, key, state))
+		message_received.emit(GUIMessage.new(
+			_parent, GUIMessage.DATA_UPDATE, config_path, _create_payload(key, state)))
 	)
 
 ## An [OptionButton] is a drop-down field.
@@ -158,13 +174,15 @@ func _setup_drop_down(option_button: OptionButton) -> void:
 	option_button.item_selected.connect(func(idx: int) -> void:
 		var text := option_button.get_item_text(idx)
 		
-		message_received.emit(GUIMessage.new(_parent, GUIMessage.SETTING_CHANGED, key, text))
+		message_received.emit(GUIMessage.new(
+			_parent, GUIMessage.DATA_UPDATE, config_path, _create_payload(key, text)))
 	)
 
 ## A [ColorPickerButton] that hides a [ColorPicker].
 func _setup_color_picker_button(color_picker_button: ColorPickerButton) -> void:
 	color_picker_button.get_picker().color_changed.connect(func(color: Color) -> void:
-		message_received.emit(GUIMessage.new(_parent, GUIMessage.SETTING_CHANGED, key, color))
+		message_received.emit(GUIMessage.new(
+			_parent, GUIMessage.DATA_UPDATE, config_path, _create_payload(key, color)))
 	)
 
 ## Setup two control nodes managed by the [SettingsOption].
@@ -196,7 +214,9 @@ func _setup_bounded_number_field(line_edit: LineEdit, h_slider: HSlider) -> void
 		if not text.is_valid_float():
 			return
 		
-		message_received.emit(GUIMessage.new(_parent, GUIMessage.SETTING_CHANGED, key, text.to_float()))
+		message_received.emit(GUIMessage.new(
+			_parent, GUIMessage.DATA_UPDATE, config_path, _create_payload(
+				key, text.to_float())))
 	
 	line_edit.text_changed.connect(text_received)
 	line_edit.text_submitted.connect(text_received)
@@ -252,7 +272,9 @@ func _setup_unbounded_number_field(dec_button: Button, line_edit: LineEdit, inc_
 		if not text.is_valid_float():
 			return
 		
-		message_received.emit(GUIMessage.new(_parent, GUIMessage.SETTING_CHANGED, key, text.to_float()))
+		message_received.emit(GUIMessage.new(
+			_parent, GUIMessage.DATA_UPDATE, config_path, _create_payload(
+				key, text.to_float())))
 	
 	line_edit.text_changed.connect(text_received)
 	line_edit.text_submitted.connect(text_received)

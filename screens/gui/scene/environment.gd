@@ -17,20 +17,20 @@ var _chromakey_color := %ChromakeyColor
 
 func _ready() -> void:
 	_background_type.message_received.connect(func(message: GUIMessage) -> void:
-		message_received.emit(message.to_data_update(
-			OPTION_KEY,
-			"background_mode",
-			EnvironmentUtil.background_mode_string_to_enum(message.value)
-		))
+		# The value must be transformed before passing back to the config since the [Environment]
+		# resource works off of enum ints but we display those values as strings
+		message.value.value = EnvironmentUtil.background_mode_string_to_enum(message.value.value)
+		message_received.emit(message)
 	)
 	
-	_chromakey_color.message_received.connect(func(message: GUIMessage) -> void:
-		message_received.emit(message.to_data_update(OPTION_KEY, "background_color", message.value))
-	)
+	_chromakey_color.message_received.connect(_forward)
 
 #-----------------------------------------------------------------------------#
 # Private functions
 #-----------------------------------------------------------------------------#
+
+func _forward(message: GUIMessage) -> void:
+	message_received.emit(message)
 
 #-----------------------------------------------------------------------------#
 # Public functions

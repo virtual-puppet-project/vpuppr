@@ -27,31 +27,16 @@ func _ready() -> void:
 		message_received.emit(message)
 	)
 	
-	_model_x_position.message_received.connect(func(message: GUIMessage) -> void:
-		message_received.emit(message.to_data_update(
-			OPTION_KEY,
-			"position:x",
-			message.value
-		))
-	)
-	_model_y_position.message_received.connect(func(message: GUIMessage) -> void:
-		message_received.emit(message.to_data_update(
-			OPTION_KEY,
-			"position:y",
-			message.value
-		))
-	)
-	_model_z_position.message_received.connect(func(message: GUIMessage) -> void:
-		message_received.emit(message.to_data_update(
-			OPTION_KEY,
-			"position:z",
-			message.value
-		))
-	)
+	_model_x_position.message_received.connect(_forward)
+	_model_y_position.message_received.connect(_forward)
+	_model_z_position.message_received.connect(_forward)
 
 #-----------------------------------------------------------------------------#
 # Private functions
 #-----------------------------------------------------------------------------#
+
+func _forward(message: GUIMessage) -> void:
+	message_received.emit(message)
 
 #-----------------------------------------------------------------------------#
 # Public functions

@@ -24,6 +24,8 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("2_uswrr")
+config_path = &"puppet_data"
+key = &"position:x"
 
 [node name="Button" type="Button" parent="ModelXPosition"]
 layout_mode = 2
@@ -41,6 +43,8 @@ text = ">"
 unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("2_uswrr")
+config_path = &"puppet_data"
+key = &"position:y"
 
 [node name="Button" type="Button" parent="ModelYPosition"]
 layout_mode = 2
@@ -58,6 +62,8 @@ text = ">"
 unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("2_uswrr")
+config_path = &"puppet_data"
+key = &"position:z"
 
 [node name="Button" type="Button" parent="ModelZPosition"]
 layout_mode = 2
