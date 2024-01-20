@@ -1,7 +1,5 @@
 # Vpuppr
 
-[![Chat on Discord](https://img.shields.io/discord/853476898071117865?label=chat&logo=discord)](https://discord.gg/6mcdWWBkrr)
-
 VTuber software made with Godot.
 
 Godot 4 rewrite in progress.
